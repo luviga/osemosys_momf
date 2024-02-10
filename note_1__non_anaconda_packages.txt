@@ -1,0 +1,17 @@
+Here is a list of packages that must be installed additionally to Anaconda.
+
+To install these, simply compute in the *anaconda prompt*: "pip install *name_of_package*".
+
+Below is a list of the packages.
+
+1. pyDOE (https://pypi.org/project/pyDOE/)
+2. prim (https://pypi.org/project/PRIM/)
+4. gekko
+
+Optional
+3. ema_workbench (https://emaworkbench.readthedocs.io/en/latest/installation.html)
+
+ema_workbench requires these two other packages:
+3.1. ipyparallel (https://ipyparallel.readthedocs.io/en/latest/)
+3.2. platypus-opt (https://github.com/Project-Platypus/Platypus)
+3.3 altair (https://altair-viz.github.io/getting_started/installation.html)

@@ -1,0 +1,533 @@
+2023Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -2.693300000000013
+Previous benefits Special Transport companies: -1.8533000000000133
+Previous benefits Taxi companies: 18.786900000000003
+Previous benefits Light Truck companies: -143.0340000000001
+Previous benefits Heavy Truck companies: -75.64380000000021
+Previous benefits Private companies: -11.492299999999808
+
+
+#################################################2024Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: 3.877699999999976
+Previous benefits Special Transport companies: 2.974400000000008
+Previous benefits Taxi companies: 24.00719999999997
+Previous benefits Light Truck companies: -167.77740000000006
+Previous benefits Heavy Truck companies: -82.62349999999984
+Previous benefits Private companies: -9.316700000000615
+
+
+#################################################2025Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: 12.416800000000077
+Previous benefits Special Transport companies: 11.403500000000001
+Previous benefits Taxi companies: 34.7469
+Previous benefits Light Truck companies: -188.7084000000001
+Previous benefits Heavy Truck companies: -78.14659999999986
+Previous benefits Private companies: -20.113899999999447
+
+
+#################################################2026Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: 10.379400000000011
+Previous benefits Special Transport companies: 28.901299999999992
+Previous benefits Taxi companies: 34.324899999999985
+Previous benefits Light Truck companies: -209.26980000000032
+Previous benefits Heavy Truck companies: -78.58740000000006
+Previous benefits Private companies: -6.223399999999522
+
+
+#################################################2027Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -3.2213999999999885
+Previous benefits Special Transport companies: 26.697100000000002
+Previous benefits Taxi companies: 18.425200000000014
+Previous benefits Light Truck companies: -219.81009999999998
+Previous benefits Heavy Truck companies: -100.67839999999995
+Previous benefits Private companies: 65.5623999999993
+
+
+#################################################2028Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -18.969899999999974
+Previous benefits Special Transport companies: 17.276799999999987
+Previous benefits Taxi companies: -1.3373000000000035
+Previous benefits Light Truck companies: -269.8203
+Previous benefits Heavy Truck companies: -147.298
+Previous benefits Private companies: -10.9804000000007
+
+
+#################################################2029Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -24.714800000000015
+Previous benefits Special Transport companies: 11.456599999999986
+Previous benefits Taxi companies: -4.763899999999994
+Previous benefits Light Truck companies: -279.6791000000001
+Previous benefits Heavy Truck companies: -173.49159999999995
+Previous benefits Private companies: 30.15000000000032
+
+
+#################################################2030Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -27.348999999999958
+Previous benefits Special Transport companies: 7.178300000000005
+Previous benefits Taxi companies: -1.2081999999999873
+Previous benefits Light Truck companies: -146.9861000000003
+Previous benefits Heavy Truck companies: -172.81649999999985
+Previous benefits Private companies: 212.82920000000007
+
+
+#################################################2031Shortfall: 49.264800000000264
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 49.2648
+
+
+Previous benefits Bus companies: -26.261299999999913
+Previous benefits Special Transport companies: 1.2963999999999967
+Previous benefits Taxi companies: 7.521300000000012
+Previous benefits Light Truck companies: -15.606399999999951
+Previous benefits Heavy Truck companies: -120.18440000000004
+Previous benefits Private companies: 477.40160000000003
+
+
+#################################################2032Shortfall: 3.707599999999605
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 3.7076
+
+
+Previous benefits Bus companies: -21.576
+Previous benefits Special Transport companies: -6.657000000000004
+Previous benefits Taxi companies: 13.015000000000002
+Previous benefits Light Truck companies: -78.85860000000002
+Previous benefits Heavy Truck companies: -256.1380999999997
+Previous benefits Private companies: 506.62559999999996
+
+
+#################################################2033Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -23.59559999999992
+Previous benefits Special Transport companies: -20.593100000000014
+Previous benefits Taxi companies: 17.847500000000018
+Previous benefits Light Truck companies: -87.13150000000019
+Previous benefits Heavy Truck companies: -406.31089999999995
+Previous benefits Private companies: 585.3849999999993
+
+
+#################################################2034Shortfall: 15.465200000000138
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 15.4652
+
+
+Previous benefits Bus companies: -32.066
+Previous benefits Special Transport companies: -43.32299999999999
+Previous benefits Taxi companies: 23.13020000000001
+Previous benefits Light Truck companies: -64.91210000000007
+Previous benefits Heavy Truck companies: -595.5713999999996
+Previous benefits Private companies: 834.2633999999995
+
+
+#################################################2035Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -24.72760000000011
+Previous benefits Special Transport companies: -62.84440000000002
+Previous benefits Taxi companies: 22.98400000000003
+Previous benefits Light Truck companies: -133.5766999999998
+Previous benefits Heavy Truck companies: -807.0115000000003
+Previous benefits Private companies: 830.3000999999995
+
+
+#################################################2036Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: -7.454999999999899
+Previous benefits Special Transport companies: -77.90039999999999
+Previous benefits Taxi companies: 10.897699999999984
+Previous benefits Light Truck companies: -152.40399999999966
+Previous benefits Heavy Truck companies: -856.1105999999999
+Previous benefits Private companies: 976.7781000000003
+
+
+#################################################2037Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: 8.199899999999957
+Previous benefits Special Transport companies: -91.87159999999999
+Previous benefits Taxi companies: -5.059100000000015
+Previous benefits Light Truck companies: -161.40789999999993
+Previous benefits Heavy Truck companies: -923.6131000000001
+Previous benefits Private companies: 889.4944000000003
+
+
+#################################################2038Shortfall: 0
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 0
+
+
+Previous benefits Bus companies: 24.44119999999998
+Previous benefits Special Transport companies: -106.87589999999999
+Previous benefits Taxi companies: -6.545099999999984
+Previous benefits Light Truck companies: -235.8647000000002
+Previous benefits Heavy Truck companies: -969.1092999999996
+Previous benefits Private companies: 980.1106999999997
+
+
+#################################################2039Shortfall: 33.97080000000008
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 33.9708
+
+
+Previous benefits Bus companies: 68.03019999999998
+Previous benefits Special Transport companies: -108.2184
+Previous benefits Taxi companies: 8.58979999999999
+Previous benefits Light Truck companies: -39.91459999999995
+Previous benefits Heavy Truck companies: -730.9975000000006
+Previous benefits Private companies: 1638.856499999999
+
+
+#################################################2040Shortfall: 399.26330000000013
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 399.2633
+
+
+Previous benefits Bus companies: 109.6448999999999
+Previous benefits Special Transport companies: -110.0918
+Previous benefits Taxi companies: 28.68380000000001
+Previous benefits Light Truck companies: 234.90879999999999
+Previous benefits Heavy Truck companies: -490.82529999999963
+Previous benefits Private companies: 2627.1758000000004
+
+
+#################################################2041Shortfall: 660.2870999999996
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 660.2871
+
+
+Previous benefits Bus companies: 131.75879999999984
+Previous benefits Special Transport companies: -110.67769999999999
+Previous benefits Taxi companies: 39.1943
+Previous benefits Light Truck companies: 441.4036000000005
+Previous benefits Heavy Truck companies: -236.1822999999997
+Previous benefits Private companies: 3311.755100000001
+
+
+#################################################2042Shortfall: 814.7333999999997
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 814.7334
+
+
+Previous benefits Bus companies: 156.48139999999995
+Previous benefits Special Transport companies: -101.3101
+Previous benefits Taxi companies: 48.76489999999998
+Previous benefits Light Truck companies: 630.0221999999999
+Previous benefits Heavy Truck companies: 83.05130000000008
+Previous benefits Private companies: 3616.2350999999994
+
+
+#################################################2043Shortfall: 918.8332000000001
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 918.8332
+
+
+Previous benefits Bus companies: 179.50250000000005
+Previous benefits Special Transport companies: -85.55220000000003
+Previous benefits Taxi companies: 59.123700000000014
+Previous benefits Light Truck companies: 667.3488
+Previous benefits Heavy Truck companies: 435.0502999999999
+Previous benefits Private companies: 3869.1857999999993
+
+
+#################################################2044Shortfall: 1047.0103999999994
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 1047.0104
+
+
+Previous benefits Bus companies: 181.92029999999994
+Previous benefits Special Transport companies: -75.99219999999997
+Previous benefits Taxi companies: 58.81639999999996
+Previous benefits Light Truck companies: 783.0373000000002
+Previous benefits Heavy Truck companies: 736.4938999999998
+Previous benefits Private companies: 4156.3158
+
+
+#################################################2045Shortfall: 1101.2355
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 1101.2355
+
+
+Previous benefits Bus companies: 162.5843999999999
+Previous benefits Special Transport companies: -71.51659999999997
+Previous benefits Taxi companies: 42.144499999999994
+Previous benefits Light Truck companies: 932.1238000000001
+Previous benefits Heavy Truck companies: 934.7677000000001
+Previous benefits Private companies: 4201.5283
+
+
+#################################################2046Shortfall: 975.2302999999998
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 975.2303
+
+
+Previous benefits Bus companies: 141.4481
+Previous benefits Special Transport companies: -67.82079999999999
+Previous benefits Taxi companies: 22.83129999999999
+Previous benefits Light Truck companies: 680.1385000000004
+Previous benefits Heavy Truck companies: 1140.9679
+Previous benefits Private companies: 4037.5693
+
+
+#################################################2047Shortfall: 928.9706000000007
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 928.9706
+
+
+Previous benefits Bus companies: 127.57729999999992
+Previous benefits Special Transport companies: -62.32249999999999
+Previous benefits Taxi companies: 16.416700000000013
+Previous benefits Light Truck companies: 596.3337999999999
+Previous benefits Heavy Truck companies: 1335.5699
+Previous benefits Private companies: 3982.4760000000015
+
+
+#################################################2048Shortfall: 921.3369999999996
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 921.337
+
+
+Previous benefits Bus companies: 103.70400000000006
+Previous benefits Special Transport companies: -67.8988
+Previous benefits Taxi companies: 17.705299999999973
+Previous benefits Light Truck companies: 759.3236000000002
+Previous benefits Heavy Truck companies: 1410.7511000000002
+Previous benefits Private companies: 3898.495700000001
+
+
+#################################################2049Shortfall: 879.2057999999994
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 879.2058
+
+
+Previous benefits Bus companies: 70.81569999999999
+Previous benefits Special Transport companies: -85.91440000000003
+Previous benefits Taxi companies: 23.970899999999986
+Previous benefits Light Truck companies: 1013.6049999999998
+Previous benefits Heavy Truck companies: 1393.0258999999996
+Previous benefits Private companies: 3670.0838000000003
+
+
+#################################################2050Shortfall: 812.297800000001
+
+
+Contribution of Bus companies: 0
+Contribution of Special Transport companies: 0
+Contribution of Taxi companies: 0
+Contribution of Light Truck companies: 0
+Contribution of Heavy Truck companies: 0
+Contribution of Private companies: 812.2978
+
+
+Previous benefits Bus companies: 65.35620000000006
+Previous benefits Special Transport companies: -95.6569
+Previous benefits Taxi companies: 26.91020000000001
+Previous benefits Light Truck companies: 1061.3200000000002
+Previous benefits Heavy Truck companies: 1438.1282
+Previous benefits Private companies: 3530.8707000000004
+
+
+#################################################
