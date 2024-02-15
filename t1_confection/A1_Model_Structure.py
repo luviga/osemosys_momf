@@ -10,32 +10,38 @@ import csv
 import sys
 import pickle
 import time
+import yaml
 
 start1 = time.time()
 # OBJECTIVE: to establish the elements of the model to set up a BAU.
+
+# Read yaml file with parameterization
+with open('MOMF_T1_A.yaml', 'r') as file:
+    # Load content file
+    params = yaml.safe_load(file)
 '''
 -------------------------------------------------------------------------------------------------------------
 Structural feature 1: './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx'
 1.a) We use this excel file to determine what demands should be supplied
 '''
-classifier_demand_sectors = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx', sheet_name='Sectors' ) # YELLOW // Gives an overview of the sectors to satisfy
-classifier_demand_fuel_per_sectors = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx', sheet_name='Fuel_per_Sectors' ) # ORANGE // Specifies Layout
-classifier_demand_fuel_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx', sheet_name='Fuel_to_Code' ) # COLORLESS // Gives an equivalence table with names 
+classifier_demand_sectors = pd.read_excel( params['Modes_Demand'], sheet_name=params['Sectors'] ) # YELLOW // Gives an overview of the sectors to satisfy
+classifier_demand_fuel_per_sectors = pd.read_excel( params['Modes_Demand'], sheet_name=params['Fuel_per_Sectors'] ) # ORANGE // Specifies Layout
+classifier_demand_fuel_to_code = pd.read_excel( params['Modes_Demand'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names 
 
-cd_sectors_all = classifier_demand_sectors['Sector'].tolist()
-cd_sectors_name_eng = classifier_demand_sectors['Plain English'].tolist()
-cd_sectors_name_spa = classifier_demand_sectors['Plain Spanish'].tolist()
-cd_sectors_method = classifier_demand_sectors['Address_Method'].tolist()
+cd_sectors_all = classifier_demand_sectors[params['sector']].tolist()
+cd_sectors_name_eng = classifier_demand_sectors[params['plain_eng']].tolist()
+cd_sectors_name_spa = classifier_demand_sectors[params['plain_spa']].tolist()
+cd_sectors_method = classifier_demand_sectors[params['address']].tolist()
 
 cd_sectors_index = [ i for i, x in enumerate( cd_sectors_method ) if x != str( 'Detailed' ) ] # Only grabs 'Simple' Demands
 cd_sectors_simple = [ cd_sectors_all[ cd_sectors_index[i] ] for i in range( len( cd_sectors_index ) ) ]
 
-cd_fuels_in_sectors = classifier_demand_fuel_per_sectors['Fuel/Sector'].tolist()
+cd_fuels_in_sectors = classifier_demand_fuel_per_sectors[params['fuel_slash_sector']].tolist()
 
-cd_fuel_to_code_fuels = classifier_demand_fuel_to_code['Fuel'].tolist()
-cd_fuel_to_code_codes = classifier_demand_fuel_to_code['Code'].tolist()
-cd_fuel_to_code_names_eng = classifier_demand_fuel_to_code['Plain English'].tolist()
-cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code['Plain Spanish'].tolist()
+cd_fuel_to_code_fuels = classifier_demand_fuel_to_code[params['fuel']].tolist()
+cd_fuel_to_code_codes = classifier_demand_fuel_to_code[params['code']].tolist()
+cd_fuel_to_code_names_eng = classifier_demand_fuel_to_code[params['plain_eng']].tolist()
+cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code[params['plain_spa']].tolist()
 
 demands_simple = []
 demands_simple_eng = []
@@ -93,46 +99,46 @@ for s in cd_sectors_simple:
 Structural feature 2: './A1_Inputs/A-I_Classifier_Modes_Supply.xlsx'
 2.a) We use this excel file to determine how energy supply occurs
 '''
-classifier_supply_primary_energy = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Supply.xlsx', sheet_name='PrimaryEnergy' ) # ORANGE // Specifies Layout
-classifier_supply_secondary_energy = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Supply.xlsx', sheet_name='SecondaryEnergy' ) # ORANGE // Specifies Layout
+classifier_supply_primary_energy = pd.read_excel( params['Modes_Supply'], sheet_name=params['Pri_eng'] ) # ORANGE // Specifies Layout
+classifier_supply_secondary_energy = pd.read_excel( params['Modes_Supply'], sheet_name=params['Sec_eng'] ) # ORANGE // Specifies Layout
 
 #############################################################################################################
 
-cs_p_final_in_chain_all = classifier_supply_primary_energy['Final in Chain'].tolist()
+cs_p_final_in_chain_all = classifier_supply_primary_energy[params['final']].tolist()
 cs_p_final_in_chain_indices = [ i for i, x in enumerate( cs_p_final_in_chain_all ) if x != str( 'IGNORE' ) ] # Only grabs TRUE or FALSE booleans
 cs_p_final_in_chain = [ cs_p_final_in_chain_all[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_comm_primary = [ classifier_supply_primary_energy['Primary_Commodity'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_comm_secondary = [ classifier_supply_primary_energy['Secondary_Commodity'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_comm_primary = [ classifier_supply_primary_energy[params['pri_commodity']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_comm_secondary = [ classifier_supply_primary_energy[params['sec_commodity']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_tech_code = [ classifier_supply_primary_energy['Tech - Code'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_tech_names_eng = [ classifier_supply_primary_energy['Tech - Plain English'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_tech_names_spa = [ classifier_supply_primary_energy['Tech - Plain Spanish'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_code = [ classifier_supply_primary_energy[params['tech_code']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_names_eng = [ classifier_supply_primary_energy[params['tech_plain_eng']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_names_spa = [ classifier_supply_primary_energy[params['tech_plain_spa']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_fuel_code = [ classifier_supply_primary_energy['Fuel - Code (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_fuel_names_eng = [ classifier_supply_primary_energy['Fuel - Plain English (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_fuel_names_spa = [ classifier_supply_primary_energy['Fuel - Plain Spanish (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_code = [ classifier_supply_primary_energy[params['fuel_code_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_names_eng = [ classifier_supply_primary_energy[params['fuel_plain_eng_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_names_spa = [ classifier_supply_primary_energy[params['fuel_plain_spa_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
 #############################################################################################################
 
-cs_s_final_in_chain_all = classifier_supply_secondary_energy['Final in Chain'].tolist()
+cs_s_final_in_chain_all = classifier_supply_secondary_energy[params['final']].tolist()
 cs_s_final_in_chain_indices = [ i for i, x in enumerate( cs_s_final_in_chain_all ) if x != str( 'IGNORE' ) ] # Only grabs TRUE or FALSE booleans
 cs_s_final_in_chain = [ cs_s_final_in_chain_all[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_comm_secondary = [ classifier_supply_secondary_energy['Secondary_Commodity'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_comm_tertiary = [ classifier_supply_secondary_energy['Tertiary_Commodity'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_comm_secondary = [ classifier_supply_secondary_energy[params['sec_commodity']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_comm_tertiary = [ classifier_supply_secondary_energy[params['ter_commodity']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_tech_code = [ classifier_supply_secondary_energy['Tech - Code'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_tech_names_eng = [ classifier_supply_secondary_energy['Tech - Plain English'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_tech_names_spa = [ classifier_supply_secondary_energy['Tech - Plain Spanish'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_code = [ classifier_supply_secondary_energy[params['tech_code']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_names_eng = [ classifier_supply_secondary_energy[params['tech_plain_eng']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_names_spa = [ classifier_supply_secondary_energy[params['tech_plain_spa']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_fuel_i_code = [ classifier_supply_secondary_energy['Fuel - Code (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_i_names_eng = [ classifier_supply_secondary_energy['Fuel - Plain English (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_i_names_spa = [ classifier_supply_secondary_energy['Fuel - Plain Spanish (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_code = [ classifier_supply_secondary_energy[params['fuel_code_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_names_eng = [ classifier_supply_secondary_energy[params['fuel_plain_eng_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_names_spa = [ classifier_supply_secondary_energy[params['fuel_plain_spa_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_fuel_o_code = [ classifier_supply_secondary_energy['Fuel - Code (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_o_names_eng = [ classifier_supply_secondary_energy['Fuel - Plain English (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_o_names_spa = [ classifier_supply_secondary_energy['Fuel - Plain Spanish (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_code = [ classifier_supply_secondary_energy[params['fuel_code_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_names_eng = [ classifier_supply_secondary_energy[params['fuel_plain_eng_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_names_spa = [ classifier_supply_secondary_energy[params['fuel_plain_spa_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
 #############################################################################################################
 # Working with the Primary Energy:
@@ -192,7 +198,7 @@ secondary_o_fuels_names_spa = []
 techs_secondary_input_connect = {}
 techs_secondary_output_connect = {}
 #
-test_tertiary_fuels = ['Electricity', 'Hydrogen']
+test_tertiary_fuels = params['test_tertiary_fuels']
 # Working with the Secondary Energy:
 for i in range( len( cs_s_final_in_chain ) ):
     #
@@ -245,35 +251,35 @@ for i in range( len( techs_demand_input_connect_keys ) ):
 Structural feature 3: './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
 3.a) We use this excel file to determine how to strcuture the transport sector (the same would apply for other "Special" type of demands in 1.a)
 '''
-classifier_TRN_mode_broad = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Mode_Broad' ) # YELLOW // Gives an overview of the Transport Demands (Columns) and Group Techs (Rows)
-classifier_TRN_mode_per_vehfuel = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Mode_per_VehFuel' ) # ORANGE // What does each Group Tech has as VEHICLE FUELS (e.g. hybrids)?
-classifier_TRN_fuel_per_vehfuel = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_per_VehFuel' ) # ORANGE // What FUEL does each VEHICLE FUEL use?
+classifier_TRN_mode_broad = pd.read_excel( params['Modes_Trans'], sheet_name=params['Mode_Broad'] ) # YELLOW // Gives an overview of the Transport Demands (Columns) and Group Techs (Rows)
+classifier_TRN_mode_per_vehfuel = pd.read_excel( params['Modes_Trans'], sheet_name=params['Mode_per_Vehfuel'] ) # ORANGE // What does each Group Tech has as VEHICLE FUELS (e.g. hybrids)?
+classifier_TRN_fuel_per_vehfuel = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_per_Vehfuel'] ) # ORANGE // What FUEL does each VEHICLE FUEL use?
 #
-classifier_TRN_fuel_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' ) # COLORLESS // Gives an equivalence table with names - FUELS 
-classifier_TRN_vehfuel_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='VehFuel_to_Code' ) # COLORLESS // Gives an equivalence table with names - VEHICLE FUEL DESCRIPTION
-classifier_TRN_tech_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' ) # COLORLESS // Gives an equivalence table with names - TECHNOLOGY GROUPS
-classifier_TRN_dem_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Dem_to_Code' ) # COLORLESS // Gives an equivalence table with names - DEMAND CODES
+classifier_TRN_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names - FUELS 
+classifier_TRN_vehfuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Vehfuel_Code'] ) # COLORLESS // Gives an equivalence table with names - VEHICLE FUEL DESCRIPTION
+classifier_TRN_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] ) # COLORLESS // Gives an equivalence table with names - TECHNOLOGY GROUPS
+classifier_TRN_dem_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Dem_Code'] ) # COLORLESS // Gives an equivalence table with names - DEMAND CODES
 #
 # CALLING ALL EQUIVALENCIES: // NOTE: *sp_trn* means "special - transport"
 # i)
-sp_trn_fuel_to_code_Fuel = classifier_TRN_fuel_to_code['Fuel'].tolist()
-sp_trn_fuel_to_code_Code = classifier_TRN_fuel_to_code['Code'].tolist()
-sp_trn_fuel_to_code_names_eng = classifier_TRN_fuel_to_code['Plain_English'].tolist()
-sp_trn_fuel_to_code_names_spa = classifier_TRN_fuel_to_code['Plain Spanish'].tolist()
+sp_trn_fuel_to_code_Fuel = classifier_TRN_fuel_to_code[params['fuel']].tolist()
+sp_trn_fuel_to_code_Code = classifier_TRN_fuel_to_code[params['code']].tolist()
+sp_trn_fuel_to_code_names_eng = classifier_TRN_fuel_to_code[params['plain_eng']].tolist()
+sp_trn_fuel_to_code_names_spa = classifier_TRN_fuel_to_code[params['plain_spa']].tolist()
 # ii)
-sp_trn_vehfuel_to_code_VehFuel = classifier_TRN_vehfuel_to_code['VehFuel'].tolist()
-sp_trn_vehfuel_to_code_Code = classifier_TRN_vehfuel_to_code['Code'].tolist()
-sp_trn_vehfuel_to_code_names_eng = classifier_TRN_vehfuel_to_code['Plain_English'].tolist()
-sp_trn_vehfuel_to_code_names_spa = classifier_TRN_vehfuel_to_code['Plain Spanish'].tolist()
+sp_trn_vehfuel_to_code_VehFuel = classifier_TRN_vehfuel_to_code[params['vehfuel']].tolist()
+sp_trn_vehfuel_to_code_Code = classifier_TRN_vehfuel_to_code[params['code']].tolist()
+sp_trn_vehfuel_to_code_names_eng = classifier_TRN_vehfuel_to_code[params['plain_eng']].tolist()
+sp_trn_vehfuel_to_code_names_spa = classifier_TRN_vehfuel_to_code[params['plain_spa']].tolist()
 # iii)
-sp_trn_tech_to_code_Tech = classifier_TRN_tech_to_code['Techs'].tolist()
-sp_trn_tech_to_code_Code = classifier_TRN_tech_to_code['Code'].tolist()
-sp_trn_tech_to_code_names_eng = classifier_TRN_tech_to_code['Plain_English'].tolist()
-sp_trn_tech_to_code_names_spa = classifier_TRN_tech_to_code['Plain Spanish'].tolist()
+sp_trn_tech_to_code_Tech = classifier_TRN_tech_to_code[params['techs']].tolist()
+sp_trn_tech_to_code_Code = classifier_TRN_tech_to_code[params['code']].tolist()
+sp_trn_tech_to_code_names_eng = classifier_TRN_tech_to_code[params['plain_eng']].tolist()
+sp_trn_tech_to_code_names_spa = classifier_TRN_tech_to_code[params['plain_spa']].tolist()
 # iv)
-sp_trn_dem_to_code_Code = classifier_TRN_dem_to_code['Demand_Codes'].tolist()
-sp_trn_dem_to_code_names_eng = classifier_TRN_dem_to_code['Plain_English'].tolist()
-sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code['Plain Spanish'].tolist()
+sp_trn_dem_to_code_Code = classifier_TRN_dem_to_code[params['dem_codes']].tolist()
+sp_trn_dem_to_code_names_eng = classifier_TRN_dem_to_code[params['plain_eng']].tolist()
+sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code[params['plain_spa']].tolist()
 #
 '''
 -------------------------------------------------------------------------------------------------------------
@@ -282,7 +288,7 @@ sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code['Plain Spanish'].tolis
 classifier_TRN_mode_broad :: 'Techs/Demand','E6TDPASSPUB','E6TDPASPRIV','E6TDFREHEA','E6TDFRELIG' (updated 20/7/2020)
 '''
 sp_trn_demands = classifier_TRN_mode_broad.columns.tolist()[1:]
-sp_trn_group_techs = classifier_TRN_mode_broad['Techs/Demand'].tolist()
+sp_trn_group_techs = classifier_TRN_mode_broad[params['techs_slash_dem']].tolist()
 sp_trn_group_techs_names_eng = []
 #
 sp_trn_group_techs_o_connect = {}
@@ -320,7 +326,7 @@ for d in sp_trn_demands:
 classifier_TRN_mode_per_vehfuel :: 'VehFuel/Tech','Techs_4WD','Techs_LD','Techs_Minivan','Techs_Motos','Techs_Buses','Techs_Microbuses','Techs_Taxis','Techs_Trains','Techs_He_Freight','Techs_Li_Freight' (updated 20/7/2020)
 '''
 # From the above columns, we note that the columns are the GROUP TECHS, so no need to call them again.
-sp_trn_vehfuels = classifier_TRN_mode_per_vehfuel[ 'VehFuel/Tech' ].tolist()
+sp_trn_vehfuels = classifier_TRN_mode_per_vehfuel[ params['vehfuel_slash_tech'] ].tolist()
 
 sp_trn_vehfuels_per_techs = {}
 for t in sp_trn_group_techs:
@@ -385,8 +391,8 @@ sp_trn_dist_techs_i_connect = {}
 #
 #**************************#
 
-dict_dist_fam_to_name_eng = {'PUB':'Public', 'PRI':'Private', 'HEA':'Heavy Freight' , 'LIG':'Light Freight' }
-dict_dist_fam_to_name_spa = {'PUB':'Público', 'PRI':'Privado', 'HEA':'Carga Pesada' , 'LIG':'Carga Liviana' }
+dict_dist_fam_to_name_eng = params['dict_dist_fam_to_name_eng']
+dict_dist_fam_to_name_spa = params['dict_dist_fam_to_name_spa']
 
 for gt in sp_trn_group_techs: # gt is for group tech
     #
@@ -464,8 +470,8 @@ These data parameters serve as the basis to implement the experiment.
 '''
 #
 horizon_configuration = pd.read_excel( './A1_Inputs/A-I_Horizon_Configuration.xlsx' )
-baseyear = horizon_configuration['Initial_Year'].tolist()[0]
-endyear = horizon_configuration['Final_Year'].tolist()[0]
+baseyear = horizon_configuration[params['initial_year']].tolist()[0]
+endyear = horizon_configuration[params['final_year']].tolist()[0]
 global time_range_vector
 time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 '''''
@@ -514,52 +520,27 @@ codes_list_techs_all = codes_list_techs_primary + codes_list_techs_secondary + c
 #       then,
 #       DISTTRN => TRN => TRNGROUP
 # we will create a dataframe and create each of these sections as columns:
-codes_primary_secondary_demands_df_headers =    [   'Primary.Tech', 'Primary.Fuel.O',
-                                                    'Secondary.Fuel.I', 'Secondary.Tech', 'Secondary.Fuel.O',
-                                                    'Demands.Fuel.I', 'Demands.Tech', 'Demands.Fuel.O'
-                                                ]
+codes_primary_secondary_demands_df_headers = params['codes_primary_secondary_demands_df_headers']
 codes_primary_secondary_demands_df = pd.DataFrame(columns=codes_primary_secondary_demands_df_headers)
 #
-codes_transport_df_headers =            [ 'DISTTRN.Fuel.I', 'DISTTRN.Tech', 'DISTTRN.Fuel.O',
-                                        'TRN.Fuel.I', 'TRN.Tech', 'TRN.Fuel.O',
-                                        'TRNGROUP.Fuel.I', 'TRNGROUP.Tech', 'TRNGROUP.Fuel.O'
-                                        ]
+codes_transport_df_headers = params['codes_transport_df_headers']
 codes_transport_df = pd.DataFrame(columns=codes_transport_df_headers)
 #
 #---------------#
-tech_param_list_all_notyearly = [ 'CapacityToActivityUnit', 'OperationalLife' ]
-tech_param_list_primary = [     
-                            'CapitalCost', 'FixedCost', 'VariableCost', 
-                            'ResidualCapacity', 'TotalAnnualMaxCapacity',
-                            'TotalTechnologyAnnualActivityUpperLimit',
-                            'TotalTechnologyAnnualActivityLowerLimit',
-                            'TotalAnnualMinCapacityInvestment',
-                            'CapacityFactor', 'AvailabilityFactor'
-                            ]
-tech_param_list_secondary = [
-                            'CapitalCost', 'FixedCost', 'ResidualCapacity'
-                            ]
-tech_param_list_demands =   [
-                            'CapitalCost', 'FixedCost', 'ResidualCapacity'
-                            ]
-tech_param_list_disttrn =   [
-                            'CapitalCost', 'FixedCost', 'ResidualCapacity'
-                            ]
-tech_param_list_trn =       [
-                            'CapitalCost', 'FixedCost', 'ResidualCapacity', 
-                            'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'
-                            ]
-tech_param_list_trngroups = [
-                            'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'                            
-                            ]
+tech_param_list_all_notyearly = params['tech_param_list_all_notyearly']
+tech_param_list_primary = params['tech_param_list_primary']
+tech_param_list_secondary = params['tech_param_list_secondary']
+tech_param_list_demands =   params['tech_param_list_demands']
+tech_param_list_disttrn =   params['tech_param_list_disttrn']
+tech_param_list_trn =       params['tech_param_list_trn']
+tech_param_list_trngroups = params['tech_param_list_trngroups']
 #---------------#
 #
-tech_param_list_all_notyearly_df_headers = [ 'Tech.Type','Tech.ID', 'Tech', 'Tech.Name' , 'Parameter.ID', 'Parameter', 'Unit', 'Value' ]
+tech_param_list_all_notyearly_df_headers = params['tech_param_list_all_notyearly_df_headers']
 #
 tech_param_list_all_notyearly_df = pd.DataFrame(columns=tech_param_list_all_notyearly_df_headers)
 #
-tech_param_list_all_yearly_df_headers =   [     'Tech.ID', 'Tech', 'Tech.Name' , 'Parameter.ID', 'Parameter', 'Unit',
-                                                'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+tech_param_list_all_yearly_df_headers =   params['tech_param_list_all_yearly_df_headers'] + time_range_vector
 #---------------#
 tech_param_list_yearly_primary_df = pd.DataFrame(columns=tech_param_list_all_yearly_df_headers)
 #
@@ -811,17 +792,14 @@ for n in range( len( codes_list_techs_TRNGROUP ) ):
 # We must create different sheets with every section of the model, and we must create:
 #   1) Base Year calibration data, 2) Projection Data
 #   3) Demand data, which we will define here:
-df_demands_all_header = [   'Demand/Share', 'Fuel/Tech', 'Name', 'Ref.Cap.BY', 'Ref.OAR.BY', 'Ref.km.BY',
-                            'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_demands_all_header = params['df_demands_all_header'] + time_range_vector
 df_demands_all = pd.DataFrame(columns=df_demands_all_header)
 df_demands_fuel_list = []
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # A - Let's start by looking at the primary technologies for the base year // we need the elements of codename and fields for data:
-df_techs_primary_base_year_HEADER   = [ 'Tech', 'Tech.Name', 'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_primary_projection_HEADER  = [ 'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                        'Direction',
-                                        'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_primary_base_year_HEADER   = params['df_techs_primary_base_year_HEADER']
+df_techs_primary_projection_HEADER  = params['df_techs_primary_projection_HEADER'] + time_range_vector
 #
 df_techs_primary_base_year = pd.DataFrame(columns=df_techs_primary_base_year_HEADER)
 df_techs_primary_projection = pd.DataFrame(columns=df_techs_primary_projection_HEADER)
@@ -860,12 +838,8 @@ df_techs_primary_projection = df_techs_primary_projection.replace(np.nan, '', re
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # B - Let's now take the elements for the secondary energy and reproduce what we did above:
-df_techs_secondary_base_year_HEADER   = [   'Fuel.I', 'Fuel.I.Name', 'Value.Fuel.I', 'Unit.Fuel.I',
-                                            'Tech', 'Tech.Name',
-                                            'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_secondary_projection_HEADER  = [   'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                            'Direction',
-                                            'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_secondary_base_year_HEADER   = params['df_techs_secondary_base_year_HEADER']
+df_techs_secondary_projection_HEADER  = params['df_techs_secondary_projection_HEADER'] + time_range_vector
 #
 df_techs_secondary_base_year = pd.DataFrame(columns=df_techs_secondary_base_year_HEADER)
 df_techs_secondary_projection = pd.DataFrame(columns=df_techs_secondary_projection_HEADER)
@@ -924,12 +898,8 @@ df_techs_secondary_projection = df_techs_secondary_projection.replace(np.nan, ''
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # C - Let's now take the elements for the demand of simple methods:
-df_techs_demand_base_year_HEADER   = [      'Fuel.I', 'Fuel.I.Name', 'Value.Fuel.I', 'Unit.Fuel.I',
-                                            'Tech', 'Tech.Name',
-                                            'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_demand_projection_HEADER  = [      'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                            'Direction',
-                                            'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_demand_base_year_HEADER   = params['df_techs_demand_base_year_HEADER']
+df_techs_demand_projection_HEADER  = params['df_techs_demand_projection_HEADER'] + time_range_vector
 #
 df_techs_demand_base_year = pd.DataFrame(columns=df_techs_demand_base_year_HEADER)
 df_techs_demand_projection = pd.DataFrame(columns=df_techs_demand_projection_HEADER)
@@ -994,12 +964,8 @@ df_demands_all = df_demands_all.replace(np.nan, '', regex=True)
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # D - Let's now take the elements of the fuel distribution elements of transport
-df_techs_DISTTRN_base_year_HEADER   = [     'Fuel.I', 'Fuel.I.Name', 'Value.Fuel.I', 'Unit.Fuel.I',
-                                            'Tech', 'Tech.Name',
-                                            'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_DISTTRN_projection_HEADER  = [     'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                            'Direction',
-                                            'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_DISTTRN_base_year_HEADER   = params['df_techs_DISTTRN_base_year_HEADER']
+df_techs_DISTTRN_projection_HEADER  = params['df_techs_DISTTRN_projection_HEADER'] + time_range_vector
 #
 #
 df_techs_DISTTRN_base_year = pd.DataFrame(columns=df_techs_DISTTRN_base_year_HEADER)
@@ -1053,12 +1019,8 @@ df_techs_DISTTRN_projection = df_techs_DISTTRN_projection.replace(np.nan, '', re
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # E - Let's now take the elements of vehicle techs
-df_techs_TRN_base_year_HEADER   = [     'Fuel.I.1', 'Fuel.I.1.Name', 'Value.Fuel.I.1', 'Unit.Fuel.I.1','Fuel.I.2', 'Fuel.I.2.Name', 'Value.Fuel.I.2', 'Unit.Fuel.I.2',
-                                        'Tech', 'Tech.Name',
-                                        'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_TRN_projection_HEADER  = [     'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                        'Direction',
-                                        'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_TRN_base_year_HEADER   = params['df_techs_TRN_base_year_HEADER']
+df_techs_TRN_projection_HEADER  = params['df_techs_TRN_projection_HEADER'] + time_range_vector
 #
 #
 df_techs_TRN_base_year = pd.DataFrame(columns=df_techs_TRN_base_year_HEADER)
@@ -1137,12 +1099,8 @@ df_techs_TRN_projection = df_techs_TRN_projection.replace(np.nan, '', regex=True
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # F - Let's now take the elements of group vehcile techs
-df_techs_TRNGROUP_base_year_HEADER   = [      'Fuel.I', 'Fuel.I.Name', 'Value.Fuel.I', 'Unit.Fuel.I',
-                                            'Tech', 'Tech.Name',
-                                            'Fuel.O', 'Fuel.O.Name', 'Value.Fuel.O', 'Unit.Fuel.O' ]
-df_techs_TRNGROUP_projection_HEADER  = [      'Tech', 'Tech.Name', 'Fuel', 'Fuel.Name',
-                                            'Direction',
-                                            'Projection.Mode', 'Projection.Parameter' ] + time_range_vector
+df_techs_TRNGROUP_base_year_HEADER   = params['df_techs_TRNGROUP_base_year_HEADER']
+df_techs_TRNGROUP_projection_HEADER  = params['df_techs_TRNGROUP_projection_HEADER'] + time_range_vector
 #
 df_techs_TRNGROUP_base_year = pd.DataFrame(columns=df_techs_TRNGROUP_base_year_HEADER)
 df_techs_TRNGROUP_projection = pd.DataFrame(columns=df_techs_TRNGROUP_projection_HEADER)
@@ -1223,8 +1181,7 @@ tech_param_list_yearly_trngroups_df = tech_param_list_yearly_trngroups_df.replac
 tech_param_list_dfs = [ tech_param_list_all_notyearly_df, tech_param_list_yearly_primary_df ,
                         tech_param_list_yearly_secondary_df, tech_param_list_yearly_demands_df ,
                         tech_param_list_yearly_disttrn_df, tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
-tech_param_list_dfs_names = [   'Fixed Horizon Parameters', 'Primary Techs', 'Secondary Techs', 
-                                'Demand Techs', 'Transport Fuel Distribution', 'Vehicle Techs', 'Vehicle Groups' ]
+tech_param_list_dfs_names = params['tech_param_list_dfs_names']
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 #
@@ -1234,10 +1191,10 @@ tech_param_list_dfs_names = [   'Fixed Horizon Parameters', 'Primary Techs', 'Se
 #   NOTE: https://stackoverflow.com/questions/22089317/export-from-pandas-to-excel-without-row-names-index
 #
 # Print the Base Year "Activity Ratio", that puts the units.
-writer_df_baseyear = pd.ExcelWriter("./A1_Outputs/A-O_AR_Model_Base_Year.xlsx", engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_baseyear = pd.ExcelWriter(params['Print_Base_Year'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 df_base_year_list = [   df_techs_primary_base_year, df_techs_secondary_base_year, df_techs_demand_base_year,
                         df_techs_DISTTRN_base_year, df_techs_TRN_base_year, df_techs_TRNGROUP_base_year ]
-df_base_year_names = [ 'Primary', 'Secondary', 'Demand Techs', 'Distribution Transport', 'Transport', 'Transport Groups' ]
+df_base_year_names = params['df_base_year_names']
 for n in range( len( df_base_year_names ) ):
     this_df = df_base_year_list[n]
     this_df_sheet_name = df_base_year_names[n]
@@ -1245,10 +1202,10 @@ for n in range( len( df_base_year_names ) ):
 writer_df_baseyear.save()
 #
 # Print the Projection "Activity Ratio", without the units.
-writer_df_projection = pd.ExcelWriter("./A1_Outputs/A-O_AR_Projections.xlsx", engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_projection = pd.ExcelWriter(params['Print_Proj'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 df_projection_list = [   df_techs_primary_projection, df_techs_secondary_projection, df_techs_demand_projection,
                         df_techs_DISTTRN_projection, df_techs_TRN_projection, df_techs_TRNGROUP_projection ]
-df_projection_names = [ 'Primary', 'Secondary', 'Demand Techs', 'Distribution Transport', 'Transport', 'Transport Groups' ]
+df_projection_names = params['df_projection_names']
 for n in range( len( df_projection_names ) ):
     this_df = df_projection_list[n]
     this_df_sheet_name = df_projection_names[n]
@@ -1261,8 +1218,8 @@ writer_df_projection.save()
 -------------------------------------------------------------------------------------------------------------
 With that done, we now need to print the final demands. This is crucial for parameterization.
 '''
-writer_df_demand = pd.ExcelWriter("./A1_Outputs/A-O_Demand.xlsx", engine='xlsxwriter') # These are activity ratios // we should add the units.
-this_df_sheet_name = 'Demand_Projection'
+writer_df_demand = pd.ExcelWriter(params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+this_df_sheet_name = params['Dem_Proj']
 df_demands_all.to_excel(writer_df_demand, sheet_name = this_df_sheet_name, index=False)
 writer_df_demand.save()
 #
@@ -1270,7 +1227,7 @@ writer_df_demand.save()
 -------------------------------------------------------------------------------------------------------------
 With that done, we must print the distribution of trips per mode for the transport sector, as well as capacities.
 '''
-writer_df_parameters = pd.ExcelWriter("./A1_Outputs/A-O_Parametrization.xlsx", engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_parameters = pd.ExcelWriter(params['Print_Paramet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 for n in range( len( tech_param_list_dfs_names ) ):
     this_df = tech_param_list_dfs[n]
     this_df_sheet_name = tech_param_list_dfs_names[n]
@@ -1293,9 +1250,7 @@ for n in range( len( codes_list_techs_TRN ) ):
     codes_list_techs_TRNGROUP_dict[ the_group_tech ].append( codes_list_techs_TRN[n] )
     #
 #
-df_techs_fleet_HEADER   = [     'Group.ID', 'Group/Vehicle', 'Techs', 'Description',
-                                'Fleet Unit', 'Base Year', 'Base Year Value'
-                                ]
+df_techs_fleet_HEADER   = params['df_techs_fleet_HEADER']
 #
 df_techs_fleet = pd.DataFrame(columns=df_techs_fleet_HEADER)
 #
@@ -1322,11 +1277,11 @@ for n in range( len( codes_list_techs_TRNGROUP ) ):
         #
     #
 #
-with open( './A1_Outputs/A-O_Fleet_Groups.pickle', 'wb') as handle0:
+with open( params['Pickle_Fleet_Groups'], 'wb') as handle0:
     pickle.dump(codes_list_techs_TRNGROUP_dict, handle0, protocol=pickle.HIGHEST_PROTOCOL)
 #
-writer_df_fleet = pd.ExcelWriter("./A1_Outputs/A-O_Fleet.xlsx", engine='xlsxwriter') # These are activity ratios // we should add the units.
-this_df_sheet_name = 'Calibration_Fleet'
+writer_df_fleet = pd.ExcelWriter(params['Print_Fleet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+this_df_sheet_name = params['Cali_Fleet']
 df_techs_fleet.to_excel(writer_df_fleet, sheet_name = this_df_sheet_name, index=False)
 writer_df_fleet.save()
 '''
@@ -1337,7 +1292,7 @@ time_elapsed_1 = -start1 + end_1
 print( str( time_elapsed_1 ) + ' seconds /', str( time_elapsed_1/60 ) + ' minutes' )
 print('*: For all effects, we have finished the work of this script.')
 
-log_file = open("./A1_Outputs/Log.txt","w")
+log_file = open(params['log_file_A1'],"w")
 today = date.today()
 hour = time.strftime("%H")
 minute = time.strftime("%M")
