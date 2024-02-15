@@ -18,6 +18,7 @@ import time
 import gc
 import shutil
 import pickle
+import yaml
 '''
 We implement OSEMOSYS-CR in a csv based system for semi-automatic manipulation of parameters.
 '''
@@ -48,10 +49,10 @@ def interp_max_cap( x ):
     return x_pick
     #
 #
-def main_executer(n1,packaged_useful_elements):
-    set_first_list()
-    file_aboslute_address = os.path.abspath("B1_Base_Scenarios.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'B1_Base_Scenarios.py', '' ) ).replace( '\:', ':' )
+def main_executer(n1,packaged_useful_elements, params):
+    set_first_list(params)
+    file_aboslute_address = os.path.abspath(params['B1_script'])
+    file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
     #
     case_address = file_adress + r'Executables\\' + str( first_list[n1] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
@@ -61,23 +62,23 @@ def main_executer(n1,packaged_useful_elements):
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
     #
-    str2 = "glpsol -m OSeMOSYS_Model.txt -d " + str( data_file )  +  " -o " + str(output_file)
+    str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file)
     os.system( str1 and str2 )
     time.sleep(1)
     #
-    data_processor(n1,packaged_useful_elements)
+    data_processor(n1,packaged_useful_elements, params)
     #
 #
-def set_first_list():
+def set_first_list(params):
     #
-    first_list_raw = os.listdir( './Executables' )
+    first_list_raw = os.listdir( params['Executables'] )
     #
     global first_list
     scenario_list_print_with_fut = [ e + '_0' for e in scenario_list_print ]
     first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) and ( e in scenario_list_print_with_fut ) ]
     #
 #
-def data_processor( case, unpackaged_useful_elements ):
+def data_processor( case, unpackaged_useful_elements, params ):
     #
     Reference_driven_distance =     unpackaged_useful_elements[0]
     Reference_occupancy_rate =      unpackaged_useful_elements[1]
@@ -91,16 +92,16 @@ def data_processor( case, unpackaged_useful_elements ):
     dr_default = list_param_default_value_value[dr_prm_idx]
 
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
-    df_tech_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
     # 1 - Always call the structure of the model:
     #-------------------------------------------#
-    structure_filename = "B1_Model_Structure.xlsx"
+    structure_filename = params['B1_model_Struct']
     structure_file = pd.ExcelFile(structure_filename)
     structure_sheetnames = structure_file.sheet_names  # see all sheet names
     sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
@@ -156,49 +157,15 @@ def data_processor( case, unpackaged_useful_elements ):
             this_index_list.append( sheet_vars_structure.iat[2+n, col] )
         S_DICT_vars_structure['index_list'].append( this_index_list )
     #-------------------------------------------#
-    all_vars = ['Demand',
-                'NewCapacity',
-                'AccumulatedNewCapacity',
-                'TotalCapacityAnnual',
-                'TotalTechnologyAnnualActivity',
-                'ProductionByTechnology',
-                'UseByTechnology',
-                'CapitalInvestment',
-                'DiscountedCapitalInvestment',
-                'SalvageValue',
-                'DiscountedSalvageValue',
-                'OperatingCost',
-                'DiscountedOperatingCost',
-                'AnnualVariableOperatingCost',
-                'AnnualFixedOperatingCost',
-                'TotalDiscountedCostByTechnology',
-                'TotalDiscountedCost',
-                'AnnualTechnologyEmission',
-                'AnnualTechnologyEmissionPenaltyByEmission',
-                'AnnualTechnologyEmissionsPenalty',
-                'DiscountedTechnologyEmissionsPenalty',
-                'AnnualEmissions'
-                ]
+    all_vars = params['all_vars']
     #
-    more_vars = [   'DistanceDriven',
-                    'Fleet',
-                    'NewFleet',
-                    'ProducedMobility']
+    more_vars = params['more_vars']
     #
-    filter_vars = [   'FilterFuelType',
-                    'FilterVehicleType',
-                    # 'DiscountedTechnEmissionsPen',
-                    #
-                    'Capex2021', # CapitalInvestment
-                    'FixedOpex2021', # AnnualFixedOperatingCost
-                    'VarOpex2021', # AnnualVariableOperatingCost
-                    'Opex2021', # OperatingCost
-                    'Externalities2021' # AnnualTechnologyEmissionPenaltyByEmission
-                    ]
+    filter_vars = params['filter_vars_2']
     #
     all_vars_output_dict = [ {} for e in range( len( first_list ) ) ]
     #
-    output_header = [ 'Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year' ]
+    output_header = params['output_header']
     #-------------------------------------------------------#
     for v in range( len( all_vars ) ):
         output_header.append( all_vars[v] )
@@ -212,7 +179,7 @@ def data_processor( case, unpackaged_useful_elements ):
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = str( './Executables/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = params['Executables'] + str( '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
     #
     n = 0
     break_this_while = False
@@ -292,7 +259,7 @@ def data_processor( case, unpackaged_useful_elements ):
     linecache.clearcache()
     #%%
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = './Executables/' + str( first_list[case] )
+    output_adress = params['Executables'] + '/' + str( first_list[case] )
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -599,7 +566,7 @@ def data_processor( case, unpackaged_useful_elements ):
     #-----------------------------------------------------------------------------------------------------------%
     print(  'We finished with printing the outputs.')
 #
-def function_C_mathprog( stable_scenarios, unpackaged_useful_elements ):
+def function_C_mathprog( stable_scenarios, unpackaged_useful_elements, params ):
     #
     scenario_list =                     unpackaged_useful_elements[0]
     S_DICT_sets_structure =             unpackaged_useful_elements[1]
@@ -618,15 +585,15 @@ def function_C_mathprog( stable_scenarios, unpackaged_useful_elements ):
     Blend_Shares =                      unpackaged_useful_elements[9]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
-    df_tech_to_code = pd.read_excel( './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
     # header = ['Scenario','Parameter','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
-    header_indices = ['Scenario','Parameter','r','t','f','e','m','l','y','ls','ld','lh','s','value']
+    header_indices = params['header_indices']
     #
     for scen in range( len( scenario_list ) ):
         print('# This is scenario ', scenario_list[scen] )
@@ -923,32 +890,13 @@ def function_C_mathprog( stable_scenarios, unpackaged_useful_elements ):
         if scenario_list[scen] != 'BAU':
             this_Blend_Shares_data = Blend_Shares[ scenario_list[scen] ]
         #
-        basic_header_elements = [ 'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year' ]
+        basic_header_elements = params['basic_header_elements']
         #
-        parameters_to_print = [ 'SpecifiedAnnualDemand',
-                                'CapacityFactor',
-                                'OperationalLife',
-                                'ResidualCapacity',
-                                'InputActivityRatio',
-                                'OutputActivityRatio',
-                                'EmissionActivityRatio',
-                                'CapitalCost',
-                                'VariableCost',
-                                'FixedCost',
-                                'TotalAnnualMaxCapacity',
-                                'TotalAnnualMinCapacity',
-                                'TotalAnnualMaxCapacityInvestment',
-                                'TotalAnnualMinCapacityInvestment',
-                                'TotalTechnologyAnnualActivityUpperLimit',
-                                'TotalTechnologyAnnualActivityLowerLimit' ]
+        parameters_to_print = params['parameters_to_print']
         #
-        more_params = [   'DistanceDriven',
-                        'UnitCapitalCost (USD)',
-                        'UnitFixedCost (USD)',
-                        'BiofuelShares']
+        more_params = params['more_params']
         #
-        filter_params = [   'FilterFuelType',
-                        'FilterVehicleType']
+        filter_params = params['filter_params']
         #
         input_params_table_headers = basic_header_elements + parameters_to_print + more_params + filter_params
         all_data_row = []
@@ -1176,7 +1124,7 @@ def function_C_mathprog( stable_scenarios, unpackaged_useful_elements ):
         #
         ###########################################################################################################################
         #
-        with open( './Executables' + '/' + str( scenario_list[scen] ) + '_0' + '/' + str( scenario_list[scen] ) + '_0' + '_Input.csv', 'w', newline = '') as param_csv:
+        with open( params['Executables'] + '/' + str( scenario_list[scen] ) + '_0' + '/' + str( scenario_list[scen] ) + '_0' + '_Input.csv', 'w', newline = '') as param_csv:
             csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
             # Print the header:
             csvwriter.writerow( input_params_table_headers )
@@ -1399,6 +1347,10 @@ if __name__ == '__main__':
     """
     start1 = time.time()
     #
+    # Read yaml file with parameterization
+    with open('MOMF_T1_B1.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
     '''''
     ################################# PART 1 #################################
     '''''
@@ -1406,7 +1358,7 @@ if __name__ == '__main__':
     '''
     # 1.A) We extract the strucute setup of the model based on 'Structure.xlsx'
     '''
-    structure_filename = "B1_Model_Structure.xlsx"
+    structure_filename = params['B1_model_Struct']
     structure_file = pd.ExcelFile(structure_filename)
     structure_sheetnames = structure_file.sheet_names  # see all sheet names
     sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
@@ -1469,11 +1421,11 @@ if __name__ == '__main__':
     Structural dictionary 1: Notes
     a) We use this dictionary relating a specific technology and a group technology and associate the prefix list
     '''
-    Fleet_Groups =              pickle.load( open( './A1_Outputs/A-O_Fleet_Groups.pickle',            "rb" ) )
+    Fleet_Groups =              pickle.load( open( params['Pickle_Fleet_Groups'],            "rb" ) )
     Fleet_Groups['Techs_Microbuses'] += [ 'TRMBUSHYD' ] # this is an add on, kind of a patch
-    Fleet_Groups_Distance =     pickle.load( open( './A1_Outputs/A-O_Fleet_Groups_Distance.pickle',   "rb" ) )
-    Fleet_Groups_OR =           pickle.load( open( './A1_Outputs/A-O_Fleet_Groups_OR.pickle',         "rb" ) )
-    Fleet_Groups_techs_2_dem =  pickle.load( open( './A1_Outputs/A-O_Fleet_Groups_T2D.pickle',        "rb" ) )
+    Fleet_Groups_Distance =     pickle.load( open( params['Pickle_Fleet_Groups_Dist'],   "rb" ) )
+    Fleet_Groups_OR =           pickle.load( open( params['Pickle_Fleet_Groups_OR'],         "rb" ) )
+    Fleet_Groups_techs_2_dem =  pickle.load( open( params['Pickle_Fleet_Groups_T2D'],        "rb" ) )
     #
     Fleet_Groups_inv = {}
     for k in range( len( list( Fleet_Groups.keys() ) ) ):
@@ -1508,7 +1460,7 @@ if __name__ == '__main__':
     ####################################################################################################################################################
     # 1.B) We finish this sub-part, and proceed to read all the base scenarios.
     '''
-    header_row = ['PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
+    header_row = params['header_row']
     #
     scenario_list_sheet = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Scenarios' )
     scenario_list_all = [ scenario_list_sheet[ 'Name' ].tolist()[i] for i in range( len( scenario_list_sheet[ 'Name' ].tolist() ) ) if scenario_list_sheet[ 'Activated' ].tolist()[i] == 'YES' ]
@@ -1521,22 +1473,22 @@ if __name__ == '__main__':
     scenario_list = [ scenario_list_reference[i] for i in range( len( scenario_list_all ) ) if scenario_list_reference[i] != 'based' ]
     
     #
-    base_configuration_overall = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Overall_Parameters' )
-    base_configuration_distance = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Distance_Levers' )
-    base_configuration_modeshift = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Mode_Shift' )
-    base_configuration_or = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Occupancy_Rate' )
-    base_configuration_adoption = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Tech_Adoption' )
-    base_configuration_electrical = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Electrical' )
-    base_configuration_smartGrid = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='SmartGrid' )
-    base_configuration_E_and_D = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Efficiency' )
+    base_configuration_overall = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Over_params'] )
+    base_configuration_distance = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Dis_Levers'] )
+    base_configuration_modeshift = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Mode_Shift'] )
+    base_configuration_or = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Occu_Rate'] )
+    base_configuration_adoption = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Tech_Adop'] )
+    base_configuration_electrical = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Elec'] )
+    base_configuration_smartGrid = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Smart_Grid'] )
+    base_configuration_E_and_D = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Effi'] )
     #
-    all_dataset_address = './A2_Output_Params/'
+    all_dataset_address = params['A2_Output_Params']
     '''
     # Call the default parameters for later use:
     '''
-    list_param_default_value = pd.read_excel( 'B1_Default_Param.xlsx' )
-    list_param_default_value_params = list( list_param_default_value['Parameter'] )
-    list_param_default_value_value = list( list_param_default_value['Default_Value'] )
+    list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
+    list_param_default_value_params = list( list_param_default_value[params['param']] )
+    list_param_default_value_value = list( list_param_default_value[params['default_value']] )
     #
     global Initial_Year_of_Uncertainty
     for n in range( len( base_configuration_overall.index ) ):
@@ -1557,7 +1509,7 @@ if __name__ == '__main__':
         stable_scenarios.update( { scen:{} } )
     #
     for scen in range( len( scenario_list ) ):
-        this_paramter_list_dir = 'A2_Output_Params/' + str( scenario_list[scen] )
+        this_paramter_list_dir = params['A2_Output_Params'] + str( scenario_list[scen] )
         parameter_list = os.listdir( this_paramter_list_dir )
         #
         for p in range( len( parameter_list ) ):
@@ -1752,14 +1704,12 @@ if __name__ == '__main__':
     ii) We first perform changes to the _Base_Dataset file to fix the errors found in the system.
     iii) We execute the changes in the scenario restrictions.
     '''
-    Blend_Shares = {    'NDP':{}, 'NDPA':{}, 'NDPB':{},
-                        'NDPC':{}, 'NDPD':{}, 'NDPE':{},
-                        'NDPF':{}, 'NDPG':{}, 'NDPAlt':{}, 'NDPPlus':{} }
+    Blend_Shares = params['blend_shares']
     #
     for s in range( len( scenario_list ) ):
         #
         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
-        capacity_variables = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+        capacity_variables = params['capacity_variables']
         #
         if scenario_list[s] == 'BAU':
             relative_pkm_to_demand = { 'TotalAnnualMaxCapacity':{}, 'TotalTechnologyAnnualActivityLowerLimit':{} }
@@ -1945,7 +1895,7 @@ if __name__ == '__main__':
         #
         ### BLOCK 6: call and re-establish the capacity variables of group techs after modal shift change AND occupancy rate change ###
         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
-        capacity_variables = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+        capacity_variables = params['capacity_variables']
         #
         # We must call the group techs and calculate the passenger kilometers provided by each tech, then store the share relative to the demand
         for capvar in range( len( capacity_variables ) ):
@@ -2215,7 +2165,7 @@ if __name__ == '__main__':
                             stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'].append( new_value_list_rounded[y] )
             #
             if scenario_list[s] != 'BAU':
-                cap_vars = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+                cap_vars = params['cap_vars']
                 for cp in range( len( cap_vars ) ):
                     all_sets = list( set( stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] ) )
                     all_sets.sort()
@@ -2235,7 +2185,7 @@ if __name__ == '__main__':
         
         ### BLOCK 8: Adjust all paramters for distance change ### // we do not apply this to BAU // here the occupancy rate AND the modal shift were already adjusted
         # parameters_involved = ['CapitalCost','FixedCost','ResidualCapacity','TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit']
-        parameters_involved = ['CapitalCost','FixedCost','TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit','ResidualCapacity']
+        parameters_involved = params['parameters_involved']
         #
         if scenario_list[s] != 'BAU': # we proceed to adjust first the parameters and corresponding sets affected by distance, then the demands.
             #
@@ -2496,29 +2446,13 @@ if __name__ == '__main__':
         #  Note: the biodiesel blend will affect all the sectors, not only transport.
         if scenario_list[s] != 'BAU': # GENERALIZE THIS LATER.
             #
-            Diesel_Techs = [
-                'T4DSL_HEA',
-                'T4DSL_LIG',
-                'T4DSL_PRI',
-                'T4DSL_PUB']
+            Diesel_Techs = params['Diesel_Techs']
             #
-            Diesel_Techs_Emissions = {
-                'T4DSL_HEA':[ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
-                'T4DSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                'T4DSL_PRI':[ 'CO2e' ],
-                'T4DSL_PUB':[ 'CO2e' ] }
+            Diesel_Techs_Emissions = params['Diesel_Techs_Emissions']
             #
-            Gasoline_Techs = [
-                'T4GSL_LIG',
-                'T4GSL_PRI',
-                'T4GSL_PUB',
-                'DIST_GSL' ]
+            Gasoline_Techs = params['Gasoline_Techs']
             #
-            Gasoline_Techs_Emissions = {
-                'T4GSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                'T4GSL_PRI':[ 'CO2e' ],
-                'T4GSL_PUB':[ 'CO2e' ],
-                'DIST_GSL':['CO2e_sources'] }
+            Gasoline_Techs_Emissions = params['Gasoline_Techs_Emissions']
             #
             # 9.1. Let us adjust for diesel and biodiesel: (remember to use  *time_range_vector*)
             for n in range( len( Diesel_Techs ) ):
@@ -2592,7 +2526,7 @@ if __name__ == '__main__':
             Reference_driven_distance.update( { this_scenario_name:Reference_driven_distance[ scenario_list_based[sb] ] } )
             Reference_occupancy_rate.update( { this_scenario_name:Reference_occupancy_rate[ scenario_list_based[sb] ] } )
     #
-    with open('Blend_Shares_0.pickle', 'wb') as handle:
+    with open(params['Blend_Shares_0'], 'wb') as handle:
         pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
     # sys.exit()
@@ -2805,38 +2739,9 @@ if __name__ == '__main__':
     if is_this_last_update == True:
         #
         print('3: Let us store the inputs for later analysis.')
-        basic_header_elements = [ 'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year' ]
+        basic_header_elements = params['basic_header_elements']
         #
-        parameters_to_print = [ 'AnnualEmissionLimit',
-                                'AvailabilityFactor',
-                                'CapacityFactor',
-                                'CapacityToActivityUnit',
-                                'CapitalCost',
-                                'DepreciationMethod',
-                                'DiscountRate',
-                                'EmissionActivityRatio',
-                                'EmissionsPenalty',
-                                'FixedCost',
-                                'InputActivityRatio',
-                                'ModelPeriodEmissionLimit',
-                                'OperationalLife',
-                                'OutputActivityRatio',
-                                'REMinProductionTarget',
-                                'ResidualCapacity',
-                                'RETagFuel',
-                                'RETagTechnology',
-                                'SpecifiedAnnualDemand',
-                                'SpecifiedDemandProfile',
-                                'TotalAnnualMaxCapacity',
-                                'TotalAnnualMaxCapacityInvestment',
-                                'TotalAnnualMinCapacity',
-                                'TotalAnnualMinCapacityInvestment',
-                                'TotalTechnologyAnnualActivityLowerLimit',
-                                'TotalTechnologyAnnualActivityUpperLimit',
-                                'TotalTechnologyModelPeriodActivityLowerLimit',
-                                'TotalTechnologyModelPeriodActivityUpperLimit',
-                                'VariableCost',
-                                'YearSplit']
+        parameters_to_print = params['parameters_to_print']
         #
         input_params_table_headers = basic_header_elements + parameters_to_print
         all_data_row = []
@@ -2852,7 +2757,7 @@ if __name__ == '__main__':
         l_unique_list, l_counter, l_counter_list, l_unique_counter_list = [], 1, [], []
         y_unique_list, y_counter, y_counter_list, y_unique_counter_list = [], 1, [], []
         #
-        each_parameter_header = [ 'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','YEAR','TIMESLICE','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value' ]
+        each_parameter_header = params['each_parameter_header']
         each_parameter_all_data_row = {}
         #
         for s in range( len( scenario_list ) ):
@@ -3015,7 +2920,7 @@ if __name__ == '__main__':
         # let us be reminded of the 'each_parameter_header'
         for s in range( len( scenario_list ) ):
             for p in range( len( parameters_to_print ) ):
-                param_filename = './B1_Output_Params/' + str( scenario_list[s] ) + '/' + str( parameters_to_print[p] ) + '.csv'
+                param_filename = params['B1_Output_Params'] + str( scenario_list[s] ) + '/' + str( parameters_to_print[p] ) + '.csv'
                 with open( param_filename, 'w', newline = '') as param_csv:
                     csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
                     # Print the header:
@@ -3037,13 +2942,13 @@ if __name__ == '__main__':
         #
         print('5: We have finished all manipulations of base scenarios. We will now print.')
         #
-        print_adress = './Executables'
+        print_adress = params['Executables']
         #
         packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure, list_param_default_value_params, list_param_default_value_value,
                                     print_adress, Reference_driven_distance,
                                     Fleet_Groups_inv, time_range_vector, Blend_Shares ]
         #
-        function_C_mathprog( stable_scenarios, packaged_useful_elements )
+        function_C_mathprog( stable_scenarios, packaged_useful_elements, params )
 
     #########################################################################################
     if generator_or_executor == 'Executor' or generator_or_executor == 'Both':
