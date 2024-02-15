@@ -1,0 +1,303 @@
+# MOMF Tier 1 B1 (normal and parallel files) build parameterization yaml file
+
+# Model external dependencies: Directories, Files, sheets and columns
+########################################################################################
+# Directories
+Executables: './Executables'
+A2_Output_Params: './A2_Output_Params/'
+B1_Output_Params: './B1_Output_Params/'
+
+# Files, sheets and columns
+# B1 script 
+# File (First letter of the word y uppercase)
+B1_script: 'B1_Base_Scenarios.py'
+# OSeMOSYS Model
+# File
+OSeMOSYS_Model: 'OSeMOSYS_Model.txt'
+# A1 inputs files
+# File
+Modes_Trans: './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
+# Sheets (First letter of the word y uppercase)
+Fuel_Code: 'Fuel_to_Code'
+Tech_Code: 'Tech_to_Code'
+# Columns (First letter of the word y lowercase)
+code: 'Code'
+techs: 'Techs'
+plain_eng: 'Plain English'
+# B1 model structure
+# File
+B1_model_Struct: 'B1_Model_Structure.xlsx'
+# GDP REF
+# File
+GDP_REF: '_GDP_Ref.xlsx'
+# Columns
+GDP_Growth: 'GDP_Growth'
+GDP: 'GDP'
+# Pikcle Fleet Groups
+# File
+Pickle_Fleet_Groups: './A1_Outputs/A-O_Fleet_Groups.pickle'
+# Pickle Fleet Groups Distance
+# File
+Pickle_Fleet_Groups_Dist: './A1_Outputs/A-O_Fleet_Groups_Distance.pickle'
+# Pickle Fleet Groups OR
+# File
+Pickle_Fleet_Groups_OR: './A1_Outputs/A-O_Fleet_Groups_OR.pickle'
+# Pickle Fleet Groups T2D
+# File
+Pickle_Fleet_Groups_T2D: './A1_Outputs/A-O_Fleet_Groups_T2D.pickle'
+# B1 Scenario Configuration
+# File
+B1_Scen_Config: 'B1_Scenario_Config.xlsx'
+# Sheets
+Scens: 'Scenarios'
+Over_params: 'Overall_Parameters'
+TElas: 'TElasticity'
+Dis_Levers: 'Distance_Levers'
+Mode_Shift: 'Mode_Shift'
+Occu_Rate: 'Occupancy_Rate'
+Tech_Adop: 'Tech_Adoption'
+Elec: 'Electrical'
+Smart_Grid: 'SmartGrid'
+Effi: 'Efficiency'
+# B1 Default Parameters
+# File
+B1_Default_Param: 'B1_Default_Param.xlsx'
+# Columns
+default_value: 'Default_Value'
+param: 'Parameter'
+# Pickle Blend Shares 0
+# File
+Blend_Shares_0: 'Blend_Shares_0.pickle'
+########################################################################################
+
+################################# Variable definitions #################################
+# Data Processor function
+#----------------------------------------------------------------------------------#
+all_vars: [
+  'Demand',
+  'NewCapacity',
+  'AccumulatedNewCapacity',
+  'TotalCapacityAnnual',
+  'TotalTechnologyAnnualActivity',
+  'ProductionByTechnology',
+  'UseByTechnology',
+  'CapitalInvestment',
+  'DiscountedCapitalInvestment',
+  'SalvageValue',
+  'DiscountedSalvageValue',
+  'OperatingCost',
+  'DiscountedOperatingCost',
+  'AnnualVariableOperatingCost',
+  'AnnualFixedOperatingCost',
+  'TotalDiscountedCostByTechnology',
+  'TotalDiscountedCost',
+  'AnnualTechnologyEmission',
+  'AnnualTechnologyEmissionPenaltyByEmission',
+  'AnnualTechnologyEmissionsPenalty',
+  'DiscountedTechnologyEmissionsPenalty',
+  'AnnualEmissions'
+  ]
+
+more_vars: [
+  'DistanceDriven',
+  'Fleet',
+  'NewFleet',
+  'ProducedMobility'
+  ]
+
+filter_vars: [ # this list is for B1 parallel file
+  'FilterFuelType',
+  'FilterVehicleType',
+  # 'DiscountedTechnEmissionsPen',
+  #
+  'Capex2021', # CapitalInvestment
+  'FixedOpex2021', # AnnualFixedOperatingCost
+  'VarOpex2021', # AnnualVariableOperatingCost
+  'Opex2021', # OperatingCost
+  'Externalities2021', # AnnualTechnologyEmissionPenaltyByEmission
+  #
+  'Capex_GDP', # CapitalInvestment
+  'FixedOpex_GDP', # AnnualFixedOperatingCost
+  'VarOpex_GDP', # AnnualVariableOperatingCost
+  'Opex_GDP', # OperatingCost
+  'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
+  ]
+
+filter_vars_2: [ # this list is for B1 file
+  'FilterFuelType',
+  'FilterVehicleType',
+  # 'DiscountedTechnEmissionsPen',
+  #
+  'Capex2021', # CapitalInvestment
+  'FixedOpex2021', # AnnualFixedOperatingCost
+  'VarOpex2021', # AnnualVariableOperatingCost
+  'Opex2021', # OperatingCost
+  'Externalities2021' # AnnualTechnologyEmissionPenaltyByEmission
+  ]
+
+output_header: ['Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year']
+#----------------------------------------------------------------------------------#
+
+# C Mathprog function
+#--------------------------------------------------------------------------------------------------------------------#
+header_indices: ['Scenario','Parameter','r','t','f','e','m','l','y','ls','ld','lh','s','value']
+
+basic_header_elements: ['Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year']
+
+parameters_to_print: [
+  'SpecifiedAnnualDemand',
+  'CapacityFactor',
+  'OperationalLife',
+  'ResidualCapacity',
+  'InputActivityRatio',
+  'OutputActivityRatio',
+  'EmissionActivityRatio',
+  'CapitalCost',
+  'VariableCost',
+  'FixedCost',
+  'TotalAnnualMaxCapacity',
+  'TotalAnnualMinCapacity',
+  'TotalAnnualMaxCapacityInvestment',
+  'TotalAnnualMinCapacityInvestment',
+  'TotalTechnologyAnnualActivityUpperLimit',
+  'TotalTechnologyAnnualActivityLowerLimit'
+  ]
+
+more_params: [
+  'DistanceDriven',
+  'UnitCapitalCost (USD)',
+  'UnitFixedCost (USD)',
+  'BiofuelShares'
+  ]
+
+filter_params: ['FilterFuelType', 'FilterVehicleType']
+#--------------------------------------------------------------------------------------------------------------------#
+
+# CSV Printer Parallel Function
+#--------------------------------------------------------------------------------------------------------------------#
+sets: [
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION',
+  'MODE_OF_OPERATION','YEAR','TIMESLICE','SEASON','DAYTYPE',
+  'DAILYTIMEBRACKET','STORAGE','Value'
+  ]
+#--------------------------------------------------------------------------------------------------------------------#
+
+################################# PART 1 #################################
+# 1.B Proceed to read all the base scenarios
+#--------------------------------------------------------------------------------------------------------------------#
+header_row: [
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL',
+  'EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR',
+  'SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value'
+  ]
+#--------------------------------------------------------------------------------------------------------------------#
+################################# PART 2 #################################
+# 2: Manipulate each scenario for later printing of the .csv files in the same adress
+#--------------------------------------------------------------------------------------------------------------------#
+capacity_variables: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+
+cost_sets_eliminate: ['TRANOMOTBike', 'TRANOMOTWalk', 'TRANPUB', 'TRANRAILINF', 'TRANRAILCAR']
+
+set_list_group_dict: {
+  Passenger: ['E6TDPASPRI', 'E6TDPASPUB', 'E6TRNOMOT'],
+  Freight: ['E6TDFREHEA', 'E6TDFRELIG']
+  }
+
+Sets_Involved: [
+  'Techs_He_Freight', 'Techs_Li_Freight', 'Techs_Trains_Freight',
+  'Techs_SUVMIV', 'Techs_Sedan', 'Techs_Motos', 'Techs_Buses',
+  'Techs_Microbuses', 'Techs_Taxis'
+  ]
+
+params_to_adjust: [
+  'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'
+  ]
+
+ignore_techs: [
+  'TRANRAILFREINF',  'TRANOMOTWalk', 'TRANOMOTBike', 'TRXTRAIELE',
+  'TRXTRAIFREELE', 'TRANRAILINF', 'TRANPUB', 'TRANRAILCAR'
+  ]
+
+cap_vars: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+
+parameters_involved: [
+  'CapitalCost','FixedCost','TotalAnnualMaxCapacity',
+  'TotalTechnologyAnnualActivityLowerLimit','ResidualCapacity'
+  ]
+
+Diesel_Techs: ['T4DSL_HEA', 'T4DSL_LIG', 'T4DSL_PRI', 'T4DSL_PUB']
+
+Diesel_Techs_Emissions: {
+  T4DSL_HEA: [ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
+  T4DSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
+  T4DSL_PRI: [ 'CO2e' ],
+  T4DSL_PUB: [ 'CO2e' ] 
+  }
+
+Gasoline_Techs: ['T4GSL_LIG', 'T4GSL_PRI', 'T4GSL_PUB', 'DIST_GSL']
+
+Gasoline_Techs_Emissions: {
+  T4GSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
+  T4GSL_PRI: [ 'CO2e' ],
+  T4GSL_PUB: [ 'CO2e' ],
+  DIST_GSL: ['CO2e_sources']
+  }
+
+basic_header_elements: [
+  'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel',
+  'Technology', 'Emission', 'Season', 'Year'
+  ]
+
+parameters_to_print: [
+  'AnnualEmissionLimit',
+  'AvailabilityFactor',
+  'CapacityFactor',
+  'CapacityToActivityUnit',
+  'CapitalCost',
+  'DepreciationMethod',
+  'DiscountRate',
+  'EmissionActivityRatio',
+  'EmissionsPenalty',
+  'FixedCost',
+  'InputActivityRatio',
+  'ModelPeriodEmissionLimit',
+  'OperationalLife',
+  'OutputActivityRatio',
+  'REMinProductionTarget',
+  'ResidualCapacity',
+  'RETagFuel',
+  'RETagTechnology',
+  'SpecifiedAnnualDemand',
+  'SpecifiedDemandProfile',
+  'TotalAnnualMaxCapacity',
+  'TotalAnnualMaxCapacityInvestment',
+  'TotalAnnualMinCapacity',
+  'TotalAnnualMinCapacityInvestment',
+  'TotalTechnologyAnnualActivityLowerLimit',
+  'TotalTechnologyAnnualActivityUpperLimit',
+  'TotalTechnologyModelPeriodActivityLowerLimit',
+  'TotalTechnologyModelPeriodActivityUpperLimit',
+  'VariableCost',
+  'YearSplit'
+  ]
+
+blend_shares: {
+  NDP: {},
+  NDPA: {},
+  NDPB: {},
+  NDPC: {},
+  NDPD: {},
+  NDPE: {},
+  NDPF: {},
+  NDPG: {},
+  NDPAlt: {},
+  NDPPlus: {}
+  }
+
+each_parameter_header: [
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL',
+  'EMISSION','MODE_OF_OPERATION','YEAR','TIMESLICE',
+  'SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value'
+  ]
+#--------------------------------------------------------------------------------------------------------------------#
+########################################################################################
