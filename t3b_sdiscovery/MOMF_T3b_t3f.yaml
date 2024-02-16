@@ -106,4 +106,28 @@ rep_csv: {
   query_type: []
   }
 
+oc_names: ['pure_direct', 'pure_wrtBAU']
+
+oc_names_1: ['pure_wrtBAU']
+
+oc_names_2: ['pure_direct']
+
+oc_names_3: ['pure_direct', 'disag_direct', 'pure_wrtBAU', 'disag_wrtBAU']
+
+oc_names_4: ['pure_wrtBAU', 'disag_wrtBAU']
+
+oc_names_5: ['pure_direct', 'disag_direct']
+
+dc_names: ['pure_direct', 'pure_wrtBAU']
+
+dc_names_1: ['pure_wrtBAU']
+
+dc_names_2: ['pure_direct']
+
+dc_names_3: ['pure_direct', 'disag_direct', 'pure_wrtBAU', 'disag_wrtBAU']
+
+dc_names_4: ['pure_wrtBAU', 'disag_wrtBAU']
+
+dc_names_5: ['pure_direct', 'disag_direct']
+
 ########################################################################################
