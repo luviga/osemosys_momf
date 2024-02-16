@@ -14,6 +14,7 @@ import time
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+import yaml
 
 ''' ///////////////////////////////////////////////////////////////////
 Function 1 (f1): convert formulas and indicators to column information
@@ -22,7 +23,7 @@ Function 1 (f1): convert formulas and indicators to column information
 
 def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
                        prms, tfa, col_mngmt, sets_det, prms_det, scenarios,
-                       var_mngmt, o_id_as_d, d_u_id):
+                       var_mngmt, o_id_as_d, d_u_id, params):
 
     # Unpack elements (the ones that were entered as lists to this function):
     frml_num, frml_den, frml_last = frml[0], frml[1], frml[2]
@@ -192,7 +193,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
                 high_emission_sets.append(all_sets[k])
 
         col_nums_by_set += 2  # there are only 2 categories to assign here
-        col_title_suff_set = ['_' + 'LowEmissions', '_' + 'HighEmissions']
+        col_title_suff_set = params['col_title_suff_set']
 
         # This is for low emissions
         this_col_set_name = col_title_pref + col_title_suff_set[0]
@@ -242,7 +243,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         '''
 
         col_nums_by_set += 3  # there are only 3 categories to assign here
-        col_title_suff_set = ['_H2', '_elec', '_fossil']
+        col_title_suff_set = params['col_title_suff_set_2']
 
         # this is for hydrogen
         this_col_set_name = col_title_pref + col_title_suff_set[0]
@@ -266,9 +267,8 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
 
     if 'special_Biofuel' in col_mngmt_ele:  # the formula should be direct
         col_nums_by_set += 2
-        col_title_suff_set = ['_' + 'biodiesel', '_' + 'ethanol']
-        col_sets_special_Biofuel = ['NDP then T4DSL_HEA then CO2e',
-                                    'NDP then T4GSL_PRI then CO2e']
+        col_title_suff_set = params['col_title_suff_set_3']
+        col_sets_special_Biofuel = params['col_sets_special_Biofuel']
         # we use "then" because the data source is a dictionary and
         # the sets are nested
 
@@ -279,8 +279,8 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
 
     if 'special_mode_shift' in col_mngmt_ele:
         col_nums_by_set += 2
-        col_title_suff_set = ['_' + 'public', '_' + 'nonmot']
-        col_sets_special_mode_shift = ['E6TDPASPUB', 'E6TRNOMOT']
+        col_title_suff_set = params['col_title_suff_set_4']
+        col_sets_special_mode_shift = params['col_sets_special_mode_shift']
 
         for k in range(len(col_title_suff_set)):
             this_col_set_name = col_title_pref + col_title_suff_set[k]
@@ -293,8 +293,8 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
 
     if 'special_freight_shift' in col_mngmt_ele:
         col_nums_by_set += 1
-        col_title_suff_set = ['_' + 'rail']
-        col_sets_special_freight_shift = ['Techs_Trains_Freight']
+        col_title_suff_set = params['col_title_suff_set_5']
+        col_sets_special_freight_shift = params['col_sets_special_freight_shift']
 
         for k in range(len(col_title_suff_set)):
             this_col_set_name = col_title_pref + col_title_suff_set[k]
@@ -307,9 +307,8 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
 
     if 'special_PT_dist' in col_mngmt_ele:
         col_nums_by_set += 3
-        col_title_suff_set = ['_' + 'bus', '_' + 'minibus', '_' + 'taxi']
-        col_sets_special_PT_dist = ['Techs_Buses', 'Techs_Microbuses',
-                                    'Techs_Taxis']
+        col_title_suff_set = params['col_title_suff_set_6']
+        col_sets_special_PT_dist = params['col_sets_special_PT_dist']
 
         for k in range(len(col_title_suff_set)):
             this_col_set_name = col_title_pref + col_title_suff_set[k]
@@ -536,8 +535,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
     dict_per_col_set_arrgmt = {}
     dict_per_col_var_mngmt_scen = {}
 
-    column_namer_variable_Management = {'Direct': '_direct',
-                                        'wrt_BAU_excess': '_wrtBAU'}
+    column_namer_variable_Management = params['column_namer_variable_Management']
 
     for vm in range(len(all_var_mngmt)):
         for p in range(col_nums_by_prm):
@@ -665,6 +663,11 @@ if __name__ == '__main__':
     # Recording initial time of execution
     start_1 = time.time()
 
+    # Read yaml file with parameterization
+    with open('MOMF_T3b_t3f.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     ''' ----------------------------------------------------------------------
     Step 1: read the "compartmentalization" Excel file and structure the
     variables to consult; do this for each analysis
@@ -688,12 +691,12 @@ if __name__ == '__main__':
         # only the table content varies
         print('Executing for ' + ana)
 
-        fn_prim_structure = './' + ana + '/prim_structure.xlsx'
+        fn_prim_structure = './' + ana + params['Prim_Struc']
 
         df_strc = pd.read_excel(open(fn_prim_structure, 'rb'),
                                 sheet_name='Sequences')
         df_set_matching = pd.read_excel(open(fn_prim_structure, 'rb'),
-                                        sheet_name='Set_Matching_4_Param_Mult')
+                                        sheet_name=params['Set_Mat_4'])
 
         # development task: extract the unique comment columns with
         # additional information to process the variables:
@@ -788,7 +791,7 @@ if __name__ == '__main__':
 
         # Create and populate a dictionary with the instructions to extract
         # the data from the modelling sources:
-        prim_fc_p = {'Outcome': {}, 'Driver': {}, 'Driver_U': {}}
+        prim_fc_p = params['prim_fc_p']
         prim_fc_p_unique_ID = []
 
         # We must make the process faster by storing the unique drivers:
@@ -802,7 +805,7 @@ if __name__ == '__main__':
         list_udriver_unique_control = []
 
         # Creat and populate a dictionary with the PRIM execution order:
-        prim_manager = {'Outcome': {}, 'Driver': {}}  # order-dependent
+        prim_manager = params['prim_manager']  # order-dependent
         prim_manager_o = {}
 
         # Feature - 1st, table controller:
@@ -882,15 +885,14 @@ if __name__ == '__main__':
                 local_ID = list_ID_local[i]
                 this_block = list_block[b]
 
-                dict_4_update = {'Num_drivers': 0, 'Num_driver_cols': 0,
-                                 'Num_outcomes': 0, 'Num_outcome_cols': 0}
+                dict_4_update = params['dict_4_update']
                 prim_manager_o[list_block[b]].update({local_ID: dict_4_update})
 
-                dict_4_update = {'Name': [], 'Cols': [], 'Threshold': []}
+                dict_4_update = params['dict_4_update_1']
                 prim_manager['Outcome'][list_block[b]
                                         ].update({local_ID: dict_4_update})
 
-                dict_4_update = {'Name': [], 'Cols': []}
+                dict_4_update = params['dict_4_update_2']
                 prim_manager['Driver'][list_block[b]
                                        ].update({local_ID: dict_4_update})
 
@@ -907,7 +909,7 @@ if __name__ == '__main__':
                                                            o_scenarios,
                                                            o_var_mngmt,
                                                            'none',
-                                                           'none')
+                                                           'none', params)
 
                 # Store the general requirements to *pass prim_files_creator*
                 # with DIRECT INSTRUCTIONS PER COLUMN
@@ -1020,7 +1022,8 @@ if __name__ == '__main__':
                                                                d_scenarios,
                                                                d_var_mngmt,
                                                                pass_o_id_as_d,
-                                                               pass_d_u_id)
+                                                               pass_d_u_id, 
+                                                               params)
 
                     dict_4_update = {'Actor': d_actor, 'Name': d,
                                      'Source': srce, 'Set_Type': tfa,
@@ -1076,7 +1079,7 @@ if __name__ == '__main__':
 
         prim_fc_all.update({ana: prim_fc})
 
-        fn_fc = './' + ana + '/prim_files_creator.pickle'
+        fn_fc = './' + ana + params['Prim_Crea']
         with open(fn_fc, 'wb') as outf:
             pickle.dump(prim_fc, outf, protocol=pickle.HIGHEST_PROTOCOL)
         outf.close()
