@@ -1,0 +1,59 @@
+# MOMF Tier 3b for t3f's files build parameterization yaml file
+
+# Model external dependencies: Directories, Files, sheets and columns
+########################################################################################
+# Directories
+
+# Prim Strucutre
+# File (First letter of the word y uppercase)
+Prim_Struc: '/prim_structure.xlsx'
+# Sheets (First letter of the word y uppercase)
+Set_Mat_4: 'Set_Matching_4_Param_Mult'
+# Columns (First letter of the word y lowercase)
+# Pickle Prim Files Creator
+# File
+Prim_Crea: '/prim_files_creator.pickle'
+
+########################################################################################
+
+################################# Variable definitions #################################
+# frml_ind_2_colinfo function
+#----------------------------------------------------------------------------------#
+col_title_suff_set: ['_' + 'LowEmissions', '_' + 'HighEmissions']
+
+col_title_suff_set_2: ['_H2', '_elec', '_fossil']
+
+col_title_suff_set_3: ['_' + 'biodiesel', '_' + 'ethanol']
+
+col_title_suff_set_4: ['_' + 'public', '_' + 'nonmot']
+
+col_title_suff_set_5: ['_' + 'rail']
+
+col_title_suff_set_6: ['_' + 'bus', '_' + 'minibus', '_' + 'taxi']
+
+col_sets_special_Biofuel: ['NDP then T4DSL_HEA then CO2e', 'NDP then T4GSL_PRI then CO2e']
+
+col_sets_special_mode_shift: ['E6TDPASPUB', 'E6TRNOMOT']
+
+col_sets_special_freight_shift: ['Techs_Trains_Freight']
+
+col_sets_special_PT_dist: ['Techs_Buses', 'Techs_Microbuses', 'Techs_Taxis']
+
+column_namer_variable_Management: {Direct: '_direct', wrt_BAU_excess: '_wrtBAU'}
+#----------------------------------------------------------------------------------#
+
+# 1.1 Create implementation loop
+#----------------------------------------------------------------------------------#
+prim_fc_p: {Outcome: {}, Driver: {}, Driver_U: {}}
+
+prim_manager: {Outcome: {}, Driver: {}}  # order-dependent
+
+dict_4_update: {Num_drivers: 0, Num_driver_cols: 0, Num_outcomes: 0, Num_outcome_cols: 0}
+
+dict_4_update_1: {Name: [], Cols: [], Threshold: []}
+
+dict_4_update_2: {Name: [], Cols: []}
+
+#----------------------------------------------------------------------------------#
+
+########################################################################################
