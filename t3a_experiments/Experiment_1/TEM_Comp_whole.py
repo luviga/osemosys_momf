@@ -10,41 +10,29 @@ import sys
 from copy import deepcopy
 import time
 import pickle
+import yaml
 
 start1 = time.time()
+
+# Read yaml file with parameterization
+with open('MOMF_T3a_TEM.yaml', 'r') as file:
+    # Load content file
+    params = yaml.safe_load(file)
+
 global time_range_vector
 time_range_vector = [ n for n in range( 2018, 2050+1 ) ]
 
-all_columns = [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+all_columns = params['all_columns']
 
-selected_columns = [    'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                        'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                        'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                        'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                        'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                        'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                        'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                        'U VKT', 'Q Total', 'U Property Tax', 'FV'] # define later
+selected_columns = params['selected_columns']
 
 
-selected_fv_and_q = [   'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                        'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS', 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                        'U VKT', 'Q Total', 'U Property Tax', 'FV'] # define later
+selected_fv_and_q = params['selected_fv_and_q']
 
-gdp_dict = pickle.load( open( './GDP_dict.pickle', "rb" ) )
+gdp_dict = pickle.load( open( params['GDP_dict'], "rb" ) )
 
 # Gathering the dtypes for the files:
-temp_comp_assist = open('TEM_Comp_assist.xlsx', 'rb')
+temp_comp_assist = open(params['TEM_Comp_assi'], 'rb')
 dtype_dfs = pd.read_excel(temp_comp_assist, sheet_name='dtype')
 
 #           For inputs:
@@ -80,9 +68,9 @@ df_list = []
 generic_filename = 'TEM'
 #
 if 0 in future_list:
-    main_folders = [ '/Executables', '/Experimental_Platform/Futures' ]
+    main_folders = [ params['Executables'], params['Futures'] ]
 else:
-    main_folders = [ '/Experimental_Platform/Futures' ]
+    main_folders = [ params['Futures'] ]
     #
 #
 
@@ -98,7 +86,7 @@ for n0 in range( len( address_list ) ):
         # sys.exit()
         
         first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) ]
-        if main_folders[n1] == '/Executables': # dig in directly
+        if main_folders[n1] == params['Executables']: # dig in directly
             for s in range( len( first_list ) ):
                 file_list_raw = os.listdir( './' + address_list[n0] + main_folders[n1] + '/' + first_list[s] )
                 #
@@ -145,38 +133,23 @@ for n0 in range( len( address_list ) ):
                         # this_df_filter = this_df.loc[ ( ~this_df['Actor'].isna() ) & ( ~this_df['Actor'].isin( ['central_government', 'electricity_companies', 'hydrocarbon_companies', 'hydrogen_companies' ] ) ) ]
                         this_df_filter = this_df.loc[ ( ~this_df['Actor'].isna() ) ]
                         #
-                        this_df_filter[[    'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                            'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc' ]].fillna( value=0, inplace = True )
+                        this_df_filter[ params['this_df_filter'] ].fillna( value=0, inplace = True )
                         
-                        this_df_filter_sum = this_df_filter.groupby( [ 'Strategy','Future.ID','Year','Actor','Actor_Type','Owner','GorS' ], as_index=False ).sum()
+                        this_df_filter_sum = this_df_filter.groupby( params['this_df_filter_2'], as_index=False ).sum()
                         #
                         this_df_filter_sum['Technology'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                         this_df_filter_sum['Fuel'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                         this_df_filter_sum['Fuel_Surname'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                         this_df_filter_sum['Age'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                         #
-                        this_df_filter_sum = this_df_filter_sum [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                    'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                    'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                    'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                    'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                    'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                    'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                    'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                    'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                    'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                    'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                        this_df_filter_sum = this_df_filter_sum [ params['this_df_filter_sum'] ]
                         #
                         # now, let's add the detail of data not related to expenses, but prices and quantities
                         #
                         this_df_test = this_df.loc[ ( this_df['Actor'].isna() ) ]
                         #
                         this_df_pricing_vkt = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['U VKT'].isna() ) ]
-                        this_df_pricing_vkt_avg = this_df_pricing_vkt.groupby( [ 'Strategy','Future.ID','Year','Technology' ], as_index=False ).mean()
+                        this_df_pricing_vkt_avg = this_df_pricing_vkt.groupby( params['this_df_pricing_vkt_2'], as_index=False ).mean()
                         #
                         this_df_pricing_vkt_avg['Fuel'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                         this_df_pricing_vkt_avg['Fuel_Surname'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
@@ -186,36 +159,26 @@ for n0 in range( len( address_list ) ):
                         this_df_pricing_vkt_avg['Owner'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                         this_df_pricing_vkt_avg['GorS'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                         #
-                        this_df_pricing_vkt_avg = this_df_pricing_vkt_avg [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                    'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                    'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                    'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                    'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                    'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                    'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                    'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                    'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                    'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                    'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                        this_df_pricing_vkt_avg = this_df_pricing_vkt_avg [ params['this_df_pricing_vkt_avg'] ]
                         #
                         this_df_pricing_energy = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['Energy Tax'].isna() ) & ( this_df['U VKT'].isna() ) ]
                         this_df_pricing_service = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['Service Price'].isna() ) & ( this_df['U VKT'].isna() ) ]
                         #
                         this_df_pricing_fleet = deepcopy( this_df.loc[ ( this_df['Actor'].isna() ) & ( this_df['Owner'].isna() ) & ( this_df['Energy Tax'].isna() ) & ( this_df['U VKT'].isna() ) & ( this_df['Service Price'].isna() ) ] )
                         #
-                        this_df_pricing_imports_cols = [ 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF' ]
+                        this_df_pricing_imports_cols = params['this_df_pricing_imports_cols']
                         imports_mask = ( ~this_df_pricing_fleet['Q Imports'].isna() )
                         for k in range( len( this_df_pricing_imports_cols ) ):
                             this_col = this_df_pricing_imports_cols[k]
                             this_df_pricing_fleet.loc[imports_mask, this_col] *= this_df_pricing_fleet.loc[ imports_mask, 'Q Imports' ]
                         #
-                        this_df_pricing_fleet_cols = [ 'U Property Tax', 'FV' ]
+                        this_df_pricing_fleet_cols = params['this_df_pricing_fleet_cols']
                         fleet_mask = ( ~this_df_pricing_fleet['Q Total'].isna() )
                         for k in range( len( this_df_pricing_fleet_cols ) ):
                             this_col = this_df_pricing_fleet_cols[k]
                             this_df_pricing_fleet.loc[fleet_mask, this_col] *= this_df_pricing_fleet.loc[ fleet_mask, 'Q Total' ]
                         #
-                        this_df_pricing_fleet_sum = this_df_pricing_fleet.groupby( [ 'Strategy','Future.ID','Technology','Year' ], as_index=False ).sum()
+                        this_df_pricing_fleet_sum = this_df_pricing_fleet.groupby( params['this_df_pricing_fleet'], as_index=False ).sum()
                         #
                         this_df_pricing_fleet_sum['Fuel'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                         this_df_pricing_fleet_sum['Fuel_Surname'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
@@ -225,25 +188,15 @@ for n0 in range( len( address_list ) ):
                         this_df_pricing_fleet_sum['Owner'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                         this_df_pricing_fleet_sum['GorS'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                         #
-                        this_df_pricing_fleet_sum = this_df_pricing_fleet_sum [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                    'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                    'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                    'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                    'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                    'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                    'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                    'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                    'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                    'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                    'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                        this_df_pricing_fleet_sum = this_df_pricing_fleet_sum [ params['this_df_pricing_fleet_sum'] ]
                         #
-                        this_df_pricing_imports_cols = [ 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF' ]
+                        this_df_pricing_imports_cols = params['this_df_pricing_imports_cols']
                         imports_mask = ( ~this_df_pricing_fleet_sum['Q Imports'].isin( [0] ) )
                         for k in range( len( this_df_pricing_imports_cols ) ):
                             this_col = this_df_pricing_imports_cols[k]
                             this_df_pricing_fleet_sum.loc[imports_mask, this_col] /= this_df_pricing_fleet_sum.loc[ imports_mask, 'Q Imports' ]
                         #
-                        this_df_pricing_fleet_cols = [ 'U Property Tax', 'FV' ]
+                        this_df_pricing_fleet_cols = params['this_df_pricing_fleet_cols']
                         fleet_mask = ( ~this_df_pricing_fleet_sum['Q Total'].isin( [0] ) )
                         for k in range( len( this_df_pricing_fleet_cols ) ):
                             this_col = this_df_pricing_fleet_cols[k]
@@ -340,38 +293,23 @@ for n0 in range( len( address_list ) ):
                             # LET'S APPLY A FILTER TO EXCLUDE CENTRAL_GOVERNMENT GATHER, AS WE WILL NOT CARE TO SHOW REVENUE, BUT ONLY TAX EXPENSE // ASLO, LET'S REMOVE SOME COLUMNS WE WILL NOT USE.
                             this_df_filter = this_df.loc[ ( ~this_df['Actor'].isna() ) ]
                             #
-                            this_df_filter[[    'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc' ]].fillna( value=0, inplace = True )
+                            this_df_filter[ params['this_df_filter'] ].fillna( value=0, inplace = True )
                             
-                            this_df_filter_sum = this_df_filter.groupby( [ 'Strategy','Future.ID','Year','Actor','Actor_Type','Owner','GorS' ], as_index=False ).sum()
+                            this_df_filter_sum = this_df_filter.groupby( params['this_df_filter_2'] , as_index=False ).sum()
                             #
                             this_df_filter_sum['Technology'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                             this_df_filter_sum['Fuel'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                             this_df_filter_sum['Fuel_Surname'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                             this_df_filter_sum['Age'] = [ '' for k in range( len( this_df_filter_sum.index.tolist() ) ) ]
                             #
-                            this_df_filter_sum = this_df_filter_sum [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                        'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                        'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                        'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                        'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                        'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                        'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                        'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                        'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                        'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                        'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                            this_df_filter_sum = this_df_filter_sum [ params['this_df_filter_sum'] ]
                             #
                             # now, let's add the detail of data not related to expenses, but prices and quantities
                             #
                             this_df_test = this_df.loc[ ( this_df['Actor'].isna() ) ]
                             #                 
                             this_df_pricing_vkt = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['U VKT'].isna() ) ]
-                            this_df_pricing_vkt_avg = this_df_pricing_vkt.groupby( [ 'Strategy','Future.ID','Year','Technology' ], as_index=False ).mean()
+                            this_df_pricing_vkt_avg = this_df_pricing_vkt.groupby( params['this_df_pricing_vkt_2'] , as_index=False ).mean()
                             #
                             this_df_pricing_vkt_avg['Fuel'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                             this_df_pricing_vkt_avg['Fuel_Surname'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
@@ -381,36 +319,26 @@ for n0 in range( len( address_list ) ):
                             this_df_pricing_vkt_avg['Owner'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                             this_df_pricing_vkt_avg['GorS'] = [ '' for k in range( len( this_df_pricing_vkt_avg.index.tolist() ) ) ]
                             #
-                            this_df_pricing_vkt_avg = this_df_pricing_vkt_avg [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                        'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                        'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                        'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                        'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                        'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                        'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                        'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                        'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                        'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                        'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                            this_df_pricing_vkt_avg = this_df_pricing_vkt_avg [ params['this_df_pricing_vkt_avg'] ]
                             #
                             this_df_pricing_energy = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['Energy Tax'].isna() ) & ( this_df['U VKT'].isna() ) ]
                             this_df_pricing_service = this_df.loc[ ( this_df['Actor'].isna() ) & ( ~this_df['Service Price'].isna() ) & ( this_df['U VKT'].isna() ) ]
                             #
                             this_df_pricing_fleet = deepcopy( this_df.loc[ ( this_df['Actor'].isna() ) & ( this_df['Owner'].isna() ) & ( this_df['Energy Tax'].isna() ) & ( this_df['U VKT'].isna() ) & ( this_df['Service Price'].isna() ) ] )
                             #
-                            this_df_pricing_imports_cols = [ 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF' ]
+                            this_df_pricing_imports_cols = params['this_df_pricing_imports_cols']
                             imports_mask = ( ~this_df_pricing_fleet['Q Imports'].isna() )
                             for k in range( len( this_df_pricing_imports_cols ) ):
                                 this_col = this_df_pricing_imports_cols[k]
                                 this_df_pricing_fleet.loc[imports_mask, this_col] *= this_df_pricing_fleet.loc[ imports_mask, 'Q Imports' ]
                             #
-                            this_df_pricing_fleet_cols = [ 'U Property Tax', 'FV' ]
+                            this_df_pricing_fleet_cols = params['this_df_pricing_fleet_cols']
                             fleet_mask = ( ~this_df_pricing_fleet['Q Total'].isna() )
                             for k in range( len( this_df_pricing_fleet_cols ) ):
                                 this_col = this_df_pricing_fleet_cols[k]
                                 this_df_pricing_fleet.loc[fleet_mask, this_col] *= this_df_pricing_fleet.loc[ fleet_mask, 'Q Total' ]
                             #
-                            this_df_pricing_fleet_sum = this_df_pricing_fleet.groupby( [ 'Strategy','Future.ID','Technology','Year' ], as_index=False ).sum()
+                            this_df_pricing_fleet_sum = this_df_pricing_fleet.groupby( params['this_df_pricing_fleet'] , as_index=False ).sum()
                             #
                             this_df_pricing_fleet_sum['Fuel'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                             this_df_pricing_fleet_sum['Fuel_Surname'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
@@ -420,25 +348,15 @@ for n0 in range( len( address_list ) ):
                             this_df_pricing_fleet_sum['Owner'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                             this_df_pricing_fleet_sum['GorS'] = [ '' for k in range( len( this_df_pricing_fleet_sum.index.tolist() ) ) ]
                             #
-                            this_df_pricing_fleet_sum = this_df_pricing_fleet_sum [ [ 'Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-                                                                        'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS',
-                                                                        'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                                                        'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                                                                        'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                                                        'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                                                        'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                                                        'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                                                        'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                                                        'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                                                                        'U VKT', 'Q Total', 'U Property Tax', 'FV'] ]
+                            this_df_pricing_fleet_sum = this_df_pricing_fleet_sum [ params['this_df_pricing_fleet_sum'] ]
                             #
-                            this_df_pricing_imports_cols = [ 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF' ]
+                            this_df_pricing_imports_cols = params['this_df_pricing_imports_cols']
                             imports_mask = ( ~this_df_pricing_fleet_sum['Q Imports'].isin( [0] ) )
                             for k in range( len( this_df_pricing_imports_cols ) ):
                                 this_col = this_df_pricing_imports_cols[k]
                                 this_df_pricing_fleet_sum.loc[imports_mask, this_col] /= this_df_pricing_fleet_sum.loc[ imports_mask, 'Q Imports' ]
                             #
-                            this_df_pricing_fleet_cols = [ 'U Property Tax', 'FV' ]
+                            this_df_pricing_fleet_cols = params['this_df_pricing_fleet_cols']
                             fleet_mask = ( ~this_df_pricing_fleet_sum['Q Total'].isin( [0] ) )
                             for k in range( len( this_df_pricing_fleet_cols ) ):
                                 this_col = this_df_pricing_fleet_cols[k]
@@ -487,7 +405,7 @@ for n0 in range( len( address_list ) ):
     #
 #
 
-with open('df_list_whole.pickle', 'wb') as handle:
+with open(params['df_list_whole'], 'wb') as handle:
     pickle.dump(df_list_whole, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 #
@@ -509,15 +427,7 @@ for n in future_list:
     #
 #
 '''
-all_cols =  [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' ,
-                'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF', 'Q Imports',
-                'U VKT', 'Q Total', 'U Property Tax', 'FV']
+all_cols =  params['all_cols']
 #
 #--------------------------------------------------------------------------------------------------------------------#
 print_split = False
