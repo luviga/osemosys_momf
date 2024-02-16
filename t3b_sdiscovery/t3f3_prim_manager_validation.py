@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 # import ema_workbench  # standalone PRIM imported above is equivalent
 # from ema_workbench.analysis import prim as prim_ema  # we don't actually need
 from datetime import datetime
+import yaml
 
 """
 SOURCES:
@@ -124,7 +125,7 @@ The goal is to report the best thresholds, measured as avg(density, coverage).
 
 
 def f1_prim_box_execute(o_thresh_list, outc_array, outc_list, inp_df,
-                        scale_zero_float, py):
+                        scale_zero_float, py, params):
     # Create empty dictionaries:
     info_dict_1 = {}
     info_dict_2 = {}
@@ -148,12 +149,8 @@ def f1_prim_box_execute(o_thresh_list, outc_array, outc_list, inp_df,
         else:  # act as usual
             # pick base numeric threshold in percentiles
             # // below a user-defined dictionary!!!
-            num_thr_dict = {'high': 75, 'mid': 50, 'low': 25, 'zero': 0,
-                            'high40': 40, 'high60': 60, 'high25': 25,
-                            'low40': 40, 'low60': 60, 'low75': 75}
-            type_thr_dict = {'high': ">", 'mid': ">", 'low': "<", 'zero': "<",
-                             'high40': ">", 'high60': ">", 'high25': ">",
-                             'low40': "<", 'low60': "<", 'low75': "<"}
+            num_thr_dict = params['num_thr_dict']
+            type_thr_dict = params['type_thr_dict']
             '''
             The logic for these threshold types are:
                 High: find predictors of values greater than 75th percentile
@@ -469,7 +466,7 @@ def f2_ipp(lvl, lvl_max, b, o, o_name, per_name, rep_csv, ad_df_grab,
            the_maxobase, rel_driv, rel_driv_min,
            rel_driv_max, rel_driv_tbase, rel_driv_t,
            rel_driv_o1_col, rel_driv_o1_fam, rel_driv_o2_col, rel_driv_o2_fam,
-           rel_driv_maxobase, qtype):
+           rel_driv_maxobase, qtype, params):
     # Define the function's outcome:
     astr_list = []
 
@@ -487,7 +484,7 @@ def f2_ipp(lvl, lvl_max, b, o, o_name, per_name, rep_csv, ad_df_grab,
         this_df_raw = ad_df_grab[this_fam]
 
         # Filter the normalized dataframe:
-        keys_IDs = ['Fut_ID', 'Run_Strat_ID', 'Scenario', 'Strat_ID']
+        keys_IDs = params['keys_IDs']
         unique_strats = list(set(this_df_raw['Strat_ID']))
         if (len(unique_strats) == 2 and 'none' in
                 unique_strats):
@@ -749,16 +746,7 @@ if __name__ == '__main__':
                     '37-43',
                     '44-50']
     '''
-    period_list = [ '22-30',
-                    '22-35',
-                    '31-50',
-                    '31-40',
-                    '41-50',
-                    '25-30',
-                    '31-35',
-                    '36-40',
-                    '41-45',
-                    '46-50']
+    period_list = params['period_list']
     '''
     General aim: to be able to perform any prim analysis without inputs other
     than the Analysis data (this means, no external controls).
@@ -772,6 +760,11 @@ if __name__ == '__main__':
     # Recording initial time of execution
     start_1 = time.time()
 
+    # Read yaml file with parameterization
+    with open('MOMF_T3b_t3f.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     # datetime object containing current date and time
     now = datetime.now()
     # dd/mm/YY H:M:S
@@ -779,7 +772,7 @@ if __name__ == '__main__':
 
     # For a complete record of the prim manager execution, write a report with
     # all the prints in this system:
-    pmrep_name = 'sd_manager.txt'
+    pmrep_name = params['SD_Man']
     pmrep = open(pmrep_name, 'w+')
     pmrep.write(dt_string + '\n')
 
@@ -1131,13 +1124,13 @@ if __name__ == '__main__':
                                     and len(o_cols_list_wrtBAU) != 0):
                                 oc_iterate = [o_cols_pure_direct,
                                               o_cols_pure_wrtBAU]
-                                oc_names = ['pure_direct', 'pure_wrtBAU']
+                                oc_names = params['oc_names']
                             elif len(o_cols_list_direct) == 0:
                                 oc_iterate = [o_cols_pure_wrtBAU]
-                                oc_names = ['pure_wrtBAU']
+                                oc_names = params['oc_names_1']
                             elif len(o_cols_list_wrtBAU) == 0:
                                 oc_iterate = [o_cols_pure_direct]
-                                oc_names = ['pure_direct']
+                                oc_names = params['oc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(o_cols_list_direct) != 0
                                     and len(o_cols_list_wrtBAU) != 0):
@@ -1145,16 +1138,15 @@ if __name__ == '__main__':
                                               o_cols_disag_direct,
                                               o_cols_pure_wrtBAU,
                                               o_cols_disag_wrtBAU]
-                                oc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                oc_names = params['oc_names_3']
                             elif len(o_cols_list_direct) == 0:
                                 oc_iterate = [o_cols_pure_wrtBAU,
                                               o_cols_disag_wrtBAU]
-                                oc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                oc_names = params['oc_names_4']
                             elif len(o_cols_list_wrtBAU) == 0:
                                 oc_iterate = [o_cols_pure_direct,
                                               o_cols_disag_direct]
-                                oc_names = ['pure_direct', 'disag_direct']
+                                oc_names = params['oc_names_5']
 
                         # Add-on for drvers here:
                         #       If there are direct roots not in wrtBAU roots,
@@ -1203,13 +1195,13 @@ if __name__ == '__main__':
                                     and len(d_cols_list_wrtBAU) != 0):
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_pure_wrtBAU]
-                                dc_names = ['pure_direct', 'pure_wrtBAU']
+                                dc_names = params['dc_names']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU]
-                                dc_names = ['pure_wrtBAU']
+                                dc_names = params['dc_names_1']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct]
-                                dc_names = ['pure_direct']
+                                dc_names = params['dc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(d_cols_list_direct) != 0
                                     and len(d_cols_list_wrtBAU) != 0):
@@ -1217,16 +1209,15 @@ if __name__ == '__main__':
                                               d_cols_disag_direct,
                                               d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_3']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_4']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_disag_direct]
-                                dc_names = ['pure_direct', 'disag_direct']
+                                dc_names = params['dc_names_5']
 
                         # Possible family of drivers
                         if (d_cols_opt_pure == d_cols_opt_disag):
@@ -1234,13 +1225,13 @@ if __name__ == '__main__':
                                     and len(d_cols_list_wrtBAU) != 0):
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_pure_wrtBAU]
-                                dc_names = ['pure_direct', 'pure_wrtBAU']
+                                dc_names = params['dc_names']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU]
-                                dc_names = ['pure_wrtBAU']
+                                dc_names = params['dc_names_1']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct]
-                                dc_names = ['pure_direct']
+                                dc_names = params['dc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(d_cols_list_direct) != 0
                                     and len(d_cols_list_wrtBAU) != 0):
@@ -1248,16 +1239,15 @@ if __name__ == '__main__':
                                               d_cols_disag_direct,
                                               d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_3']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_4']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_disag_direct]
-                                dc_names = ['pure_direct', 'disag_direct']
+                                dc_names = params['dc_names_5']
 
                         # Creating the families:
                         for oc in range(len(oc_iterate)):
