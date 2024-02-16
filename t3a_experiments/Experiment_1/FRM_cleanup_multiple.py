@@ -35,11 +35,11 @@ import linecache
 import gc
 import shutil
 import pickle
+import yaml
 
-
-def set_first_list(Executed_Scenario):
+def set_first_list(Executed_Scenario, params):
     dir_of_interest = \
-        './Experimental_Platform/Futures/' + str(Executed_Scenario)
+        params['Futures'] + str(Executed_Scenario)
     first_list_raw = os.listdir(dir_of_interest)
 
     first_list = [e for e in first_list_raw if ('.csv' not in e) and
@@ -48,8 +48,8 @@ def set_first_list(Executed_Scenario):
     return first_list, dir_of_interest
 
 
-def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
-    first_list, dir_of_interest = set_first_list( Executed_Scenario )
+def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params ):
+    first_list, dir_of_interest = set_first_list( Executed_Scenario, params )
 
     Reference_driven_distance =     unpackaged_useful_elements[0]
     Reference_occupancy_rate =      unpackaged_useful_elements[1]
@@ -58,16 +58,16 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     dict_gdp_ref      =             unpackaged_useful_elements[4]
 
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
-    df_tech_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
-    table1 = xlrd.open_workbook("./0_From_Confection/B1_Model_Structure.xlsx") # works for all strategies
+    table1 = xlrd.open_workbook(params['From_Confection'] + params['B1_model_Struct']) # works for all strategies
     sheet_sets_structure = table1.sheet_by_index(0) # 11 columns
     sheet_params_structure = table1.sheet_by_index(1) # 30 columns
     sheet_vars_structure = table1.sheet_by_index(2) # 43 columns
@@ -115,55 +115,15 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
             this_index_list.append( sheet_vars_structure.cell_value(rowx=2+n, colx=col) )
         S_DICT_vars_structure['index_list'].append( this_index_list )
     #-------------------------------------------#
-    all_vars = ['Demand',
-                'NewCapacity',
-                'AccumulatedNewCapacity',
-                'TotalCapacityAnnual',
-                'TotalTechnologyAnnualActivity',
-                'ProductionByTechnology',
-                'UseByTechnology',
-                'CapitalInvestment',
-                'DiscountedCapitalInvestment',
-                'SalvageValue',
-                'DiscountedSalvageValue',
-                'OperatingCost',
-                'DiscountedOperatingCost',
-                'AnnualVariableOperatingCost',
-                'AnnualFixedOperatingCost',
-                'TotalDiscountedCostByTechnology',
-                'TotalDiscountedCost',
-                'AnnualTechnologyEmission',
-                'AnnualTechnologyEmissionPenaltyByEmission',
-                'AnnualTechnologyEmissionsPenalty',
-                'DiscountedTechnologyEmissionsPenalty',
-                'AnnualEmissions'
-                ]
+    all_vars = params['all_vars']
     #
-    more_vars = [   'DistanceDriven',
-                    'Fleet',
-                    'NewFleet',
-                    'ProducedMobility']
+    more_vars = params['more_vars']
     #
-    filter_vars = [ 'FilterFuelType',
-                    'FilterVehicleType',
-                    # 'DiscountedTechnEmissionsPen',
-                    #
-                    'Capex2021', # CapitalInvestment
-                    'FixedOpex2021', # AnnualFixedOperatingCost
-                    'VarOpex2021', # AnnualVariableOperatingCost
-                    'Opex2021', # OperatingCost
-                    'Externalities2021', # AnnualTechnologyEmissionPenaltyByEmission
-                    #
-                    'Capex_GDP', # CapitalInvestment
-                    'FixedOpex_GDP', # AnnualFixedOperatingCost
-                    'VarOpex_GDP', # AnnualVariableOperatingCost
-                    'Opex_GDP', # OperatingCost
-                    'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
-                    ]
+    filter_vars = params['filter_vars']
     #
     all_vars_output_dict = [ {} for e in range( len( first_list ) ) ]
     #
-    output_header = [ 'Strategy', 'Future.ID','Fuel','Technology','Emission','Year']
+    output_header = params['output_header']
     #-------------------------------------------------------#
     for v in range( len( all_vars ) ):
         output_header.append( all_vars[v] )
@@ -178,7 +138,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = str( './Experimental_Platform/Futures/' + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = str( params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
     #
     n = 0
     break_this_while = False
@@ -257,7 +217,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     linecache.clearcache()
     #%%
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = './Experimental_Platform/Futures/' + str( Executed_Scenario ) + '/' + str( first_list[case] )
+    output_adress = params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -608,11 +568,11 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     print(  'We finished with printing the outputs.', case)
 
 
-def main_executer(n1, Executed_Scenario, packaged_useful_elements):
-    first_list, dir_of_interest = set_first_list( Executed_Scenario )
+def main_executer(n1, Executed_Scenario, packaged_useful_elements, params):
+    first_list, dir_of_interest = set_first_list( Executed_Scenario, params )
     print('# ' + str(first_list[n1]) + ' of ' + Executed_Scenario )
-    file_aboslute_address = os.path.abspath("FRM_cleanup.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'FRM_cleanup.py', '' ) ).replace( '\:', ':' )
+    file_aboslute_address = os.path.abspath(params['FRM_clean'])
+    file_adress = re.escape( file_aboslute_address.replace( params['FRM_clean'], '' ) ).replace( '\:', ':' )
 
     case_address = file_adress + r'Experimental_Platform\\Futures\\' + Executed_Scenario + '\\' + str( first_list[n1] )
 
@@ -623,19 +583,24 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements):
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
 
-    str2 = "glpsol -m OSeMOSYS_Model.txt -d " + str( data_file )  +  " -o " + str(output_file)
+    str2 = "glpsol -m " + params['OSeMOSYS_Model'] + " -d " + str( data_file )  +  " -o " + str(output_file)
     os.system( str1 and str2 )
     time.sleep(1)
  
-    data_processor(n1,Executed_Scenario,packaged_useful_elements)
+    data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
 
 
 if __name__ == '__main__':
+    # Read yaml file with parameterization
+    with open('MOMF_T3a_Manager.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     time_list = []
-    setup_table = pd.read_excel('_Experiment_Setup.xlsx' )
+    setup_table = pd.read_excel( params['Exper_Setup'] )
     scenarios_to_reproduce = str(setup_table.loc[0 ,'Scenario_to_Reproduce'])
     experiment_ID = str( setup_table.loc[0 ,'Experiment_ID'])
-    gdp_dict_export = pickle.load( open( 'GDP_dict.pickle', "rb" ) )
+    gdp_dict_export = pickle.load( open( params['GDP_dict'], "rb" ) )
 
     global Initial_Year_of_Uncertainty
     Initial_Year_of_Uncertainty = \
@@ -659,9 +624,7 @@ if __name__ == '__main__':
         scenario_list.append( scenarios_to_reproduce )
 
     # Expand the capacity of solar overall
-    expand_plants = ['PPPVT',
-                     'PPWNDON',
-                     'PPPVDS']
+    expand_plants = params['expand_plants']
 
     ###
     # test_first = True
@@ -675,7 +638,7 @@ if __name__ == '__main__':
         files_2_cleanup, dirs_4_cleanup, store_names = [], [], []
         store_cases = []
 
-        first_list, dir_of_interest = set_first_list(scen)
+        first_list, dir_of_interest = set_first_list(scen, params)
         for f in first_list:
             spec_dir = dir_of_interest + '/' + f
             all_files_internal = os.listdir(spec_dir)
@@ -787,10 +750,10 @@ if __name__ == '__main__':
         # Here the files would have been re-written
 
         # Before continuing, we must add a few additional inputs:
-        Fleet_Groups = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups.pickle', "rb" ))
-        Fleet_Techs_Distance = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_Distance.pickle', "rb" ))
-        Fleet_Techs_OR = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_OR.pickle', "rb" ))
-        Fleet_Groups_techs_2_dem = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_T2D.pickle', "rb" ))
+        Fleet_Groups = pickle.load( open( params['Fleet_Group'], "rb" ))
+        Fleet_Techs_Distance = pickle.load( open( params['Fleet_Group_Dist'], "rb" ))
+        Fleet_Techs_OR = pickle.load( open( params['Fleet_Group_OR'], "rb" ))
+        Fleet_Groups_techs_2_dem = pickle.load( open( params['Fleet_Group_T2D'], "rb" ))
 
         Fleet_Groups_inv = {}
         for k in range( len( list( Fleet_Groups.keys() ) ) ):
@@ -800,10 +763,10 @@ if __name__ == '__main__':
                 Fleet_Groups_inv.update( { this_fleet_group_tech:this_fleet_group_key } )
 
         reference_driven_distance = \
-            pickle.load( open( 'reference_driven_distance.pickle', "rb" ))
+            pickle.load( open( params['Ref_Dri_Dist'], "rb" ))
 
         reference_occupancy_rate = \
-            pickle.load( open( 'reference_occupancy_rate.pickle', "rb" ))
+            pickle.load( open( params['Ref_Occu_Rate'], "rb" ))
 
         # Now this is a continuation of normal FRM
         packaged_useful_elements = [reference_driven_distance,
@@ -834,7 +797,7 @@ if __name__ == '__main__':
                 print('index: ' + str(idx_apply), ' // case: ' + first_list[idx_apply])
                 p = mp.Process(target=main_executer,
                                args=(idx_apply,
-                                     scen, packaged_useful_elements,))
+                                     scen, packaged_useful_elements, params))
                 processes.append(p)
                 p.start()
             for process in processes:
