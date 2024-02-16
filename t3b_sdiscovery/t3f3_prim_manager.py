@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 # import ema_workbench  # standalone PRIM imported above is equivalent
 # from ema_workbench.analysis import prim as prim_ema  # we don't actually need
 from datetime import datetime
+import yaml
 
 """
 SOURCES:
@@ -124,7 +125,7 @@ The goal is to report the best thresholds, measured as avg(density, coverage).
 
 
 def f1_prim_box_execute(o_thresh_list, outc_array, outc_list, inp_df,
-                        scale_zero_float, py):
+                        scale_zero_float, py, params):
     # Create empty dictionaries:
     info_dict_1 = {}
     info_dict_2 = {}
@@ -148,12 +149,8 @@ def f1_prim_box_execute(o_thresh_list, outc_array, outc_list, inp_df,
         else:  # act as usual
             # pick base numeric threshold in percentiles
             # // below a user-defined dictionary!!!
-            num_thr_dict = {'high': 75, 'mid': 50, 'low': 25, 'zero': 0,
-                            'high40': 40, 'high60': 60, 'high25': 25,
-                            'low40': 40, 'low60': 60, 'low75': 75}
-            type_thr_dict = {'high': ">", 'mid': ">", 'low': "<", 'zero': "<",
-                             'high40': ">", 'high60': ">", 'high25': ">",
-                             'low40': "<", 'low60': "<", 'low75': "<"}
+            num_thr_dict = params['num_thr_dict']
+            type_thr_dict = params['type_thr_dict']
             '''
             The logic for these threshold types are:
                 High: find predictors of values greater than 75th percentile
@@ -772,6 +769,11 @@ if __name__ == '__main__':
 
     # Recording initial time of execution
     start_1 = time.time()
+
+    # Read yaml file with parameterization
+    with open('MOMF_T3b_t3f.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
 
     # datetime object containing current date and time
     now = datetime.now()
@@ -1759,7 +1761,8 @@ if __name__ == '__main__':
                                                                 outc_list,
                                                                 inp_df,
                                                                 scale_zero[c],
-                                                                py
+                                                                py,
+                                                                params
                                                                 )
                                         this_dict_infos = {1: info_dict_1,
                                                            2: info_dict_2}
