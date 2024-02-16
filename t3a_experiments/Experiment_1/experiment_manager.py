@@ -1920,7 +1920,7 @@ if __name__ == '__main__':
     #
     reference_driven_distance = {}
     reference_occupancy_rate = {}
-    Blend_Shares = { 'NDP':{} , 'NDPTh':{} , 'NDPWOS':{}, 'NDPWOSTh':{} }
+    Blend_Shares = params['Blend_Shares_dict']
     #
     for s in range( len( scenario_list ) ):
         this_s = s
