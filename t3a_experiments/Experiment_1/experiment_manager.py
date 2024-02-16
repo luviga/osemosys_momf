@@ -24,6 +24,7 @@ import shutil
 import pickle
 # https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube
 from pyDOE import *
+import yaml
 
 '''
 We implement OSEMOSYS-CR in a procedimental code
@@ -35,14 +36,14 @@ interpolation : implemented in a function for linear of non-linear time-series
 #
 def set_first_list( Executed_Scenario ):
     #
-    first_list_raw = os.listdir( './Experimental_Platform/Futures/' + str( Executed_Scenario ) )
+    first_list_raw = os.listdir( params['Futures'] + str( Executed_Scenario ) )
     #
     global first_list
     first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) ]
 
 ############################################################################################################################################################################################################
 
-def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
+def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params ):
     #
     Reference_driven_distance =     unpackaged_useful_elements[0]
     Reference_occupancy_rate =      unpackaged_useful_elements[1]
@@ -51,16 +52,16 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     dict_gdp_ref      =             unpackaged_useful_elements[4]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
-    df_tech_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
-    structure_filename = "./0_From_Confection/B1_Model_Structure.xlsx"
+    structure_filename = params['B1_model_Struct']
     structure_file = pd.ExcelFile(structure_filename)
     structure_sheetnames = structure_file.sheet_names  # see all sheet names
     sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
@@ -116,55 +117,15 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
             this_index_list.append( sheet_vars_structure.iat[2+n, col] )
         S_DICT_vars_structure['index_list'].append( this_index_list )
     #-------------------------------------------#
-    all_vars = ['Demand',
-                'NewCapacity',
-                'AccumulatedNewCapacity',
-                'TotalCapacityAnnual',
-                'TotalTechnologyAnnualActivity',
-                'ProductionByTechnology',
-                'UseByTechnology',
-                'CapitalInvestment',
-                'DiscountedCapitalInvestment',
-                'SalvageValue',
-                'DiscountedSalvageValue',
-                'OperatingCost',
-                'DiscountedOperatingCost',
-                'AnnualVariableOperatingCost',
-                'AnnualFixedOperatingCost',
-                'TotalDiscountedCostByTechnology',
-                'TotalDiscountedCost',
-                'AnnualTechnologyEmission',
-                'AnnualTechnologyEmissionPenaltyByEmission',
-                'AnnualTechnologyEmissionsPenalty',
-                'DiscountedTechnologyEmissionsPenalty',
-                'AnnualEmissions'
-                ]
+    all_vars = params['all_vars']
     #
-    more_vars = [   'DistanceDriven',
-                    'Fleet',
-                    'NewFleet',
-                    'ProducedMobility']
+    more_vars = params['more_vars']
     #
-    filter_vars = [ 'FilterFuelType',
-                    'FilterVehicleType',
-                    # 'DiscountedTechnEmissionsPen',
-                    #
-                    'Capex2021', # CapitalInvestment
-                    'FixedOpex2021', # AnnualFixedOperatingCost
-                    'VarOpex2021', # AnnualVariableOperatingCost
-                    'Opex2021', # OperatingCost
-                    'Externalities2021', # AnnualTechnologyEmissionPenaltyByEmission
-                    #
-                    'Capex_GDP', # CapitalInvestment
-                    'FixedOpex_GDP', # AnnualFixedOperatingCost
-                    'VarOpex_GDP', # AnnualVariableOperatingCost
-                    'Opex_GDP', # OperatingCost
-                    'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
-                    ]
+    filter_vars = params['filter_vars']
     #
     all_vars_output_dict = [ {} for e in range( len( first_list ) ) ]
     #
-    output_header = [ 'Strategy', 'Future.ID','Fuel','Technology','Emission','Year']
+    output_header = params['output_header']
     #-------------------------------------------------------#
     for v in range( len( all_vars ) ):
         output_header.append( all_vars[v] )
@@ -179,7 +140,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = str( './Experimental_Platform/Futures/' + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = str( params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
     #
     n = 0
     break_this_while = False
@@ -258,7 +219,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     linecache.clearcache()
     #%%
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = './Experimental_Platform/Futures/' + str( Executed_Scenario ) + '/' + str( first_list[case] )
+    output_adress = params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -605,11 +566,11 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements ):
     print(  'We finished with printing the outputs.', case)
 
 ############################################################################################################################################################################################################
-def main_executer(n1, Executed_Scenario, packaged_useful_elements):
+def main_executer(n1, Executed_Scenario, packaged_useful_elements, params):
     print('# ' + str(n1+1) + ' of ' + Executed_Scenario )
     set_first_list( Executed_Scenario )
-    file_aboslute_address = os.path.abspath("experiment_manager.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'experiment_manager.py', '' ) ).replace( '\:', ':' )
+    file_aboslute_address = os.path.abspath(params['manager'])
+    file_adress = re.escape( file_aboslute_address.replace( params['manager'], '' ) ).replace( '\:', ':' )
     #
     case_address = file_adress + r'Experimental_Platform\\Futures\\' + Executed_Scenario + '\\' + str( first_list[n1] )
     #
@@ -620,13 +581,13 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements):
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
     #
-    str2 = "glpsol -m OSeMOSYS_Model.txt -d " + str( data_file )  +  " -o " + str(output_file)
+    str2 = "glpsol -m " + params['OSeMOSYS_Model'] + " -d " + str( data_file )  +  " -o " + str(output_file)
     os.system( str1 and str2 )
     time.sleep(1)
     #
-    data_processor(n1,Executed_Scenario,packaged_useful_elements)
+    data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
 #
-def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_useful_elements ):
+def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_useful_elements, params ):
     #
     scenario_list =                     unpackaged_useful_elements[0]
     S_DICT_sets_structure =             unpackaged_useful_elements[1]
@@ -642,12 +603,12 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Fuel_to_Code' )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
-    df_tech_to_code = pd.read_excel( './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx', sheet_name='Tech_to_Code' )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
     if fut_index < len( all_futures ):
         fut = all_futures[fut_index]
@@ -672,7 +633,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
         scen = 6
     #
     # header = ['Scenario','Parameter','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
-    header_indices = ['Scenario','Parameter','r','t','f','e','m','l','y','ls','ld','lh','s','value']
+    header_indices = params['header_indices']
     #
     fut = all_futures[fut_index - scen*len( all_futures ) ]
     #
@@ -968,32 +929,13 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     if scenario_list[scen] != 'BAU':
         this_Blend_Shares_data = Blend_Shares[ scenario_list[scen] ][ fut ]
         #
-    basic_header_elements = [ 'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year' ]
+    basic_header_elements = params['basic_header_elements']
     #
-    parameters_to_print = [ 'SpecifiedAnnualDemand',
-                            'CapacityFactor',
-                            'OperationalLife',
-                            'ResidualCapacity',
-                            'InputActivityRatio',
-                            'OutputActivityRatio',
-                            'EmissionActivityRatio',
-                            'CapitalCost',
-                            'VariableCost',
-                            'FixedCost',
-                            'TotalAnnualMaxCapacity',
-                            'TotalAnnualMinCapacity',
-                            'TotalAnnualMaxCapacityInvestment',
-                            'TotalAnnualMinCapacityInvestment',
-                            'TotalTechnologyAnnualActivityUpperLimit',
-                            'TotalTechnologyAnnualActivityLowerLimit']
+    parameters_to_print = params['parameters_to_print']
     #
-    more_params = [   'DistanceDriven',
-                    'UnitCapitalCost (USD)',
-                    'UnitFixedCost (USD)',
-                    'BiofuelShares']
+    more_params = params['more_params']
     #
-    filter_params = [   'FilterFuelType',
-                    'FilterVehicleType']
+    filter_params = params['filter_params']
     #
     input_params_table_headers = basic_header_elements + parameters_to_print + more_params + filter_params
     all_data_row = []
@@ -1221,8 +1163,8 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     #
     ###########################################################################################################################
     #
-    file_aboslute_address = os.path.abspath("experiment_manager.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'experiment_manager.py', '' ) ).replace( '\:', ':' )
+    file_aboslute_address = os.path.abspath(params['Manager'])
+    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
     with open( file_adress + '\\Experimental_Platform\\Futures\\' + str( scenario_list[scen] ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '_Input.csv', 'w', newline = '') as param_csv:
         csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # Print the header:
@@ -1451,6 +1393,10 @@ def interpolation_blend( start_blend_point, final_blend_point, value_list, time_
 #
 if __name__ == '__main__':
     #
+    # Read yaml file with parameterization
+    with open('MOMF_T3a_Manager.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
     '''
     Let us define some control inputs internally:
     '''
@@ -1467,7 +1413,7 @@ if __name__ == '__main__':
     '''
     # 1.A) We extract the strucute setup of the model based on 'Structure.xlsx'
     '''
-    structure_filename = "./0_From_Confection/B1_Model_Structure.xlsx"
+    structure_filename = params['From_Confection'] + params['B1_model_Struct']
     structure_file = pd.ExcelFile(structure_filename)
     structure_sheetnames = structure_file.sheet_names  # see all sheet names
     sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
@@ -1528,10 +1474,10 @@ if __name__ == '__main__':
     a) We use this dictionary relating a specific technology and a group technology and associate the prefix list
     '''
 
-    Fleet_Groups = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups.pickle', "rb" ))
-    Fleet_Techs_Distance = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_Distance.pickle', "rb" ))
-    Fleet_Techs_OR = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_OR.pickle', "rb" ))
-    Fleet_Groups_techs_2_dem = pickle.load( open( './0_From_Confection/A-O_Fleet_Groups_T2D.pickle', "rb" ))
+    Fleet_Groups = pickle.load( open( params['Fleet_Group'], "rb" ))
+    Fleet_Techs_Distance = pickle.load( open( params['Fleet_Group_Dist'], "rb" ))
+    Fleet_Techs_OR = pickle.load( open( params['Fleet_Group_OR'], "rb" ))
+    Fleet_Groups_techs_2_dem = pickle.load( open( params['Fleet_Group_T2D'], "rb" ))
 
     Fleet_Groups_inv = {}
     for k in range( len( list( Fleet_Groups.keys() ) ) ):
@@ -1577,11 +1523,11 @@ if __name__ == '__main__':
     initial_year = time_range_vector[0]
 
     # We must open useful GDP data for demand projection
-    df_gdp_ref = pd.read_excel('_GDP_Ref.xlsx', 'GDP')
-    list_gdp_growth_ref = df_gdp_ref['GDP_Growth'].tolist()
-    list_gdp_ref = df_gdp_ref['GDP'].tolist()
-    df_elasticities = pd.read_excel('_GDP_Ref.xlsx', 'Elasticities')
-    df_intensities = pd.read_excel('_GDP_Ref.xlsx', 'Intensities')
+    df_gdp_ref = pd.read_excel(params['GDP_REF'], params['GDP'])
+    list_gdp_growth_ref = df_gdp_ref[params['GDP_Growth']].tolist()
+    list_gdp_ref = df_gdp_ref[params['GDP']].tolist()
+    df_elasticities = pd.read_excel(params['GDP_REF'], params['Elast'])
+    df_intensities = pd.read_excel(params['GDP_REF'], params['Inten'])
     #
     #############################################################################################################################
     #
@@ -1601,7 +1547,7 @@ if __name__ == '__main__':
     CONTROL ACTION 2: select all the futures that you want to process in this run, from beginning to end
     Part 4: print the new .txt files
     '''
-    setup_table = pd.read_excel('_Experiment_Setup.xlsx' )
+    setup_table = pd.read_excel(params['Exper_Setup'] )
     scenarios_to_reproduce = str( setup_table.loc[ 0 ,'Scenario_to_Reproduce'] )
     experiment_ID = str( setup_table.loc[ 0 ,'Experiment_ID'] )
     #
@@ -1611,7 +1557,7 @@ if __name__ == '__main__':
     ################################# PART 1 #################################
     '''''
     print('1: I start by reading the Uncertainty Table and systematically perturbing the paramaters.')
-    uncertainty_table = pd.read_excel( 'Uncertainty_Table.xlsx' )
+    uncertainty_table = pd.read_excel( params['Uncer_Table'] )
     # use .loc to access [row, column name]
     experiment_variables = list( uncertainty_table.columns )
     #
@@ -1637,7 +1583,7 @@ if __name__ == '__main__':
     # hypercube[p] gives vector with values of variable p across the N futures, hence len( hypercube[p] ) = N
     #
     experiment_dictionary = {}
-    all_dataset_address = './1_Baseline_Modelling/'
+    all_dataset_address = './' + params['Base_Model'] +'/'
 
     for n in range( N ):
         this_future_X_change_direction = [] # up or down
@@ -1887,11 +1833,11 @@ if __name__ == '__main__':
     '''
     # 2.B) We finish this sub-part, and proceed to read all the base scenarios.
     '''
-    header_row = ['PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
+    header_row = params['header_row']
     #
     scenario_list = []
     if scenarios_to_reproduce == 'All':
-        stable_scenario_list_raw = os.listdir( '1_Baseline_Modelling' )
+        stable_scenario_list_raw = os.listdir( params['Base_Model'] )
         for n in range( len( stable_scenario_list_raw ) ):
             if stable_scenario_list_raw[n] not in ['_Base_Dataset', '_BACKUP'] and '.txt' not in stable_scenario_list_raw[n]:
                 scenario_list.append( stable_scenario_list_raw[n] )
@@ -1918,7 +1864,7 @@ if __name__ == '__main__':
     #
     for scen in range( len( scenario_list ) ):
         #
-        this_paramter_list_dir = '1_Baseline_Modelling/' + str( scenario_list[scen] )
+        this_paramter_list_dir = params['Base_Model'] + '/' + str( scenario_list[scen] )
         parameter_list = os.listdir( this_paramter_list_dir )
         #
         for p in range( len( parameter_list ) ):
@@ -1949,7 +1895,7 @@ if __name__ == '__main__':
     '''
     # 2.C) We call the default parameters for later use:
     '''
-    list_param_default_value = pd.read_excel( './0_From_Confection/B1_Default_Param.xlsx' )
+    list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
     list_param_default_value_params = list( list_param_default_value['Parameter'] )
     list_param_default_value_value = list( list_param_default_value['Default_Value'] )
 
@@ -2173,15 +2119,7 @@ if __name__ == '__main__':
 
                         elif Math_Type == 'Blend_Time_Series':  # we can enter this snippet at "Adjustment OAR" if we want to ignore biofuel variations
                             #
-                            Techs_Emissions = {
-                                'T4DSL_HEA':[ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
-                                'T4DSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                                'T4DSL_PRI':[ 'CO2e' ],
-                                'T4DSL_PUB':[ 'CO2e' ],
-                                'T4GSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                                'T4GSL_PRI':[ 'CO2e' ],
-                                'T4GSL_PUB':[ 'CO2e' ],
-                                'DIST_GSL':['CO2e_sources'] }
+                            Techs_Emissions = params['Techs_Emissions']
                             #
                             for n in range( len( Sets_Involved ) ):
                                 #
@@ -3178,10 +3116,10 @@ if __name__ == '__main__':
                     # %% WE CAN TAKE ADVANTAGE HERE AND ADJUST ALL GROUP TECHS FOR COHERENCE %%
                     #
                     # ADD AN EXCEPTION LIST BELOW TO SHOW THE GROUPS THAT SHOULD NOT BE ADJUSTED TO AVOID DOUBLING THE WORK:
-                    except_techs = ['Techs_SUVMIV', 'Techs_Sedan', 'Techs_Motos', 'Techs_Buses', 'Techs_Microbuses', 'Techs_Taxis']
-                    except_scen = ['NDP']
+                    except_techs = params['except_techs']
+                    except_scen = params['except_scen']
                     #
-                    params_to_adjust = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+                    params_to_adjust = params['params_to_adjust']
                     for par in range( len( params_to_adjust ) ):
                         for a_set in range( len( Sets_Involved ) ):
                             #
@@ -3274,20 +3212,9 @@ if __name__ == '__main__':
                     ignore_biofuels = True
                     if ignore_biofuels is True and scenario_list[s] != 'BAU':
                         #
-                        Techs_Emissions = {
-                            'T4DSL_HEA':[ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
-                            'T4DSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                            'T4DSL_PRI':[ 'CO2e' ],
-                            'T4DSL_PUB':[ 'CO2e' ],
-                            'T4GSL_LIG':[ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-                            'T4GSL_PRI':[ 'CO2e' ],
-                            'T4GSL_PUB':[ 'CO2e' ],
-                            'DIST_GSL':['CO2e_sources'] }
+                        Techs_Emissions = params['Techs_Emissions']
                         #
-                        Sets_Involved = \
-                            ['T4DSL_HEA', 'T4DSL_LIG', 'T4DSL_PRI',
-                             'T4DSL_PUB', 'T4GSL_LIG',
-                             'T4GSL_PRI', 'T4GSL_PUB', 'DIST_GSL']
+                        Sets_Involved = params['Sets_Involved']
                         #
                         for n in range( len( Sets_Involved ) ):
                             #
@@ -3420,15 +3347,15 @@ if __name__ == '__main__':
             this_gdp_list[ index_this_year ] = this_gdp_list[ index_prev_year ] * ( 1 + this_growth / 100 )
             gdp_dict_export.update( { n:deepcopy( this_gdp_list ) } )
 
-    with open( 'GDP_dict.pickle', 'wb') as handle:
+    with open( params['GDP_dict'], 'wb') as handle:
         pickle.dump( gdp_dict_export, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
 
-    with open( 'reference_driven_distance.pickle', 'wb') as handle:
+    with open( params['Ref_Dri_Dist'], 'wb') as handle:
         pickle.dump( reference_driven_distance, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
 
-    with open( 'reference_occupancy_rate.pickle', 'wb') as handle:
+    with open( params['Ref_Occu_Rate'], 'wb') as handle:
         pickle.dump( reference_occupancy_rate, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
 
@@ -3436,13 +3363,13 @@ if __name__ == '__main__':
     experiment_dictionary[1]['Futures'] = [0] + experiment_dictionary[1]['Futures']
     experiment_dictionary[1]['Values'] = [3] + experiment_dictionary[1]['Values']  # 3% GDP growth is the basics
 
-    with open('experiment_dictionary.pickle', 'wb') as handle:
+    with open(params['Exper_Dict'], 'wb') as handle:
         pickle.dump(experiment_dictionary, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
 
-    blend_shares_zero = pickle.load( open( './0_From_Confection/Blend_Shares_0.pickle', "rb" ) )
+    blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares'], "rb" ) )
     Blend_Shares['NDP'].update({0: blend_shares_zero['NDP']})
-    with open('Blend_Shares.pickle', 'wb') as handle:
+    with open(params['Blend_Shares'], 'wb') as handle:
         pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
     '''
@@ -3453,7 +3380,7 @@ if __name__ == '__main__':
         #
         print('4: We will now print the input .txt files of diverse future scenarios.')
         #
-        print_adress = './Experimental_Platform/Futures/'
+        print_adress = params['Futures']
         packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure,
                                     list_param_default_value_params, list_param_default_value_value,
                                     print_adress, all_futures, reference_driven_distance,
@@ -3480,7 +3407,7 @@ if __name__ == '__main__':
                     max_iter = x
                 #    
                 for n2 in range( n_ini , max_iter ):
-                    p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,) )
+                    p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,params) )
                     processes.append(p)
                     p.start()
             
@@ -3501,7 +3428,7 @@ if __name__ == '__main__':
             #
             x = len(all_futures)*len(scenario_list_print)
             for n in range( x ):
-                function_C_mathprog_parallel(n,inherited_scenarios,packaged_useful_elements)
+                function_C_mathprog_parallel(n,inherited_scenarios,packaged_useful_elements,params)
         '''
         ##########################################################################
         '''
@@ -3544,7 +3471,7 @@ if __name__ == '__main__':
                 #
                 for n2 in range( n_ini , max_iter ):
                     print(n2)
-                    p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,) )
+                    p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,params) )
                     processes.append(p)
                     p.start()
                 #
