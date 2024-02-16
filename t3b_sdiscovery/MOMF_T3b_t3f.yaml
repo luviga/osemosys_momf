@@ -13,6 +13,9 @@ Set_Mat_4: 'Set_Matching_4_Param_Mult'
 # Pickle Prim Files Creator
 # File
 Prim_Crea: '/prim_files_creator.pickle'
+# SD_Manager
+# File
+SD_Man: 'sd_manager.txt'
 
 ########################################################################################
 
@@ -71,4 +74,36 @@ type_thr_dict: {
   }
 
 #----------------------------------------------------------------------------------#
+
+period_list: [ 
+  '22-30',
+  '22-35',
+  '31-50',
+  '31-40',
+  '41-50',
+  '25-30',
+  '31-35',
+  '36-40',
+  '41-45',
+  '46-50'
+  ]
+
+keys_IDs: ['Fut_ID', 'Run_Strat_ID', 'Scenario', 'Strat_ID']
+
+dict_large_table: {Fut_ID: [], Run_Strat_ID: [], Scenario: [], Strat_ID: []}
+
+rep_csv: {
+  block: [], o_id: [], outcome: [],
+  level: [], o1_fam: [], o1_col: [],
+  o2_fam: [], o2_col: [],
+  family: [], column: [],
+  period: [], base_thr: [],
+  thr_type: [], thr_range: [], thr_value: [],
+  thr_value_norm: [], prim_option: [],
+  coverage: [], density: [], avg_cov_dev: [],
+  driver_col: [], min: [], max: [],
+  min_norm: [], max_norm: [],
+  query_type: []
+  }
+
 ########################################################################################
