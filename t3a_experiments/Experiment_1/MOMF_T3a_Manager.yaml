@@ -1,0 +1,205 @@
+# MOMF Tier 3a for Manager file build parameterization yaml file
+
+# Model external dependencies: Directories, Files, sheets and columns
+########################################################################################
+# Directories
+Futures: './Experimental_Platform/Futures/'
+From_Confection: './0_From_Confection/'
+Base_Model: '1_Baseline_Modelling'
+
+# Input File Classifier Modes transport
+# File (First letter of the word y uppercase)
+Modes_Trans: './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+# Sheets (First letter of the word y uppercase)
+Fuel_Code: 'Fuel_to_Code'
+Tech_Code: 'Tech_to_Code'
+# Columns (First letter of the word y lowercase)
+code: 'Code'
+techs: 'Techs'
+plain_eng: 'Plain English'
+# B1 Model Structure
+# File
+B1_model_Struct: 'B1_Model_Structure.xlsx'
+# Experiment Manager Script
+# File
+Manager: 'experiment_manager.py' 
+# OSeMOSYS Model
+# File
+OSeMOSYS_Model: 'OSeMOSYS_Model.txt'
+# Pickle Fleet Group
+# File
+Fleet_Group: './0_From_Confection/A-O_Fleet_Groups.pickle'
+# Pickle Fleet Group Distance
+# File
+Fleet_Group_Dist: './0_From_Confection/A-O_Fleet_Groups_Distance.pickle'
+# Pickle Fleet Group OR
+# File
+Fleet_Group_OR: './0_From_Confection/A-O_Fleet_Groups_OR.pickle'
+# Pickle Fleet Group T2D
+# File
+Fleet_Group_T2D: './0_From_Confection/A-O_Fleet_Groups_T2D.pickle'
+# Pickle GDP dictionary
+# File
+GDP_dict: 'GDP_dict.pickle'
+# Pickle reference driven distance
+# File
+Ref_Dri_Dist: 'reference_driven_distance.pickle'
+# Pickle reference occupancy rate
+# File
+Ref_Occu_Rate: 'reference_occupancy_rate.pickle'
+# Experiment Dictionary
+# File
+Exper_Dict: 'experiment_dictionary.pickle'
+# Belnde Shares 0
+# File
+Blend_Shares: 'Blend_Shares_0.pickle'
+# GDP REF
+# File
+GDP_REF: '_GDP_Ref.xlsx'
+# Sheets
+GDP: 'GDP'
+Elast: 'Elasticities'
+Inten: 'Intensities'
+# Columns
+GDP_Growth: 'GDP_Growth'
+# Experiment Setup
+# File
+Exper_Setup: '_Experiment_Setup.xlsx'
+# Uncertainty Table
+# File
+Uncer_Table: 'Uncertainty_Table.xlsx'
+# B1 Default Parameters
+# File
+B1_Default_Param: './0_From_Confection/B1_Default_Param.xlsx'
+########################################################################################
+
+################################# Variable definitions #################################
+# Data Processor function
+#----------------------------------------------------------------------------------#
+all_vars: [
+  'Demand',
+  'NewCapacity',
+  'AccumulatedNewCapacity',
+  'TotalCapacityAnnual',
+  'TotalTechnologyAnnualActivity',
+  'ProductionByTechnology',
+  'UseByTechnology',
+  'CapitalInvestment',
+  'DiscountedCapitalInvestment',
+  'SalvageValue',
+  'DiscountedSalvageValue',
+  'OperatingCost',
+  'DiscountedOperatingCost',
+  'AnnualVariableOperatingCost',
+  'AnnualFixedOperatingCost',
+  'TotalDiscountedCostByTechnology',
+  'TotalDiscountedCost',
+  'AnnualTechnologyEmission',
+  'AnnualTechnologyEmissionPenaltyByEmission',
+  'AnnualTechnologyEmissionsPenalty',
+  'DiscountedTechnologyEmissionsPenalty',
+  'AnnualEmissions'
+  ]
+
+more_vars: [
+  'DistanceDriven',
+  'Fleet',
+  'NewFleet',
+  'ProducedMobility'
+  ]
+
+filter_vars: [ # this list is for B1 parallel file
+  'FilterFuelType',
+  'FilterVehicleType',
+  # 'DiscountedTechnEmissionsPen',
+  #
+  'Capex2021', # CapitalInvestment
+  'FixedOpex2021', # AnnualFixedOperatingCost
+  'VarOpex2021', # AnnualVariableOperatingCost
+  'Opex2021', # OperatingCost
+  'Externalities2021', # AnnualTechnologyEmissionPenaltyByEmission
+  #
+  'Capex_GDP', # CapitalInvestment
+  'FixedOpex_GDP', # AnnualFixedOperatingCost
+  'VarOpex_GDP', # AnnualVariableOperatingCost
+  'Opex_GDP', # OperatingCost
+  'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
+  ]
+
+output_header: ['Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year']
+#----------------------------------------------------------------------------------#
+
+# Function C Mathprog Parallel
+#----------------------------------------------------------------------------------#
+header_indices: ['Scenario','Parameter','r','t','f','e','m','l','y','ls','ld','lh','s','value']
+
+basic_header_elements: ['Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year']
+
+parameters_to_print: [
+  'SpecifiedAnnualDemand',
+  'CapacityFactor',
+  'OperationalLife',
+  'ResidualCapacity',
+  'InputActivityRatio',
+  'OutputActivityRatio',
+  'EmissionActivityRatio',
+  'CapitalCost',
+  'VariableCost',
+  'FixedCost',
+  'TotalAnnualMaxCapacity',
+  'TotalAnnualMinCapacity',
+  'TotalAnnualMaxCapacityInvestment',
+  'TotalAnnualMinCapacityInvestment',
+  'TotalTechnologyAnnualActivityUpperLimit',
+  'TotalTechnologyAnnualActivityLowerLimit'
+  ]
+
+more_params: [
+  'DistanceDriven',
+  'UnitCapitalCost (USD)',
+  'UnitFixedCost (USD)',
+  'BiofuelShares'
+  ]
+
+filter_params: [
+  'FilterFuelType',
+  'FilterVehicleType'
+  ]
+#----------------------------------------------------------------------------------#
+
+################################# PART 2 #################################
+# 2.B Read all the base scenarios
+#----------------------------------------------------------------------------------#
+header_row: [
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION',
+  'MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE',
+  'DAILYTIMEBRACKET','STORAGE','Value'
+  ]
+
+Techs_Emissions: {
+  T4DSL_HEA: [ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
+  T4DSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
+  T4DSL_PRI: [ 'CO2e' ],
+  T4DSL_PUB: [ 'CO2e' ],
+  T4GSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
+  T4GSL_PRI: [ 'CO2e' ],
+  T4GSL_PUB: [ 'CO2e' ],
+  DIST_GSL: ['CO2e_sources']
+  }
+
+except_techs: [
+  'Techs_SUVMIV', 'Techs_Sedan', 'Techs_Motos', 'Techs_Buses',
+  'Techs_Microbuses', 'Techs_Taxis'
+  ]
+
+except_scen: ['NDP']
+
+params_to_adjust: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+
+Sets_Involved: [
+  'T4DSL_HEA', 'T4DSL_LIG', 'T4DSL_PRI',
+  'T4DSL_PUB', 'T4GSL_LIG', 'T4GSL_PRI',
+  'T4GSL_PUB', 'DIST_GSL'
+  ]
+#----------------------------------------------------------------------------------#
+########################################################################################
