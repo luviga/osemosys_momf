@@ -22,7 +22,10 @@ plain_eng: 'Plain English'
 B1_model_Struct: 'B1_Model_Structure.xlsx'
 # Experiment Manager Script
 # File
-Manager: 'experiment_manager.py' 
+Manager: 'experiment_manager.py'
+# FRM Cleanup script
+# File
+FRM_clean: 'FRM_cleanup.py'
 # OSeMOSYS Model
 # File
 OSeMOSYS_Model: 'OSeMOSYS_Model.txt'
@@ -167,6 +170,8 @@ filter_params: [
   ]
 #----------------------------------------------------------------------------------#
 
+expand_plants: ['PPPVT', 'PPWNDON', 'PPPVDS']
+
 ################################# PART 2 #################################
 # 2.B Read all the base scenarios
 #----------------------------------------------------------------------------------#
@@ -201,5 +206,16 @@ Sets_Involved: [
   'T4DSL_PUB', 'T4GSL_LIG', 'T4GSL_PRI',
   'T4GSL_PUB', 'DIST_GSL'
   ]
+#----------------------------------------------------------------------------------#
+
+################################# PART 3 #################################
+# 3.B Implementing the orderly manipulation
+#----------------------------------------------------------------------------------#
+Blend_Shares_dict: {
+  NDP: {},
+  NDPTh: {},
+  NDPWOS: {},
+  NDPWOSTh:{}
+  }
 #----------------------------------------------------------------------------------#
 ########################################################################################
