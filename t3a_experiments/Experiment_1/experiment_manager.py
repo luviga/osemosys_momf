@@ -61,7 +61,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
-    structure_filename = params['B1_model_Struct']
+    structure_filename = params['From_Confection'] + params['B1_model_Struct']
     structure_file = pd.ExcelFile(structure_filename)
     structure_sheetnames = structure_file.sheet_names  # see all sheet names
     sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
