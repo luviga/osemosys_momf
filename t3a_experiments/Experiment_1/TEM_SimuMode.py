@@ -15,6 +15,8 @@ import sys
 from copy import deepcopy
 from gekko import GEKKO
 import pickle
+import yaml
+
 '''
 We implement OSEMOSYS-CR-TEM to estimate transfers between agents of the transport sector.
 This version implements the printing of prices, quantities and rates in a single file.
@@ -38,51 +40,51 @@ class o_type_1_actor( agent ): # [ central_government ]
     def gather_derecho_arancelario( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_DerechoArancelario , m , df_new_Rates ):
         # print('Gathering Import and Sales Tax')
         df_Rates_T = df_Rates_T_DerechoArancelario # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Gather', name_ID, 'Type_1', df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Gather', name_ID, 'Type_1', df_new_Rates, params )
         return returnable_list_of_lists
     #
     def gather_valor_aduanero( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ValorAduanero , m , df_new_Rates ):
         # print('Gathering Import and Sales Tax')
         df_Rates_T = df_Rates_T_ValorAduanero # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def gather_selectivo_al_consumo( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_SelectivoAlConsumo , m , df_new_Rates ):
         # print('Gathering Import and Sales Tax')
         df_Rates_T = df_Rates_T_SelectivoAlConsumo # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def gather_import_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ImportVAT , m , df_new_Rates ):
         # print('Gathering Import and Sales Tax')
         df_Rates_T = df_Rates_T_ImportVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def gather_iuc( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_IUC , m , fuel , df_new_Rates ):
         # print('Gathering fuel consumption tax')
         df_Rates_TF = df_Rates_TF_IUC # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def gather_electricity_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_ElectricityVAT , m , fuel , df_new_Rates ):
         # print('Gathering fuel consumption tax')
         df_Rates_TF = df_Rates_TF_ElectricityVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def gather_h2( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_TF_H2 , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Unit_TF_H2 # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Gather', name_ID, 'Type_1', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def gather_property_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_PropertyTax , m , df_new_Rates ):
         # print('Gathering Property Tax')
         df_Rates_T = df_Rates_T_PropertyTax # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     ''' ------------------------------------------
@@ -90,7 +92,7 @@ class o_type_1_actor( agent ): # [ central_government ]
     def gather_total_import_taxes( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_TotalTaxes , m , df_new_Rates ):
         # print('Gathering Property Tax')
         df_Rates_T = df_Unit_T_TotalTaxes # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     ''' ------------------------------------------
@@ -98,7 +100,7 @@ class o_type_1_actor( agent ): # [ central_government ]
     def gather_vmt_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , this_vmt_rates_per_tech , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Property Tax')
         df_Rates_T = this_vmt_rates_per_tech # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Gather', name_ID, 'Type_1' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Gather', name_ID, 'Type_1' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     '''
@@ -107,17 +109,17 @@ class o_type_1_actor( agent ): # [ central_government ]
     # PUBLIC SPENDING (MAINLY FOR PUBLIC TRANSPORT)
     def spend_investements_and_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments and FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_1' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_1', params )
         return returnable_list_of_lists
 
     def spend_investements( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_1' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_1', params )
         return returnable_list_of_lists
     
     def spend_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_1' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_1', params )
         return returnable_list_of_lists
     '''
     #------------------------------------------------------------------------------------------------------#
@@ -129,27 +131,27 @@ class o_type_2_actor( agent ): # [ electricity_companies, hydrocarbon_companies,
     def gather_energy_sale( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_SalesPurchasesEnergy , m , fuel ):
         # print('Gathering energy sales')
         df_Rates_TF = df_Rates_TF_SalesPurchasesEnergy # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Gather', name_ID, 'Type_2', fuel , 'NO_df_new_Rates' )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Gather', name_ID, 'Type_2', fuel , 'NO_df_new_Rates', params )
         return returnable_list_of_lists
 
     def spend_investements_and_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments and FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_2' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_2', params )
         return returnable_list_of_lists
 
     def spend_investements( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_2' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_2', params )
         return returnable_list_of_lists
     
     def spend_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_2' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_2', params )
         return returnable_list_of_lists
 
     def spend_variable_costs( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database) // imported hydrocarbons are national costs
         # print('Spending in variable costs')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualVariableOperatingCost', 'None', m, 'Variable Costs', 'Spend', name_ID, 'Type_2' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualVariableOperatingCost', 'None', m, 'Variable Costs', 'Spend', name_ID, 'Type_2', params )
         return returnable_list_of_lists
 
 #####################################
@@ -158,28 +160,28 @@ class o_type_3_actor( agent ): # [ bus_companies , bus_special_companies , taxi_
     def gather_service_sale( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_SalesPurchasesService , m , fuel ):
         # print('Gathering service sales')
         df_Rates_TF = df_Rates_TF_SalesPurchasesService # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'ProductionByTechnology', m, 'Service Sales', 'Gather', name_ID, 'Type_3', fuel , 'NO_df_new_Rates' )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'ProductionByTechnology', m, 'Service Sales', 'Gather', name_ID, 'Type_3', fuel , 'NO_df_new_Rates', params )
         return returnable_list_of_lists
 
     def spend_investements_and_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments and FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_3' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_3', params )
         return returnable_list_of_lists
 
     def spend_investements( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_3' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_3', params )
         return returnable_list_of_lists
     
     def spend_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_3' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_3', params )
         return returnable_list_of_lists
 
     def spend_energy_purchase( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_SalesPurchasesEnergy , m , fuel ):
         # print('Spending in energy purchases')
         df_Rates_TF = df_Rates_TF_SalesPurchasesEnergy # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Spend', name_ID, 'Type_3', fuel , 'NO_df_new_Rates' )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Spend', name_ID, 'Type_3', fuel , 'NO_df_new_Rates', params )
         return returnable_list_of_lists
 
     '''
@@ -189,77 +191,77 @@ class o_type_3_actor( agent ): # [ bus_companies , bus_special_companies , taxi_
     def spend_derecho_arancelario( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_DerechoArancelario , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_DerechoArancelario # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_valor_aduanero( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ValorAduanero , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_ValorAduanero # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_selectivo_al_consumo( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_SelectivoAlConsumo , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_SelectivoAlConsumo # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_import_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ImportVAT , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_ImportVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def spend_total_import_taxes( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_TotalTaxes , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_TotalTaxes # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_estimated_earnings( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_GananciaEstimada , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_GananciaEstimada # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'GE', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'GE', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_vehicle_purchase( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_MarketPrice , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_MarketPrice # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Vehicle Purchase', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Vehicle Purchase', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def spend_iuc( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_IUC , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Rates_TF_IUC # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_electricity_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_ElectricityVAT , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Rates_TF_ElectricityVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_h2( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_TF_H2 , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Unit_TF_H2 # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Spend', name_ID, 'Type_3', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     ''' ------------------------------------------
     '''
     def spend_property_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_PropertyTax , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Property Tax')
         df_Rates_T = df_Rates_T_PropertyTax # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     ''' ------------------------------------------
     '''
     def spend_vmt_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , this_vmt_rates_per_tech , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Property Tax')
         df_Rates_T = this_vmt_rates_per_tech # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Spend', name_ID, 'Type_3' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Spend', name_ID, 'Type_3' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     '''
@@ -271,23 +273,23 @@ class o_type_4_actor( agent ): # [ light_truck_companies, heavy_freight_companie
 
     def spend_investements_and_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments and FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_4' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'AnnualFixedOperatingCost', m, 'Investments and FOM', 'Spend', name_ID, 'Type_4', params )
         return returnable_list_of_lists
 
     def spend_investements( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in investments')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_4' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'CapitalInvestment', 'None', m, 'Investments', 'Spend', name_ID, 'Type_4', params )
         return returnable_list_of_lists
     
     def spend_fom( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , m ): # (direct from database)
         # print('Spending in FOM')
-        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_4' )
+        returnable_list_of_lists = data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate, 'AnnualFixedOperatingCost', 'None', m, 'FOM', 'Spend', name_ID, 'Type_4', params )
         return returnable_list_of_lists
 
     def spend_energy_purchase( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_SalesPurchasesEnergy , m , fuel ):
         # print('Spending in energy purchases')
         df_Rates_TF = df_Rates_TF_SalesPurchasesEnergy # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Spend', name_ID, 'Type_4', fuel, 'NO_df_new_Rates' )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'Energy Sales and Purchases', 'Spend', name_ID, 'Type_4', fuel, 'NO_df_new_Rates', params )
         return returnable_list_of_lists
 
     '''
@@ -297,77 +299,77 @@ class o_type_4_actor( agent ): # [ light_truck_companies, heavy_freight_companie
     def spend_derecho_arancelario( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_DerechoArancelario , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_DerechoArancelario # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'DAI', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_valor_aduanero( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ValorAduanero , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_ValorAduanero # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Customs', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_selectivo_al_consumo( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_SelectivoAlConsumo , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_SelectivoAlConsumo # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'SC', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_import_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_ImportVAT , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Rates_T_ImportVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'VAT-Imports', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def spend_total_import_taxes( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_TotalTaxes , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_TotalTaxes # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Total Import Taxes', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_estimated_earnings( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_GananciaEstimada , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_GananciaEstimada # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'GE', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'GE', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_vehicle_purchase( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_T_MarketPrice , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Import and Sales Tax')
         df_Rates_T = df_Unit_T_MarketPrice # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Vehicle Purchase', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'NewCapacity', m, 'Vehicle Purchase', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     '''------------------------------------------
     '''
     def spend_iuc( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_IUC , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Rates_TF_IUC # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'IUC', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_electricity_vat( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_ElectricityVAT , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Rates_TF_ElectricityVAT # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'VAT-Electricity', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     #
     def spend_h2( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Unit_TF_H2 , m , fuel , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in fuel consumption tax')
         df_Rates_TF = df_Unit_TF_H2 # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'UseByTechnology', m, 'H2', 'Spend', name_ID, 'Type_4', fuel , df_new_Rates, params )
         return returnable_list_of_lists
     ''' ------------------------------------------
     '''
     def spend_property_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_T_PropertyTax , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in Property Tax')
         df_Rates_T = df_Rates_T_PropertyTax # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'TotalCapacityAnnual', m, 'Property Tax', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     ''' ------------------------------------------
     '''
     def spend_vmt_tax( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , this_vmt_rates_per_tech , m , df_new_Rates ): # TRANSFERED TO GOVERNMENT
         # print('Spending in VMT Tax')
         df_Rates_T = this_vmt_rates_per_tech # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Spend', name_ID, 'Type_4' , df_new_Rates )
+        returnable_list_of_lists = data_management_T( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_T, 'DistanceDriven', m, 'VKT', 'Spend', name_ID, 'Type_4' , df_new_Rates, params )
         return returnable_list_of_lists
     #
     '''
@@ -380,7 +382,7 @@ class o_type_5_actor( agent ): # [ public_transport_users ]
     def spend_service_purchase( self, discounted_or_not, assorted_data_dicts, techs , name_ID , discount_rate , df_Rates_TF_SalesPurchasesService , m , fuel ):
         # print('Spending in service purchases')
         df_Rates_TF = df_Rates_TF_SalesPurchasesService # These are actually "Unit"-type dataframes // kept rate for generality
-        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'ProductionByTechnology', m, 'Service Purchases', 'Spend', name_ID, 'Type_5', fuel , 'NO_df_new_Rates' )
+        returnable_list_of_lists = data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, 'ProductionByTechnology', m, 'Service Purchases', 'Spend', name_ID, 'Type_5', fuel , 'NO_df_new_Rates', params )
         return returnable_list_of_lists
     #
 #
@@ -468,21 +470,14 @@ def soften_imports( x_raw ):
 #
 #####################################
 # Data management function for technology-based parameters THAT DO NOT REQUIRE RATES:
-def data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate , variable_1 , variable_2 , m , output_variable , GorS , name_ID , atype ):
+def data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , discount_rate , variable_1 , variable_2 , m , output_variable , GorS , name_ID , atype, params ):
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
     returnable_list_of_lists = []
     all_years = [i for i in range(2018,2050+1) ]
     #
-    list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                            'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                            'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                            'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+    list_of_variables = params['list_of_variables']
     #
-    fcm_table_header = [ 'Strategy', 'Future.ID' , 'Technology' , 'Fuel', 'Fuel_Surname' , 'Year', 'Age' , 'Actor' , 'Actor_Type' , 'Owner' , 'GorS' ] + list_of_variables
+    fcm_table_header = params['fcm_table_header'] + list_of_variables
     #
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
     #
@@ -572,7 +567,7 @@ def data_management_T_solo( discounted_or_not, assorted_data_dicts, techs , disc
     #
     return returnable_list_of_lists
 #
-def data_management_T( discounted_or_not, assorted_data_dicts, actor_techs , discount_rate , df_Rates_T , variable , m , output_variable , GorS , name_ID , atype , df_new_Rates ):
+def data_management_T( discounted_or_not, assorted_data_dicts, actor_techs , discount_rate , df_Rates_T , variable , m , output_variable , GorS , name_ID , atype , df_new_Rates, params ):
     #
     if output_variable == 'Property Tax':
         if df_new_Rates == 'NO_df_new_Rates':
@@ -601,16 +596,9 @@ def data_management_T( discounted_or_not, assorted_data_dicts, actor_techs , dis
     returnable_list_of_lists = []
     all_years = [i for i in range(2018,2050+1) ]
     #
-    list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                            'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                            'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                            'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+    list_of_variables = params['list_of_variables']
     #
-    fcm_table_header = [ 'Strategy', 'Future.ID' , 'Technology' , 'Fuel', 'Fuel_Surname' , 'Year', 'Age' , 'Actor' , 'Actor_Type' , 'Owner' , 'GorS' ] + list_of_variables
+    fcm_table_header = params['fcm_table_header'] + list_of_variables
     #
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
     #
@@ -902,22 +890,15 @@ def intersection_2(lst1, lst2):
     #
 #
 # Data management function for technology & fuel-based parameters:
-def data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, variable , m , output_variable , GorS , name_ID , atype , fuel, df_new_Rates ):
+def data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount_rate, df_Rates_TF, variable , m , output_variable , GorS , name_ID , atype , fuel, df_new_Rates, params ):
     #
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
     returnable_list_of_lists = []
     all_years = [i for i in range(2018,2050+1) ]
     #
-    list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                            'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                            'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                            'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+    list_of_variables = params['list_of_variables']
     #
-    fcm_table_header = [ 'Strategy', 'Future.ID' , 'Technology' , 'Fuel', 'Fuel_Surname' , 'Year', 'Age' , 'Actor' , 'Actor_Type' , 'Owner' , 'GorS' ] + list_of_variables
+    fcm_table_header = params['fcm_table_header'] + list_of_variables
     #
     #-------------------------------------------------------------------------------------------------------------------------------------------------------------#
     #
@@ -1116,11 +1097,11 @@ def data_management_TF( discounted_or_not, assorted_data_dicts, techs , discount
 '''
 
 
-def set_first_list():
+def set_first_list(params):
     # scenario_list_print = ['BAU','NDP','OP15C']
     # scenario_list_print = ['BAU','OP15C']
     # scenario_list_print = ['OP15C']
-    first_list_raw = os.listdir( './Executables' )
+    first_list_raw = os.listdir( params['Executables'] )
     #
     global first_list
     # scenario_list_print_with_fut = [ e + '_0' for e in scenario_list_print ]
@@ -1132,7 +1113,7 @@ def set_first_list():
 
 def set_first_list_d(Executed_Scenario):
     first_list_raw = \
-        os.listdir( './Experimental_Platform/Futures/' + 
+        os.listdir( params['Experi_Plat'] + params['Futures'] + 
                    str(Executed_Scenario))
 
     global first_list_d
@@ -1176,14 +1157,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
     print( Initial_OR_Adjustment + ' Part - Performing FCM_7.b.B - Calculate transfers for Energy Companies' )
     for n in range( len( type_2_actor ) ):
         # Function 1: gather_energy_sale
-        fuels_produced_by_techs = ['E1BG', 'E1BM', 'E1DSL', 'E1FO1', 'E1LPG',
-                                   'E2ELE', 'E3ELE', 'E3HYD', 'E4DSL_HEA',
-                                   'E4DSL_LIG', 'E4DSL_PRI', 'E4DSL_PUB',
-                                   'E4ELE_HEA', 'E4ELE_LIG', 'E4ELE_PRI',
-                                   'E4ELE_PUB', 'E4GSL_LIG', 'E4GSL_PRI',
-                                   'E4GSL_PUB', 'E4HYD_HEA', 'E4HYD_PUB',
-                                   'E4LPG_HEA', 'E4LPG_LIG', 'E4LPG_PRI',
-                                   'E4LPG_PUB']
+        fuels_produced_by_techs = params['fuels_produced_by_techs']
         for k in range( len( fuels_produced_by_techs ) ):
             this_returnable = type_2_actor[n].gather_energy_sale( discounted_or_not, assorted_data_dicts, type_2_actor[n].techs_sell , type_2_actor[n].name_ID , type_2_actor[n].discount_rate , df_Rates_TF_SalesPurchasesEnergy , m , fuels_produced_by_techs[k] )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1214,10 +1188,9 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
     print( Initial_OR_Adjustment + ' Part - Performing FCM_7.b.C - Calculate transfers for Public Transport Operators' )
     for n in range( len( type_3_actor ) ):
         # Define the energy commodities used by the actor type:
-        fuels_used_by_techs = ['E4DSL_PUB', 'E4GSL_PUB', 'E4LPG_PUB',
-                               'E4HYD_PUB', 'E4ELE_PUB']
+        fuels_used_by_techs = params['fuels_used_by_techs_2']
         # Function 1: gather_service_sale
-        fuels_produced_by_techs = ['E6TDPASPUB'] # review the fuels produced by transport service companies // match OutputActivityRatio && Relationship_Table
+        fuels_produced_by_techs = params['fuels_produced_by_techs'] # review the fuels produced by transport service companies // match OutputActivityRatio && Relationship_Table
         for k in range( len( fuels_produced_by_techs ) ):
             this_returnable = type_3_actor[n].gather_service_sale( discounted_or_not, assorted_data_dicts, type_3_actor[n].techs_sell , type_3_actor[n].name_ID , type_3_actor[n].discount_rate , df_Rates_TF_SalesPurchasesService , m , fuels_produced_by_techs[k] )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1289,7 +1262,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
             results_list.append( lists_of_lists_to_print[l] )
         ''' ------------------------------------------ '''
         # Function 5a: spend_iuc (using "UseByTechnology")
-        fuels_used_by_techs = ['E4DSL_PUB', 'E4LPG_PUB', 'E4GSL_PUB']
+        fuels_used_by_techs = params['fuels_used_by_techs_3']
         for k in range(len(fuels_used_by_techs)):
             this_returnable = type_3_actor[n].spend_iuc( discounted_or_not, assorted_data_dicts, type_3_actor[n].techs_own , type_3_actor[n].name_ID , type_3_actor[n].discount_rate , df_Unit_TF_IUC , m , fuels_used_by_techs[k] , 'NO_df_new_Rates' )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1297,7 +1270,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
                 results_list.append( lists_of_lists_to_print[l] )
 
         # Function 5b: spend_electricity_vat (using "UseByTechnology")
-        fuels_used_by_techs = ['E4ELE_PUB']
+        fuels_used_by_techs = params['fuels_used_by_techs_4']
         for k in range( len( fuels_used_by_techs ) ):
             this_returnable = type_3_actor[n].spend_electricity_vat( discounted_or_not, assorted_data_dicts, type_3_actor[n].techs_own , type_3_actor[n].name_ID , type_3_actor[n].discount_rate , df_Unit_TF_ElectricityVAT , m , fuels_used_by_techs[k] , 'NO_df_new_Rates' )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1305,7 +1278,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
                 results_list.append( lists_of_lists_to_print[l] )
 
         # Function 5c: spend_h2 (using "UseByTechnology")
-        fuels_used_by_techs = ['E4HYD_PUB']
+        fuels_used_by_techs = params['fuels_used_by_techs_5']
         for k in range( len( fuels_used_by_techs ) ):
             this_returnable = type_3_actor[n].spend_h2( discounted_or_not, assorted_data_dicts, type_3_actor[n].techs_own , type_3_actor[n].name_ID , type_3_actor[n].discount_rate , df_Unit_TF_H2 , m , fuels_used_by_techs[k] , 'NO_df_new_Rates' )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1338,10 +1311,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
         # Define the energy commodities used by the actor type:
         # review the fuels used by transport service companies //
         # match OutputActivityRatio && Relationship_Table
-        fuels_used_by_techs = \
-            ['E4DSL_PRI', 'E4LPG_PRI', 'E4ELE_PRI', 'E4HYD_PRI', 'E4GSL_PRI',
-             'E4ELE_HEA', 'E4DSL_HEA', 'E4LPG_HEA', 'E4HYD_HEA', 'E4DSL_LIG',
-             'E4GSL_LIG', 'E4LPG_LIG', 'E4ELE_LIG' ]
+        fuels_used_by_techs = params['fuels_used_by_techs_6']
 
         # Function 1: spend_investements_and_fom
         print( '        Part - Performing FCM_7.b.D.1 - Investments and FOM for ' + str( type_4_actor[n].name_ID ) )
@@ -1419,9 +1389,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
 
         ''' ------------------------------------------ '''
         # Function 4a: spend_iuc
-        fuels_used_by_techs = \
-            ['E4DSL_PRI', 'E4LPG_PRI', 'E4GSL_PRI', 'E4DSL_HEA', 'E4LPG_HEA',
-             'E4DSL_LIG', 'E4GSL_LIG', 'E4LPG_LIG']
+        fuels_used_by_techs = params['fuels_used_by_techs_7']
 
         print( '        Part - Performing FCM_7.b.D.10 - Spend IUC ' + str( type_4_actor[n].name_ID ) )
         for k in range( len( fuels_used_by_techs ) ):
@@ -1440,8 +1408,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
                 results_list.append( lists_of_lists_to_print[l] )
 
         # Function 4c: spend_h2 (using "UseByTechnology")
-        fuels_used_by_techs = [     'E4HYD_PRI',
-                                    'E4HYD_HEA']
+        fuels_used_by_techs = params['fuels_used_by_techs_8']
         print( '        Part - Performing FCM_7.b.D.12 - Spend H2 ' + str( type_4_actor[n].name_ID ) )
         for k in range( len( fuels_used_by_techs ) ):
             this_returnable = type_4_actor[n].spend_h2( discounted_or_not, assorted_data_dicts, type_4_actor[n].techs_own , type_4_actor[n].name_ID , type_4_actor[n].discount_rate , df_Unit_TF_H2 , m , fuels_used_by_techs[k] , 'NO_df_new_Rates' )
@@ -1474,7 +1441,7 @@ def calculate_transfers(    m, discounted_or_not, results_list, assorted_data_di
     print( Initial_OR_Adjustment + ' Part - Performing FCM_7.b.E - Calculate transfers for Public Transport Users' )
     for n in range( len( type_5_actor ) ):
         # Function 1: spend_service_purchase
-        fuels_produced_by_techs = ['E6TDPASPUB' ] # review the fuels produced by transport service companies // match OutputActivityRatio && Relationship_Table
+        fuels_produced_by_techs = params['fuels_produced_by_techs'] # review the fuels produced by transport service companies // match OutputActivityRatio && Relationship_Table
         for k in range( len( fuels_produced_by_techs ) ):
             this_returnable = type_5_actor[n].spend_service_purchase( discounted_or_not, assorted_data_dicts, type_5_actor[n].techs_buy , type_5_actor[n].name_ID , type_5_actor[n].discount_rate , df_Rates_TF_SalesPurchasesService , m , fuels_produced_by_techs[k] )
             lists_of_lists_to_print = deepcopy( this_returnable )
@@ -1557,18 +1524,9 @@ def incorporate_qs_ps_ts( m, results_list, assorted_data_dicts, q_p_t_list, phas
     returnable_list_of_lists = []
     all_years = [i for i in range(2018,2050+1) ]
 
-    list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                            'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                            'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                            'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+    list_of_variables = params['list_of_variables']
 
-    fcm_table_header = \
-        ['Strategy', 'Future.ID', 'Technology', 'Fuel', 'Fuel_Surname', 'Year',
-         'Age', 'Actor', 'Actor_Type', 'Owner', 'GorS'] + list_of_variables
+    fcm_table_header = params['fcm_table_header'] + list_of_variables
     #--------------------------------------------------------------------------
     # A) Adding energy taxes:
     supplier_price_data = []
@@ -1692,7 +1650,7 @@ def incorporate_qs_ps_ts( m, results_list, assorted_data_dicts, q_p_t_list, phas
     # -------------------------------------------------------------------------
     # B) Adding Imports-related rates and units:
     dicts2check = [  df_Unit_T_SelectivoAlConsumo, df_Unit_T_TotalTaxes, df_Unit_T_MarketPrice, df_Unit_T_CIF ]
-    var_names_to_check = [ 'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF' ]
+    var_names_to_check = params['var_names_to_check']
 
     tech_list = list( fleet_Q_perTech_perYear_per_age.keys() )
     for t in range( len( tech_list ) ):
@@ -1840,11 +1798,9 @@ def incorporate_qs_ps_ts( m, results_list, assorted_data_dicts, q_p_t_list, phas
     return results_list
 
 
-def disag_lcoe_pp(assorted_data_dicts, time_range_vector):
+def disag_lcoe_pp(assorted_data_dicts, time_range_vector, params):
     lcoe_per_pp = {}
-    all_power_plants_techs = ['PPHDAM', 'PPHROR', 'PPGEO', 'PPWNDON',
-                              'PPPVT', 'PPPVTHYD', 'PPPVD', 'PPPVDS',
-                              'PPBIO', 'PPDSL', 'PPFOI']
+    all_power_plants_techs = params['all_power_plants_techs']
 
     for appt in all_power_plants_techs:
         power_plants_techs = [appt]
@@ -2028,15 +1984,8 @@ def calc_lcot(assorted_data_dicts, time_range_vector, trn_tech, Fleet_Groups,
 
 
 def additional_levelized_costs(m, lcot_sedan, lcoe_per_pp, all_years):
-    list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                            'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                            'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                            'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                            'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                            'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                            'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                            'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
-    fcm_table_header = [ 'Strategy', 'Future.ID' , 'Technology' , 'Fuel', 'Fuel_Surname' , 'Year', 'Age' , 'Actor' , 'Actor_Type' , 'Owner' , 'GorS' ] + list_of_variables
+    list_of_variables = params['list_of_variables']
+    fcm_table_header = params['fcm_table_header'] + list_of_variables
 
     returnable_list_of_lists = []
 
@@ -2157,10 +2106,10 @@ def data_processor(case, base_or_fut, content_all):
     dict_residual_fleet_distribution = content_tax_rates[9]
 
     if base_or_fut == 'base':
-        first_list = set_first_list()
+        first_list = set_first_list(params)
         case_element_list = first_list[case].split('_')
         scenario_string = str( first_list[case] )
-        output_adress = './Executables/' + scenario_string
+        output_adress = params['Executables'] + '/' + scenario_string
 
         scenario_string_cif = scenario_string
         output_adress_cif = output_adress
@@ -2168,11 +2117,11 @@ def data_processor(case, base_or_fut, content_all):
     if base_or_fut == 'fut':
         case_element_list = case.split('_')
         scenario_string = str( case )
-        output_adress = './Experimental_Platform/Futures/' + \
+        output_adress = params['Experi_Plat'] + params['Futures'] + \
             scenario_string.split('_')[0] + '/' + scenario_string
 
         scenario_string_cif = str( case ).replace( 'BAU', 'NDP' )
-        output_adress_cif = './Experimental_Platform/Futures/' + 'NDP' + \
+        output_adress_cif = params['Experi_Plat'] + params['Futures'] + 'NDP' + \
             '/' + scenario_string_cif
 
     case_strategy_alphabet = case_element_list[0]
@@ -2202,7 +2151,7 @@ def data_processor(case, base_or_fut, content_all):
               '(or previous parameters) into a dictionary.')
         ''' 1.A) We extract the strucute setup of the model
         based on 'Structure.xlsx' '''
-        structure_filename = "./0_From_Confection/B1_Model_Structure.xlsx"
+        structure_filename = params['From_Conf'] + params['B1_Model_Struc']
         structure_file = pd.ExcelFile(structure_filename)
         structure_sheetnames = structure_file.sheet_names  # see all sheet names
         sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
@@ -2292,10 +2241,7 @@ def data_processor(case, base_or_fut, content_all):
         # -
         ''' 1.B) We finish this sub-part,
         and proceed to read all the base scenarios. '''
-        header_row = ['PARAMETER', 'Scenario', 'REGION', 'TECHNOLOGY', 'FUEL',
-                      'EMISSION', 'MODE_OF_OPERATION', 'TIMESLICE', 'YEAR',
-                      'SEASON', 'DAYTYPE', 'DAILYTIMEBRACKET', 'STORAGE',
-                      'Value']
+        header_row = params['header_row']
 
         scenario_list = []
         stable_scenario_list_raw = os.listdir( '1_Baseline_Modelling' )
@@ -2363,7 +2309,7 @@ def data_processor(case, base_or_fut, content_all):
                             stable_scenarios[scenario_list[scen]][this_param ]['value' ].append( row[ header_row[-1] ] )
 
         ''' 1.C) : '''
-        first_list = set_first_list()
+        first_list = set_first_list(params)
         # ---
         r_government = \
             float( pd_discount_rates.loc[0 ,'Government'])
@@ -2379,10 +2325,10 @@ def data_processor(case, base_or_fut, content_all):
             float( pd_discount_rates.loc[0 ,'Public_Transport_User'])
         # ---
         if base_or_fut == 'base':
-            first_list = set_first_list()
+            first_list = set_first_list(params)
             case_element_list = first_list[case].split('_')
             scenario_string = str( first_list[case] )
-            output_adress = './Executables/' + scenario_string
+            output_adress = params['Executables'] + '/' + scenario_string
 
             scenario_string_cif = scenario_string
             output_adress_cif = output_adress
@@ -2391,12 +2337,12 @@ def data_processor(case, base_or_fut, content_all):
             case_element_list = case.split('_')
             scenario_string = str( case )
             output_adress = \
-                './Experimental_Platform/Futures/' + \
+                params['Experi_Plat'] + params['Futures'] + \
                 scenario_string.split('_')[0] + '/' + scenario_string
 
             scenario_string_cif = str( case ).replace( 'BAU', 'NDP' )
             output_adress_cif = \
-                './Experimental_Platform/Futures/' + 'NDP' + '/' + \
+                params['Experi_Plat'] + params['Futures'] + 'NDP' + '/' + \
                 scenario_string_cif
 
         case_strategy_alphabet = case_element_list[0]
@@ -2411,11 +2357,8 @@ def data_processor(case, base_or_fut, content_all):
         # FCM_1 - First, we read the inputs: 
         # ---------------------------------------------------------------------
         # Extract the OseMOSYS database:
-        general_data = [ 'Strategy','Future.ID','Fuel','Technology','Year']
-        all_vars_of_interest = [    'NewCapacity' , 'AccumulatedNewCapacity' , 'TotalCapacityAnnual', 'NewFleet',
-                                    'CapitalInvestment' , 'AnnualFixedOperatingCost' , 'AnnualVariableOperatingCost',
-                                    'ProductionByTechnology', 'UseByTechnology', 'DiscountedCapitalInvestment', 'DistanceDriven'
-                                ]
+        general_data = params['general_data']
+        all_vars_of_interest = params['all_vars_of_interest']
         all_columns_of_interest = general_data + all_vars_of_interest
         with open( output_adress + '/' + scenario_string + '_Output' + '.csv' ) as csvfile:
             reader = csv.DictReader( csvfile, skipinitialspace = True )
@@ -2426,8 +2369,8 @@ def data_processor(case, base_or_fut, content_all):
                         osemosys_database[name].append( row[name] )
         # ---------------------------------------------------------------------
         # Extract the Distance Driven from the Input Parameters (to estimate the unit cost of vehicles).
-        general_data_i = [ 'Future.ID' , 'Strategy' , 'Fuel' , 'Technology' , 'Year' ]
-        all_vars_of_interest_i = [ 'DistanceDriven', 'ResidualCapacity' ]
+        general_data_i = params['general_data_i']
+        all_vars_of_interest_i = params['all_vars_of_interest_i']
         all_columns_of_interest_i = general_data_i + all_vars_of_interest_i
 
         with open( output_adress + '/' + scenario_string + '_Input' + '.csv' ) as csvfile:
@@ -2440,7 +2383,7 @@ def data_processor(case, base_or_fut, content_all):
                         osemosys_database_i[name].append( row[name] )
         # ---------------------------------------------------------------------
         # Extract the CapitalCost from the Inputs:
-        input_param_header = [ 'Technology' , 'Year' , 'CapitalCost' ]
+        input_param_header = params['input_param_header']
         with open( output_adress_cif + '/' + scenario_string_cif + '_Input' + '.csv' ) as csvfile:
             reader = csv.DictReader( csvfile, skipinitialspace = True )
             capital_cost_database = { name: [] for name in input_param_header } # reader.fieldnames }
@@ -2452,7 +2395,7 @@ def data_processor(case, base_or_fut, content_all):
                         capital_cost_database[name].append( 0 )
 
         # Extract the VariableCost from the inputs:
-        input_param_header = [ 'Technology' , 'Year' , 'VariableCost' ]
+        input_param_header = params['input_param_header']
         with open( output_adress + '/' + scenario_string + '_Input' + '.csv' ) as csvfile:
             reader = csv.DictReader( csvfile, skipinitialspace = True )
             variable_cost_database = { name: [] for name in input_param_header } # reader.fieldnames }
@@ -2464,7 +2407,7 @@ def data_processor(case, base_or_fut, content_all):
                         variable_cost_database[name].append( 0 )
 
         # Extract the OperationalLife from the inputs:
-        input_param_header = [ 'Technology' , 'OperationalLife' ]
+        input_param_header = params['input_param_header_2']
         with open( output_adress + '/' + scenario_string + '_Input' + '.csv' ) as csvfile: # $*$ Because of a technicality, we had not printed operational life before. Keep making reference to the future 0 for this.
         # with open( './Executables/' + scenario_string.split('_')[0] + '_0/' + scenario_string.split('_')[0] + '_0_Input' + '.csv' ) as csvfile:
             reader = csv.DictReader( csvfile, skipinitialspace = True )
@@ -3025,10 +2968,10 @@ def data_processor(case, base_or_fut, content_all):
 
         ''' Action 3: Let's define a distributed private fleet amongst
         companies and households. '''
-        select_techs_raw = ['Techs_Motos', 'Techs_SUVMIV', 'Techs_Sedan']
+        select_techs_raw = params['select_techs_raw']
 
-        results_fleet_property = pd.DataFrame( columns = ['Group', 'Tech', 'Year', 'Age', 'Q', 'FV' ] )
-        results_fleet_imports = pd.DataFrame( columns = ['Group', 'Tech', 'Year', 'Age', 'Q', 'FV' ] )
+        results_fleet_property = pd.DataFrame( columns = params['results_fleet_columns'] )
+        results_fleet_imports = pd.DataFrame( columns = params['results_fleet_columns'] )
         import_techs_list_check = list( fleet_Q_perTech_perYear_per_age_imports.keys() )
         this_dict_4_pd_v1 = {}
         this_dict_4_pd_v2 = {}
@@ -3064,7 +3007,7 @@ def data_processor(case, base_or_fut, content_all):
         end_distribute_fleet_time_1 = time.time()
         print( '    Mid 1 of FCM_4.d.' )
         # With the pandas structure, it is possible to perform the sorting of the system:
-        select_techs = [['Techs_Motos'], ['Techs_SUVMIV', 'Techs_Sedan']]
+        select_techs = params['select_techs']
         # Create the sorting of the fleet for property:
         results_fleet_distributed = deepcopy( results_fleet_property )
         li_results_fleet_distributed = []
@@ -3178,8 +3121,8 @@ def data_processor(case, base_or_fut, content_all):
                     car_groups_ass.append( 100*the_fleet_assign_share )
                 car_groups_ass_unchanged = deepcopy( car_groups_ass )
 
-                cumulative_assignation = { 'Q5_Households':0 , 'Q4_Households':0 , 'Q3_Households':0 , 'Q2_Households':0 , 'Q1_Households':0 }
-                household_types = ['Q5_Households' , 'Q4_Households' , 'Q3_Households' , 'Q2_Households' , 'Q1_Households']
+                cumulative_assignation = params['cumulative_assignation']
+                household_types = params['household_types']
                 last_i = 0
                 for n in range( len( household_types ) ):
                     this_household_type = household_types[n]
@@ -3313,8 +3256,8 @@ def data_processor(case, base_or_fut, content_all):
                         car_groups_ass.append( 100*the_fleet_assign_share )
                     car_groups_ass_unchanged = deepcopy( car_groups_ass )
 
-                    cumulative_assignation = { 'Q5_Households':0 , 'Q4_Households':0 , 'Q3_Households':0 , 'Q2_Households':0 , 'Q1_Households':0 }
-                    household_types = ['Q5_Households' , 'Q4_Households' , 'Q3_Households' , 'Q2_Households' , 'Q1_Households']
+                    cumulative_assignation = params['cumulative_assignation']
+                    household_types = params['household_types']
                     last_i = 0
                     for n in range( len( household_types ) ):
                         this_household_type = household_types[n]
@@ -3394,8 +3337,8 @@ def data_processor(case, base_or_fut, content_all):
         df_results_fleet_distributed = pd.concat(li_results_fleet_distributed, axis=0, ignore_index=True)
         df_results_fleet_distributed_imp = pd.concat(li_results_fleet_distributed_imp, axis=0, ignore_index=True)
 
-        df_distributed = df_results_fleet_distributed[ ['Group', 'Tech', 'Year', 'Age', 'Owner', 'Q_Actor'] ]
-        df_distributed_imp = df_results_fleet_distributed_imp[ ['Group', 'Tech', 'Year', 'Age', 'Owner', 'Q_Actor'] ]
+        df_distributed = df_results_fleet_distributed[ params['df_distributed'] ]
+        df_distributed_imp = df_results_fleet_distributed_imp[ params['df_distributed'] ]
 
         tech_list_owner = list( set( df_distributed['Owner'].tolist() ) )
         tech_list_owner.sort()
@@ -3587,14 +3530,11 @@ def data_processor(case, base_or_fut, content_all):
         # FCM_5 - Estimate electricity price:
         print('Initial Part - Performing FCM_5 - Estimating Electricity Price')
         # Electricity price analysis:
-        power_plants_techs = ['PPHDAM', 'PPHROR', 'PPGEO', 'PPWNDON',
-                              'PPPVT', 'PPPVD', 'PPPVDS',
-                              'PPBIO', 'PPDSL', 'PPFOI']
-        fossil_power_plants = ['PPDSL', 'PPFOI']
+        power_plants_techs = params['power_plants_techs']
+        fossil_power_plants = params['fossil_power_plants']
 
         electricity_related_techs = \
-            power_plants_techs + ['ELE_TRANS', 'ELE_DIST', 'T4ELE_PRI',
-                                  'T4ELE_PUB', 'T4ELE_LIG']
+            power_plants_techs + params['electricity_related_techs']
 
         ElectricityPrice_annualized_new_investments_vector = [ 0 for y in range( len(time_range_vector) ) ]
         ElectricityPrice_new_investments = [ 0 for y in range( len(time_range_vector) ) ]
@@ -3689,18 +3629,17 @@ def data_processor(case, base_or_fut, content_all):
             ElectricityPrice_vector[y] = ElectricityPrice_for_old[y] + ElectricityPrice_for_new[y]
 
         # FCM_5.b. - Estimate disaggregated power plant costs:
-        lcoe_per_pp = disag_lcoe_pp(assorted_data_dicts, time_range_vector)
+        lcoe_per_pp = disag_lcoe_pp(assorted_data_dicts, time_range_vector, params)
 
         # FCM_5.c. - Estimate hydrogen price:
         print('Initial Part - Performing FCM_5.b. - Estimating Hydrogen Price')
         # Hydrogen price analysis:
-        hydrogen_input_tech = [ 'HYD_G_PROD' ]
-        hyd_2_pp_dict = {'HYD_G_PROD': 'PPPVTHYD'}
+        hydrogen_input_tech = params['hydrogen_input_tech']
+        hyd_2_pp_dict = params['hyd_2_pp_dict']
 
-        hydrogen_output_tech = [ 'HYD_DIST' ]
+        hydrogen_output_tech = params['hydrogen_output_tech']
 
-        hydrogen_cost_techs = ['HYD_G_PROD', 'HYD_DIST', 'T5HYDIND',
-                               'T4HYD_PUB', 'T4HYD_HEA', 'PPPVTHYD']
+        hydrogen_cost_techs = params['hydrogen_cost_techs']
 
         HydrogenPrice_annualized_new_investments_vector = [ 0 for y in range( len(time_range_vector) ) ]
         HydrogenPrice_new_investments = [ 0 for y in range( len(time_range_vector) ) ]
@@ -4118,16 +4057,9 @@ def data_processor(case, base_or_fut, content_all):
 
         discounted_or_not = 'Discounted' # DEPRICATED: does not matter anymore
 
-        list_of_variables = [   'DAI', 'Customs', 'SC', 'VAT-Imports', 'Total Import Taxes', 'GE', 'Vehicle Purchase', 'Property Tax', 'IUC', 'VAT-Electricity',
-                                'H2', 'VKT', 'Energy Sales and Purchases', 'Investments and FOM', 'Variable Costs' , 'Service Sales', 'Service Purchases', 'Investments', 'FOM',
-                                'DAI Disc', 'Customs Disc', 'SC Disc', 'VAT-Imports Disc', 'Total Import Taxes Disc', 'GE Disc', 'Vehicle Purchase Disc', 'Property Tax Disc', 'IUC Disc', 'VAT-Electricity Disc',
-                                'H2 Disc', 'VKT Disc', 'Energy Sales and Purchases Disc', 'Investments and FOM Disc', 'Variable Costs Disc' ,
-                                'Service Sales Disc', 'Service Purchases Disc', 'Investments Disc', 'FOM Disc',
-                                'Energy Price', 'Energy Price wTax', 'Energy Tax', 'Service Price',
-                                'U SC', 'U Total Import Taxes', 'U Market Price', 'U CIF',
-                                'Q Imports', 'U VKT', 'Q Total', 'U Property Tax', 'FV' ]
+        list_of_variables = params['list_of_variables']
 
-        fcm_table_header = [ 'Strategy', 'Future.ID' , 'Technology' , 'Fuel', 'Fuel_Surname' , 'Year', 'Age' , 'Actor' , 'Actor_Type' , 'Owner' , 'GorS' ] + list_of_variables
+        fcm_table_header =  params['fcm_table_header'] + list_of_variables
 
         results_list = [] # this will be discounted and undiscounted
 
@@ -4174,18 +4106,7 @@ def data_processor(case, base_or_fut, content_all):
             ''' ------------------------------------------ '''
             # Function 2a: gather_iuc
             print('     Within FCM_7 - Calculate *IUC* Revenue')
-            fuels_produced_by_techs = [ 'E4DSL_PRI',
-                                        'E4GSL_PRI',
-                                        'E4LPG_PRI',
-                                        'E4DSL_PUB',
-                                        'E4LPG_PUB',
-                                        'E4GSL_PUB',
-                                        'E4DSL_HEA',
-                                        'E4LPG_HEA',
-                                        'E4DSL_LIG',
-                                        'E4GSL_LIG',
-                                        'E4LPG_LIG',
-                                        'E4ELE_LIG']
+            fuels_produced_by_techs = params['fuels_produced_by_techs_2']
             for k in range( len( fuels_produced_by_techs ) ):
                 this_returnable = type_1_actor[n].gather_iuc( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_IUC , m , fuels_produced_by_techs[k], 'NO_df_new_Rates' )
                 lists_of_lists_to_print = deepcopy( this_returnable )
@@ -4194,10 +4115,7 @@ def data_processor(case, base_or_fut, content_all):
 
             # Function 2b: gather_electricity_vat
             print('     Within FCM_7 - Calculate *Electricity VAT* Revenue')
-            fuels_produced_by_techs = [ 'E4ELE_PRI',
-                                        'E4ELE_PUB',
-                                        'E4ELE_HEA',
-                                        'E4ELE_LIG' ]
+            fuels_produced_by_techs = params['fuels_produced_by_techs_3']
             for k in range( len( fuels_produced_by_techs ) ):
                 this_returnable = type_1_actor[n].gather_electricity_vat( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_ElectricityVAT , m , fuels_produced_by_techs[k], 'NO_df_new_Rates' )
                 lists_of_lists_to_print = deepcopy( this_returnable )
@@ -4206,8 +4124,7 @@ def data_processor(case, base_or_fut, content_all):
 
             # Function 2c: gather_h2
             print('     Within FCM_7 - Calculate *H2* Revenue')
-            fuels_produced_by_techs = [ 'E4HYD_PUB',
-                                        'E4HYD_HEA' ]
+            fuels_produced_by_techs = params['fuels_produced_by_techs_4']
             for k in range( len( fuels_produced_by_techs ) ):
                 this_returnable = type_1_actor[n].gather_h2( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_H2 , m , fuels_produced_by_techs[k], 'NO_df_new_Rates' )
                 lists_of_lists_to_print = deepcopy( this_returnable )
@@ -4351,12 +4268,12 @@ def data_processor(case, base_or_fut, content_all):
                 this_decarb_f = 0
 
             if base_or_fut == 'fut':
-                output_adress_BAU = './Experimental_Platform/Futures/BAU/BAU_' + case.split('_')[-1]
+                output_adress_BAU = params['Experi_Plat'] + params['Futures'] + params['Bau_Bau'] + case.split('_')[-1]
                 BAU_Cost_Distribution = pd.read_csv( output_adress_BAU + '/BAU_' + case.split('_')[-1] + '_TEM' + '.csv' )
                 This_Scenario_Cost_Distribution = pd.read_csv( output_adress + '/' + scenario_string + '_TEM' + '.csv' )
                 this_decarb_f = int( case.split('_')[-1] )
 
-            verification_filename = output_adress + '/' + scenario_string + '_Verification.txt'
+            verification_filename = output_adress + '/' + scenario_string + params['Verif']
             verification_file = open( verification_filename, "w" )
 
             print('     SO-1. We have called some input files. Now let us initialize some data.')
@@ -4368,25 +4285,14 @@ def data_processor(case, base_or_fut, content_all):
 
             # Do not forget to list the taxes that must be assorted here:
             # tax_type_list = ['Import and Sales Tax', 'Energy Tax', 'Property Tax']
-            tax_type_list = [ 'DAI', 'Customs', 'SC', 'VAT-Imports', 'Property Tax', 'IUC', 'VAT-Electricity', 'H2', 'VKT' ]
+            tax_type_list = params['tax_type_list']
             BAU_revenue_per_tax_type = {} # this is an optional variable, we kept it just in case
             This_Scenario_revenue_per_tax_type = {} # this is an optional variable, we kept it just in case
             This_Scenario_relative_revenue_shortfall_per_tax_type = {} # this is an optional variable, we kept it just in case
             This_Scenario_relative_revenue_shortfall_total = {} # this is an optional variable, we kept it just in case
 
             # We should extract the remaining benefits of the remaining actors so that we can implement the system:
-            actor_j_list = [
-                # 'electricity_companies', # /// commented because they have almost zero or fixed earnings
-                # 'hydrocarbon_companies', # /// commented because they have almost zero or fixed earnings
-                # 'hydrogen_companies', # /// commented because they have almost zero or fixed earnings
-                'bus_companies', # should also add the train technologies
-                'special_transport_companies',
-                'taxi_industry',
-                'light_truck_companies',
-                'heavy_freight_companies',
-                'private_transport_owners' # ,
-                # 'public_transport_users' # /// commented because we must incorporate later
-                ]
+            actor_j_list = params['actor_j_list']
 
             BAU_Actor_Costs = {}
             This_Scenario_Actor_Costs = {}
@@ -4408,8 +4314,8 @@ def data_processor(case, base_or_fut, content_all):
                 BAU_Actor_Income_yearly.update( { j:[] } )
                 This_Scenario_Actor_Income_yearly.update( { j:[] } )
 
-            actor_expense_list = [ 'Vehicle Purchase','Property Tax','IUC','VAT-Electricity','H2','VKT','Energy Sales and Purchases','FOM' ] # The vehicle taxes are embedded in the Vehicle Purchase expense, but the eenergy taxes are separated,
-            actor_income_list = [ 'Service Sales' ]
+            actor_expense_list = params['actor_expense_list'] # The vehicle taxes are embedded in the Vehicle Purchase expense, but the eenergy taxes are separated,
+            actor_income_list = params['actor_income_list']
             BAU_expenses_per_actor_per_exp_type = {}
             This_Scenario_expenses_per_actor_per_exp_type = {}
             This_Scenario_relative_benefit_per_actor_per_exp_type = {}
@@ -5005,18 +4911,7 @@ def data_processor(case, base_or_fut, content_all):
                 print_this_string = '#################################################'
                 verification_file.write( print_this_string )
                 #------------------------------------------------------#
-                actor_j_contribution.update( { query_year:{
-                    # 'electricity_companies', # /// commented because they have almost zero or fixed earnings
-                    # 'hydrocarbon_companies', # /// commented because they have almost zero or fixed earnings
-                    # 'hydrogen_companies', # /// commented because they have almost zero or fixed earnings
-                    'bus_companies':v1_value, # should also add the train technologies
-                    'special_transport_companies':v2_value,
-                    'taxi_industry':v3_value,
-                    'light_truck_companies':v4_value,
-                    'heavy_freight_companies':v5_value,
-                    'private_transport_owners':v6_value # ,
-                    # 'public_transport_users' # /// commented because we must incorporate later
-                    } } )
+                actor_j_contribution.update( params['query_year'] )
 
             # ADJUSTMENT CALCULATION:
             # The optimization part is executed. Now, let's do the distribution of the contributions:
@@ -5370,18 +5265,7 @@ def data_processor(case, base_or_fut, content_all):
 
                     ''' MODIFY THIS RATE ''' # Function 2a: gather_iuc
                     print('     Within FCM_7 - Calculate *IUC* Revenue')
-                    fuels_produced_by_techs = [ 'E4DSL_PRI',
-                                                'E4GSL_PRI',
-                                                'E4LPG_PRI',
-                                                'E4DSL_PUB',
-                                                'E4LPG_PUB',
-                                                'E4GSL_PUB',
-                                                'E4DSL_HEA',
-                                                'E4LPG_HEA',
-                                                'E4DSL_LIG',
-                                                'E4GSL_LIG',
-                                                'E4LPG_LIG',
-                                                'E4ELE_LIG']
+                    fuels_produced_by_techs = params['fuels_produced_by_techs_2']
                     for k in range( len( fuels_produced_by_techs ) ):
                         this_returnable = type_1_actor[n].gather_iuc( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_IUC_new , m , fuels_produced_by_techs[k], 'df_new_Rates' )
                         lists_of_lists_to_print = deepcopy( this_returnable )
@@ -5392,10 +5276,7 @@ def data_processor(case, base_or_fut, content_all):
 
                     ''' MODIFY THIS RATE ''' # Function 2b: gather_electricity_vat
                     print('     Within FCM_7 - Calculate *Electricity VAT* Revenue')
-                    fuels_produced_by_techs = [ 'E4ELE_PRI',
-                                                'E4ELE_PUB',
-                                                'E4ELE_HEA',
-                                                'E4ELE_LIG' ]
+                    fuels_produced_by_techs = params['fuels_produced_by_techs_3']
                     for k in range( len( fuels_produced_by_techs ) ):
                         this_returnable = type_1_actor[n].gather_electricity_vat( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_ElectricityVAT_new , m , fuels_produced_by_techs[k], 'df_new_Rates' )
                         lists_of_lists_to_print = deepcopy( this_returnable )
@@ -5406,8 +5287,7 @@ def data_processor(case, base_or_fut, content_all):
 
                     ''' MODIFY THIS RATE ''' # Function 2c: gather_h2 (using "UseByTechnology")
                     print('     Within FCM_7 - Calculate *H2* Revenue')
-                    fuels_used_by_techs = [ 'E4HYD_HEA',
-                                            'E4HYD_PUB']
+                    fuels_used_by_techs = params['fuels_used_by_techs_5']
                     for k in range( len( fuels_used_by_techs ) ):
                         this_returnable = type_1_actor[n].gather_h2( discounted_or_not, assorted_data_dicts, type_1_actor[n].techs_gather , type_1_actor[n].name_ID , type_1_actor[n].discount_rate , df_Unit_TF_H2_new , m , fuels_used_by_techs[k] , 'NO_df_new_Rates' )
                         lists_of_lists_to_print = deepcopy( this_returnable )
@@ -5752,6 +5632,11 @@ if __name__ == '__main__':
 
     start1 = time.time()
 
+    # Read yaml file with parameterization
+    with open('MOMF_T3a_TEM_SimuMode.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     # Before deploying this system, we need to open all the supporting data;
     # this action will make the system run faster.
 
@@ -5759,16 +5644,16 @@ if __name__ == '__main__':
     print('General data input 1 - We call the default parameters for later use'
           )  # DONE
     list_param_default_value = \
-        pd.read_excel('Scenario_Default_Parameters.xlsx',
-                      sheet_name='Default_Values')
+        pd.read_excel(params['Scen_Default_Param'],
+                      sheet_name=params['Default_Val'])
     list_param_default_value_params = list(list_param_default_value
-                                           ['Parameter'])
+                                           [params['Param']])
     list_param_default_value_value = list(list_param_default_value
-                                          ['Default_Value'])
+                                          [params['Default_Val']])
 
     base_configuration_overall = \
-        pd.read_excel('Scenario_Default_Parameters.xlsx',
-                      sheet_name='Overall_Parameters')
+        pd.read_excel(params['Scen_Default_Param'],
+                      sheet_name=params['Over_Param'])
     global Initial_Year_of_Uncertainty
     for n in range(len(base_configuration_overall.index)):
         if (str(base_configuration_overall.loc[n, 'Parameter']) ==
@@ -5782,8 +5667,8 @@ if __name__ == '__main__':
 
     # -------------------------------------------------------------------------
     print('General data input 2 - Extract the relationship table')  # DONE
-    df_Relations = pd.read_excel('Relationship_Table.xlsx',
-                                 sheet_name='Relationship_Table')
+    df_Relations = pd.read_excel(params['Relat_Tabl_file'],
+                                 sheet_name=params['Relshee'])
     agent_list = [i for i in df_Relations.columns.tolist() if 'Set' not in i]
     all_techs_list = df_Relations['Set_Name'].tolist()
     all_techs_list_unique = list(set(all_techs_list))
@@ -5822,7 +5707,7 @@ if __name__ == '__main__':
 
     # -------------------------------------------------------------------------
     print('General data input 3 - Extract the rates')
-    pd_discount_rates = pd.read_excel('_TEM_Rates.xlsx', sheet_name='Discount')
+    pd_discount_rates = pd.read_excel(params['TEM_Rates'], sheet_name=params['Disc'])
     r_government = float(pd_discount_rates.loc[0, 'Government'])
     r_energy_companies = float(pd_discount_rates.loc[0, 'Energy_Companies'])
     r_public_transport_companies = \
@@ -5838,7 +5723,7 @@ if __name__ == '__main__':
                             in_relationship_gather, in_relationship_sell,
                             in_relationship_buy]
 
-    df_ER = pd.read_excel(open('_TEM_Rates.xlsx', 'rb'), sheet_name='ER')
+    df_ER = pd.read_excel(open(params['TEM_Rates'], 'rb'), sheet_name=params['ER'])
     list_ER = df_ER['Colones_per_Dollar'].tolist()
     list_ER_years = df_ER['Year'].tolist()
     global dict_ER_per_year
@@ -5849,23 +5734,23 @@ if __name__ == '__main__':
     # ----
     # Extracting Rates of Services Sales/Purchases:
     df_Rates_TF_SalesPurchasesService = \
-        pd.read_excel(open('_TEM_Rates.xlsx', 'rb'),
-                      sheet_name='rates_tf_spservice')
+        pd.read_excel(open(params['TEM_Rates'], 'rb'),
+                      sheet_name=params['rat_spserv'])
 
     # ----
     # Let's estimate the price of fossil fuels / let's provisionally include
     # the price structure we had in November
     # $*$ This is a provisional method for fossil fuel additional costs.
     df_Rates_TF_SalesPurchasesEnergy = \
-        pd.read_excel(open('_TEM_Rates.xlsx', 'rb'),
-                      sheet_name='rates_tf_spenergy')
+        pd.read_excel(open(params['TEM_Rates'], 'rb'),
+                      sheet_name=params['rat_spene'])
 
     # ----
     # Procedure: we must bring the rates we know into the program.
     # The rates are in colones for fuels or in % for electricity.
     df_Rates_TF_TaxEnergy = \
-        pd.read_excel(open('_TEM_Rates.xlsx', 'rb'),
-                      sheet_name='rates_tf_tax_ene')
+        pd.read_excel(open(params['TEM_Rates'], 'rb'),
+                      sheet_name=params['rat_sptax'])
 
     content_TEM_rates = [pd_discount_rates, dict_ER_per_year, list_ER,
                          df_Rates_TF_SalesPurchasesService,
@@ -5875,13 +5760,13 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------
     print('General data input 4 - Extract the TEM controller')
     df_tax_assign = pd.read_excel('_TEM_Control_File.xlsx',
-                                  sheet_name='Tax_Assign')
+                                  sheet_name=params['Tax_Ass'])
     df_strategies = pd.read_excel('_TEM_Control_File.xlsx',
-                                  sheet_name='Strategies')
+                                  sheet_name=params['Strat'])
     df_milestones = pd.read_excel('_TEM_Control_File.xlsx',
-                                  sheet_name='Milestones')
+                                  sheet_name=params['Miles'])
     df_fuels_and_techs = pd.read_excel('_TEM_Control_File.xlsx',
-                                       sheet_name='Fuels_and_Techs')
+                                       sheet_name=params['Fuels_and_Techs'])
 
     content_TEM_control_file = [df_tax_assign, df_strategies,
                                 df_milestones, df_fuels_and_techs]
@@ -5890,8 +5775,8 @@ if __name__ == '__main__':
     print('General data input 5 - Extract the Transport Tech List')
 
     # 5.1
-    technology_list_cif = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                        sheet_name='import_techs')
+    technology_list_cif = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                        sheet_name=params['Imp_techs'])
     technology_list_transport_dict_cif = {}
     for i in range(len(technology_list_cif['Technology'].tolist())):
         technology_list_transport_dict_cif \
@@ -5899,8 +5784,8 @@ if __name__ == '__main__':
                      technology_list_cif['Technology_CIF'].tolist()[i]})
 
     # 5.2
-    technology_list_existing = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                             sheet_name='existing_techs')
+    technology_list_existing = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                             sheet_name=params['Exis_techs'])
     technology_list_transport_dict_existing = {}
     for i in range(len(technology_list_existing['Technology'].tolist())):
         technology_list_transport_dict_existing \
@@ -5909,17 +5794,15 @@ if __name__ == '__main__':
                      .tolist()[i]})
 
     # 5.3
-    technology_list_transport = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                              sheet_name='all_techs')
+    technology_list_transport = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                              sheet_name=params['All_techs'])
     technology_list_transport_techs = \
-        technology_list_transport['Technology'].tolist()
+        technology_list_transport[params['Tech']].tolist()
 
     # 5.4
-    df_Property_Tax_Ranges = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                           sheet_name='tbl_prop')
-    df_Property_Tax_Ranges_columns = ['Char', 'Scale 0', 'Scale 1', 'Scale 2',
-                                      'Scale 3', 'Scale 4', 'Scale 5',
-                                      'Scale 6', 'Exchange_Rate']
+    df_Property_Tax_Ranges = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                           sheet_name=params['TBL_Prop'])
+    df_Property_Tax_Ranges_columns = params[params['Prop_Tax_Range']]
 
     dict_property_tax_fiscal_value_scales = {}
 
@@ -5942,8 +5825,8 @@ if __name__ == '__main__':
                                   'Min': this_min, 'Max': this_max}})
 
     # 5.5
-    df_Property_Tax_Applicable = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                               sheet_name='tbl_prop_apply')
+    df_Property_Tax_Applicable = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                               sheet_name=params['TBL_Prop_Apply'])
     dict_Property_Tax_Applicable = {}
     for i in range(len(df_Property_Tax_Applicable['Technology'].tolist())):
         dict_Property_Tax_Applicable \
@@ -5951,33 +5834,33 @@ if __name__ == '__main__':
                      df_Property_Tax_Applicable['Property_Value'].tolist()[i]})
 
     # 5.6
-    df_Property_Growth = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                       sheet_name='fleet_growth')
+    df_Property_Growth = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                       sheet_name=params['Fleet_Gro'])
     factor_Property_Growth = df_Property_Growth.loc[0, 'growth_of_base']
 
     # 5.7
-    table_depreciation = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                       sheet_name='dep_tbl')
-    table_depreciation_age = table_depreciation['Age'].tolist()
+    table_depreciation = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                       sheet_name=params['Dep_TBL'])
+    table_depreciation_age = table_depreciation[params['Age']].tolist()
     table_depreciation_factor = \
-        table_depreciation['Depreciation_Factor'].tolist()
+        table_depreciation[params['Depre_Fac']].tolist()
 
     # 5.8
-    df_depreciation_bus_rates = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                              sheet_name='dep_tbl_bus_rate')
+    df_depreciation_bus_rates = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                              sheet_name=params['Dep_TBL_Bus_Rate'])
     df_bus_rates_age = \
-        df_depreciation_bus_rates['Age'].tolist()
+        df_depreciation_bus_rates[params['Age']].tolist()
     df_bus_rates_dep_factor = \
-        df_depreciation_bus_rates['Depreciation'].tolist()
+        df_depreciation_bus_rates[params['Depre']].tolist()
     df_bus_rates_profit_factor = \
-        df_depreciation_bus_rates['Capital_Profitability_Factor'].tolist()
+        df_depreciation_bus_rates[params['Cap_Pro_Fac']].tolist()
     df_bus_rates_profit_rate = \
-        df_depreciation_bus_rates['Capital_Profitability_Rate'].tolist()
+        df_depreciation_bus_rates[params['Cap_Pro_Rate']].tolist()
 
     # 5.9
     pd_shares_fiscalvalue_per_modelyear = \
-        pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                      sheet_name='share_fv_per_my')
+        pd.read_excel(params['TEM_Trans_Tech_list'],
+                      sheet_name=params['Share_FV'])
     pd_shares_fiscalvalue_per_modelyear.fillna(0, inplace=True)
     pd_shares_fiscalvalue_col = \
         pd_shares_fiscalvalue_per_modelyear.columns.tolist()  # don't bring
@@ -5989,16 +5872,16 @@ if __name__ == '__main__':
 
     # 5.10
     pd_shares_cif_rates_per_age = \
-        pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                      sheet_name='share_cif_per_age')
+        pd.read_excel(params['TEM_Trans_Tech_list'],
+                      sheet_name=params['Share_CIF'])
     pd_shares_cif_rates_per_age.fillna(0, inplace=True)
     pd_shares_cif_col = pd_shares_cif_rates_per_age.columns.tolist()
 
     # 5.11
-    fixed_admin_costs_buses = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                            sheet_name='add_costs_bus')
-    fixed_admin_costs_taxis = pd.read_excel('_TEM_Transport_Tech_List.xlsx',
-                                            sheet_name='add_costs_taxis')
+    fixed_admin_costs_buses = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                            sheet_name=params['Add_Cost_Bus'])
+    fixed_admin_costs_taxis = pd.read_excel(params['TEM_Trans_Tech_list'],
+                                            sheet_name=params['Add_Cost_Taxis'])
 
     content_trn_tech_list = [technology_list_cif,  # 5.1
                              technology_list_transport_dict_cif,  # 5.1
@@ -6030,23 +5913,16 @@ if __name__ == '__main__':
     print('General data input 6 - This is the distribution of vehicle imports'
           + ' and fleet ownership of private actor (households and businesses)'
           )  # DONE
-    df_enigh2tem_raw = pd.read_excel('ENIGH2TEM.xlsx', sheet_name='ENIGH2TEM')
-    Actors = ['Businesses', 'Households', 'Q5_Households', 'Q4_Households',
-              'Q3_Households', 'Q2_Households', 'Q1_Households']
-    Actors_Final = ['Businesses', 'Q5_Households', 'Q4_Households',
-                    'Q3_Households', 'Q2_Households', 'Q1_Households']
-    Actor_Equivalence = {'Empresas': 'Businesses', 'Hogares': 'Households',
-                         'Quintil_1': 'Q1_Households',
-                         'Quintil_2': 'Q2_Households',
-                         'Quintil_3': 'Q3_Households',
-                         'Quintil_4': 'Q4_Households',
-                         'Quintil_5': 'Q5_Households'}
+    df_enigh2tem_raw = pd.read_excel(params['ENI_File'], sheet_name=params['ENI'])
+    Actors = params['Actors']
+    Actors_Final = params['Actors_Final']
+    Actor_Equivalence = params['Actor_Equivalence']
 
     # let's call the household data and have it around:
-    df_enigh2tem_raw = pd.read_excel('ENIGH2TEM.xlsx')
+    df_enigh2tem_raw = pd.read_excel(params['ENI_File'])
     content_df_enigh2tem = {}
 
-    first_list = set_first_list()
+    first_list = set_first_list(params)
     for case in range(len(first_list)):
         case_element_list = first_list[case].split('_')
         case_strategy_alphabet = case_element_list[0]
@@ -6138,21 +6014,17 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------
     print('General data input 7 - Open fleet pickles')  # DONE
     Fleet_Groups = \
-        pickle.load(open('./0_From_Confection/A-O_Fleet_Groups.pickle', "rb"))
+        pickle.load(open(params['From_Conf'] + params['Fleet_Group'], "rb"))
     # Fleet_Groups['Techs_Microbuses'] += [ 'TRMBUSHYD' ]
     # this is an add on, kind of a patch
     Fleet_Groups_Distance = \
-        pickle.load(open('./0_From_Confection/A-O_Fleet_Groups_Distance.pickle',
-                         "rb"))
+        pickle.load(open(params['From_Conf'] + params['Fleet_Group_Dist'], "rb"))
     Fleet_Groups_OR = \
-        pickle.load(open('./0_From_Confection/A-O_Fleet_Groups_OR.pickle',
-                         "rb"))
+        pickle.load(open(params['From_Conf'] + params['Fleet_Group_OR'], "rb"))
     Fleet_Groups_techs_2_dem = \
-        pickle.load(open('./0_From_Confection/A-O_Fleet_Groups_T2D.pickle',
-                         "rb"))
+        pickle.load(open(params['From_Conf'] + params['Fleet_Group_T2D'], "rb"))
 
-    content_fleet_groups = [Fleet_Groups, Fleet_Groups_Distance,
-                            Fleet_Groups_OR, Fleet_Groups_techs_2_dem]
+    content_fleet_groups = params['content_fleet_groups']
 
     # -------------------------------------------------------------------------
     ''' # Action 1: Work on the different tax options. '''
@@ -6343,7 +6215,7 @@ if __name__ == '__main__':
 
     print('* We must now execute the TEM.')
 
-    first_list = set_first_list()  # creates the global variable *first_list*
+    first_list = set_first_list(params)  # creates the global variable *first_list*
     for n in range(len(first_list)):
         # Creates the global variable *first_list_d*
         first_list_d = set_first_list_d(first_list[n].split('_')[0])
