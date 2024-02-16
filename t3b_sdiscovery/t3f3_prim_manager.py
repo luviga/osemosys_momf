@@ -1125,13 +1125,13 @@ if __name__ == '__main__':
                                     and len(o_cols_list_wrtBAU) != 0):
                                 oc_iterate = [o_cols_pure_direct,
                                               o_cols_pure_wrtBAU]
-                                oc_names = ['pure_direct', 'pure_wrtBAU']
+                                oc_names = params['oc_names']
                             elif len(o_cols_list_direct) == 0:
                                 oc_iterate = [o_cols_pure_wrtBAU]
-                                oc_names = ['pure_wrtBAU']
+                                oc_names = params['oc_names_1']
                             elif len(o_cols_list_wrtBAU) == 0:
                                 oc_iterate = [o_cols_pure_direct]
-                                oc_names = ['pure_direct']
+                                oc_names = params['oc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(o_cols_list_direct) != 0
                                     and len(o_cols_list_wrtBAU) != 0):
@@ -1139,16 +1139,15 @@ if __name__ == '__main__':
                                               o_cols_disag_direct,
                                               o_cols_pure_wrtBAU,
                                               o_cols_disag_wrtBAU]
-                                oc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                oc_names = params['oc_names_3']
                             elif len(o_cols_list_direct) == 0:
                                 oc_iterate = [o_cols_pure_wrtBAU,
                                               o_cols_disag_wrtBAU]
-                                oc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                oc_names = params['oc_names_4']
                             elif len(o_cols_list_wrtBAU) == 0:
                                 oc_iterate = [o_cols_pure_direct,
                                               o_cols_disag_direct]
-                                oc_names = ['pure_direct', 'disag_direct']
+                                oc_names = params['oc_names_5']
 
                         # Add-on for drvers here:
                         #       If there are direct roots not in wrtBAU roots,
@@ -1197,13 +1196,13 @@ if __name__ == '__main__':
                                     and len(d_cols_list_wrtBAU) != 0):
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_pure_wrtBAU]
-                                dc_names = ['pure_direct', 'pure_wrtBAU']
+                                dc_names = params['dc_names']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU]
-                                dc_names = ['pure_wrtBAU']
+                                dc_names = params['dc_names_1']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct]
-                                dc_names = ['pure_direct']
+                                dc_names = params['dc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(d_cols_list_direct) != 0
                                     and len(d_cols_list_wrtBAU) != 0):
@@ -1211,16 +1210,15 @@ if __name__ == '__main__':
                                               d_cols_disag_direct,
                                               d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_3']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_4']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_disag_direct]
-                                dc_names = ['pure_direct', 'disag_direct']
+                                dc_names = params['dc_names_5']
 
                         # Possible family of drivers
                         if (d_cols_opt_pure == d_cols_opt_disag):
@@ -1228,13 +1226,13 @@ if __name__ == '__main__':
                                     and len(d_cols_list_wrtBAU) != 0):
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_pure_wrtBAU]
-                                dc_names = ['pure_direct', 'pure_wrtBAU']
+                                dc_names = params['dc_names']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU]
-                                dc_names = ['pure_wrtBAU']
+                                dc_names = params['dc_names_1']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct]
-                                dc_names = ['pure_direct']
+                                dc_names = params['dc_names_2']
                         else:  # "pure" and "disag" are different
                             if (len(d_cols_list_direct) != 0
                                     and len(d_cols_list_wrtBAU) != 0):
@@ -1242,16 +1240,15 @@ if __name__ == '__main__':
                                               d_cols_disag_direct,
                                               d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_direct', 'disag_direct',
-                                            'pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_3']
                             elif len(d_cols_list_direct) == 0:
                                 dc_iterate = [d_cols_pure_wrtBAU,
                                               d_cols_disag_wrtBAU]
-                                dc_names = ['pure_wrtBAU', 'disag_wrtBAU']
+                                dc_names = params['dc_names_4']
                             elif len(d_cols_list_wrtBAU) == 0:
                                 dc_iterate = [d_cols_pure_direct,
                                               d_cols_disag_direct]
-                                dc_names = ['pure_direct', 'disag_direct']
+                                dc_names = params['dc_names_5']
 
                         # Creating the families:
                         for oc in range(len(oc_iterate)):
