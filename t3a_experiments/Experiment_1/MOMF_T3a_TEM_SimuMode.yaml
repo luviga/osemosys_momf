@@ -18,7 +18,7 @@ Verif: '_Verification.txt'
 # File
 Scen_Default_Param: 'Scenario_Default_Parameters.xlsx'
 # Sheets
-Default_Val: 'Default_Values'
+Default_Val: 'Default_Value'
 Over_Param: 'Overall_Parameters'
 # Columns
 Param: 'Parameter'
