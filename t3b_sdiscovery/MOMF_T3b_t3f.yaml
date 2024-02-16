@@ -19,17 +19,17 @@ Prim_Crea: '/prim_files_creator.pickle'
 ################################# Variable definitions #################################
 # frml_ind_2_colinfo function
 #----------------------------------------------------------------------------------#
-col_title_suff_set: ['_' + 'LowEmissions', '_' + 'HighEmissions']
+col_title_suff_set: ['_LowEmissions', '_HighEmissions']
 
 col_title_suff_set_2: ['_H2', '_elec', '_fossil']
 
-col_title_suff_set_3: ['_' + 'biodiesel', '_' + 'ethanol']
+col_title_suff_set_3: ['_biodiesel', '_ethanol']
 
-col_title_suff_set_4: ['_' + 'public', '_' + 'nonmot']
+col_title_suff_set_4: ['_public', '_nonmot']
 
-col_title_suff_set_5: ['_' + 'rail']
+col_title_suff_set_5: ['_rail']
 
-col_title_suff_set_6: ['_' + 'bus', '_' + 'minibus', '_' + 'taxi']
+col_title_suff_set_6: ['_bus', '_minibus', '_taxi']
 
 col_sets_special_Biofuel: ['NDP then T4DSL_HEA then CO2e', 'NDP then T4GSL_PRI then CO2e']
 
@@ -56,4 +56,19 @@ dict_4_update_2: {Name: [], Cols: []}
 
 #----------------------------------------------------------------------------------#
 
+# f1_prim_box_execute function
+#----------------------------------------------------------------------------------#
+num_thr_dict: {
+  high: 75, mid: 50, low: 25, zero: 0,
+  high40: 40, high60: 60, high25: 25,
+  low40: 40, low60: 60, low75: 75
+  }
+
+type_thr_dict: {
+  high: ">", mid: ">", low: "<", zero: "<",
+  high40: ">", high60: ">", high25: ">",
+  low40: "<", low60: "<", low75: "<"
+  }
+
+#----------------------------------------------------------------------------------#
 ########################################################################################
