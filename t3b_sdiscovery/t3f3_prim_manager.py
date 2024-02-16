@@ -740,22 +740,21 @@ if __name__ == '__main__':
 
     # WARNING!!! The list below contains the period strings to make running
     # this program faster.
+    # Recording initial time of execution
+    start_1 = time.time()
+
+    # Read yaml file with parameterization
+    with open('MOMF_T3b_t3f.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     '''
     period_list = [ '25-29',
                     '30-36',
                     '37-43',
                     '44-50']
     '''
-    period_list = [ '22-30',
-                    '22-35',
-                    '31-50',
-                    '31-40',
-                    '41-50',
-                    '25-30',
-                    '31-35',
-                    '36-40',
-                    '41-45',
-                    '46-50']
+    period_list = params['period_list']
 
     '''
     General aim: to be able to perform any prim analysis without inputs other
@@ -767,14 +766,6 @@ if __name__ == '__main__':
     Objective: control access to the controlling dictionaries and the data
     -----------------------------------------------------------------------'''
 
-    # Recording initial time of execution
-    start_1 = time.time()
-
-    # Read yaml file with parameterization
-    with open('MOMF_T3b_t3f.yaml', 'r') as file:
-        # Load content file
-        params = yaml.safe_load(file)
-
     # datetime object containing current date and time
     now = datetime.now()
     # dd/mm/YY H:M:S
@@ -782,7 +773,7 @@ if __name__ == '__main__':
 
     # For a complete record of the prim manager execution, write a report with
     # all the prints in this system:
-    pmrep_name = 'sd_manager.txt'
+    pmrep_name = params['SD_Man']
     pmrep = open(pmrep_name, 'w+')
     pmrep.write(dt_string + '\n')
 
@@ -1287,10 +1278,8 @@ if __name__ == '__main__':
                         print(add_str)
                         pmrep.write(add_str + '\n')
 
-                        keys_IDs = ['Fut_ID', 'Run_Strat_ID', 'Scenario',
-                                    'Strat_ID']
-                        dict_large_table = {'Fut_ID': [], 'Run_Strat_ID': [],
-                                            'Scenario': [], 'Strat_ID': []}
+                        keys_IDs = params['keys_IDs']
+                        dict_large_table = params['dict_large_table']
                         for fut in future_list:
                             # Extracting all the available IDs:
                             fut_ID_list = o_data[fut]['Fut_ID']
@@ -1573,17 +1562,7 @@ if __name__ == '__main__':
 
             # Don't forget to create a .csv output with the systematization
             # of the Scenario Discovery results:
-            rep_csv = {'block': [], 'o_id': [], 'outcome': [],
-                       'level': [], 'o1_fam': [], 'o1_col': [],
-                       'o2_fam': [], 'o2_col': [],
-                       'family': [], 'column': [],
-                       'period': [], 'base_thr': [],
-                       'thr_type': [], 'thr_range': [], 'thr_value': [],
-                       'thr_value_norm': [], 'prim_option': [],
-                       'coverage': [], 'density': [], 'avg_cov_dev': [],
-                       'driver_col': [], 'min': [], 'max': [],
-                       'min_norm': [], 'max_norm': [],
-                       'query_type': []}
+            rep_csv = params['rep_csv']
 
             for b in list_blocks:  # 4 dubugging
                 # for b in [33]:
