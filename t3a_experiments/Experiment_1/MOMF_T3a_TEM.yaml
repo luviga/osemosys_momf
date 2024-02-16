@@ -6,14 +6,8 @@
 Futures: '/Experimental_Platform/Futures/'
 Executables: '/Executables'
 
-# Input File Classifier Modes transport
-# File (First letter of the word y uppercase)
-
-# Sheets (First letter of the word y uppercase)
-
-# Columns (First letter of the word y lowercase)
 # Pickle DGP Dictionary
-# File
+# File (First letter of the word y uppercase)
 GDP_dict: './GDP_dict.pickle'
 # TEMP Comp asssit
 # File
