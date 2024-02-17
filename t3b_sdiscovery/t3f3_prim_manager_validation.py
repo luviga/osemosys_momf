@@ -740,6 +740,15 @@ if __name__ == '__main__':
 
     # WARNING!!! The list below contains the period strings to make running
     # this program faster.
+
+    # Recording initial time of execution
+    start_1 = time.time()
+
+    # Read yaml file with parameterization
+    with open('MOMF_T3b_t3f.yaml', 'r') as file:
+        # Load content file
+        params = yaml.safe_load(file)
+
     '''
     period_list = [ '25-29',
                     '30-36',
@@ -756,14 +765,6 @@ if __name__ == '__main__':
     Step 1: Open the analysis pickles according to each analysis
     Objective: control access to the controlling dictionaries and the data
     -----------------------------------------------------------------------'''
-
-    # Recording initial time of execution
-    start_1 = time.time()
-
-    # Read yaml file with parameterization
-    with open('MOMF_T3b_t3f.yaml', 'r') as file:
-        # Load content file
-        params = yaml.safe_load(file)
 
     # datetime object containing current date and time
     now = datetime.now()
