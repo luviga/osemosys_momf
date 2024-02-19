@@ -3,6 +3,7 @@
 # Model external dependencies: Directories, Files, sheets and columns
 ########################################################################################
 # Directories
+Analysis: './Analysis_1'
 
 # Prim Strucutre
 # File (First letter of the word y uppercase)
@@ -16,7 +17,24 @@ Prim_Crea: '/prim_files_creator.pickle'
 # SD_Manager
 # File
 SD_Man: 'sd_manager.txt'
-
+# Prim Structures
+# File
+Prim_Struc: '/prim_structure.xlsx'
+# t3f4 Prdominant Ranges
+# File
+Pre_Domi: 't3f4_predominant_ranges'
+# t3f4 Prdominant Ranges a1 e2
+# File
+Pre_Domin_Ranges_a1_e2: 't3f4_predominant_ranges_a1_e2.xlsx'
+# Subtbl ana 7 exp 2
+# File
+Sub_ana_7_exp_2: 'subtbl_ana_7_exp_2.pickle'
+# Subtbl ana 1 exp 1
+# File
+Sub_ana_1_exp_1: 'subtbl_ana_1_exp_1.pickle'
+# Validation analysis output
+# File
+Val_Ana_out: 't3f6_validation_analysis_output.xlsx'
 ########################################################################################
 
 ################################# Variable definitions #################################
@@ -75,6 +93,8 @@ type_thr_dict: {
 
 #----------------------------------------------------------------------------------#
 
+# Main from f1 to f3
+#----------------------------------------------------------------------------------#
 period_list: [ 
   '22-30',
   '22-35',
@@ -129,5 +149,87 @@ dc_names_3: ['pure_direct', 'disag_direct', 'pure_wrtBAU', 'disag_wrtBAU']
 dc_names_4: ['pure_wrtBAU', 'disag_wrtBAU']
 
 dc_names_5: ['pure_direct', 'disag_direct']
+#----------------------------------------------------------------------------------#
 
+# Step 1) call the results data
+#----------------------------------------------------------------------------------#
+sd_cols: [
+  'block', 'o_id', 'outcome', 'level', 'o1_fam', 'o1_col',
+  'o2_fam', 'o2_col', 'family', 'column', 'period', 'base_thr',
+  'thr_type', 'thr_range', 'thr_value', 'thr_value_norm', 'prim_option',
+  'coverage', 'density', 'avg_cov_dev', 'driver_col', 'min', 'max',
+  'min_norm', 'max_norm', 'query_type'
+  ]
+
+desirable_outcomes: {
+  Benefit: 'high',
+  Emissions National: 'low',
+  CAPEX: 'low',
+  Bus Price: 'low',
+  Electricity price: 'low'
+  }
+risk_outcomes: {
+  Benefit: 'low',
+  Emissions National: 'high',
+  CAPEX: 'high',
+  Bus Price: 'high',
+  Electricity price: 'high'
+  }
+
+general_u_keys: [
+  'drivers', 'drivers_max_norm', 'drivers_min_norm',
+  'case', 'condition', 'tiebreaker', 'driver_type',
+  'store_uncertainty_driver_data',
+  'store_intermediary_driver_data'
+  ]
+
+outcome_type_list: ['desirable', 'risk']
+
+df_ranges_cols: [
+  'Outcome_Type', 'Metric', 'Period', 'Driver',
+  'Driver_Type', 'Max_Norm', 'Min_Norm', 'Case',
+  'Condition', 'Tiebreaker'
+  ]
+
+except_cols: ['Fut_ID', 'Run_Strat_ID', 'Scenario', 'Strat_ID']
+
+desirable_outcomes_num: {
+  Benefit: 'high_75',
+  Emissions National: 'low_25',
+  CAPEX: 'low_25',
+  Bus Price: 'low_25',
+  Electricity price: 'low_25'
+  }
+
+risk_outcomes_num: {
+  Benefit: 'low_25',
+  Emissions National: 'high_75',
+  CAPEX: 'high_75',
+  Bus Price: 'high_75',
+  Electricity price: 'high_75'
+  }
+
+validation_columns: [
+  'Outcome_Type',
+  'Metric',
+  'Period',
+  'Driver',
+  'Driver_Type',
+  'Group',
+  'Sensitivity',
+  'Metric space (# futures)',
+  'Strategy space (# futures)',
+  'Coverage',
+  'Density',
+  'Metric space (ratio)',
+  'Strategy space (ratio)'
+  ]
+
+i_metric_add_alls: ['All-1', 'All-2', 'All-3']
+
+sensitivities_list: [
+  '25%', '40%', '50%', '60%', '65%', '70%', '75%',
+  '80%', '85%', '90%', '95%'
+  ]
+#----------------------------------------------------------------------------------#
 ########################################################################################
