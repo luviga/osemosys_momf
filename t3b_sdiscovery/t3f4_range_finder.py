@@ -12,8 +12,14 @@ Objective: work the "sd" file to find the adequate ranges of drivers
 import pandas as pd
 import sys
 from copy import deepcopy
+import yaml
 
 # The main code is below:
+
+# Read yaml file with parameterization
+with open('MOMF_T3b_t3f.yaml', 'r') as file:
+    # Load content file
+    params = yaml.safe_load(file)
 
 #######################################################################
 # Step 1) call the results data
@@ -26,11 +32,7 @@ sd_file = sd_filename + '.csv'
 sd_df = pd.read_csv(sd_file)  
 
 # the columns of an sd are:
-sd_cols = ['block', 'o_id', 'outcome', 'level', 'o1_fam', 'o1_col',
-'o2_fam', 'o2_col', 'family', 'column', 'period', 'base_thr',
-'thr_type', 'thr_range', 'thr_value', 'thr_value_norm', 'prim_option',
-'coverage', 'density', 'avg_cov_dev', 'driver_col', 'min', 'max',
-'min_norm', 'max_norm', 'query_type']
+sd_cols = params['sd_cols']
 
 # the unique elements per column are:
 unique_content_dict = {}
@@ -58,7 +60,7 @@ unique_periods = unique_content_dict['period']
 
 # also call the prim_structure to get the uncertainties, i.e., what matters:
 prim_structure = \
-    pd.read_excel(open('./Analysis_' + str(ana_id) + '/prim_structure.xlsx', 'rb'),
+    pd.read_excel(open('./Analysis_' + str(ana_id) + params['Prim_Struc'], 'rb'),
                   sheet_name='Sequences')
 
 drivers_uncertainty_df = \
@@ -83,25 +85,12 @@ prim_structure['Driver']
 # that tells the PRIM story
 
 # Define the separation between desirable and risk outcomes:
-desirable_outcomes = {\
-    'Benefit':'high',
-    'Emissions National':'low',
-    'CAPEX':'low',
-    'Bus Price':'low',
-    'Electricity price':'low'}
-risk_outcomes = {\
-    'Benefit':'low',
-    'Emissions National':'high',
-    'CAPEX':'high',
-    'Bus Price':'high',
-    'Electricity price':'high'}
+desirable_outcomes = params['desirable_outcomes']
+risk_outcomes = params['risk_outcomes']
 
 # create dictionaries apt for periods (2 for this analysis):
 desi_u_data = {}
-general_u_keys = ['drivers', 'drivers_max_norm', 'drivers_min_norm',
-                  'case', 'condition', 'tiebreaker', 'driver_type',
-                  'store_uncertainty_driver_data',
-                  'store_intermediary_driver_data']
+general_u_keys = params['general_u_keys']
 
 # create a nested dictionary to store all results:
 list_u_data_metrics = sd_outcome_unique + ['All']  # 'All' is last
@@ -119,7 +108,7 @@ for metric in list_u_data_metrics:  # iterate across metrics
 risk_u_data = deepcopy(desi_u_data)
 
 # iterating the across periods and outcomes to search outcomes:
-outcome_type_list = ['desirable', 'risk']
+outcome_type_list = params['outcome_type_list']
 for outcome_type in outcome_type_list:
     for p in range(len(unique_periods)):  # "unique_periods" is from above
         per = unique_periods[p]
@@ -696,7 +685,7 @@ df_list = [end_result_df]
 # storing the data:
 add_ae_id = '_a' + str(ana_id) + '_e' + str(exp_id)
 filename_end_result = \
-    't3f4_predominant_ranges' + add_ae_id + '.xlsx'
+    params['Pre_Domi'] + add_ae_id + '.xlsx'
 writer_fn_end_result = pd.ExcelWriter(filename_end_result,
                                       engine='xlsxwriter')
 for n in range(len(sheet_names)):
