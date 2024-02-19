@@ -13,6 +13,7 @@ import math
 from copy import deepcopy
 from functools import reduce
 import pickle
+import yaml
 
 
 def subselect_df(this_df, m_col, od_perc, od_dir):
@@ -74,18 +75,22 @@ references:
 Objective:
 To know how effective found the ranges are.
 '''
+
+# Read yaml file with parameterization
+with open('MOMF_T3b_t3f.yaml', 'r') as file:
+    # Load content file
+    params = yaml.safe_load(file)
+
 #######################################################################
 # Step 1) Open the inputs avaialbe:
 # first, open the results of predominant ranges:
-df_ranges = pd.read_excel(open('t3f4_predominant_ranges_a1_e2.xlsx', 'rb'), sheet_name='ranges')
-df_ranges_cols = ['Outcome_Type', 'Metric', 'Period', 'Driver',
-                  'Driver_Type', 'Max_Norm', 'Min_Norm', 'Case',
-                  'Condition', 'Tiebreaker']
+df_ranges = pd.read_excel(open(params['Pre_Domin_Ranges_a1_e2'], 'rb'), sheet_name='ranges')
+df_ranges_cols = params['df_ranges_cols']
 df_ranges_drivers_all_unique = list(set(df_ranges['Driver'].tolist()))
 
 # second, open the data tables as per Analysis 7:
-data_pickle = pickle.load( open( 'subtbl_ana_7_exp_2.pickle', "rb" ))
-except_cols = ['Fut_ID', 'Run_Strat_ID', 'Scenario', 'Strat_ID']
+data_pickle = pickle.load( open( params['Sub_ana_7_exp_2'], "rb" ))
+except_cols = params['except_cols']
 
 data_df_22_30_raw = data_pickle[1][1]['22-30']['o_pure_direct_d_disag_wrtBAU']
 data_df_22_30 = data_df_22_30_raw.loc[(data_df_22_30_raw['Strat_ID'] == 'none')]
@@ -116,10 +121,10 @@ dict_norm_df = {'22-30': data_df_22_30_norm,
                 '31-50': data_df_31_50_norm}
 
 # third, keep the boxes around just in case; although, it is likely not needed
-data_boxes_pickle = pickle.load( open( 'subtbl_ana_1_exp_1.pickle', "rb" ))
+data_boxes_pickle = pickle.load( open( params['Sub_ana_1_exp_1'], "rb" ))
 # for example, find the names of the variables that are "metrics of interest"
 df_ana1_raw = \
-    pd.read_excel(open('./Analysis_1/prim_structure.xlsx', 'rb'), sheet_name='Sequences')
+    pd.read_excel(open(params['Analysis'] + params['Prim_Struc'], 'rb'), sheet_name='Sequences')
 df_ana1_mask = \
     ((~df_ana1_raw['Outcome_Source'].isna()) &
      (df_ana1_raw['Outcome_Type'] == 'Metric of interest'))
@@ -190,18 +195,8 @@ df_classes = \
                   sheet_name='classes')
 
 # remember the selection of metric thresholds:
-desirable_outcomes = {\
-    'Benefit':'high_75',
-    'Emissions National':'low_25',
-    'CAPEX':'low_25',
-    'Bus Price':'low_25',
-    'Electricity price':'low_25'}
-risk_outcomes = {\
-    'Benefit':'low_25',
-    'Emissions National':'high_75',
-    'CAPEX':'high_75',
-    'Bus Price':'high_75',
-    'Electricity price':'high_75'}
+desirable_outcomes = params['desirable_outcomes_num']
+risk_outcomes = params['risk_outcomes_num']
 outcome_directions = {'Desirable':desirable_outcomes,
                       'Risk':risk_outcomes}
 
@@ -212,19 +207,7 @@ if test_index_list == test_future_list:
     print('Futures and indices are equivalent')
 
 # let's define a dictionary accoriding to the desired columns:
-validation_columns = ['Outcome_Type',
-                      'Metric',
-                      'Period',
-                      'Driver',
-                      'Driver_Type',
-                      'Group',
-                      'Sensitivity',
-                      'Metric space (# futures)',
-                      'Strategy space (# futures)',
-                      'Coverage',
-                      'Density',
-                      'Metric space (ratio)',
-                      'Strategy space (ratio)']
+validation_columns = params['validation_columns']
 validation_dict = {}
 
 # let's also open other inputs support strategy:
@@ -246,7 +229,7 @@ for d in range(len(df_classes.index.tolist())):
 # now let's define the priorities and additional metrics:
 # consider the priority:
 # National financial impacts > Electricity prices > Bus prices > Emissions > CAPEX
-i_metric_add_alls = ['All-1', 'All-2', 'All-3']
+i_metric_add_alls = params['i_metric_add_alls']
 i_metric += i_metric_add_alls
 
 # also, consider the "contrarian" outcome:
@@ -590,9 +573,7 @@ for ot in i_outcome_type:
             futures_85per_drivers = []
             futures_90per_drivers = []
             futures_95per_drivers = []
-            sensitivities_list = \
-                ['25%', '40%', '50%', '60%', '65%', '70%', '75%',
-                 '80%', '85%', '90%', '95%']
+            sensitivities_list = params['sensitivities_list']
             sensitivities_dict = {}
 
             for f in test_index_list:
@@ -843,7 +824,7 @@ df_list = [end_result_df]
 
 # storing the data:
 filename_end_result = \
-    't3f6_validation_analysis_output.xlsx'
+    params['Val_Ana_out']
 writer_fn_end_result = pd.ExcelWriter(filename_end_result,
                                       engine='xlsxwriter')
 for n in range(len(sheet_names)):
