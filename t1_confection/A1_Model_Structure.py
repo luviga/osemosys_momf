@@ -1191,7 +1191,7 @@ tech_param_list_dfs_names = params['tech_param_list_dfs_names']
 #   NOTE: https://stackoverflow.com/questions/22089317/export-from-pandas-to-excel-without-row-names-index
 #
 # Print the Base Year "Activity Ratio", that puts the units.
-writer_df_baseyear = pd.ExcelWriter(params['Print_Base_Year'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_baseyear = pd.ExcelWriter( params['A1_outputs'] + params['Print_Base_Year'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 df_base_year_list = [   df_techs_primary_base_year, df_techs_secondary_base_year, df_techs_demand_base_year,
                         df_techs_DISTTRN_base_year, df_techs_TRN_base_year, df_techs_TRNGROUP_base_year ]
 df_base_year_names = params['df_base_year_names']
@@ -1202,7 +1202,7 @@ for n in range( len( df_base_year_names ) ):
 writer_df_baseyear._save()
 #
 # Print the Projection "Activity Ratio", without the units.
-writer_df_projection = pd.ExcelWriter(params['Print_Proj'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_projection = pd.ExcelWriter( params['A1_outputs'] + params['Print_Proj'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 df_projection_list = [   df_techs_primary_projection, df_techs_secondary_projection, df_techs_demand_projection,
                         df_techs_DISTTRN_projection, df_techs_TRN_projection, df_techs_TRNGROUP_projection ]
 df_projection_names = params['df_projection_names']
@@ -1218,7 +1218,7 @@ writer_df_projection._save()
 -------------------------------------------------------------------------------------------------------------
 With that done, we now need to print the final demands. This is crucial for parameterization.
 '''
-writer_df_demand = pd.ExcelWriter(params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_demand = pd.ExcelWriter(params['A1_outputs'] + params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 this_df_sheet_name = params['Dem_Proj']
 df_demands_all.to_excel(writer_df_demand, sheet_name = this_df_sheet_name, index=False)
 writer_df_demand._save()
@@ -1227,7 +1227,7 @@ writer_df_demand._save()
 -------------------------------------------------------------------------------------------------------------
 With that done, we must print the distribution of trips per mode for the transport sector, as well as capacities.
 '''
-writer_df_parameters = pd.ExcelWriter(params['Print_Paramet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_parameters = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 for n in range( len( tech_param_list_dfs_names ) ):
     this_df = tech_param_list_dfs[n]
     this_df_sheet_name = tech_param_list_dfs_names[n]
@@ -1277,10 +1277,10 @@ for n in range( len( codes_list_techs_TRNGROUP ) ):
         #
     #
 #
-with open( params['Pickle_Fleet_Groups'], 'wb') as handle0:
+with open( params['A1_outputs'] + params['Pickle_Fleet_Groups'], 'wb') as handle0:
     pickle.dump(codes_list_techs_TRNGROUP_dict, handle0, protocol=pickle.HIGHEST_PROTOCOL)
 #
-writer_df_fleet = pd.ExcelWriter(params['Print_Fleet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
+writer_df_fleet = pd.ExcelWriter(params['A1_outputs'] + params['Print_Fleet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 this_df_sheet_name = params['Cali_Fleet']
 df_techs_fleet.to_excel(writer_df_fleet, sheet_name = this_df_sheet_name, index=False)
 writer_df_fleet._save()
@@ -1292,7 +1292,7 @@ time_elapsed_1 = -start1 + end_1
 print( str( time_elapsed_1 ) + ' seconds /', str( time_elapsed_1/60 ) + ' minutes' )
 print('*: For all effects, we have finished the work of this script.')
 
-log_file = open(params['log_file_A1'],"w")
+log_file = open(params['A1_outputs'] + params['log_file_A1'],"w")
 today = date.today()
 hour = time.strftime("%H")
 minute = time.strftime("%M")
