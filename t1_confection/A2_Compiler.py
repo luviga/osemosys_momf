@@ -18,17 +18,17 @@ with open('MOMF_T1_A.yaml', 'r') as file:
     # Load content file
     params = yaml.safe_load(file)
 
-horizon_configuration = pd.read_excel( params['horizon_configuration'] )
-baseyear = horizon_configuration[params['initial_year']].tolist()[0]
-endyear = horizon_configuration[params['final_year']].tolist()[0]
+horizon_configuration = pd.read_excel( params['A1_inputs'] + params['Horizon_configuration'] )
+baseyear = horizon_configuration['Initial_Year'].tolist()[0]
+endyear = horizon_configuration['Final_Year'].tolist()[0]
 global time_range_vector
 time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 #
 Wide_Param_Header = params['sets']
 #
-other_setup_parameters = pd.read_excel( params['Xtra_Scen'] )
-other_setup_params_name = other_setup_parameters[params['name']].tolist()
-other_setup_params_param = other_setup_parameters[params['param']].tolist() 
+other_setup_parameters = pd.read_excel( params['A2_extra_inputs'] + params['Xtra_Scen'] )
+other_setup_params_name = other_setup_parameters['Name'].tolist()
+other_setup_params_param = other_setup_parameters['Param'].tolist() 
 other_setup_params = {}
 for n in range( len( other_setup_params_name ) ):
     other_setup_params.update( { other_setup_params_name[n]:other_setup_params_param[n] } )
@@ -46,8 +46,8 @@ for y in range( len( time_range_vector ) ):
 #------------------------------------------------------------------------------
 # BELOW WORKS WELL
 #
-AR_Model_Base_Year = pd.ExcelFile(params['Print_Base_Year'])
-AR_Projections = pd.ExcelFile(params['Print_Proj'])
+AR_Model_Base_Year = pd.ExcelFile(params['A1_outputs'] + params['Print_Base_Year'])
+AR_Projections = pd.ExcelFile(params['A1_outputs'] + params['Print_Proj'])
 groups_list = AR_Model_Base_Year.sheet_names # see all sheet names
 # NOTE THIS IS THE SAME AS :: AR_Projections.sheet_names # see all sheet names
 
@@ -230,17 +230,17 @@ for g in range( len( groups_list ) ):
 #
 #------------------------------------------------------------------------------
 # DEMAND
-Demand = pd.ExcelFile(params['Print_Demand'])
+Demand = pd.ExcelFile(params['A1_outputs'] + params['Print_Demand'])
 Demand_df = Demand.parse( Demand.sheet_names[0] )
 #
 df_SpecAnnualDemand = pd.DataFrame( columns = Wide_Param_Header )
 df_SpecDemandProfile = pd.DataFrame( columns = Wide_Param_Header )
 #
-Projections = pd.ExcelFile([params['Xtra_Proj']])
+Projections = pd.ExcelFile([params['A2_extra_inputs'] + params['Xtra_Proj']])
 Projections_sheet = Projections.parse( Projections.sheet_names[0] ) # see all sheet names
 Projections_control = Projections.parse( Projections.sheet_names[1] )
-Projection_Driver_Vars = Projections_control[ params['variable'] ].tolist()
-Projection_Mode_per_Driver = Projections_control[ params['proj_mode'] ].tolist()
+Projection_Driver_Vars = Projections_control[ 'Variable' ].tolist()
+Projection_Mode_per_Driver = Projections_control[ 'Projection Mode' ].tolist()
 for n in range( len( Projection_Driver_Vars ) ):
     this_col_header = Projection_Driver_Vars[ n ]
     if Projection_Mode_per_Driver[n] == 'Interpolate to final value':
@@ -252,9 +252,9 @@ for n in range( len( Projection_Driver_Vars ) ):
 #
 demand_headers = params['demand_headers']
 #
-list_demand_or_share = Demand_df[ params['dem_slash_share'] ].tolist()
+list_demand_or_share = Demand_df[ 'Demand/Share' ].tolist()
 #
-list_fuel_or_tech = Demand_df[ params['fuel_slash_tech'] ].tolist()
+list_fuel_or_tech = Demand_df[ 'Fuel/Tech' ].tolist()
 Fuels_dems = [ i for i in range( len( list_fuel_or_tech ) ) if 'E6' in list_fuel_or_tech[i] ] 
 Fuels_techs = [ i for i in range( len( list_fuel_or_tech ) ) if 'Techs' in list_fuel_or_tech[i] ]
 Fuels_techs_2_dems = {}
@@ -266,8 +266,8 @@ for i in range( len( list_fuel_or_tech ) ):
                 break
         Fuels_techs_2_dems.update( { list_fuel_or_tech[i]:list_fuel_or_tech[Fuel_dem_index] } )
 #
-list_projection_mode = Demand_df[ params['proj_mode'] ].tolist()
-list_projection_param = Demand_df[ params['proj_param'] ].tolist()
+list_projection_mode = Demand_df[ 'Projection Mode' ].tolist()
+list_projection_param = Demand_df[ 'Projection.Parameter' ].tolist()
 #
 for m in range( len( list_demand_or_share ) ):
     # This is the case for *Passenger* transport:
@@ -322,16 +322,16 @@ for m in range( len( list_demand_or_share ) ):
 # HERE WE HAVE A FUNCTIONING DEMAND *DF* // still have to add the wide format
 #------------------------------------------------------------------------------
 # THIS SECTION ONLY PARAMETERIZES TECHNOLOGIES:
-Battery_Replacement = pd.ExcelFile('./A2_Extra_Inputs/A-Xtra_Battery_Replacement.xlsx')
+Battery_Replacement = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Battery'])
 Battery_Replacement_df = Battery_Replacement.parse( Battery_Replacement.sheet_names[0] ) # see all sheet names
 #
-Fleet = pd.ExcelFile(params['Print_Fleet'])
+Fleet = pd.ExcelFile(params['A1_outputs'] + params['Print_Fleet'])
 Fleet_df = Fleet.parse( Fleet.sheet_names[0] )
-Fleet_Groups = pickle.load( open( params['Pickle_Fleet_Groups'], "rb" ) )
+Fleet_Groups = pickle.load( open( params['A1_outputs'] + params['Pickle_Fleet_Groups'], "rb" ) )
 Fleet_Groups_Distance = {}
 Fleet_Groups_OR = {} # *OR* is occupancy rate
 #
-Parametrization = pd.ExcelFile(params['Print_Paramet'])
+Parametrization = pd.ExcelFile(params['A1_outputs'] + params['Print_Paramet'])
 param_sheets = Parametrization.sheet_names # see all sheet names
 #
 params_dict = {}
@@ -343,7 +343,7 @@ params_columns_dict = {}
 overall_param_list = []
 for s in range( len( param_sheets ) ):
     this_df = Parametrization.parse( param_sheets[s] )
-    overall_param_list_raw = this_df[ params['parameter'] ].tolist()
+    overall_param_list_raw = this_df[ 'Parameter' ].tolist()
     for p in range( len( list( set( overall_param_list_raw ) ) ) ):
         if list( set( overall_param_list_raw ) )[p] not in overall_param_list:
             overall_param_list.append( list( set( overall_param_list_raw ) )[p] )
@@ -364,7 +364,7 @@ Description: this section changes the units from *Demand_df* in % to Gpkm for th
 Alternatives: change the value of oar (occupancy rate) in time, here it is left constant
 '''
 Demand_df_new = deepcopy( Demand_df )
-Demand_df_techs = Demand_df_new[ params['fuel_slash_tech'] ].tolist()
+Demand_df_techs = Demand_df_new[ 'Fuel/Tech' ].tolist()
 groups_list = list( Fleet_Groups.keys() )
 #
 for g in range( len( groups_list ) ):
@@ -545,7 +545,7 @@ for s in range( len( param_sheets ) ):
                     if this_tech in Fleet_Groups [ groups_list[g] ]:
                         this_group = groups_list[g]
                 #
-                tech_list_from_demand_df = Demand_df[params['fuel_slash_tech']].tolist()
+                tech_list_from_demand_df = Demand_df['Fuel/Tech'].tolist()
                 index_call_demand_df = tech_list_from_demand_df.index( this_group )
                 ref_km = Demand_df.loc[ index_call_demand_df, 'Ref.km.BY' ]
                 
@@ -690,17 +690,17 @@ for s in range( len( param_sheets ) ):
     #
 #
 #------------------------------------------------------------------------------
-Emissions = pd.ExcelFile(params['Xtra_Emi'])
+Emissions = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Emi'])
 # Emissions.sheet_names # see all sheet names // this only need thes wide format
 Emissions_ghg_df = Emissions.parse( params['GHGs'] )
 Emissions_ext_df = Emissions.parse( params['Externalities'] )
 #
-emissions_list = list( set( Emissions_ghg_df[params['emi']].tolist() + Emissions_ext_df[params['external_cost']].tolist() ) )
+emissions_list = list( set( Emissions_ghg_df['Emissions'].tolist() + Emissions_ext_df['External Cost' ].tolist() ) )
 #
 df_Emissions = pd.DataFrame( columns = Wide_Param_Header )
-these_emissions = Emissions_ghg_df[params['emi']].tolist()
-these_e_techs = Emissions_ghg_df[params['tech']].tolist()
-these_e_values = Emissions_ghg_df[params['emi_acti_ratio']].tolist()
+these_emissions = Emissions_ghg_df['Emissions'].tolist()
+these_e_techs = Emissions_ghg_df['Tech'].tolist()
+these_e_values = Emissions_ghg_df['EmissionActivityRatio'].tolist()
 for e in range( len( these_emissions ) ):
     this_emission = these_emissions[e]
     this_tech = these_e_techs[e]
@@ -714,10 +714,10 @@ for e in range( len( these_emissions ) ):
         df_Emissions = df_Emissions.append( this_dict_4_wide, ignore_index=True )
 #
 df_EmissionPenalty = pd.DataFrame( columns = Wide_Param_Header )
-these_emissions = Emissions_ext_df[params['external_cost']].tolist()
-these_e_techs = Emissions_ext_df[params['tech']].tolist()
-these_e_values = Emissions_ext_df[params['emi_acti_ratio']].tolist()
-these_e_penalty = Emissions_ext_df[params['emi_penal']].tolist()
+these_emissions = Emissions_ext_df['External Cost'].tolist()
+these_e_techs = Emissions_ext_df['Tech'].tolist()
+these_e_values = Emissions_ext_df['EmissionActivityRatio'].tolist()
+these_e_penalty = Emissions_ext_df['EmissionPenalty'].tolist()
 this_emission_unique = []
 for e in range( len( these_emissions ) ):
     this_emission = these_emissions[e]
@@ -786,14 +786,14 @@ print('*: For all effects, we have finished the processing tasks of this script.
 #***********************************************************************************
 #---------------------------------
 # Print updated demand DF (user)
-writer_Demand_df_new = pd.ExcelWriter(params['Print_Dem_Completed'], engine='xlsxwriter')
+writer_Demand_df_new = pd.ExcelWriter(params['A1_outputs'] + params['Print_Dem_Completed'], engine='xlsxwriter')
 Demand_df_new[2018] = Demand_df_new[2018].astype(float)
 Demand_df_new = Demand_df_new.round( 4 )
-Demand_df_new.to_excel( writer_Demand_df_new, sheet_name = 'A-O_Demand', index=False)
+Demand_df_new.to_excel( writer_Demand_df_new, sheet_name = params['A_O_Dem'], index=False)
 writer_Demand_df_new.save()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in Osemosys terms
-writer_Param_df = pd.ExcelWriter(params['Print_Paramet_Completed'], engine='xlsxwriter')
+writer_Param_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Completed'], engine='xlsxwriter')
 param_sheets_print = list( params_dict_new.keys() )
 for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new[ param_sheets_print[s] ]
@@ -802,7 +802,7 @@ for s in range( len( param_sheets_print ) ):
 writer_Param_df.save()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in "natural" terms, i.e. the value of each one of the vehicles per unit
-writer_Param_Natural_df = pd.ExcelWriter(params['Print_Paramet_Natural_Completed'], engine='xlsxwriter')
+writer_Param_Natural_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Natural_Completed'], engine='xlsxwriter')
 param_sheets_print = list( params_dict_new_natural.keys() )
 for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new_natural[ param_sheets_print[s] ]
@@ -811,7 +811,7 @@ for s in range( len( param_sheets_print ) ):
 writer_Param_Natural_df.save()
 #---------------------------------
 # Print updated 'Activity Ratio' projections
-writer_AR_Proj_df = pd.ExcelWriter(params['Print_Proj_Completed'], engine='xlsxwriter')
+writer_AR_Proj_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Proj_Completed'], engine='xlsxwriter')
 param_sheets_print = list( AR_Base_proj_df_new.keys() )
 for s in range( len( param_sheets_print ) ):
     this_df_print = AR_Base_proj_df_new[ param_sheets_print[s] ]
@@ -859,15 +859,15 @@ df_structure['Emission'] = df_structure_emission
 df_structure['MOO'] = df_structure_moo
 df_structure['Region'] = df_structure_region
 writer_Structure_df = pd.ExcelWriter(params['Print_A2_Struct_List'], engine='xlsxwriter')
-df_structure.to_excel( writer_Structure_df, sheet_name = 'Lists', index=False)
+df_structure.to_excel( writer_Structure_df, sheet_name = params['lists'], index=False)
 writer_Structure_df.save()
 #
 #***********************************************************************************
 # Print important pickles below:
-with open( params['Pickle_Fleet_Groups_Dist'], 'wb') as handle1:
+with open( params['A1_outputs'] + params['Pickle_Fleet_Groups_Dist'], 'wb') as handle1:
     pickle.dump(Fleet_Groups_Distance, handle1, protocol=pickle.HIGHEST_PROTOCOL)
-with open( params['Pickle_Fleet_Groups_OR'], 'wb') as handle2:
+with open( params['A1_outputs'] + params['Pickle_Fleet_Groups_OR'], 'wb') as handle2:
     pickle.dump(Fleet_Groups_OR, handle2, protocol=pickle.HIGHEST_PROTOCOL)
-with open( params['Pickle_Fleet_Groups_T2D'], 'wb') as handle3:
+with open( params['A1_outputs'] + params['Pickle_Fleet_Groups_T2D'], 'wb') as handle3:
     pickle.dump(Fuels_techs_2_dems, handle3, protocol=pickle.HIGHEST_PROTOCOL)
 #
