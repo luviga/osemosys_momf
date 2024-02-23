@@ -60,16 +60,61 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
     str1 = "start /B start cmd.exe @cmd /k cd " + file_adress
+    str_start = "start cmd.exe /k cd " + file_adress
     #
-    data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
-    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
+    data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )   
+    # # OLD GLPK
+    # output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
+    # str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file)
+    # os.system( str1 and str2 )
+    # #
+    # data_processor(n1,packaged_useful_elements, params)
     #
-    str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file)
-    os.system( str1 and str2 )
+    
+    # Solve model
+    solver = params['solver']
+    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
+    if solver == 'glpk':
+        # GLPK
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
+        os.system( str_start and str_solve )        
+    else:      
+        # LP
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wlp ' + output_file + '.lp --check'
+        os.system( str_start and str_solve )
+        if solver == 'cbc':
+            # CBC
+            str_solve = 'cbc ' + output_file + '.lp solve -solu ' + output_file + '.sol'
+            os.system( str_start and str_solve )
+        elif solver == 'cplex':
+            # CPLEX
+            str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
+            os.system( str_start and str_solve )
+    
+    # Conversion of outputs from .sol to csvs
+    if solver == 'glpk':
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ./Executables/' + this_case[0].replace('.txt','') + '/Outputs datafile ' + str( data_file ) + ' ./config/conversion_format.yaml --glpk_model ' + output_file + '.glp'
+    else: # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+          # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ./Executables/' + this_case[0].replace('.txt','') + '/Outputs csv ./config/templates ./config/conversion_format.yaml'
+    os.system( str_start and str_outputs )
+    
     time.sleep(1)
-    #
-    data_processor(n1,packaged_useful_elements, params)
-    #
+        
+    # Delete glp, lp, txt and sol files
+    print(file_adress)
+    delete_files(output_file, solver)
+    
+#
+def delete_files(file, solver):
+    # Delete files
+    shutil.os.remove(file + '.sol')
+    
+    if solver == 'glpk':
+        shutil.os.remove(file + '.glp')        
+    else:
+        shutil.os.remove(file + '.lp')
+
 #
 def set_first_list(scenario_list_print, params):
     #
@@ -3864,6 +3909,12 @@ if __name__ == '__main__':
             #
             for process in processes:
                 process.join()
+        
+    # Delete log files when solver='cplex'
+    if params['solver'] == 'cplex':
+        shutil.os.remove('cplex.log')
+        shutil.os.remove('clone1.log')
+        shutil.os.remove('clone2.log')
 
         # This is for the linear version
         # for n in range( len( first_list ) ):
