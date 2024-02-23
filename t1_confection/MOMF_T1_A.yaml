@@ -3,6 +3,7 @@
 # Model external dependencies: Directories, Files, sheets and columns
 ########################################################################################
 # Directories
+A1_inputs: './A1_Inputs'
 A2_output_BAU: './A2_Output_Params/BAU/'
 A2_output_NDP: './A2_Output_Params/NDP/'
 
@@ -10,7 +11,7 @@ A2_output_NDP: './A2_Output_Params/NDP/'
 # A1
 # Structural feature 1
 # File (First letter of the word y uppercase)
-Modes_Demand: './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx'
+Modes_Demand: '/A-I_Classifier_Modes_Demand.xlsx'
 # Sheets (First letter of the word y uppercase)
 Sectors: 'Sectors'
 Fuel_per_Sectors: 'Fuel_per_Sectors'
@@ -25,7 +26,7 @@ fuel: 'Fuel'
 code: 'Code'
 # Structural feature 2
 # File
-Modes_Supply: './A1_Inputs/A-I_Classifier_Modes_Supply.xlsx'
+Modes_Supply: '/A-I_Classifier_Modes_Supply.xlsx'
 # Sheets
 Pri_eng: 'PrimaryEnergy'
 Sec_eng: 'SecondaryEnergy'
@@ -45,7 +46,7 @@ fuel_plain_eng_out: 'Fuel - Plain English (Output)'
 fuel_plain_spa_out: 'Fuel - Plain Spanish (Output)'
 # Structural feature 3
 # File
-Modes_Trans: './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
+Modes_Trans: '/A-I_Classifier_Modes_Transport.xlsx'
 # Sheets
 Mode_Broad: 'Mode_Broad'
 Mode_per_Vehfuel: 'Mode_per_VehFuel'
@@ -63,7 +64,7 @@ techs_slash_dem: 'Techs/Demand'
 vehfuel_slash_tech: 'VehFuel/Tech'
 # Structural feature 3
 # File
-horizon_configuration: './A1_Inputs/A-I_Horizon_Configuration.xlsx'
+Horizon_configuration: '/A-I_Horizon_Configuration.xlsx'
 # Columns
 initial_year: 'Initial_Year'
 final_year: 'Final_Year'
