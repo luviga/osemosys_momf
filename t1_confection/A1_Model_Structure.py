@@ -24,24 +24,24 @@ with open('MOMF_T1_A.yaml', 'r') as file:
 Structural feature 1: './A1_Inputs/A-I_Classifier_Modes_Demand.xlsx'
 1.a) We use this excel file to determine what demands should be supplied
 '''
-classifier_demand_sectors = pd.read_excel( params['Modes_Demand'], sheet_name=params['Sectors'] ) # YELLOW // Gives an overview of the sectors to satisfy
-classifier_demand_fuel_per_sectors = pd.read_excel( params['Modes_Demand'], sheet_name=params['Fuel_per_Sectors'] ) # ORANGE // Specifies Layout
-classifier_demand_fuel_to_code = pd.read_excel( params['Modes_Demand'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names 
+classifier_demand_sectors = pd.read_excel( params['A1_inputs'] + params['Modes_Demand'], sheet_name=params['Sectors'] ) # YELLOW // Gives an overview of the sectors to satisfy
+classifier_demand_fuel_per_sectors = pd.read_excel( params['A1_inputs'] + params['Modes_Demand'], sheet_name=params['Fuel_per_Sectors'] ) # ORANGE // Specifies Layout
+classifier_demand_fuel_to_code = pd.read_excel( params['A1_inputs'] + params['Modes_Demand'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names 
 
-cd_sectors_all = classifier_demand_sectors[params['sector']].tolist()
-cd_sectors_name_eng = classifier_demand_sectors[params['plain_eng']].tolist()
-cd_sectors_name_spa = classifier_demand_sectors[params['plain_spa']].tolist()
-cd_sectors_method = classifier_demand_sectors[params['address']].tolist()
+cd_sectors_all = classifier_demand_sectors['Sector'].tolist()
+cd_sectors_name_eng = classifier_demand_sectors['Plain English'].tolist()
+cd_sectors_name_spa = classifier_demand_sectors['Plain Spanish'].tolist()
+cd_sectors_method = classifier_demand_sectors['Address_Method'].tolist()
 
 cd_sectors_index = [ i for i, x in enumerate( cd_sectors_method ) if x != str( 'Detailed' ) ] # Only grabs 'Simple' Demands
 cd_sectors_simple = [ cd_sectors_all[ cd_sectors_index[i] ] for i in range( len( cd_sectors_index ) ) ]
 
-cd_fuels_in_sectors = classifier_demand_fuel_per_sectors[params['fuel_slash_sector']].tolist()
+cd_fuels_in_sectors = classifier_demand_fuel_per_sectors['Fuel/Sector'].tolist()
 
-cd_fuel_to_code_fuels = classifier_demand_fuel_to_code[params['fuel']].tolist()
-cd_fuel_to_code_codes = classifier_demand_fuel_to_code[params['code']].tolist()
-cd_fuel_to_code_names_eng = classifier_demand_fuel_to_code[params['plain_eng']].tolist()
-cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code[params['plain_spa']].tolist()
+cd_fuel_to_code_fuels = classifier_demand_fuel_to_code['Fuel'].tolist()
+cd_fuel_to_code_codes = classifier_demand_fuel_to_code['Code'].tolist()
+cd_fuel_to_code_names_eng = classifier_demand_fuel_to_code['Plain English'].tolist()
+cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code['Plain Spanish'].tolist()
 
 demands_simple = []
 demands_simple_eng = []
@@ -99,46 +99,46 @@ for s in cd_sectors_simple:
 Structural feature 2: './A1_Inputs/A-I_Classifier_Modes_Supply.xlsx'
 2.a) We use this excel file to determine how energy supply occurs
 '''
-classifier_supply_primary_energy = pd.read_excel( params['Modes_Supply'], sheet_name=params['Pri_eng'] ) # ORANGE // Specifies Layout
-classifier_supply_secondary_energy = pd.read_excel( params['Modes_Supply'], sheet_name=params['Sec_eng'] ) # ORANGE // Specifies Layout
+classifier_supply_primary_energy = pd.read_excel( params['A1_inputs'] + params['Modes_Supply'], sheet_name=params['Pri_eng'] ) # ORANGE // Specifies Layout
+classifier_supply_secondary_energy = pd.read_excel( params['A1_inputs'] + params['Modes_Supply'], sheet_name=params['Sec_eng'] ) # ORANGE // Specifies Layout
 
 #############################################################################################################
 
-cs_p_final_in_chain_all = classifier_supply_primary_energy[params['final']].tolist()
+cs_p_final_in_chain_all = classifier_supply_primary_energy['Final in Chain'].tolist()
 cs_p_final_in_chain_indices = [ i for i, x in enumerate( cs_p_final_in_chain_all ) if x != str( 'IGNORE' ) ] # Only grabs TRUE or FALSE booleans
 cs_p_final_in_chain = [ cs_p_final_in_chain_all[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_comm_primary = [ classifier_supply_primary_energy[params['pri_commodity']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_comm_secondary = [ classifier_supply_primary_energy[params['sec_commodity']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_comm_primary = [ classifier_supply_primary_energy['Primary_Commodity'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_comm_secondary = [ classifier_supply_primary_energy['Secondary_Commodity'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_tech_code = [ classifier_supply_primary_energy[params['tech_code']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_tech_names_eng = [ classifier_supply_primary_energy[params['tech_plain_eng']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_tech_names_spa = [ classifier_supply_primary_energy[params['tech_plain_spa']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_code = [ classifier_supply_primary_energy['Tech - Code'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_names_eng = [ classifier_supply_primary_energy['Tech - Plain English'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_tech_names_spa = [ classifier_supply_primary_energy['Tech - Plain Spanish'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
-cs_p_fuel_code = [ classifier_supply_primary_energy[params['fuel_code_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_fuel_names_eng = [ classifier_supply_primary_energy[params['fuel_plain_eng_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
-cs_p_fuel_names_spa = [ classifier_supply_primary_energy[params['fuel_plain_spa_out']].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_code = [ classifier_supply_primary_energy['Fuel - Code (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_names_eng = [ classifier_supply_primary_energy['Fuel - Plain English (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
+cs_p_fuel_names_spa = [ classifier_supply_primary_energy['Fuel - Plain Spanish (Output)'].tolist()[ cs_p_final_in_chain_indices[i] ] for i in range( len( cs_p_final_in_chain_indices ) ) ]
 
 #############################################################################################################
 
-cs_s_final_in_chain_all = classifier_supply_secondary_energy[params['final']].tolist()
+cs_s_final_in_chain_all = classifier_supply_secondary_energy['Final in Chain'].tolist()
 cs_s_final_in_chain_indices = [ i for i, x in enumerate( cs_s_final_in_chain_all ) if x != str( 'IGNORE' ) ] # Only grabs TRUE or FALSE booleans
 cs_s_final_in_chain = [ cs_s_final_in_chain_all[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_comm_secondary = [ classifier_supply_secondary_energy[params['sec_commodity']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_comm_tertiary = [ classifier_supply_secondary_energy[params['ter_commodity']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_comm_secondary = [ classifier_supply_secondary_energy['Secondary_Commodity'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_comm_tertiary = [ classifier_supply_secondary_energy['Tertiary_Commodity'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_tech_code = [ classifier_supply_secondary_energy[params['tech_code']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_tech_names_eng = [ classifier_supply_secondary_energy[params['tech_plain_eng']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_tech_names_spa = [ classifier_supply_secondary_energy[params['tech_plain_spa']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_code = [ classifier_supply_secondary_energy['Tech - Code'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_names_eng = [ classifier_supply_secondary_energy['Tech - Plain English'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_tech_names_spa = [ classifier_supply_secondary_energy['Tech - Plain Spanish'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_fuel_i_code = [ classifier_supply_secondary_energy[params['fuel_code_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_i_names_eng = [ classifier_supply_secondary_energy[params['fuel_plain_eng_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_i_names_spa = [ classifier_supply_secondary_energy[params['fuel_plain_spa_in']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_code = [ classifier_supply_secondary_energy['Fuel - Code (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_names_eng = [ classifier_supply_secondary_energy['Fuel - Plain English (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_i_names_spa = [ classifier_supply_secondary_energy['Fuel - Plain Spanish (Input)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
-cs_s_fuel_o_code = [ classifier_supply_secondary_energy[params['fuel_code_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_o_names_eng = [ classifier_supply_secondary_energy[params['fuel_plain_eng_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
-cs_s_fuel_o_names_spa = [ classifier_supply_secondary_energy[params['fuel_plain_spa_out']].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_code = [ classifier_supply_secondary_energy['Fuel - Code (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_names_eng = [ classifier_supply_secondary_energy['Fuel - Plain English (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
+cs_s_fuel_o_names_spa = [ classifier_supply_secondary_energy['Fuel - Plain Spanish (Output)'].tolist()[ cs_s_final_in_chain_indices[i] ] for i in range( len( cs_s_final_in_chain_indices ) ) ]
 
 #############################################################################################################
 # Working with the Primary Energy:
@@ -251,35 +251,35 @@ for i in range( len( techs_demand_input_connect_keys ) ):
 Structural feature 3: './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
 3.a) We use this excel file to determine how to strcuture the transport sector (the same would apply for other "Special" type of demands in 1.a)
 '''
-classifier_TRN_mode_broad = pd.read_excel( params['Modes_Trans'], sheet_name=params['Mode_Broad'] ) # YELLOW // Gives an overview of the Transport Demands (Columns) and Group Techs (Rows)
-classifier_TRN_mode_per_vehfuel = pd.read_excel( params['Modes_Trans'], sheet_name=params['Mode_per_Vehfuel'] ) # ORANGE // What does each Group Tech has as VEHICLE FUELS (e.g. hybrids)?
-classifier_TRN_fuel_per_vehfuel = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_per_Vehfuel'] ) # ORANGE // What FUEL does each VEHICLE FUEL use?
+classifier_TRN_mode_broad = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Mode_Broad'] ) # YELLOW // Gives an overview of the Transport Demands (Columns) and Group Techs (Rows)
+classifier_TRN_mode_per_vehfuel = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Mode_per_Vehfuel'] ) # ORANGE // What does each Group Tech has as VEHICLE FUELS (e.g. hybrids)?
+classifier_TRN_fuel_per_vehfuel = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_per_Vehfuel'] ) # ORANGE // What FUEL does each VEHICLE FUEL use?
 #
-classifier_TRN_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names - FUELS 
-classifier_TRN_vehfuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Vehfuel_Code'] ) # COLORLESS // Gives an equivalence table with names - VEHICLE FUEL DESCRIPTION
-classifier_TRN_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] ) # COLORLESS // Gives an equivalence table with names - TECHNOLOGY GROUPS
-classifier_TRN_dem_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Dem_Code'] ) # COLORLESS // Gives an equivalence table with names - DEMAND CODES
+classifier_TRN_fuel_to_code = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] ) # COLORLESS // Gives an equivalence table with names - FUELS 
+classifier_TRN_vehfuel_to_code = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Vehfuel_Code'] ) # COLORLESS // Gives an equivalence table with names - VEHICLE FUEL DESCRIPTION
+classifier_TRN_tech_to_code = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] ) # COLORLESS // Gives an equivalence table with names - TECHNOLOGY GROUPS
+classifier_TRN_dem_to_code = pd.read_excel( params['A1_inputs'] + params['Modes_Trans'], sheet_name=params['Dem_Code'] ) # COLORLESS // Gives an equivalence table with names - DEMAND CODES
 #
 # CALLING ALL EQUIVALENCIES: // NOTE: *sp_trn* means "special - transport"
 # i)
-sp_trn_fuel_to_code_Fuel = classifier_TRN_fuel_to_code[params['fuel']].tolist()
-sp_trn_fuel_to_code_Code = classifier_TRN_fuel_to_code[params['code']].tolist()
-sp_trn_fuel_to_code_names_eng = classifier_TRN_fuel_to_code[params['plain_eng']].tolist()
-sp_trn_fuel_to_code_names_spa = classifier_TRN_fuel_to_code[params['plain_spa']].tolist()
+sp_trn_fuel_to_code_Fuel = classifier_TRN_fuel_to_code['Fuel'].tolist()
+sp_trn_fuel_to_code_Code = classifier_TRN_fuel_to_code['Code'].tolist()
+sp_trn_fuel_to_code_names_eng = classifier_TRN_fuel_to_code['Plain English'].tolist()
+sp_trn_fuel_to_code_names_spa = classifier_TRN_fuel_to_code['Plain Spanish'].tolist()
 # ii)
-sp_trn_vehfuel_to_code_VehFuel = classifier_TRN_vehfuel_to_code[params['vehfuel']].tolist()
-sp_trn_vehfuel_to_code_Code = classifier_TRN_vehfuel_to_code[params['code']].tolist()
-sp_trn_vehfuel_to_code_names_eng = classifier_TRN_vehfuel_to_code[params['plain_eng']].tolist()
-sp_trn_vehfuel_to_code_names_spa = classifier_TRN_vehfuel_to_code[params['plain_spa']].tolist()
+sp_trn_vehfuel_to_code_VehFuel = classifier_TRN_vehfuel_to_code['VehFuel'].tolist()
+sp_trn_vehfuel_to_code_Code = classifier_TRN_vehfuel_to_code['Code'].tolist()
+sp_trn_vehfuel_to_code_names_eng = classifier_TRN_vehfuel_to_code['Plain English'].tolist()
+sp_trn_vehfuel_to_code_names_spa = classifier_TRN_vehfuel_to_code['Plain Spanish'].tolist()
 # iii)
-sp_trn_tech_to_code_Tech = classifier_TRN_tech_to_code[params['techs']].tolist()
-sp_trn_tech_to_code_Code = classifier_TRN_tech_to_code[params['code']].tolist()
-sp_trn_tech_to_code_names_eng = classifier_TRN_tech_to_code[params['plain_eng']].tolist()
-sp_trn_tech_to_code_names_spa = classifier_TRN_tech_to_code[params['plain_spa']].tolist()
+sp_trn_tech_to_code_Tech = classifier_TRN_tech_to_code['Techs'].tolist()
+sp_trn_tech_to_code_Code = classifier_TRN_tech_to_code['Code'].tolist()
+sp_trn_tech_to_code_names_eng = classifier_TRN_tech_to_code['Plain English'].tolist()
+sp_trn_tech_to_code_names_spa = classifier_TRN_tech_to_code['Plain Spanish'].tolist()
 # iv)
-sp_trn_dem_to_code_Code = classifier_TRN_dem_to_code[params['dem_codes']].tolist()
-sp_trn_dem_to_code_names_eng = classifier_TRN_dem_to_code[params['plain_eng']].tolist()
-sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code[params['plain_spa']].tolist()
+sp_trn_dem_to_code_Code = classifier_TRN_dem_to_code['Demand_Codes'].tolist()
+sp_trn_dem_to_code_names_eng = classifier_TRN_dem_to_code['Plain English'].tolist()
+sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code['Plain Spanish'].tolist()
 #
 '''
 -------------------------------------------------------------------------------------------------------------
@@ -288,7 +288,7 @@ sp_trn_dem_to_code_names_spa = classifier_TRN_dem_to_code[params['plain_spa']].t
 classifier_TRN_mode_broad :: 'Techs/Demand','E6TDPASSPUB','E6TDPASPRIV','E6TDFREHEA','E6TDFRELIG' (updated 20/7/2020)
 '''
 sp_trn_demands = classifier_TRN_mode_broad.columns.tolist()[1:]
-sp_trn_group_techs = classifier_TRN_mode_broad[params['techs_slash_dem']].tolist()
+sp_trn_group_techs = classifier_TRN_mode_broad['Techs/Demand'].tolist()
 sp_trn_group_techs_names_eng = []
 #
 sp_trn_group_techs_o_connect = {}
@@ -326,7 +326,7 @@ for d in sp_trn_demands:
 classifier_TRN_mode_per_vehfuel :: 'VehFuel/Tech','Techs_4WD','Techs_LD','Techs_Minivan','Techs_Motos','Techs_Buses','Techs_Microbuses','Techs_Taxis','Techs_Trains','Techs_He_Freight','Techs_Li_Freight' (updated 20/7/2020)
 '''
 # From the above columns, we note that the columns are the GROUP TECHS, so no need to call them again.
-sp_trn_vehfuels = classifier_TRN_mode_per_vehfuel[ params['vehfuel_slash_tech'] ].tolist()
+sp_trn_vehfuels = classifier_TRN_mode_per_vehfuel[ 'VehFuel/Tech' ].tolist()
 
 sp_trn_vehfuels_per_techs = {}
 for t in sp_trn_group_techs:
@@ -469,9 +469,9 @@ For all effects, read all the user-defined scenarios in future 0, created by han
 These data parameters serve as the basis to implement the experiment.
 '''
 #
-horizon_configuration = pd.read_excel( './A1_Inputs/A-I_Horizon_Configuration.xlsx' )
-baseyear = horizon_configuration[params['initial_year']].tolist()[0]
-endyear = horizon_configuration[params['final_year']].tolist()[0]
+horizon_configuration = pd.read_excel( params['A1_inputs'] + params['Horizon_configuration'] )
+baseyear = horizon_configuration['Initial_Year'].tolist()[0]
+endyear = horizon_configuration['Final_Year'].tolist()[0]
 global time_range_vector
 time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 '''''
@@ -1299,11 +1299,3 @@ minute = time.strftime("%M")
 str1 = 'Esta versión se produjo el ' + str(today) + ' a las ' + hour + ':' + minute
 log_file.write(str1)
 log_file.close()
-
-
-
-
-
-
-
-
