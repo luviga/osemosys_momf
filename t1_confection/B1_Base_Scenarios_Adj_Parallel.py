@@ -62,10 +62,11 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     str1 = "start /B start cmd.exe @cmd /k cd " + file_adress
     str_start = "start cmd.exe /k cd " + file_adress
     #
-    data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )   
+    data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
+    print(data_file)
+    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
     # # OLD GLPK
-    # output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
-    # str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file)
+    # str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
     # os.system( str1 and str2 )
     # #
     # data_processor(n1,packaged_useful_elements, params)
@@ -73,7 +74,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     
     # Solve model
     solver = params['solver']
-    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
+    
     if solver == 'glpk':
         # GLPK
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
@@ -142,11 +143,11 @@ def data_processor( case, unpackaged_useful_elements, params ):
 
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
+    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure of the model:
     #-------------------------------------------#
@@ -874,11 +875,11 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     #
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
+    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # header = ['Scenario','Parameter','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
     header_indices = params['header_indices']
@@ -1988,8 +1989,8 @@ if __name__ == '__main__':
     # Call the default parameters for later use:
     '''
     list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
-    list_param_default_value_params = list( list_param_default_value[params['param']] )
-    list_param_default_value_value = list( list_param_default_value[params['default_value']] )
+    list_param_default_value_params = list( list_param_default_value['Parameter'] )
+    list_param_default_value_value = list( list_param_default_value['Default_Value'] )
     #
     global Initial_Year_of_Uncertainty
     for n in range( len( base_configuration_overall.index ) ):
