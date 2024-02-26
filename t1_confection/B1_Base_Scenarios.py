@@ -93,11 +93,11 @@ def data_processor( case, unpackaged_useful_elements, params ):
 
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
+    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure of the model:
     #-------------------------------------------#
@@ -586,11 +586,11 @@ def function_C_mathprog( stable_scenarios, unpackaged_useful_elements, params ):
     #
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
+    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # header = ['Scenario','Parameter','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value']
     header_indices = params['header_indices']
@@ -1462,7 +1462,7 @@ if __name__ == '__main__':
     '''
     header_row = params['header_row']
     #
-    scenario_list_sheet = pd.read_excel( 'B1_Scenario_Config.xlsx', sheet_name='Scenarios' )
+    scenario_list_sheet = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Scens'] )
     scenario_list_all = [ scenario_list_sheet[ 'Name' ].tolist()[i] for i in range( len( scenario_list_sheet[ 'Name' ].tolist() ) ) if scenario_list_sheet[ 'Activated' ].tolist()[i] == 'YES' ]
     scenario_list_reference = [ scenario_list_sheet[ 'Reference' ].tolist()[i] for i in range( len( scenario_list_sheet[ 'Name' ].tolist() ) ) if scenario_list_sheet[ 'Activated' ].tolist()[i] == 'YES' ] # the address to the produced dataset
     scenario_list_based = [ scenario_list_sheet[ 'Based_On' ].tolist()[i] for i in range( len( scenario_list_sheet[ 'Name' ].tolist() ) ) if scenario_list_sheet[ 'Activated' ].tolist()[i] == 'YES' ]
@@ -1487,8 +1487,8 @@ if __name__ == '__main__':
     # Call the default parameters for later use:
     '''
     list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
-    list_param_default_value_params = list( list_param_default_value[params['param']] )
-    list_param_default_value_value = list( list_param_default_value[params['default_value']] )
+    list_param_default_value_params = list( list_param_default_value['Parameter'] )
+    list_param_default_value_value = list( list_param_default_value['Default_Value'] )
     #
     global Initial_Year_of_Uncertainty
     for n in range( len( base_configuration_overall.index ) ):
