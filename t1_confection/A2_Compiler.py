@@ -41,7 +41,7 @@ for y in range( len( time_range_vector ) ):
     this_dict_4_wide.update( { 'PARAMETER':'Yearsplit', 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                 'TIMESLICE':other_setup_params['Timeslice'], 'YEAR':time_range_vector[y],
                                 'Value':1 } )
-    df_Yearsplit = df_Yearsplit.append( this_dict_4_wide, ignore_index=True )
+    df_Yearsplit = df_Yearsplit._append( this_dict_4_wide, ignore_index=True )
 #
 #------------------------------------------------------------------------------
 # BELOW WORKS WELL
@@ -85,13 +85,13 @@ for g in range( len( groups_list ) ):
     this_proj_df_new.rename( columns={ "Direction": "Parameter" }, inplace=True )
     this_proj_df_new = this_proj_df_new.drop(columns=['Projection.Mode', 'Projection.Parameter'])
     #
-    if groups_list[g] != 'Primary' and groups_list[g] != 'Transport':
+    if groups_list[g] != params['primary'] and groups_list[g] != params['transport']:
         this_df_fuel_i = this_df['Fuel.I'].tolist()
         this_df_fuel_i_name = this_df['Fuel.I.Name'].tolist()
-    if groups_list[g] == 'Primary':
+    if groups_list[g] == params['primary']:
         this_df_fuel_i = []
         this_df_fuel_i_name = []
-    if groups_list[g] == 'Transport':
+    if groups_list[g] == params['transport']:
         this_df_fuel_i = this_df['Fuel.I.1'].tolist()
         this_df_fuel_i_name = this_df['Fuel.I.1.Name'].tolist()
         #
@@ -133,18 +133,18 @@ for g in range( len( groups_list ) ):
         this_proj_df_local = this_proj_df.loc[ ( this_proj_df[ 'Tech' ] == this_tech ) & ( this_proj_df[ 'Fuel' ] == output_fuel ) ] 
         this_proj_df_mode_o, this_proj_df_param_o = this_proj_df_local['Projection.Mode'].tolist()[0] , this_proj_df_local['Projection.Parameter'].tolist()[0]
         #
-        if groups_list[g] != 'Primary' and groups_list[g] != 'Transport':
+        if groups_list[g] != params['primary'] and groups_list[g] != params['transport']:
             # query 1 input and 1 output
             input_fuel = this_df_fuel_i[t]
             input_fuel_2 = 'none'
         #
-        if groups_list[g] == 'Transport':
+        if groups_list[g] == params['transport']:
             # query 2 inputs
             input_fuel = this_df_fuel_i[t]
             input_fuel_2 = this_df_fuel_i2[t]
         #
-        if groups_list[g] != 'Primary':
-            if groups_list[g] != 'Transport':
+        if groups_list[g] != params['primary']:
+            if groups_list[g] != params['transport']:
                 this_df_select = this_df.loc[ ( this_df[ 'Tech' ] == this_tech ) & ( this_df[ 'Fuel.I' ] == input_fuel ) ]
                 this_df_select_by_fi = [ this_df_select[ 'Value.Fuel.I' ].tolist()[0] ]
                 #
@@ -175,7 +175,7 @@ for g in range( len( groups_list ) ):
         for y in range( len( time_range_vector ) ):
             this_param = 'OutputActivityRatio'
             mask = ( this_proj_df_new[ 'Tech' ] == this_tech ) & ( this_proj_df_new[ 'Fuel' ] == output_fuel ) & ( this_proj_df_new[ 'Parameter' ] == this_param )
-            if this_proj_df_mode_o == 'Flat':
+            if this_proj_df_mode_o == params['flat']:
                 this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_df_select_by_fo, 4 )
             #
             # Filling the data :
@@ -184,9 +184,9 @@ for g in range( len( groups_list ) ):
                                 'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':output_fuel ,
                                 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] ,
                                 'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-            df_OAR = df_OAR.append( df_OAR_dict, ignore_index=True )
+            df_OAR = df_OAR._append( df_OAR_dict, ignore_index=True )
             #
-            if groups_list[g] != 'Primary':
+            if groups_list[g] != params['primary']:
                 input_fuel_list = [ input_fuel ]
                 if input_fuel_2 != 'none':
                     input_fuel_list += [ input_fuel_2 ]
@@ -199,15 +199,15 @@ for g in range( len( groups_list ) ):
                     this_param = 'InputActivityRatio'
                     mask = ( this_proj_df_new[ 'Tech' ] == this_tech ) & ( this_proj_df_new[ 'Fuel' ] == this_input_fuel ) & ( this_proj_df_new[ 'Parameter' ] == this_param )
                     ###################################################################################################
-                    if this_proj_df_mode_i0 == 'Flat':
+                    if this_proj_df_mode_i0 == params['flat']:
                         this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_df_select_by_fi[ inp ], 4 )
-                    if this_proj_df_mode_i0 == 'Yearly percent change':
+                    if this_proj_df_mode_i0 == params['yearly_per_change']:
                         if y == 0:
                             this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_df_select_by_fi[ inp ], 4 ) # round( this_df_select_by_fi[ inp ]*( 1 + this_proj_df_param_i0/100 ), 4 )
                         else:
                             this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_proj_df_new.loc[ mask , time_range_vector[y-1] ]*( 1 + this_proj_df_param_i0/100 ), 4 )
                     #
-                    if this_proj_df_mode_i0 == 'User defined':
+                    if this_proj_df_mode_i0 == params['user_defined']:
                         this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_proj_df.loc[ mask , time_range_vector[y] ], 4 )
                     #
                     ###################################################################################################
@@ -217,7 +217,7 @@ for g in range( len( groups_list ) ):
                                         'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':this_input_fuel ,
                                         'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] , 
                                         'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-                    df_IAR = df_IAR.append( df_IAR_dict, ignore_index=True )
+                    df_IAR = df_IAR._append( df_IAR_dict, ignore_index=True )
                     #
                 #
             #
@@ -232,22 +232,50 @@ for g in range( len( groups_list ) ):
 # DEMAND
 Demand = pd.ExcelFile(params['A1_outputs'] + params['Print_Demand'])
 Demand_df = Demand.parse( Demand.sheet_names[0] )
+
+
+# #------------------------------------------------------------------------------
+# import openpyxl
+
+# # Carga el libro de trabajo de Excel
+# wb = openpyxl.load_workbook(params['A1_outputs'] + params['Print_Demand'])
+
+# # Selecciona la primera hoja del libro
+# sheet = wb[wb.sheetnames[0]]
+
+# # Leer los datos de la hoja en una lista de diccionarios
+# data = []
+# for row in sheet.iter_rows(values_only=True, min_row=2):  # Asume que la primera fila tiene encabezados
+#     row_data = {sheet.cell(row=1, column=i).value: cell for i, cell in enumerate(row, start=1)}
+#     data.append(row_data)
+
+# # Convertir la lista de diccionarios en un DataFrame
+# Demand_df = pd.DataFrame(data)
+
+# # Cierra el libro para liberar memoria
+# wb.close()
+# sys.exit()
+# #------------------------------------------------------------------------------
+
+
+
+
 #
 df_SpecAnnualDemand = pd.DataFrame( columns = Wide_Param_Header )
 df_SpecDemandProfile = pd.DataFrame( columns = Wide_Param_Header )
 #
-Projections = pd.ExcelFile([params['A2_extra_inputs'] + params['Xtra_Proj']])
+Projections = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Proj'])
 Projections_sheet = Projections.parse( Projections.sheet_names[0] ) # see all sheet names
 Projections_control = Projections.parse( Projections.sheet_names[1] )
 Projection_Driver_Vars = Projections_control[ 'Variable' ].tolist()
 Projection_Mode_per_Driver = Projections_control[ 'Projection Mode' ].tolist()
 for n in range( len( Projection_Driver_Vars ) ):
     this_col_header = Projection_Driver_Vars[ n ]
-    if Projection_Mode_per_Driver[n] == 'Interpolate to final value':
+    if Projection_Mode_per_Driver[n] == params['inter_final_value']:
         Projections_sheet[ this_col_header ].interpolate(method ='linear', limit_direction ='forward', inplace = True)
-    if Projection_Mode_per_Driver[n] == 'Flat':
+    if Projection_Mode_per_Driver[n] == params['flat']:
         Projections_sheet[ this_col_header ].interpolate(method ='linear', limit_direction ='forward', inplace = True)
-    if Projection_Mode_per_Driver[n] == 'Flat after final year':
+    if Projection_Mode_per_Driver[n] == params['flat_aft_final_year']:
         Projections_sheet[ this_col_header ].interpolate(method ='linear', limit_direction ='forward', inplace = True)
 #
 demand_headers = params['demand_headers']
@@ -255,8 +283,8 @@ demand_headers = params['demand_headers']
 list_demand_or_share = Demand_df[ 'Demand/Share' ].tolist()
 #
 list_fuel_or_tech = Demand_df[ 'Fuel/Tech' ].tolist()
-Fuels_dems = [ i for i in range( len( list_fuel_or_tech ) ) if 'E6' in list_fuel_or_tech[i] ] 
-Fuels_techs = [ i for i in range( len( list_fuel_or_tech ) ) if 'Techs' in list_fuel_or_tech[i] ]
+Fuels_dems = [ i for i in range( len( list_fuel_or_tech ) ) if params['E6'] in list_fuel_or_tech[i] ] 
+Fuels_techs = [ i for i in range( len( list_fuel_or_tech ) ) if params['techs'] in list_fuel_or_tech[i] ]
 Fuels_techs_2_dems = {}
 for i in range( len( list_fuel_or_tech ) ):
     if i in Fuels_techs:
@@ -266,15 +294,15 @@ for i in range( len( list_fuel_or_tech ) ):
                 break
         Fuels_techs_2_dems.update( { list_fuel_or_tech[i]:list_fuel_or_tech[Fuel_dem_index] } )
 #
-list_projection_mode = Demand_df[ 'Projection Mode' ].tolist()
+list_projection_mode = Demand_df[ 'Projection.Mode' ].tolist()
 list_projection_param = Demand_df[ 'Projection.Parameter' ].tolist()
 #
 for m in range( len( list_demand_or_share ) ):
     # This is the case for *Passenger* transport:
-    if 'GDP' in list_projection_mode[m]:
+    if params['gdp'] in list_projection_mode[m]:
         this_tech = list_fuel_or_tech[m]
         other_value_BY = 0
-        if 'joint' in list_projection_mode[m]:
+        if params['joint'] in list_projection_mode[m]:
             other_tech = list_projection_mode[m].split(' ')[-1]
             other_tech_index = list_fuel_or_tech.index( other_tech )
             other_value_BY = Demand_df.loc[ other_tech_index, 2018 ]
@@ -284,19 +312,19 @@ for m in range( len( list_demand_or_share ) ):
         #
         demand_trajectory = [ this_net_value_BY ]
         for y in range( len( Projections_sheet['Year'].tolist() ) ):
-            if 'passenger' in list_projection_param[m]:
+            if params['passenger'] in list_projection_param[m]:
                 demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Passenger'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
-            if 'freight' in list_projection_param[m]:
+            if params['freight'] in list_projection_param[m]:
                 demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Freight'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
             Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( demand_trajectory[-1]*( this_value_BY/( this_value_BY + other_value_BY ) ), 4 )
         #
     #
-    if 'Flat' == list_projection_mode[m]:
+    if params['flat'] == list_projection_mode[m]:
         this_value_BY = Demand_df.loc[ m, 2018 ]
         for y in range( len( Projections_sheet['Year'].tolist() ) ):
             Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( this_value_BY, 4 )
     #
-    if Demand_df['Demand/Share'].tolist()[m] == 'Demand':
+    if Demand_df['Demand/Share'].tolist()[m] == params['demand']:
         this_fuel = list_fuel_or_tech[m]
         for y in range( len( time_range_vector ) ):
             this_dict_4_wide = {}
@@ -304,14 +332,14 @@ for m in range( len( list_demand_or_share ) ):
                                         'REGION':other_setup_params['Region'] , 'FUEL':this_fuel,
                                         'YEAR':time_range_vector[y],
                                         'Value':Demand_df.loc[ m, time_range_vector[y] ] } )
-            df_SpecAnnualDemand = df_SpecAnnualDemand.append( this_dict_4_wide, ignore_index=True )
+            df_SpecAnnualDemand = df_SpecAnnualDemand._append( this_dict_4_wide, ignore_index=True )
             #
             this_dict_4_wide = {}
             this_dict_4_wide.update( { 'PARAMETER':'SpecifiedDemandProfile', 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                         'REGION':other_setup_params['Region'] , 'FUEL':this_fuel,
                                         'TIMESLICE':other_setup_params['Timeslice'], 'YEAR':time_range_vector[y],
                                         'Value':1 } )
-            df_SpecDemandProfile = df_SpecDemandProfile.append( this_dict_4_wide, ignore_index=True )
+            df_SpecDemandProfile = df_SpecDemandProfile._append( this_dict_4_wide, ignore_index=True )
             #
         #
     #
@@ -372,7 +400,7 @@ for g in range( len( groups_list ) ):
     oar = Demand_df_new.loc[ this_group_tech_index, 'Ref.OAR.BY' ]
     if type( oar ) == float or type( oar ) == int:
         for d in range( this_group_tech_index ):
-            if 'E6' in Demand_df_new.loc[ d, 'Fuel/Tech' ]:
+            if params['E6'] in Demand_df_new.loc[ d, params['fuel__tech'] ]:
                 closest_demand_index =  d
         #
         Fleet_Groups_OR.update( { groups_list[g]:[ oar for y in range( len( time_range_vector ) ) ] } )
@@ -392,12 +420,12 @@ for g in range( len( groups_list ) ):
                                           'REGION':other_setup_params['Region'] , 'TECHNOLOGY':groups_list[g],
                                           'YEAR':time_range_vector[y],
                                           'Value':deepcopy( round( ref_demand_value*target_share/oar, 4 ) ) } )
-                overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+                overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
  
             #
         Demand_df_new.loc[ this_group_tech_index, 'Target.Unit' ] = 'Gvkm'
     #
-    elif oar == 'not considered': # THIS WORKS FOR RAIL
+    elif oar == params['not_considered']: # THIS WORKS FOR RAIL
         # sys.exit()
         for y in range( len( time_range_vector ) ):
             ref_cap = Demand_df_new.loc[ this_group_tech_index, time_range_vector[y] ]
@@ -408,7 +436,7 @@ for g in range( len( groups_list ) ):
                                           'REGION':other_setup_params['Region'] , 'TECHNOLOGY':groups_list[g],
                                           'YEAR':time_range_vector[y],
                                           'Value':deepcopy( round( ref_cap, 4 ) ) } )
-                overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+                overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
 #
 for s in range( len( param_sheets ) ):
     params_dict.update( { param_sheets[s]:Parametrization.parse( param_sheets[s] ) } )
@@ -431,12 +459,12 @@ for s in range( len( param_sheets ) ):
         if s != 0: # s == 0 does not need to change in time
             this_projection_mode = this_df.loc[ n, 'Projection.Mode' ]
             #-----------------------------------------
-            if this_projection_mode == 'Flat':
+            if this_projection_mode == params['flat']:
                 for y in range( len( time_range_vector ) ):
                     this_df_new.loc[ n, time_range_vector[y] ] = round( this_df.loc[ n, 2018 ], 4 )
                     this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
             #-----------------------------------------
-            if this_projection_mode == 'Percent growth of incomplete years':
+            if this_projection_mode == params['perce_grow_incom_years']:
                 growth_param = this_df.loc[ n, 'Projection.Parameter' ]
                 for y in range( len( time_range_vector ) ):
                     value_field = this_df.loc[ n, time_range_vector[y] ]
@@ -444,12 +472,12 @@ for s in range( len( param_sheets ) ):
                         this_df_new.loc[ n, time_range_vector[y] ] = round( this_df_new.loc[ n, time_range_vector[y-1] ]*( 1 + growth_param/100 ), 4 )
                         this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
             #-----------------------------------------
-            if this_projection_mode == 'User defined':
+            if this_projection_mode == params['user_defined']:
                 for y in range( len( time_range_vector ) ):
                     this_df_new.loc[ n, time_range_vector[y] ] = round( this_df.loc[ n, time_range_vector[y] ], 4 )
                     this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
             #-----------------------------------------
-            if this_projection_mode == 'Interpolate to stated end value from projection parameter':
+            if this_projection_mode == params['inter_Stated_value_proj_param']:
                 final_year_to_interpolate = this_df.loc[ n, 'Projection.Parameter' ]
                 #
                 x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
@@ -497,20 +525,20 @@ for s in range( len( param_sheets ) ):
                     this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
                 #
             #-----------------------------------------
-            if this_projection_mode == 'Zero':
+            if this_projection_mode == params['zero']:
                 for y in range( len( time_range_vector ) ):
                     this_df_new.loc[ n, time_range_vector[y] ] = 0
                     this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
             #
         #********************************************#
-        if param_sheets[s] == 'Vehicle Techs':
+        if param_sheets[s] == params['veh_techs']:
             this_projection_mode = this_df.loc[ n, 'Projection.Mode' ]
             this_unit_introduced = this_df.loc[ n, 'Unit.Introduced' ] 
             this_unit_target = this_df.loc[ n, 'Unit' ] 
             # we must use fleet // demand // projections to calibrate the vehicle fleets
             if type( this_unit_introduced ) == str:
             
-                if 'Relative' in this_unit_introduced and this_projection_mode == 'User defined trajectory relative to BY':
+                if params['relative'] in this_unit_introduced and this_projection_mode == params['user_rel_BY']:
                     ref_tech = this_unit_introduced.split(' ')[-1]
                     ref_tech_index = this_df_tech_list.index(ref_tech)
                     ref_value = this_df.loc[ ref_tech_index, time_range_vector[0] ]
@@ -521,7 +549,7 @@ for s in range( len( param_sheets ) ):
                             this_df_new.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[0] ]*this_df.loc[ n, time_range_vector[y] ]                    
                         this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
                 #
-                if 'Relative' in this_unit_introduced and this_projection_mode == 'Flat':
+                if params['relative'] in this_unit_introduced and this_projection_mode == params['flat']:
                     ref_tech = this_unit_introduced.split(' ')[-1]
                     ref_tech_index = this_df_tech_list.index(ref_tech)
                     ref_value = this_df.loc[ ref_tech_index, time_range_vector[0] ]
@@ -530,7 +558,7 @@ for s in range( len( param_sheets ) ):
                         this_df_new.loc[ n, time_range_vector[y] ] = ref_value*this_df.loc[ n, time_range_vector[0] ]
                         this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
                 #
-                if 'Relative' not in this_unit_introduced and this_projection_mode == 'User defined trajectory relative to BY':
+                if params['relative'] not in this_unit_introduced and this_projection_mode == params['user_rel_BY']:
                     for y in range( len( time_range_vector ) ): # these units are NOT relative to another tech, so we proceeed as follows:
                         if y == 0:
                             pass # nothing is necessary to do
@@ -553,7 +581,7 @@ for s in range( len( param_sheets ) ):
                 
                 if type( ref_km ) == float or type( ref_km ) == int:
                     #
-                    if 'Freight' not in this_group:
+                    if params['freight'] not in this_group:
                         this_km_list_change = Projections_sheet['Variation_km_Passenger'].tolist()
                     else:
                         this_km_list_change = Projections_sheet['Variation_km_Freight'].tolist()
@@ -564,13 +592,13 @@ for s in range( len( param_sheets ) ):
                     #
                     Fleet_Groups_Distance.update( { this_tech:this_km_list } )
                     #
-                    if 'Gvkm' in this_unit_target and ( 'vehicle' in this_unit_introduced or 'Relative' in this_unit_introduced ): # this acts on the cost parameters
+                    if params['Gvkm'] in this_unit_target and ( params['veh'] in this_unit_introduced or params['relative'] in this_unit_introduced ): # this acts on the cost parameters
                         # print( 'got here' )
                         for y in range( len( time_range_vector ) ): # we employ a conversion of units
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( 1000*this_df_new.loc[ n, time_range_vector[y] ]/this_km_list[y] , 4 )
                         this_df_new_2.loc[ n, 'Unit.Introduced' ] = this_df_new.loc[ n, 'Unit' ]
                     #
-                    if 'Gvkm' in this_unit_target and 'Vehicles' in this_unit_introduced: # this acts on the capacity parameters
+                    if params['Gvkm'] in this_unit_target and params['vehs'] in this_unit_introduced: # this acts on the capacity parameters
                         # print( 'got here' )
                         for y in range( len( time_range_vector ) ): # we employ a conversion of units
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( this_df_new.loc[ n, time_range_vector[y] ]*this_km_list[y]/(1e9), 4 )
@@ -586,13 +614,13 @@ for s in range( len( param_sheets ) ):
                 target_year = Fleet_df.loc[ fleet_df_tech_index, 'Target Year']
                 target_value = Fleet_df.loc[ fleet_df_tech_index, 'Target Value']
                 start_year = Fleet_df.loc[ fleet_df_tech_index, 'Start Year']
-                if Fleet_df.loc[ fleet_df_tech_index, 'Target Type'] == 'Hard': # proceed
+                if Fleet_df.loc[ fleet_df_tech_index, params['target_type']] == params['hard']: # proceed
                     define_restriction = True
-                if Fleet_df.loc[ fleet_df_tech_index, 'Target Type'] == 'Lower' and this_param == 'TotalTechnologyAnnualActivityLowerLimit': # proceed
+                if Fleet_df.loc[ fleet_df_tech_index, params['target_type']] == params['lower'] and this_param == 'TotalTechnologyAnnualActivityLowerLimit': # proceed
                     define_restriction = True
                 if define_restriction == True:
                     demand_df_index = Demand_df_techs.index( this_group ) # this enables us to call the Gvkm value of the restriction
-                    if start_year == 'Continuous': # means we need to take the residual capacity into consideration
+                    if start_year == params['continuos']: # means we need to take the residual capacity into consideration
                         this_residual_cap_row = this_df_new_2.loc[ ( this_df_new_2['Tech'] == this_tech ) & ( ( this_df_new_2['Parameter'] == 'ResidualCapacity' ) ) ] # units in Gvkm
                         this_main_cap_list = []
                         this_residual_cap_list = []
@@ -612,7 +640,7 @@ for s in range( len( param_sheets ) ):
                             this_dict_4_wide = {}
                             this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ], 'REGION':other_setup_params['Region'] ,
                                                         'TECHNOLOGY':this_tech, 'YEAR':time_range_vector[y], 'Value':deepcopy( round( this_correct_capacity[-1], 4 ) ) } )
-                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
                     #
                     if type( start_year ) == int:
                         x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
@@ -642,7 +670,7 @@ for s in range( len( param_sheets ) ):
                             this_dict_4_wide = {}
                             this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ], 'REGION':other_setup_params['Region'] ,
                                                         'TECHNOLOGY':this_tech, 'YEAR':time_range_vector[y], 'Value':deepcopy( round( this_main_cap_list[-1]*interpolated_values[y], 4 ) ) } )
-                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
             #
         #
         #********************************************#
@@ -652,13 +680,13 @@ for s in range( len( param_sheets ) ):
             this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                 'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
                                 'Value':deepcopy( this_df_new_2.loc[ n , 'Value' ] ) } )
-            overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
         #
-        elif this_projection_mode != 'EMPTY' and this_projection_mode != 'Zero' and this_projection_mode != '' and type(this_projection_mode) == str and this_projection_mode != 'None' and this_projection_mode != 'According to demand':
+        elif this_projection_mode != params['empty'] and this_projection_mode != params['zero'] and this_projection_mode != '' and type(this_projection_mode) == str and this_projection_mode != 'None' and this_projection_mode != params['accor_dem']:
             for y in range( len( time_range_vector ) ):
                 this_dict_4_wide = {}
                 #
-                if s != 0 and param_sheets[s] != 'Other_Techs':
+                if s != 0 and param_sheets[s] != params['other_techs']:
                     if this_param in [ 'CapacityFactor' ]: # must include timeslice
                         this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                                 'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
@@ -669,17 +697,17 @@ for s in range( len( param_sheets ) ):
                                                 'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
                                                 'YEAR':time_range_vector[y], 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],
                                                 'Value':deepcopy( round( this_df_new_2.loc[ n, time_range_vector[y] ], 4 ) ) } )
-                    if this_param not in [ 'CapacityFactor', 'VariableCost' ] and this_projection_mode != 'According to demand':
+                    if this_param not in [ 'CapacityFactor', 'VariableCost' ] and this_projection_mode != params['accor_dem']:
                         this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                                 'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
                                                 'YEAR':time_range_vector[y],
                                                 'Value':deepcopy( round( this_df_new_2.loc[ n, time_range_vector[y] ], 4 ) ) } )
                     #
-                    if this_projection_mode == 'According to demand':
+                    if this_projection_mode == params['accor_dem']:
                         pass
                         #
                     #
-                    overall_param_df_dict[this_param] = overall_param_df_dict[this_param].append( this_dict_4_wide, ignore_index=True )
+                    overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
                     #
                 #
             #
@@ -695,10 +723,10 @@ Emissions = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Emi'])
 Emissions_ghg_df = Emissions.parse( params['GHGs'] )
 Emissions_ext_df = Emissions.parse( params['Externalities'] )
 #
-emissions_list = list( set( Emissions_ghg_df['Emissions'].tolist() + Emissions_ext_df['External Cost' ].tolist() ) )
+emissions_list = list( set( Emissions_ghg_df['Emission'].tolist() + Emissions_ext_df['External Cost' ].tolist() ) )
 #
 df_Emissions = pd.DataFrame( columns = Wide_Param_Header )
-these_emissions = Emissions_ghg_df['Emissions'].tolist()
+these_emissions = Emissions_ghg_df['Emission'].tolist()
 these_e_techs = Emissions_ghg_df['Tech'].tolist()
 these_e_values = Emissions_ghg_df['EmissionActivityRatio'].tolist()
 for e in range( len( these_emissions ) ):
@@ -711,13 +739,13 @@ for e in range( len( these_emissions ) ):
                                     'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
                                     'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
                                     'Value':these_e_values[e] } )
-        df_Emissions = df_Emissions.append( this_dict_4_wide, ignore_index=True )
+        df_Emissions = df_Emissions._append( this_dict_4_wide, ignore_index=True )
 #
 df_EmissionPenalty = pd.DataFrame( columns = Wide_Param_Header )
 these_emissions = Emissions_ext_df['External Cost'].tolist()
 these_e_techs = Emissions_ext_df['Tech'].tolist()
 these_e_values = Emissions_ext_df['EmissionActivityRatio'].tolist()
-these_e_penalty = Emissions_ext_df['EmissionPenalty'].tolist()
+these_e_penalty = Emissions_ext_df['EmissionsPenalty'].tolist()
 this_emission_unique = []
 for e in range( len( these_emissions ) ):
     this_emission = these_emissions[e]
@@ -730,14 +758,14 @@ for e in range( len( these_emissions ) ):
                                     'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
                                     'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
                                     'Value':these_e_values[e] } )
-        df_Emissions = df_Emissions.append( this_dict_4_wide, ignore_index=True )
+        df_Emissions = df_Emissions._append( this_dict_4_wide, ignore_index=True )
         #
         if this_emission + ' ' + str( time_range_vector[y] ) not in this_emission_unique:
             this_dict_4_wide_2.update( { 'PARAMETER':'EmissionsPenalty', 'Scenario':other_setup_params[ 'Main_Scenario' ],
                                         'REGION':other_setup_params['Region'] , 'TECHNOLOGY':'', 'EMISSION':this_emission,
                                         'YEAR':time_range_vector[y],
                                         'Value':these_e_penalty[e] } )
-            df_EmissionPenalty = df_EmissionPenalty.append( this_dict_4_wide_2, ignore_index=True )
+            df_EmissionPenalty = df_EmissionPenalty._append( this_dict_4_wide_2, ignore_index=True )
             this_emission_unique.append( this_emission + ' ' + str( time_range_vector[y] ) )
         #
     #
@@ -776,7 +804,7 @@ for p in range( len( additional_params_list ) ):
                                         'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'FUEL':this_fuel,
                                         'YEAR':time_range_vector[y], 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],
                                         'Value':deepcopy( round( additional_params_df.loc[ p, time_range_vector[y] ], 4 ) ) } )
-        overall_param_df_dict_ndp[ this_param ] = overall_param_df_dict_ndp[ this_param ].append( this_dict_4_wide, ignore_index=True )
+        overall_param_df_dict_ndp[ this_param ] = overall_param_df_dict_ndp[ this_param ]._append( this_dict_4_wide, ignore_index=True )
     #
 #
 end_1 = time.time()   
@@ -790,7 +818,7 @@ writer_Demand_df_new = pd.ExcelWriter(params['A1_outputs'] + params['Print_Dem_C
 Demand_df_new[2018] = Demand_df_new[2018].astype(float)
 Demand_df_new = Demand_df_new.round( 4 )
 Demand_df_new.to_excel( writer_Demand_df_new, sheet_name = params['A_O_Dem'], index=False)
-writer_Demand_df_new.save()
+writer_Demand_df_new._save()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in Osemosys terms
 writer_Param_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Completed'], engine='xlsxwriter')
@@ -799,7 +827,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_Param_df, sheet_name = param_sheets_print[s], index=False)
-writer_Param_df.save()
+writer_Param_df._save()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in "natural" terms, i.e. the value of each one of the vehicles per unit
 writer_Param_Natural_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Natural_Completed'], engine='xlsxwriter')
@@ -808,7 +836,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new_natural[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_Param_Natural_df, sheet_name = param_sheets_print[s], index=False)
-writer_Param_Natural_df.save()
+writer_Param_Natural_df._save()
 #---------------------------------
 # Print updated 'Activity Ratio' projections
 writer_AR_Proj_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Proj_Completed'], engine='xlsxwriter')
@@ -817,7 +845,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = AR_Base_proj_df_new[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_AR_Proj_df, sheet_name = param_sheets_print[s], index=False)
-writer_AR_Proj_df.save()
+writer_AR_Proj_df._save()
 #
 #***********************************************************************************
 #
@@ -860,7 +888,7 @@ df_structure['MOO'] = df_structure_moo
 df_structure['Region'] = df_structure_region
 writer_Structure_df = pd.ExcelWriter(params['Print_A2_Struct_List'], engine='xlsxwriter')
 df_structure.to_excel( writer_Structure_df, sheet_name = params['lists'], index=False)
-writer_Structure_df.save()
+writer_Structure_df._save()
 #
 #***********************************************************************************
 # Print important pickles below:
