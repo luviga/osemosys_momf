@@ -6,6 +6,9 @@
 Executables: './Executables'
 A2_Output_Params: './A2_Output_Params/'
 B1_Output_Params: './B1_Output_Params/'
+outputs: '/Outputs'
+config: './config'
+templates: '/templates'
 
 # Files, sheets and columns
 # B1 script 
@@ -68,11 +71,35 @@ param: 'Parameter'
 # Pickle Blend Shares 0
 # File
 Blend_Shares_0: 'Blend_Shares_0.pickle'
+# Yaml conversion format
+# File
+conv_format: '/conversion_format.yaml'
+# Script to create and change values of the yaml file to use with otoole
+# File
+otoole_config: change_default_vals_params.py
 ########################################################################################
 
 ################################# Variable definitions #################################
+# Configuration variables
+#----------------------------------------------------------------------------------#
+# Start command line
+start: 'start cmd.exe /k cd '
+
 # Solver
-solver: 'cplex' # Could you use 'glpk', 'cbc' or cplex
+solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex'
+
+# For GLPK use
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
+
+# Choose if want to delete or not the solver solutions files
+del_files: True
+
+# Maximun cores to use per iteration
+max_x_per_iter: 40
+
+# Choose if want run script in parallel or not
+parallel: True
+#----------------------------------------------------------------------------------#
 
 # General values
 #----------------------------------------------------------------------------------#

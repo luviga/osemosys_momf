@@ -59,23 +59,24 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     case_address = file_adress + r'Executables\\' + str( first_list[n1] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
-    str1 = "start /B start cmd.exe @cmd /k cd " + file_adress
-    str_start = "start cmd.exe /k cd " + file_adress
+    str_start = params['start'] + file_adress
     #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     print(data_file)
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
-    # # OLD GLPK
-    # str2 = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
-    # os.system( str1 and str2 )
-    # #
-    # data_processor(n1,packaged_useful_elements, params)
-    #
-    
+
     # Solve model
     solver = params['solver']
-    
-    if solver == 'glpk':
+
+    if solver == 'glpk' and params['glpk_option'] == 'old':
+        # OLD GLPK
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
+        os.system( str_start and str_solve )
+        #
+        if params['del_files']:
+            data_processor(n1,packaged_useful_elements, params)
+
+    elif solver == 'glpk'and params['glpk_option'] == 'new':
         # GLPK
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
         os.system( str_start and str_solve )        
@@ -92,19 +93,26 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
             os.system( str_start and str_solve )
     
+    # If not existe yaml file to use with otoole
+    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_adress + 'config'):
+        str_otoole_config = 'python -u ' + file_adress + params['otoole_config']
+        os.system( str_start and str_otoole_config )
+        print('Creado')
+        sys.exit()
+
     # Conversion of outputs from .sol to csvs
-    if solver == 'glpk':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ./Executables/' + this_case[0].replace('.txt','') + '/Outputs datafile ' + str( data_file ) + ' ./config/conversion_format.yaml --glpk_model ' + output_file + '.glp'
-    else: # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+    if solver == 'glpk' and params['glpk_option'] == 'new':
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+    elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
           # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ./Executables/' + this_case[0].replace('.txt','') + '/Outputs csv ./config/templates ./config/conversion_format.yaml'
-    os.system( str_start and str_outputs )
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + params['config'] + params['templates'] + ' ' + params['config'] + params['conv_format']
+        os.system( str_start and str_outputs )
     
     time.sleep(1)
         
     # Delete glp, lp, txt and sol files
-    print(file_adress)
-    delete_files(output_file, solver)
+    if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
+        delete_files(output_file, solver)
     
 #
 def delete_files(file, solver):
@@ -849,7 +857,8 @@ def data_processor( case, unpackaged_useful_elements, params ):
         for n in range( len( data_row_list ) ):
             csvwriter.writerow( data_row_list[n] )
     #-----------------------------------------------------------------------------------------------------------%
-    shutil.os.remove(data_name) #-----------------------------------------------------------------------------------------------------------%
+    if params['del_files']:
+        shutil.os.remove(data_name) #-----------------------------------------------------------------------------------------------------------%
     gc.collect(generation=2)
     time.sleep(0.05)
     #-----------------------------------------------------------------------------------------------------------%
@@ -1829,6 +1838,8 @@ if __name__ == '__main__':
     with open('MOMF_T1_B1.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
+
+    # if config
 
     all_years = [ y for y in range( 2018 , 2050+1 ) ]
     index_2024 = all_years.index( 2024 )
@@ -3890,41 +3901,41 @@ if __name__ == '__main__':
         set_first_list(scenario_list_print, params)
         print('Entered Parallelization of model execution')
         x = len(first_list)
-        max_x_per_iter = 40 # FLAG: This is an input
+        max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
         y = x / max_x_per_iter
         y_ceil = math.ceil( y )
         #
-        for n in range(0,y_ceil):
-            n_ini = n*max_x_per_iter
-            processes = []
-            #
-            if n_ini + max_x_per_iter <= x:
-                max_iter = n_ini + max_x_per_iter
-            else:
-                max_iter = x
-            #    
-            for n2 in range( n_ini , max_iter ):
-                p = mp.Process(target=main_executer, args=(n2, packaged_useful_elements, scenario_list_print, params) )
-                processes.append(p)
-                p.start()
-            #
-            for process in processes:
-                process.join()
-        
+        if params['parallel']:
+            for n in range(0,y_ceil):
+                n_ini = n*max_x_per_iter
+                processes = []
+                #
+                if n_ini + max_x_per_iter <= x:
+                    max_iter = n_ini + max_x_per_iter
+                else:
+                    max_iter = x
+                #    
+                for n2 in range( n_ini , max_iter ):
+                    p = mp.Process(target=main_executer, args=(n2, packaged_useful_elements, scenario_list_print, params) )
+                    processes.append(p)
+                    p.start()
+                #
+                for process in processes:
+                    process.join()
+            
+        # This is for the linear version
+        else:
+            for n in range( len( first_list ) ):
+                main_executer(n, packaged_useful_elements, scenario_list_print, params)
+                
     # Delete log files when solver='cplex'
-    if params['solver'] == 'cplex':
+    if params['solver'] == 'cplex' and params['del_files']:
         shutil.os.remove('cplex.log')
         shutil.os.remove('clone1.log')
         shutil.os.remove('clone2.log')
-
-        # This is for the linear version
-        # for n in range( len( first_list ) ):
-        #     main_executer(n,packaged_useful_elements)
 
     end_1 = time.time()   
     time_elapsed_1 = -start1 + end_1
     print( str( time_elapsed_1 ) + ' seconds /', str( time_elapsed_1/60 ) + ' minutes' )
     print('*: For all effects, we have finished the work of this script.')
     #########################################################################################
-
-
