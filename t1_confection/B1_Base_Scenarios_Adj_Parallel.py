@@ -266,7 +266,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
             index = S_DICT_vars_structure['variable'].index( the_variable )
             this_variable_indices = S_DICT_vars_structure['index_list'][ index ]
             #
-            # if ('y' in this_variable_indices) and ( ('2015' in set_list) or ('2019' in set_list) or ('2025' in set_list) or ('2030' in set_list) or ('2035' in set_list) or ('2040' in set_list) or ('2045' in set_list) or (params['final_year_str'] in set_list) ):
+            # if ('y' in this_variable_indices) and ( ('2015' in set_list) or (f'{params['base_year_3']}' in set_list) or ('2025' in set_list) or (f'{params['first_decade_year']}' in set_list) or ('2035' in set_list) or (f'{params['sec_decade_year']}' in set_list) or ('2045' in set_list) or (params['final_year_str'] in set_list) ):
             #--%
             if 'y' in this_variable_indices:
                 data_line = linecache.getline(data_name, n+1)
@@ -518,8 +518,8 @@ def data_processor( case, unpackaged_useful_elements, params ):
                     #
                     if params['trains'] not in group_tech:
                         driven_distance = float(Reference_driven_distance[this_strategy][group_tech][this_year_index])
-                        driven_distance_2024 = \
-                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(2024)])
+                        driven_distance_change_year = \
+                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['change_year'])])
                         driven_distance_final = \
                             float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['final_year'])])
                         passenger_per_vehicle = float(Reference_occupancy_rate[this_strategy][group_tech][this_year_index])
@@ -533,17 +533,17 @@ def data_processor( case, unpackaged_useful_elements, params ):
 
                             accum_new_cap_subtract = 0
                             driven_distance_prev = float(Reference_driven_distance[this_strategy][group_tech][this_year_index-1])
-                            if int(this_year) >= 2024 and driven_distance_2024 != driven_distance_final:
+                            if int(this_year) >= params['change_year'] and driven_distance_change_year != driven_distance_final:
                                 # We need to select the appropiate accumulated new capacity:
                                 accum_new_cap = \
                                     aide_dict_accumnewcap[this_tech][this_year_index-1]
 
-                                if int(this_year) > 2018+Reference_op_life[this_strategy][this_tech]:  # works with a timeframe by 2050; longer timeframes may need more lifetime cycle adjustments
+                                if int(this_year) > params['base_year_2']+Reference_op_life[this_strategy][this_tech]:  # works with a timeframe by 2050; longer timeframes may need more lifetime cycle adjustments
                                     subtract_index_accum_old = \
                                         int(Reference_op_life[this_strategy][this_tech])
-                                    if int(this_year) - subtract_index_accum_old <= 2024:
+                                    if int(this_year) - subtract_index_accum_old <= params['change_year']:
                                         driven_distance_17 = \
-                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(2019)])
+                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['base_year_3'])])
                                     else:
                                         driven_distance_17 = \
                                             float(Reference_driven_distance[this_strategy][group_tech][this_year_index-subtract_index_accum_old])
@@ -551,13 +551,13 @@ def data_processor( case, unpackaged_useful_elements, params ):
                                     adjust_factor_old_cap = \
                                         (1-driven_distance/driven_distance_17)
 
-                                    if int(this_year) - subtract_index_accum_old > 2024:  # this is an odd rule, but works empirically
-                                        driven_distance_2024 = \
-                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(2024)])
+                                    if int(this_year) - subtract_index_accum_old > params['change_year']:  # this is an odd rule, but works empirically
+                                        driven_distance_change_year = \
+                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['change_year'])])
                                         driven_distance_minus3 = \
                                             float(Reference_driven_distance[this_strategy][group_tech][this_year_index-3])
                                         adjust_factor_old_cap -= \
-                                            (1-driven_distance_17/driven_distance_2024)
+                                            (1-driven_distance_17/driven_distance_change_year)
                                         adjust_factor_old_cap -= \
                                             (1-driven_distance/driven_distance_minus3)
 
@@ -614,7 +614,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
             output_csv_r = dr_default*100
-            output_csv_year = 2021
+            output_csv_year = params['base_year']
             #
             if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
                 ref_index = combination_list.index( this_combination )
@@ -660,24 +660,24 @@ def data_processor( case, unpackaged_useful_elements, params ):
                     group_tech = Fleet_Groups_inv[this_tech]
                     if params['trains'] not in group_tech:
                         driven_distance = float(Reference_driven_distance[this_strategy][group_tech][this_year_index])
-                        driven_distance_2024 = \
-                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(2024)])
+                        driven_distance_change_year = \
+                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['change_year'])])
                         driven_distance_final = \
                             float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['final_year'])])
 
                         accum_new_cap_subtract = 0
                         driven_distance_prev = float(Reference_driven_distance[this_strategy][group_tech][this_year_index-1])
-                        if int(this_year) >= 2024 and driven_distance_2024 != driven_distance_final:  # greater than the base year
+                        if int(this_year) >= params['change_year'] and driven_distance_change_year != driven_distance_final:  # greater than the base year
                             # We need to select the appropiate accumulated new capacity:
                             accum_new_cap = \
                                 aide_dict_accumnewcap[this_tech][this_year_index-1]
 
-                            if int(this_year) > 2018+Reference_op_life[this_strategy][this_tech]:
+                            if int(this_year) > params['base_year_2']+Reference_op_life[this_strategy][this_tech]:
                                 subtract_index_accum_old = \
                                     int(Reference_op_life[this_strategy][this_tech])
-                                if int(this_year) - subtract_index_accum_old <= 2024:
+                                if int(this_year) - subtract_index_accum_old <= params['change_year']:
                                     driven_distance_17 = \
-                                        float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(2019)])
+                                        float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['base_year_3'])])
                                 else:
                                     driven_distance_17 = \
                                         float(Reference_driven_distance[this_strategy][group_tech][this_year_index-subtract_index_accum_old])
@@ -685,11 +685,11 @@ def data_processor( case, unpackaged_useful_elements, params ):
                                 adjust_factor_old_cap = \
                                     (1-driven_distance/driven_distance_17)
 
-                                if int(this_year) - subtract_index_accum_old > 2024:  # this is an odd rule, but works empirically
+                                if int(this_year) - subtract_index_accum_old > params['change_year']:  # this is an odd rule, but works empirically
                                     driven_distance_minus3 = \
                                         float(Reference_driven_distance[this_strategy][group_tech][this_year_index-3])
                                     adjust_factor_old_cap -= \
-                                        (1-driven_distance_17/driven_distance_2024)
+                                        (1-driven_distance_17/driven_distance_change_year)
                                     adjust_factor_old_cap -= \
                                         (1-driven_distance/driven_distance_minus3)
 
@@ -1841,8 +1841,8 @@ if __name__ == '__main__':
 
     # if config
 
-    all_years = [ y for y in range( 2018 , params['final_year']+1 ) ]
-    index_2024 = all_years.index( 2024 )
+    all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+    index_change_year = all_years.index( params['change_year'] )
     initial_year = all_years[0]
     final_year = all_years[-1]
     """
@@ -2090,24 +2090,24 @@ if __name__ == '__main__':
         modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ].update( { base_configuration_modeshift_group_set_list[-1]:{} } )
         #
         if str( base_configuration_modeshift.loc[ n ,params['logistic']] ) == 'YES' and str( base_configuration_modeshift.loc[ n ,params['linear']] ) == 'NO':
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( {'Values':[],'Type':params['logistic']} ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LOGISTIC BEHAVIOR: R2021, R2050, L, C, M
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( {'Values':[],'Type':params['logistic']} ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LOGISTIC BEHAVIOR: params['R_base_year'], params['R_final_year'], L, C, M
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( { params['context']:base_configuration_modeshift.loc[ n ,params['context']] } )
             #
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'R2021'] ) )
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'R2050'] ) )
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,params['R_base_year']] ) )
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,params['R_final_year']] ) )
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'L'] ) )
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'C'] ) )
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'M'] ) )
             #
         #
         elif str( base_configuration_modeshift.loc[ n ,params['logistic']] ) == 'NO' and str( base_configuration_modeshift.loc[ n ,params['linear']] ) == 'YES':
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( {'Values':[], 'Type':params['linear']} ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LINEAR BEHAVIOR: y_ini, v_2030, v_2040, v_2050
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( {'Values':[], 'Type':params['linear']} ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LINEAR BEHAVIOR: y_ini, params['v_first_decade_year'], params['v_sec_decade_year'], v_final_year = v_2050
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ].update( { params['context']:base_configuration_modeshift.loc[ n ,params['context']] } )
             #
             modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_modeshift.loc[ n ,'y_ini'] ) )
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,'v_2030'] )
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,'v_2040'] )
-            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,'v_2050'] )
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,params['v_first_decade_year']] )
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,params['v_sec_decade_year']] )
+            modeshift_params[ base_configuration_modeshift_unique_scenario_list[-1] ][ base_configuration_modeshift_group_set_list[-1] ][ 'Values' ].append( base_configuration_modeshift.loc[ n ,params['v_final_year']] )
             #
         #
         elif str( base_configuration_modeshift.loc[ n ,params['built_in']] ) == 'YES':
@@ -2156,21 +2156,21 @@ if __name__ == '__main__':
         store_the_sector = deepcopy(str( base_configuration_adoption.loc[ n ,'Sector'] ))
         #
         if str( base_configuration_adoption.loc[ n ,params['logistic']] ) == 'YES' and str( base_configuration_adoption.loc[ n ,params['linear']] ) == 'NO':
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ].update( {'Values':[], 'Type':params['logistic'], 'Restriction_Type':str( base_configuration_adoption.loc[ n ,'Restriction_Type'] ) } ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LOGISTIC BEHAVIOR: R2021, R2050, L, C, M
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ].update( {'Values':[], 'Type':params['logistic'], 'Restriction_Type':str( base_configuration_adoption.loc[ n ,'Restriction_Type'] ) } ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LOGISTIC BEHAVIOR: params['R_base_year'], params['R_final_year'], L, C, M
             #
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'R2021'] ) )
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'R2050'] ) )
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,params['R_base_year']] ) )
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,params['R_final_year']] ) )
             adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'L'] ) )
             adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'C'] ) )
             adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'M'] ) )
             #
         #
         elif str( base_configuration_adoption.loc[ n ,params['logistic']] ) == 'NO' and str( base_configuration_adoption.loc[ n ,params['linear']] ) == 'YES':
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ].update( {'Values':[], 'Type':params['linear'], 'Restriction_Type':str( base_configuration_adoption.loc[ n ,'Restriction_Type'] ) } ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LINEAR BEHAVIOR: y_ini, v_2050
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ].update( {'Values':[], 'Type':params['linear'], 'Restriction_Type':str( base_configuration_adoption.loc[ n ,'Restriction_Type'] ) } ) # WE MUST REMEMBER THE ORDER OF APPENDING THE PARAMETERS OF LINEAR BEHAVIOR: y_ini, params['v_final_year']
             adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( float( base_configuration_adoption.loc[ n ,'y_ini'] ) )
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,'v_2030'] )
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,'v_2040'] )
-            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,'v_2050'] )
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,params['v_first_decade_year']] )
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,params['v_sec_decade_year']] )
+            adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ][ 'Values' ].append( base_configuration_adoption.loc[ n ,params['v_final_year']] )
             #
         #
         adoption_params[ base_configuration_adoption_unique_scenario_list[-1] ][ base_configuration_adoption_group_set_list[-1] ].update( {'Sector':store_the_sector} )
@@ -2293,15 +2293,15 @@ if __name__ == '__main__':
                 this_set = applicable_sets_demand[ a_set ]
                 if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['logistic']:
                     #
-                    R2021 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
-                    R2050 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+                    R_base_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
+                    R_final_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
                     L =     modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
                     C =     modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     M =     modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 4 ]
                     #
-                    r2050 = 1/R2050
+                    r_final_year = 1/R_final_year
                     Q =     L/C - 1
-                    k =     np.log( (r2050-1)/Q )/(M-params['final_year'])
+                    k =     np.log( (r_final_year-1)/Q )/(M-params['final_year'])
                     #
                     shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,params['final_year']+1 ) ]
                     shift_year_counter = 0
@@ -2319,9 +2319,9 @@ if __name__ == '__main__':
                 #
                 elif modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['linear']:
                     y_ini = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ]
-                    v_2030 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
-                    v_2040 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]                
-                    v_2050 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
+                    v_first_decade_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+                    v_sec_decade_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]                
+                    v_final_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     #
                     x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
                     for y in range( len( time_range_vector ) ):
@@ -2330,17 +2330,17 @@ if __name__ == '__main__':
                             xp_coord_known.append( y )
                             yp_coord_known.append( 0 )
                             not_known_e = False
-                        if v_2030 != params['interp'] and time_range_vector[y] == 2030:
+                        if v_first_decade_year != params['interp'] and time_range_vector[y] == params['first_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2030 )
+                            yp_coord_known.append( v_first_decade_year )
                             not_known_e = False
-                        if v_2040 != params['interp'] and time_range_vector[y] == 2040:
+                        if v_sec_decade_year != params['interp'] and time_range_vector[y] == params['sec_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2040 )
+                            yp_coord_known.append( v_sec_decade_year )
                             not_known_e = False
-                        if v_2050 != params['interp'] and time_range_vector[y] == params['final_year']:
+                        if v_final_year != params['interp'] and time_range_vector[y] == params['final_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2050 )
+                            yp_coord_known.append( v_final_year )
                             not_known_e = False
                         if not_known_e == True:
                             x_coord_tofill.append( y )
@@ -2394,9 +2394,9 @@ if __name__ == '__main__':
                 #
                 if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['linear']:
                     y_ini = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ]
-                    v_2030 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
-                    v_2040 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]                
-                    v_2050 = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
+                    v_first_decade_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+                    v_sec_decade_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]                
+                    v_final_year = modeshift_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     #
                     x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
                     for y in range( len( time_range_vector ) ):
@@ -2405,17 +2405,17 @@ if __name__ == '__main__':
                             xp_coord_known.append( y )
                             yp_coord_known.append( 0 )
                             not_known_e = False
-                        if v_2030 != params['interp'] and time_range_vector[y] == 2030:
+                        if v_first_decade_year != params['interp'] and time_range_vector[y] == params['first_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2030 )
+                            yp_coord_known.append( v_first_decade_year )
                             not_known_e = False
-                        if v_2040 != params['interp'] and time_range_vector[y] == 2040:
+                        if v_sec_decade_year != params['interp'] and time_range_vector[y] == params['sec_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2040 )
+                            yp_coord_known.append( v_sec_decade_year )
                             not_known_e = False
-                        if v_2050 != params['interp'] and time_range_vector[y] == params['final_year']:
+                        if v_final_year != params['interp'] and time_range_vector[y] == params['final_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2050 )
+                            yp_coord_known.append( v_final_year )
                             not_known_e = False
                         if not_known_e == True:
                             x_coord_tofill.append( y )
@@ -2796,7 +2796,7 @@ if __name__ == '__main__':
                             new_value_list_old_base = deepcopy( value_list )
                             new_value_list = []
                             for n in range( len( new_value_list_old_base ) ):
-                                if n < index_2024:
+                                if n < index_change_year:
                                     new_value_list.append( new_value_list_old_base[n] )
                                 else:
                                     new_value_list.append( (new_value_list_old_base[n]-subtract_list[n])*(demand_list[n]/demand_list_BASE[n]) )
@@ -2917,27 +2917,27 @@ if __name__ == '__main__':
                 #########################################################################################
                 if this_type == params['linear']:
                     y_ini  = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
-                    v_2030 = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
-                    v_2040 = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
-                    v_2050 = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
+                    v_first_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+                    v_sec_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
+                    v_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     #
-                    known_years_ini = [e for e in range(2018, int(y_ini)+1)]
-                    known_years = known_years_ini + [2030, 2040, params['final_year'] ]
-                    #2030
+                    known_years_ini = [e for e in range(params['base_year_2'], int(y_ini)+1)]
+                    known_years = known_years_ini + [params['first_decade_year'], params['sec_decade_year'], params['final_year'] ]
+                    # First decade year
                     try:
-                        float_v2030 = float(v_2030)
+                        float_v_first_decade_year = float(v_first_decade_year)
                     except Exception:
-                        float_v2030 = params['interp']
-                    #2040
+                        float_v_first_decade_year = params['interp']
+                    # Second decade year
                     try:
-                        float_v2040 = float(v_2040)
+                        float_v_sec_decade_year = float(v_sec_decade_year)
                     except Exception:
-                        float_v2040 = params['interp'] 
-                    #2050
+                        float_v_sec_decade_year = params['interp'] 
+                    #Final year
                     try:
-                        float_v2050 = float(v_2050)
+                        float_v_final_year = float(v_final_year)
                     except Exception:    
-                        float_v2050 = params['interp']
+                        float_v_final_year = params['interp']
                     #
                     ### if this_sector == params['indus']:
                     # Here we must know the initial share (extracting the group values):
@@ -2976,7 +2976,7 @@ if __name__ == '__main__':
                     ###         #
                     ###     #
                     #
-                    known_values = known_value_ini + [float_v2030, float_v2040, float_v2050 ]
+                    known_values = known_value_ini + [float_v_first_decade_year, float_v_sec_decade_year, float_v_final_year ]
                     #
                     x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
                     for y in range( len( time_range_vector ) ):
@@ -2985,17 +2985,17 @@ if __name__ == '__main__':
                             xp_coord_known.append( y )
                             yp_coord_known.append( known_value_ini[y] )
                             not_known_e = False
-                        if v_2030 != params['interp'] and time_range_vector[y] == 2030:
+                        if v_first_decade_year != params['interp'] and time_range_vector[y] == params['first_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2030 )
+                            yp_coord_known.append( v_first_decade_year )
                             not_known_e = False
-                        if v_2040 != params['interp'] and time_range_vector[y] == 2040:
+                        if v_sec_decade_year != params['interp'] and time_range_vector[y] == params['sec_decade_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2040 )
+                            yp_coord_known.append( v_sec_decade_year )
                             not_known_e = False
-                        if v_2050 != params['interp'] and time_range_vector[y] == params['final_year']:
+                        if v_final_year != params['interp'] and time_range_vector[y] == params['final_year']:
                             xp_coord_known.append( y )
-                            yp_coord_known.append( v_2050 )
+                            yp_coord_known.append( v_final_year )
                             not_known_e = False
                         if not_known_e == True:
                             x_coord_tofill.append( y )
@@ -3014,15 +3014,15 @@ if __name__ == '__main__':
                     #
                 #
                 if this_type == params['logistic']:
-                    R2021 = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
-                    R2050 = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+                    R_base_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
+                    R_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
                     L =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
                     C =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     M =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 4 ]
                     #
-                    r2050 = 1/R2050
+                    r_final_year = 1/R_final_year
                     Q =     L/C - 1
-                    k =     np.log( (r2050-1)/Q )/(M-params['final_year'])
+                    k =     np.log( (r_final_year-1)/Q )/(M-params['final_year'])
                     #
                     shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,params['final_year']+1 ) ]
                     shift_year_counter = 0
@@ -3201,7 +3201,7 @@ if __name__ == '__main__':
                         #
                         new_value_list = []
                         for n in range( len( demand_list ) ):
-                            if n < index_2024:
+                            if n < index_change_year:
                                 new_value_list.append( demand_list[n] )
                             else:
                                 new_value_list.append( (demand_list[n]-subtract_list[n])*new_distance[n]/base_distance[n] )
@@ -3216,7 +3216,7 @@ if __name__ == '__main__':
                             #
                             new_value_list = []
                             for n in range( len( demand_list ) ):
-                                if n < index_2024:
+                                if n < index_change_year:
                                     new_value_list.append( demand_list[n] )
                                 else:
                                     new_value_list.append( demand_list[n]*new_distance[n]/base_distance[n] )
@@ -3247,7 +3247,7 @@ if __name__ == '__main__':
                             #
                             new_value_list = []
                             for n in range( len( value_list ) ):
-                                if n < index_2024:
+                                if n < index_change_year:
                                     new_value_list.append( value_list[n] )
                                 else:
                                     new_value_list.append( value_list[n]*new_distance[n]/base_distance[n] )
@@ -3529,8 +3529,8 @@ if __name__ == '__main__':
                     value_list = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] )
                     value_list = [ float(value_list[j]) for j in range( len(value_list) ) ]
                     #
-                    start_blend_point = [2026, 1]
-                    final_blend_point = [2030, 5]
+                    start_blend_point = [params['change_year_2'], 1]
+                    final_blend_point = [params['first_decade_year'], 5]
                     new_value_list_rounded, biofuel_shares = interpolation_blend( start_blend_point, 'None', final_blend_point, value_list, time_range_vector )
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
@@ -3555,9 +3555,9 @@ if __name__ == '__main__':
                     value_list = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] )
                     value_list = [ float(value_list[j]) for j in range( len(value_list) ) ]
                     #
-                    start_blend_point = [2020, 2]
-                    mid_blend_point = [2021, 4]
-                    final_blend_point = [2022, 8]
+                    start_blend_point = [params['base_year_4'], 2]
+                    mid_blend_point = [params['base_year'], 4]
+                    final_blend_point = [params['base_year_5'], 8]
                     new_value_list_rounded, biofuel_shares = interpolation_blend( start_blend_point, mid_blend_point, final_blend_point, value_list, time_range_vector )
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
@@ -3826,22 +3826,28 @@ if __name__ == '__main__':
         y = x / max_x_per_iter
         y_ceil = math.ceil( y )
         #
-        for n in range(0,y_ceil):
-            n_ini = n*max_x_per_iter
-            processes = []
-            #
-            if n_ini + max_x_per_iter <= x:
-                max_iter = n_ini + max_x_per_iter
-            else:
-                max_iter = x
-            #    
-            for n2 in range( n_ini , max_iter ):
-                p = mp.Process(target=csv_printer_parallel, args=(n2, scenario_list, stable_scenarios, basic_header_elements, parameters_to_print, S_DICT_params_structure, params) )
-                processes.append(p)
-                p.start()
-            #
-            for process in processes:
-                process.join()
+        if params['parallel']:
+            for n in range(0,y_ceil):
+                n_ini = n*max_x_per_iter
+                processes = []
+                #
+                if n_ini + max_x_per_iter <= x:
+                    max_iter = n_ini + max_x_per_iter
+                else:
+                    max_iter = x
+                #    
+                for n2 in range( n_ini , max_iter ):
+                    p = mp.Process(target=csv_printer_parallel, args=(n2, scenario_list, stable_scenarios, basic_header_elements, parameters_to_print, S_DICT_params_structure, params) )
+                    processes.append(p)
+                    p.start()
+                #
+                for process in processes:
+                    process.join()
+
+        # # This is for the linear version
+        # else:
+        #     for n in range( len( first_list ) ):
+        #         main_executer(n, packaged_useful_elements, scenario_list_print, params)
 
     #########################################################################################
     global scenario_list_print
@@ -3868,25 +3874,28 @@ if __name__ == '__main__':
         y = x / max_x_per_iter
         y_ceil = math.ceil( y )
         #
-        for n in range(0,y_ceil):
-            n_ini = n*max_x_per_iter
-            processes = []
-            #
-            if n_ini + max_x_per_iter <= x:
-                max_iter = n_ini + max_x_per_iter
-            else:
-                max_iter = x
-            #    
-            for n2 in range( n_ini , max_iter ):
-                p = mp.Process(target=function_C_mathprog, args=(n2, stable_scenarios, packaged_useful_elements, params) )
-                processes.append(p)
-                p.start()
-            #
-            for process in processes:
-                process.join()
+        if params['parallel']:
+            for n in range(0,y_ceil):
+                n_ini = n*max_x_per_iter
+                processes = []
+                #
+                if n_ini + max_x_per_iter <= x:
+                    max_iter = n_ini + max_x_per_iter
+                else:
+                    max_iter = x
+                #    
+                for n2 in range( n_ini , max_iter ):
+                    p = mp.Process(target=function_C_mathprog, args=(n2, stable_scenarios, packaged_useful_elements, params) )
+                    processes.append(p)
+                    p.start()
+                #
+                for process in processes:
+                    process.join()
 
         # This is for the linear version
-        # function_C_mathprog( stable_scenarios, packaged_useful_elements )
+        else:
+            for n in range( len( first_list ) ):
+                main_executer(n, packaged_useful_elements, scenario_list_print, params)
 
     #########################################################################################
     if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
