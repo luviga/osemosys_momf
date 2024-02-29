@@ -99,6 +99,34 @@ max_x_per_iter: 40
 
 # Choose if want run script in parallel or not
 parallel: True
+
+# Control inputs
+is_this_last_update: True
+generator_or_executor: 'Both' # options: 'None', 'Generator', 'Executor'
+
+# Country
+coun_initial: 'CR'
+
+
+# Scenarios
+#--------------------------------------------------------------------------------------------------------------------#
+BAU: 'BAU'
+NDP: 'NDP'
+#--------------------------------------------------------------------------------------------------------------------#
+
+# Years variables
+#----------------------------------------------------------------------------------#
+# Main years
+base_year:
+change_year:
+final_year: 2050
+final_year_str: '2050'
+
+
+
+# Final year
+
+
 #----------------------------------------------------------------------------------#
 
 # General values
@@ -271,6 +299,31 @@ sets: [
 #--------------------------------------------------------------------------------------------------------------------#
 
 ################################# PART 1 #################################
+# 1.A Extract the strucute setup of the model based on 'Structure.xlsx'
+#--------------------------------------------------------------------------------------------------------------------#
+
+S_DICT_sets_structure: {
+  set: [],
+  initial: [],
+  number_of_elements: [],
+  elements_list: []
+  }
+
+S_DICT_params_structure: {
+  category: [],
+  parameter: [],
+  number_of_elements: [],
+  index_list: []
+  }
+
+S_DICT_vars_structure: {
+  category: [],
+  variable: [],
+  number_of_elements: [],
+  index_list: []
+  }
+#--------------------------------------------------------------------------------------------------------------------#
+
 # 1.B Proceed to read all the base scenarios
 #--------------------------------------------------------------------------------------------------------------------#
 header_row: [
@@ -389,3 +442,86 @@ each_parameter_header: [
   ]
 #--------------------------------------------------------------------------------------------------------------------#
 ########################################################################################
+
+################################# Conditions #################################
+trains: 'Trains'
+train: 'Train'
+tech_train: 'Techs_Trains'
+param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost']
+this_combina: ['Accidents', 'Health', 'Congestion']
+PRI: 'PRI'
+PUB: 'PUB'
+FEAHEA: 'FREHEA'
+FRELIG: 'FRELIG'
+ini_year_uncer: 'Initial_Year_of_Uncertainty'
+scen: 'Scenario'
+group_set: 'Group_Set'
+interp: 'interp'
+type: 'Type'
+techs_var: 'Techs' # You must be careful because 'Techs' is also used as a sheet, but here are diferent parameter name.
+tech_train_fre: 'Techs_Trains_Freight'
+tech_he_fre: 'Techs_He_Freight'
+built_in: 'Built-in'
+tech_train_ele: 'TRXTRAIELE' # Technologies Trains Electric
+exact: 'Exact'
+pass : 'Passenger'
+fre : 'Freight'
+tr: 'TR'
+in: 'IN'
+min__max: 'Min/Max'
+min: 'Min'
+max: 'Max'
+trans: 'Transport'
+indus: 'Industry'
+cap_vars_cond: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityUpperLimit']
+cap_vars_cond_2: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+techs_: 'Techs_'
+gen_or_exe_1: 'Generator'
+gen_or_exe_2: 'Both'
+gen_or_exe_3: 'Executor'
+gen_or_exe_4: 'Both'
+
+##############################################################################
+
+################################# General Var #################################
+newfleet: 'NewFleet'
+externa_base_year: 'Externalities2021'
+externa_gdp: 'Externalities_GDP'
+capex_base_year: 'Capex2021'
+capex_gdp: 'Capex_GDP'
+fopex_base_year: 'FixedOpex2021'
+fopex_gdp: 'FixedOpex_GDP'
+vopex_base_year: 'VarOpex2021'
+vopex_gdp: 'VarOpex_GDP'
+opex_base_year: 'Opex2021'
+opex_gdp: 'Opex_GDP'
+biofuel_shares: 'BiofuelShares'
+fleet: 'Fleet'
+dist_driven: 'DistanceDriven'
+produced_mob: 'ProducedMobility'
+filt_fuel_type: 'FilterFuelType'
+filt_veh_type: 'FilterVehicleType'
+tech_set: 'Tech_Set'
+logistic: 'Logistic'
+linear: 'Linear'
+context: 'Context'
+tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public
+tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private
+tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight
+tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight
+tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize
+cost: 'Cost'
+inter_escal: 'Interpolate_Escalate'
+fix_last: 'Fix_Last'
+intact: 'intact'
+inter: 'Interpolate'
+fix_ind: 'Fix_Indicated'
+write: 'Write'
+overwrite: 'Overwrite'
+exat_mult: 'Exact_Multiplier'
+copy: 'Copy'
+
+
+
+
+##############################################################################
