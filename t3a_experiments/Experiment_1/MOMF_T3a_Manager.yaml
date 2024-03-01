@@ -109,6 +109,30 @@ BAU: 'BAU'
 NDP: 'NDP'
 #--------------------------------------------------------------------------------------------------------------------#
 
+# Years variables
+#----------------------------------------------------------------------------------#
+# Base year
+base_year: 2021
+R_base_year: 'R2021' 
+# r_base_year_max == r2021max Do not uncommented, this is a variable defined at the script
+
+base_year_2: 2018 # Talk with Luis about this variable
+
+# Changed year
+change_year: 2024
+# index_change_year == index_2024
+
+# Final year
+final_year: 2050
+final_year_str: '2050'
+R_final_year: 'R2050'
+v_final_year: 'v_2050'
+# v_final_year == 'v_2050' Do not uncommented, this is a variable defined at the script
+# r_final_year == r2050
+# the_final_year_value == the_2050_value
+# the_final_year_value_raw == the_2050_value_raw
+#----------------------------------------------------------------------------------#
+
 # Data Processor function
 #----------------------------------------------------------------------------------#
 S_DICT_sets_structure: {

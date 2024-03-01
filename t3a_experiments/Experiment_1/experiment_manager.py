@@ -374,7 +374,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
             output_csv_r = 0.05*100
-            output_csv_year = 2021
+            output_csv_year = params['base_year']
             #
             if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
                 ref_index = combination_list.index( this_combination )
@@ -1698,16 +1698,16 @@ if __name__ == '__main__':
                 #
                 elif 'M (' in independent_Param: # means we are ready to estimate all the parameters
                     # we must calculate the upper limit as a function of the other parametrs for a coherent outcome
-                    r2021max = 1/0.05 # 1/this_future_X_param[ independent_Param_index-2 ]
-                    r2050 = 1/0.999 # 1/this_future_X_param[ independent_Param_index-1 ]
+                    r_base_year_max = 1/0.05 # 1/this_future_X_param[ independent_Param_index-2 ]
+                    r_final_year = 1/0.999 # 1/this_future_X_param[ independent_Param_index-1 ]
                     #
                     M = this_future_X_param[ independent_Param_index ]
                     #
                     this_C = evaluation_value
                     this_L = this_future_X_param[ independent_Param_index-1 ]
                     #
-                    log_Qmax_wo_elevate = (r2021max-1)/( (r2050-1)**( (M-2021)/(M-2050) ) )
-                    Q_elevation_factor = 1 - (M-2021)/(M-2050)
+                    log_Qmax_wo_elevate = (r_base_year_max-1)/( (r_final_year-1)**( (M-params['base_year'])/(M-params['final_year']) ) )
+                    Q_elevation_factor = 1 - (M-params['base_year'])/(M-params['final_year'])
                     log_Qmax = np.log(log_Qmax_wo_elevate)/Q_elevation_factor
                     Qmax = np.exp( log_Qmax )
                     Cmax = this_L/( Qmax+1 )
@@ -1722,7 +1722,7 @@ if __name__ == '__main__':
                 if 'M (' in independent_Param:
                     this_C = evaluation_value
                     Q = this_L/this_C - 1
-                    k = np.log( (r2050-1)/Q )/(M-2050)
+                    k = np.log( (r_final_year-1)/Q )/(M-params['final_year'])
 
             #######################################################################
             # here, we program the direction dependencies:
@@ -2060,8 +2060,8 @@ if __name__ == '__main__':
                                     distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
 
                             # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                            all_years = [ y for y in range( 2018 , 2050+1 ) ]
-                            index_2024 = all_years.index( 2024 )
+                            all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+                            index_change_year = all_years.index( params['change_year'] )
                             local_df_elasticities = deepcopy(df_elasticities)
                             local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
                             local_df_elasticities[params['e_pass']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
@@ -2069,7 +2069,7 @@ if __name__ == '__main__':
 
                             new_value_list = []
                             for y in range(len(all_years)):
-                                if y < index_2024:
+                                if y < index_change_year:
                                     new_value_list.append(summed_value_list[y])
                                 else:  # apply growth formula with demand elasticity
                                     gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
@@ -2116,8 +2116,8 @@ if __name__ == '__main__':
 
                                 if X_Cat in params['fre_dem']:
                                     # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                                    all_years = [ y for y in range( 2018 , 2050+1 ) ]
-                                    index_2024 = all_years.index( 2024 )
+                                    all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+                                    index_change_year = all_years.index( params['change_year'] )
                                     local_df_elasticities = deepcopy(df_elasticities)
                                     local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_fre'])] = float(Values_per_Future[fut_id])
                                     local_df_elasticities[params['e_fre']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
@@ -2125,7 +2125,7 @@ if __name__ == '__main__':
 
                                     new_value_list = []
                                     for y in range(len(all_years)):
-                                        if y < index_2024:
+                                        if y < index_change_year:
                                             new_value_list.append(value_list[y])
                                         else:  # apply growth formula with demand elasticity
                                             gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
@@ -2151,7 +2151,7 @@ if __name__ == '__main__':
 
                                     new_value_list = []
                                     for y in range(len(all_years)):
-                                        if y < index_2024:
+                                        if y < index_change_year:
                                             new_value_list.append(value_list_ratio[y]*list_gdp_ref[y]*list_i[y]/1e6)
                                             last_gdp = deepcopy(list_gdp_ref[y])
                                         else:  # apply growth formula with demand elasticity
@@ -2316,7 +2316,7 @@ if __name__ == '__main__':
                             this_demand_set_value = [ float(this_demand_set_value[j]) for j in range( len( time_range_vector ) ) ]
 
                             # Linear interpolation of freight modal shift
-                            v_2050 = float(Values_per_Future[fut_id] )
+                            v_final_year = float(Values_per_Future[fut_id] )
                             x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
                             for y in range( len( time_range_vector ) ):
                                 not_known_e = True
@@ -2324,9 +2324,9 @@ if __name__ == '__main__':
                                     xp_coord_known.append( y )
                                     yp_coord_known.append( 0 )
                                     not_known_e = False
-                                if time_range_vector[y] == 2050:
+                                if time_range_vector[y] == params['final_year']:
                                     xp_coord_known.append( y )
-                                    yp_coord_known.append( v_2050 )
+                                    yp_coord_known.append( v_final_year )
                                     not_known_e = False
                                 if not_known_e is True:
                                     x_coord_tofill.append( y )
@@ -2955,7 +2955,7 @@ if __name__ == '__main__':
                                     #
                                     new_value_list = []
                                     for n in range( len( value_list ) ):
-                                        if n < index_2024:
+                                        if n < index_change_year:
                                             new_value_list.append( demand_list[n] )
                                         else:
                                             new_value_list.append( (demand_list[n]-subtract_list[n])*new_distance[n]/base_distance[n] )
@@ -2970,7 +2970,7 @@ if __name__ == '__main__':
                                         #
                                         new_value_list = []
                                         for n in range( len( value_list ) ):
-                                            if n < index_2024:
+                                            if n < index_change_year:
                                                 new_value_list.append( demand_list[n] )
                                             else:
                                                 new_value_list.append( demand_list[n]*new_distance[n]/base_distance[n] )
@@ -3000,7 +3000,7 @@ if __name__ == '__main__':
                                         #
                                         new_value_list = []
                                         for n in range( len( value_list ) ):
-                                            if n < index_2024:
+                                            if n < index_change_year:
                                                 new_value_list.append( value_list[n] )
                                             else:
                                                 new_value_list.append( value_list[n]*new_distance[n]/base_distance[n] )
@@ -3039,9 +3039,9 @@ if __name__ == '__main__':
                                 for n in range( len( this_transport_techs ) ):
                                     proceed_with_adjustment = True
                                     if this_parameter == 'TotalAnnualMaxCapacity':
-                                        the_2050_value_raw = df_getter.loc[ ( df_getter['TECHNOLOGY'].str.contains( this_transport_techs[n] ) ) & (df_getter['YEAR'] == final_year ) ]
-                                        the_2050_value = float( "{0:.3f}".format( the_2050_value_raw['Value'].iloc[0] ) )
-                                        if the_2050_value >= 99:
+                                        the_final_year_value_raw = df_getter.loc[ ( df_getter['TECHNOLOGY'].str.contains( this_transport_techs[n] ) ) & (df_getter['YEAR'] == final_year ) ]
+                                        the_final_year_value = float( "{0:.3f}".format( the_final_year_value_raw['Value'].iloc[0] ) )
+                                        if the_final_year_value >= 99:
                                             proceed_with_adjustment = False
                                     #
                                     if proceed_with_adjustment == True:
@@ -3220,9 +3220,9 @@ if __name__ == '__main__':
                         for n in range( len( this_transport_techs ) ):
                             proceed_with_adjustment = True
                             if params_to_adjust[par] == 'TotalAnnualMaxCapacity':
-                                the_2050_value_raw = df_getter.loc[ ( df_getter['TECHNOLOGY'].str.contains( this_transport_techs[n] ) ) & (df_getter['YEAR'] == final_year ) ]
-                                the_2050_value = float( "{0:.3f}".format( the_2050_value_raw['Value'].iloc[0] ) )
-                                if the_2050_value >= 99:
+                                the_final_year_value_raw = df_getter.loc[ ( df_getter['TECHNOLOGY'].str.contains( this_transport_techs[n] ) ) & (df_getter['YEAR'] == final_year ) ]
+                                the_final_year_value = float( "{0:.3f}".format( the_final_year_value_raw['Value'].iloc[0] ) )
+                                if the_final_year_value >= 99:
                                     proceed_with_adjustment = False
                             #
                             if proceed_with_adjustment is True:
@@ -3378,9 +3378,9 @@ if __name__ == '__main__':
     gdp_dict = experiment_dictionary[1]
     gdp_growth_values = gdp_dict['Values'] # start to apply in 2024
 
-    all_years = [ y for y in range( 2018 , 2050+1 ) ]
-    index_2024 = all_years.index( 2024 )
-    applicable_years = all_years[index_2024+1:]
+    all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+    index_change_year = all_years.index( params['change_year'] )
+    applicable_years = all_years[index_change_year+1:]
 
     gdp_dict_export = {}
     gdp_dict_export.update( { 0:deepcopy( list_gdp_ref ) } )
