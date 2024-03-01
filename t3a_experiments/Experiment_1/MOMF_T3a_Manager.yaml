@@ -6,6 +6,7 @@
 Futures: './Experimental_Platform/Futures/'
 From_Confection: './0_From_Confection/'
 Base_Model: '1_Baseline_Modelling'
+results: 'Experimental_Platform\\Futures\\'
 
 # Input File Classifier Modes transport
 # File (First letter of the word y uppercase)
@@ -13,10 +14,6 @@ Modes_Trans: './0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
 # Sheets (First letter of the word y uppercase)
 Fuel_Code: 'Fuel_to_Code'
 Tech_Code: 'Tech_to_Code'
-# Columns (First letter of the word y lowercase)
-code: 'Code'
-techs: 'Techs'
-plain_eng: 'Plain English'
 # B1 Model Structure
 # File
 B1_model_Struct: 'B1_Model_Structure.xlsx'
@@ -63,7 +60,6 @@ GDP_REF: '_GDP_Ref.xlsx'
 GDP: 'GDP'
 Elast: 'Elasticities'
 Inten: 'Intensities'
-# Columns
 GDP_Growth: 'GDP_Growth'
 # Experiment Setup
 # File
@@ -77,8 +73,65 @@ B1_Default_Param: './0_From_Confection/B1_Default_Param.xlsx'
 ########################################################################################
 
 ################################# Variable definitions #################################
+# Configuration variables
+#----------------------------------------------------------------------------------#
+# Start command line
+start: 'start cmd.exe /k cd '
+
+# Solver
+solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex'
+
+# For GLPK use
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
+
+# Choose if want to delete or not the solver solutions files
+del_files: True
+
+# Maximun cores to use per iteration
+Number_of_Runs: 40
+Scenario_to_Reproduce: 'All'
+Initial_Future_to_Print: 1
+Final_Future_to_Print: 10
+Initial_Year_of_Uncertainty: 2022
+Experiment_ID: 1
+max_x_per_iter: 20
+
+# Choose if want run script in parallel or not
+parallel: True
+
+# Control inputs
+generator_or_executor: 'Both' # options: 'Both', 'None', 'Generator', 'Executor'
+inputs_txt_csv: 'Both' # 'Both', 'csv'
+
+# Scenarios
+#--------------------------------------------------------------------------------------------------------------------#
+BAU: 'BAU'
+NDP: 'NDP'
+#--------------------------------------------------------------------------------------------------------------------#
+
 # Data Processor function
 #----------------------------------------------------------------------------------#
+S_DICT_sets_structure: {
+  set: [],
+  initial: [],
+  number_of_elements: [],
+  elements_list: []
+  }
+
+S_DICT_params_structure: {
+  category: [],
+  parameter: [],
+  number_of_elements: [],
+  index_list: []
+  }
+
+S_DICT_vars_structure: {
+  category: [],
+  variable: [],
+  number_of_elements: [],
+  index_list: []
+  }
+
 all_vars: [
   'Demand',
   'NewCapacity',
@@ -219,3 +272,120 @@ Blend_Shares_dict: {
   }
 #----------------------------------------------------------------------------------#
 ########################################################################################
+
+################################# Conditions #################################
+trains: 'Trains'
+tech_train: 'Techs_Trains'
+this_combina: ['Accidents', 'Health', 'Congestion']
+PRI: 'PRI'
+PUB: 'PUB'
+FEAHEA: 'FREHEA'
+FRELIG: 'FRELIG'
+tech_train_fre: 'Techs_Trains_Freight'
+tech_he_fre: 'Techs_He_Freight'
+fre: 'Freight'
+tr: 'TR'
+cap_vars_cond_2: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+techs_: 'Techs_'
+gen_or_exe_1: 'Generator'
+gen_or_exe_2: 'Both'
+gen_or_exe_3: 'Executor'
+gen_or_exe_4: 'Both'
+KKT: 'Karush-Kuhn-Tucker'
+motos: 'Motos'
+param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost']
+down: 'down'
+up: 'up'
+exp_param_rel_base: 'Explored_Parameter_is_Relative_to_Baseline'
+year_when_rea_zero: 'Year_when_reaches_zero'
+cte: 'Constant'
+ble_time_series: 'Blend_Time_Series'
+_base_data: '_Base_Dataset'
+_backup: '_BACKUP'
+exper: 'Experiment'
+pass_dem: 'Passenger Demand'
+x_cat_list: ['Electrical Demand', 'Fuel Demand', 'Freight Demand']
+fre_dem: 'Freight Demand'
+ele_dem: 'Electrical Demand'
+fuel_dem: 'Fuel Demand'
+rail_dem: 'Rail Demand'
+mode_shift: 'Mode Shift'
+pub_tra_dis: 'Public Transport Distribution'
+techs_motos: 'Techs_Motos'
+techs_sedan: 'Techs_Sedan'
+techs_taxis: 'Techs_Taxis'
+techs_bus: 'Techs_Buses'
+techs_mibus: 'Techs_Microbuses'
+ini_val: 'Initial_Value'
+fin_val: 'Final_Value'
+shift_per_ini_val: 'Shift_as_percent_of_Initial_Value'
+dis: 'Distance'
+dem: 'Demand'
+non_rail: 'Non-Rail'
+adj_oar: 'Adjustment OAR'
+acci: 'Accidents'
+electri: 'Electrification'
+pen: 'Penetration'
+this_set: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD']
+TRBUSHYD: 'TRBUSHYD'
+TRBUSELE: 'TRBUSELE'
+TRMBUSHYD: 'TRMBUSHYD'
+TRMBUSELE: 'TRMBUSELE'
+TRYTKHYD: 'TRYTKHYD'
+TRYTKELE: 'TRYTKELE'
+##############################################################################
+
+################################# General Var #################################
+newfleet: 'NewFleet'
+externa_base_year: 'Externalities2021'
+externa_gdp: 'Externalities_GDP'
+capex_base_year: 'Capex2021'
+capex_gdp: 'Capex_GDP'
+fopex_base_year: 'FixedOpex2021'
+fopex_gdp: 'FixedOpex_GDP'
+vopex_base_year: 'VarOpex2021'
+vopex_gdp: 'VarOpex_GDP'
+opex_base_year: 'Opex2021'
+opex_gdp: 'Opex_GDP'
+biofuel_shares: 'BiofuelShares'
+fleet: 'Fleet'
+dist_driven: 'DistanceDriven'
+produced_mob: 'ProducedMobility'
+filt_fuel_type: 'FilterFuelType'
+filt_veh_type: 'FilterVehicleType'
+tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public
+tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private
+tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight
+tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight
+tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize
+uni_capex: 'UnitCapitalCost (USD)'
+uni_fopex: 'UnitFixedCost (USD)'
+num_runs: 'Number_of_Runs'
+xlrm_id: 'XLRM_ID'
+x_math__type: 'X_Mathematical_Type'
+exp_param_x: 'Explored_Parameter_of_X'
+inv_scen: 'Involved_Scenarios'
+inv_sets_ose: 'Involved_Sets_in_Osemosys'
+exac_param_inv_ose: 'Exact_Parameters_Involved_in_Osemosys'
+x_pla_eng_desc: 'X_Plain_English_Description'
+x_num: 'X_Num'
+x_cat: 'X_Category'
+exp_param_num: 'Explored_Parameter_Number'
+min_val: 'Min_Value'
+max_val: 'Max_Value'
+dep_pre_exp_param: 'Dependency_on_Previous_Explored_Parameter'
+sing_dep_spe_xs: 'Sign_Dependency_on_Specified_Xs'
+fut_var: 'Futures'
+dis_invs: 'Discrete_Investments'
+time_series: 'Time_Series'
+adop_curve: 'Adoption_Curve'
+ini_year: 'Initial_Year'
+exact_x: 'Exact_X'
+Cat: 'Category'
+math_type: 'Math_Type'
+rel_base: 'Relative_to_Baseline'
+e_pass: 'e_Passenger'
+e_fre: 'e_Freight'
+i_nt_ele: 'i_NT_elec'
+i_nt_fossil: 'i_NT_fossil'
+##############################################################################
