@@ -1942,7 +1942,8 @@ if __name__ == '__main__':
     '''
     # 2.C) We call the default parameters for later use:
     '''
-    list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
+    dict_default_val_params = params['default_val_params']
+    list_param_default_value = pd.DataFrame(list(dict_default_val_params.items()), columns=['Parameter', 'Default_Value'])
     list_param_default_value_params = list( list_param_default_value['Parameter'] )
     list_param_default_value_value = list( list_param_default_value['Default_Value'] )
 
