@@ -56,7 +56,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     file_aboslute_address = os.path.abspath(params['B1_script'])
     file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
     #
-    case_address = file_adress + r'Executables\\' + str( first_list[n1] )
+    case_address = file_adress + params['results'] + str( first_list[n1] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
     str_start = params['start'] + file_adress
@@ -97,8 +97,6 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_adress + 'config'):
         str_otoole_config = 'python -u ' + file_adress + params['otoole_config']
         os.system( str_start and str_otoole_config )
-        print('Creado')
-        sys.exit()
 
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
@@ -246,7 +244,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
         structure_line_raw = linecache.getline(data_name, n)
         if 'No. Column name  St   Activity     Lower bound   Upper bound    Marginal' in structure_line_raw:
             ini_line = deepcopy( n+2 )
-        if 'Karush-Kuhn-Tucker' in structure_line_raw:
+        if params['KKT'] in structure_line_raw:
             end_line = deepcopy( n-1 )
             break_this_while = True
             break
@@ -1998,7 +1996,8 @@ if __name__ == '__main__':
     '''
     # Call the default parameters for later use:
     '''
-    list_param_default_value = pd.read_excel( params['B1_Default_Param'] )
+    dict_default_val_params = params['default_val_params']
+    list_param_default_value = pd.DataFrame(list(dict_default_val_params.items()), columns=['Parameter', 'Default_Value'])
     list_param_default_value_params = list( list_param_default_value['Parameter'] )
     list_param_default_value_value = list( list_param_default_value['Default_Value'] )
     #
@@ -3820,13 +3819,13 @@ if __name__ == '__main__':
         #
         parameters_to_print = params['parameters_to_print']
 
-        print('Entered Parallelization of control inputs')
-        x = len(scenario_list)
-        max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
-        y = x / max_x_per_iter
-        y_ceil = math.ceil( y )
-        #
         if params['parallel']:
+            print('Entered Parallelization of control inputs')
+            x = len(scenario_list)
+            max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
+            y = x / max_x_per_iter
+            y_ceil = math.ceil( y )
+            #
             for n in range(0,y_ceil):
                 n_ini = n*max_x_per_iter
                 processes = []
@@ -3846,8 +3845,9 @@ if __name__ == '__main__':
 
         # # This is for the linear version
         # else:
+        #     print('Started Linear Runs')
         #     for n in range( len( first_list ) ):
-        #         main_executer(n, packaged_useful_elements, scenario_list_print, params)
+        #         csv_printer_parallel(n, scenario_list, stable_scenarios, basic_header_elements, parameters_to_print, S_DICT_params_structure, params)
 
     #########################################################################################
     global scenario_list_print
@@ -3868,13 +3868,13 @@ if __name__ == '__main__':
                                     print_adress, Reference_driven_distance,
                                     Fleet_Groups_inv, time_range_vector, Blend_Shares ]
         #
-        print('Entered Parallelization of .txt printing')
-        x = len(scenario_list)
-        max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
-        y = x / max_x_per_iter
-        y_ceil = math.ceil( y )
-        #
         if params['parallel']:
+            print('Entered Parallelization of .txt printing')
+            x = len(scenario_list)
+            max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
+            y = x / max_x_per_iter
+            y_ceil = math.ceil( y )
+            #
             for n in range(0,y_ceil):
                 n_ini = n*max_x_per_iter
                 processes = []
@@ -3892,10 +3892,12 @@ if __name__ == '__main__':
                 for process in processes:
                     process.join()
 
-        # This is for the linear version
-        else:
-            for n in range( len( first_list ) ):
-                main_executer(n, packaged_useful_elements, scenario_list_print, params)
+        # # This is for the linear version
+        # else:
+        #     print('Started Linear Runs')
+        #     x = len(all_futures)*len(scenario_list_print)
+        #     for n in range( x ):
+        #         function_C_mathprog(n, stable_scenarios, packaged_useful_elements, params)
 
     #########################################################################################
     if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
@@ -3907,13 +3909,14 @@ if __name__ == '__main__':
                                     list_param_default_value_params, list_param_default_value_value, list_gdp_ref]
         #
         set_first_list(scenario_list_print, params)
-        print('Entered Parallelization of model execution')
-        x = len(first_list)
-        max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
-        y = x / max_x_per_iter
-        y_ceil = math.ceil( y )
-        #
+        
         if params['parallel']:
+            print('Entered Parallelization of model execution')
+            x = len(first_list)
+            max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input
+            y = x / max_x_per_iter
+            y_ceil = math.ceil( y )
+            #
             for n in range(0,y_ceil):
                 n_ini = n*max_x_per_iter
                 processes = []
@@ -3933,6 +3936,7 @@ if __name__ == '__main__':
             
         # This is for the linear version
         else:
+            print('Started Linear Runs')
             for n in range( len( first_list ) ):
                 main_executer(n, packaged_useful_elements, scenario_list_print, params)
                 

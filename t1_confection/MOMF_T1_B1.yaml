@@ -23,19 +23,15 @@ Modes_Trans: './A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
 # Sheets (First letter of the word y uppercase)
 Fuel_Code: 'Fuel_to_Code'
 Tech_Code: 'Tech_to_Code'
-# Columns (First letter of the word y lowercase)
-code: 'Code'
-techs: 'Techs'
-plain_eng: 'Plain English'
 # B1 model structure
 # File
 B1_model_Struct: 'B1_Model_Structure.xlsx'
 # GDP REF
 # File
 GDP_REF: '_GDP_Ref.xlsx'
-# Columns
-GDP_Growth: 'GDP_Growth'
+# Sheets
 GDP: 'GDP'
+GDP_Growth: 'GDP_Growth'
 # Pikcle Fleet Groups
 # File
 Pickle_Fleet_Groups: './A1_Outputs/A-O_Fleet_Groups.pickle'
@@ -65,9 +61,6 @@ Effi: 'Efficiency'
 # B1 Default Parameters
 # File
 B1_Default_Param: 'B1_Default_Param.xlsx'
-# Columns
-default_value: 'Default_Value'
-param: 'Parameter'
 # Pickle Blend Shares 0
 # File
 Blend_Shares_0: 'Blend_Shares_0.pickle'
@@ -82,6 +75,9 @@ otoole_config: change_default_vals_params.py
 ################################# Variable definitions #################################
 # Configuration variables
 #----------------------------------------------------------------------------------#
+# Results folder
+results: 'Executables\\'
+
 # Start command line
 start: 'start cmd.exe /k cd '
 
@@ -506,7 +502,6 @@ gen_or_exe_1: 'Generator'
 gen_or_exe_2: 'Both'
 gen_or_exe_3: 'Executor'
 gen_or_exe_4: 'Both'
-
 ##############################################################################
 
 ################################# General Var #################################
@@ -546,8 +541,4 @@ write: 'Write'
 overwrite: 'Overwrite'
 exat_mult: 'Exact_Multiplier'
 copy: 'Copy'
-
-
-
-
 ##############################################################################

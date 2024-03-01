@@ -469,9 +469,8 @@ For all effects, read all the user-defined scenarios in future 0, created by han
 These data parameters serve as the basis to implement the experiment.
 '''
 #
-horizon_configuration = pd.read_excel( params['A1_inputs'] + params['Horizon_configuration'] )
-baseyear = horizon_configuration['Initial_Year'].tolist()[0]
-endyear = horizon_configuration['Final_Year'].tolist()[0]
+baseyear = params['base_year']
+endyear = params['final_year']
 global time_range_vector
 time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 '''''

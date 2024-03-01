@@ -26,7 +26,8 @@ time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 #
 Wide_Param_Header = params['sets']
 #
-other_setup_parameters = pd.read_excel( params['A2_extra_inputs'] + params['Xtra_Scen'] )
+dict_xtra_scen = params['xtra_scen']
+other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=['Name', 'Param'])
 other_setup_params_name = other_setup_parameters['Name'].tolist()
 other_setup_params_param = other_setup_parameters['Param'].tolist() 
 other_setup_params = {}
