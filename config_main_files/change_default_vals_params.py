@@ -9,16 +9,37 @@ import yaml
 import os
 from copy import deepcopy
 import shutil
+import sys
+
+def get_config_main_path(full_path):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    
+    return appended_path
 
 # Read yaml file with parameterization
-with open('MOMF_T1_B1.yaml', 'r') as file:
+file_config_address = get_config_main_path(os.path.abspath(''))
+# sys.exit()
+with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
     # Load content file
     params = yaml.safe_load(file)
 # Select dict with default values parameters
 default_val_params = params['default_val_params']
 
 # Create defaul yaml file by otoole
-file_path = './config/conversion_format.yaml'
+file_path = file_config_address + 'config\\conversion_format.yaml'
 directory = os.path.dirname(file_path)
 if not os.path.exists(directory):
     os.makedirs(directory)
@@ -26,7 +47,7 @@ if not os.path.exists(directory):
 os.system(f'otoole setup --overwrite config {file_path}')
 
 # Create folder with csv templates
-os.system('otoole setup --overwrite csv ./config/templates')
+os.system(f'otoole setup --overwrite csv ' + file_config_address + 'config\\templates')
 
 # Read yaml file with parameterization to conversion format by otoole
 with open(file_path, 'r') as file:
@@ -40,7 +61,7 @@ temp_defaut_params = deepcopy(default_format)
 for old_key, attributes in temp_defaut_params.items():
     if attributes['type'] == 'param' and not old_key in default_val_params:
         default_format.pop(old_key)
-        shutil.os.remove('./config/templates/' + old_key + '.csv')
+        shutil.os.remove(file_config_address + 'config\\templates\\' + old_key + '.csv')
         
 # Change default value
 for old_key, attributes in default_format.items():
