@@ -25,7 +25,7 @@ if run_for_first_time == True:
 
 ############################################################################################################
 df_0_output = pd.read_csv('.\Executables\output_dataset_0.csv', index_col=None, header=0)
-df_f_output = pd.read_csv( file_adress + '\Experimental_Platform\Futures\output_dataset_f.csv', index_col=None, header=0)
+df_f_output = pd.read_csv( file_adress + '\Futures\output_dataset_f.csv', index_col=None, header=0)
 li_output = [df_0_output, df_f_output]
 #
 df_output = pd.concat(li_output, axis=0, ignore_index=True)
@@ -33,7 +33,7 @@ df_output.sort_values(by=['Strategy','Future.ID','Fuel','Technology','Emission',
 ############################################################################################################
 df_0_input = pd.read_csv('.\Executables\input_dataset_0.csv', index_col=None, header=0)
 
-df_f_input = pd.read_csv('.\Experimental_Platform\Futures\input_dataset_f.csv', index_col=None, header=0)
+df_f_input = pd.read_csv('.\Futures\input_dataset_f.csv', index_col=None, header=0)
 li_intput = [df_0_input, df_f_input]
 #
 df_input = pd.concat(li_intput, axis=0, ignore_index=True)

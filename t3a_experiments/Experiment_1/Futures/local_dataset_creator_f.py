@@ -9,7 +9,7 @@ def test1():
 def execute_local_dataset_creator_f_outputs ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
     file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += '\\Experimental_Platform\\Futures\\'
+    file_adress += '\\Futures\\'
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -41,7 +41,7 @@ def execute_local_dataset_creator_f_outputs ():
 def execute_local_dataset_creator_f_inputs ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
     file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Experimental_Platform\\Futures\\'
+    file_adress += 'Futures\\'
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -73,7 +73,7 @@ def execute_local_dataset_creator_f_inputs ():
 def execute_local_dataset_creator_f_prices ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
     file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Experimental_Platform\\Futures\\'
+    file_adress += 'Futures\\'
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -114,7 +114,7 @@ def execute_local_dataset_creator_f_prices ():
 def execute_local_dataset_creator_f_distribution ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
     file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Experimental_Platform\\Futures\\'
+    file_adress += 'Futures\\'
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
