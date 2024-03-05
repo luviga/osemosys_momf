@@ -34,9 +34,13 @@ function_C_mathprog_parallel : we will insert it all in a function to run in par
 interpolation : implemented in a function for linear of non-linear time-series
 '''
 #
-def set_first_list( Executed_Scenario ):
+def set_first_list( Executed_Scenario, params ):
     #
-    first_list_raw = os.listdir( params['Futures'] + str( Executed_Scenario ) )
+    directory = './' + params['Futures'].replace('/','') + '/' + str( Executed_Scenario )
+    print(directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    first_list_raw = os.listdir( directory )
     #
     global first_list
     first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) ]
@@ -52,10 +56,10 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     dict_gdp_ref      =             unpackaged_useful_elements[4]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -140,7 +144,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = str( params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = str( '.' + params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
     #
     n = 0
     break_this_while = False
@@ -219,7 +223,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     linecache.clearcache()
     #%%
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
+    output_adress = '.' + params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -558,7 +562,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
         for n in range( len( data_row_list ) ):
             csvwriter.writerow( data_row_list[n] )
     #-----------------------------------------------------------------------------------------------------------%
-    shutil.os.remove(data_name)
+    if params['del_files']:
+        shutil.os.remove(data_name)
     #-----------------------------------------------------------------------------------------------------------%
     gc.collect(generation=2)
     time.sleep(0.05)
@@ -566,18 +571,24 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     print(  'We finished with printing the outputs.', case)
 
 ############################################################################################################################################################################################################
-def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
-    set_first_list(scenario_list_print, params)
-    file_aboslute_address = os.path.abspath(params['manager'])
-    file_adress = re.escape( file_aboslute_address.replace( params['manager'], '' ) ).replace( '\:', ':' )
+def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list_print, params, n2=None):  
+
+    set_first_list(Executed_Scenario, params)
+    # print(first_list[n1])
+    # sys.exit()
+    file_aboslute_address = os.path.abspath(params['Manager'])
+    file_config_address = get_config_main_path(os.path.abspath(''))
+    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
     #
-    case_address = file_adress + params['results'] + str( first_list[n1] )
+    
+
+    case_address = file_adress + params['futures_2'] + Executed_Scenario + '\\' + str( first_list[n1] )
+    # case_address = file_adress + r'Experimental_Platform\\Futures\\' + Executed_Scenario + '\\' + str( first_list[n_list] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
     str_start = params['start'] + file_adress
     #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
-    print(data_file)
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
 
     # Solve model
@@ -588,8 +599,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
         os.system( str_start and str_solve )
         #
-        if params['del_files']:
-            data_processor(n1,packaged_useful_elements, params)
+        data_processor(n1,packaged_useful_elements, params)
 
     elif solver == 'glpk'and params['glpk_option'] == 'new':
         # GLPK
@@ -609,16 +619,17 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
             os.system( str_start and str_solve )
     
     # If not existe yaml file to use with otoole
-    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_adress + 'config'):
-        str_otoole_config = 'python -u ' + file_adress + params['otoole_config']
+    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
+        str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
         os.system( str_start and str_otoole_config )
 
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
           # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + params['config'] + params['templates'] + ' ' + params['config'] + params['conv_format']
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
+        print(str_outputs)
         os.system( str_start and str_outputs )
     
     time.sleep(1)
@@ -653,10 +664,10 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -691,6 +702,8 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     #
     try:
         scen_file_dir = print_adress + '/' + str( scenario_list[scen] ) + '/' + str( scenario_list[scen] ) + '_' + str( fut )
+        if not os.path.exists(scen_file_dir):
+            os.makedirs(scen_file_dir)
         os.mkdir( scen_file_dir )
 
     except OSError as exc:
@@ -1215,7 +1228,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     #
     file_aboslute_address = os.path.abspath(params['Manager'])
     file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-    with open( file_adress + '\\' + params['results'] + str( scenario_list[scen] ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '_Input.csv', 'w', newline = '') as param_csv:
+    with open( file_adress + '\\' + params['futures_2'] + str( scenario_list[scen] ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '_Input.csv', 'w', newline = '') as param_csv:
         csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # Print the header:
         csvwriter.writerow( input_params_table_headers )
@@ -1441,10 +1454,29 @@ def interpolation_blend( start_blend_point, final_blend_point, value_list, time_
     return new_value_list_rounded, biofuel_shares
     #
 #
+def get_config_main_path(full_path):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    
+    return appended_path
+
 if __name__ == '__main__':
     #
     # Read yaml file with parameterization
-    with open('MOMF_T3a_Manager.yaml', 'r') as file:
+    file_config_address = get_config_main_path(os.path.abspath(''))
+    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
     '''
@@ -1522,10 +1554,10 @@ if __name__ == '__main__':
     a) We use this dictionary relating a specific technology and a group technology and associate the prefix list
     '''
 
-    Fleet_Groups = pickle.load( open( params['Fleet_Group'], "rb" ))
-    Fleet_Techs_Distance = pickle.load( open( params['Fleet_Group_Dist'], "rb" ))
-    Fleet_Techs_OR = pickle.load( open( params['Fleet_Group_OR'], "rb" ))
-    Fleet_Groups_techs_2_dem = pickle.load( open( params['Fleet_Group_T2D'], "rb" ))
+    Fleet_Groups = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups'], "rb" ))
+    Fleet_Techs_Distance = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_Dist'], "rb" ))
+    Fleet_Techs_OR = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_OR'], "rb" ))
+    Fleet_Groups_techs_2_dem = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_T2D'], "rb" ))
 
     Fleet_Groups_inv = {}
     for k in range( len( list( Fleet_Groups.keys() ) ) ):
@@ -1880,7 +1912,7 @@ if __name__ == '__main__':
     '''
     # 2.B) We finish this sub-part, and proceed to read all the base scenarios.
     '''
-    header_row = params['header_row']
+    header_row = params['header_row_em']
     #
     scenario_list = []
     if scenarios_to_reproduce == 'All':
@@ -2148,7 +2180,7 @@ if __name__ == '__main__':
                                         list_i = local_df_intensities[df_intensity_col].tolist()
                                         
                                         print('check intensities')
-                                        sys.exit()
+                                        # sys.exit()
 
                                     new_value_list = []
                                     for y in range(len(all_years)):
@@ -3415,9 +3447,9 @@ if __name__ == '__main__':
         pickle.dump(experiment_dictionary, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
 
-    blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares'], "rb" ) )
+    blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares_0'], "rb" ) )
     Blend_Shares[params['NDP']].update({0: blend_shares_zero[params['NDP']]})
-    with open(params['Blend_Shares'], 'wb') as handle:
+    with open(params['Blend_Shares_0'], 'wb') as handle:
         pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
     '''
@@ -3428,7 +3460,7 @@ if __name__ == '__main__':
         #
         print('4: We will now print the input .txt files of diverse future scenarios.')
         #
-        print_adress = params['Futures']
+        print_adress = './' + params['Futures'].replace('/', '')
         packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure,
                                     list_param_default_value_params, list_param_default_value_value,
                                     print_adress, all_futures, reference_driven_distance,
@@ -3491,7 +3523,7 @@ if __name__ == '__main__':
             packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
             #
             Executed_Scenario = scenario_list_print[ a_scen ]
-            set_first_list(Executed_Scenario)
+            set_first_list(Executed_Scenario, params)
             #
             if params['parallel']:
                 print('Entered Parallelization')
@@ -3518,7 +3550,7 @@ if __name__ == '__main__':
                     #
                     for n2 in range( n_ini , max_iter ):
                         print(n2)
-                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,params) )
+                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
                         processes.append(p)
                         p.start()
                     #
@@ -3540,7 +3572,7 @@ if __name__ == '__main__':
                 print('Started Linear Runs')
                 #
                 for n in range( len( first_list ) ):
-                    main_executer(n,Executed_Scenario,packaged_useful_elements,params)
+                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
                 #
                     
                 # Delete log files when solver='cplex'

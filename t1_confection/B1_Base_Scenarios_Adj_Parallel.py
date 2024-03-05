@@ -54,6 +54,7 @@ def interp_max_cap( x ):
 def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     set_first_list(scenario_list_print, params)
     file_aboslute_address = os.path.abspath(params['B1_script'])
+    file_config_address = get_config_main_path(os.path.abspath(''))
     file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
     #
     case_address = file_adress + params['results'] + str( first_list[n1] )
@@ -62,7 +63,6 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     str_start = params['start'] + file_adress
     #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
-    print(data_file)
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
 
     # Solve model
@@ -73,8 +73,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
         os.system( str_start and str_solve )
         #
-        if params['del_files']:
-            data_processor(n1,packaged_useful_elements, params)
+        data_processor(n1,packaged_useful_elements, params)
 
     elif solver == 'glpk'and params['glpk_option'] == 'new':
         # GLPK
@@ -94,16 +93,17 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
             os.system( str_start and str_solve )
     
     # If not existe yaml file to use with otoole
-    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_adress + 'config'):
-        str_otoole_config = 'python -u ' + file_adress + params['otoole_config']
+    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
+        str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
+        print(str_otoole_config)
         os.system( str_start and str_otoole_config )
 
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
           # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + params['config'] + params['templates'] + ' ' + params['config'] + params['conv_format']
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
         os.system( str_start and str_outputs )
     
     time.sleep(1)
@@ -148,10 +148,10 @@ def data_processor( case, unpackaged_useful_elements, params ):
     dr_default = list_param_default_value_value[dr_prm_idx]
 
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -881,10 +881,10 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     Blend_Shares =                      unpackaged_useful_elements[9]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -1828,12 +1828,32 @@ def csv_printer_parallel(s, scenario_list, stable_scenarios, basic_header_elemen
             for n in range( len( each_parameter_all_data_row[ scenario_list[s] ][ parameters_to_print[p] ] ) ):
                 csvwriter.writerow( each_parameter_all_data_row[ scenario_list[s] ][ parameters_to_print[p] ][n] )
 
+def get_config_main_path(full_path):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    
+    return appended_path
+
+
 if __name__ == '__main__':
     #
     start1 = time.time()
 
     # Read yaml file with parameterization
-    with open('MOMF_T1_B1.yaml', 'r') as file:
+    file_config_address = get_config_main_path(os.path.abspath(''))
+    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
 
@@ -1923,12 +1943,12 @@ if __name__ == '__main__':
     Structural dictionary 1: Notes
     a) We use this dictionary relating a specific technology and a group technology and associate the prefix list
     '''
-    Fleet_Groups =              pickle.load( open( params['Pickle_Fleet_Groups'],            "rb" ) )
+    Fleet_Groups =              pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups'],            "rb" ) )
     ### Ind_Groups =                pickle.load( open( './A1_Outputs/A-O_Ind_Groups.pickle',            "rb" ) )
     Fleet_Groups['Techs_Microbuses'] += [ 'TRMBUSHYD' ] # this is an add on, kind of a patch
-    Fleet_Groups_Distance =     pickle.load( open( params['Pickle_Fleet_Groups_Dist'],   "rb" ) )
-    Fleet_Groups_OR =           pickle.load( open( params['Pickle_Fleet_Groups_OR'],         "rb" ) )
-    Fleet_Groups_techs_2_dem =  pickle.load( open( params['Pickle_Fleet_Groups_T2D'],        "rb" ) )
+    Fleet_Groups_Distance =     pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_Dist'],   "rb" ) )
+    Fleet_Groups_OR =           pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_OR'],         "rb" ) )
+    Fleet_Groups_techs_2_dem =  pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_T2D'],        "rb" ) )
     #
     Fleet_Groups_inv = {}
     for k in range( len( list( Fleet_Groups.keys() ) ) ):
