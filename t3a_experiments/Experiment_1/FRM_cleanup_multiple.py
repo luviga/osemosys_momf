@@ -39,7 +39,7 @@ import yaml
 
 def set_first_list(Executed_Scenario, params):
     dir_of_interest = \
-        params['Futures'] + str(Executed_Scenario)
+        './' + params['Futures'] + str( Executed_Scenario )
     first_list_raw = os.listdir(dir_of_interest)
 
     first_list = [e for e in first_list_raw if ('.csv' not in e) and
@@ -58,10 +58,10 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     dict_gdp_ref      =             unpackaged_useful_elements[4]
 
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
-    df_tech_to_code = pd.read_excel( params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
     #
@@ -589,10 +589,28 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, params):
  
     data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
 
+def get_config_main_path(full_path):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    
+    return appended_path
 
 if __name__ == '__main__':
     # Read yaml file with parameterization
-    with open('MOMF_T3a_Manager.yaml', 'r') as file:
+    file_config_address = get_config_main_path(os.path.abspath(''))
+    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
 
