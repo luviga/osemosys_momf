@@ -3863,12 +3863,6 @@ if __name__ == '__main__':
                 for process in processes:
                     process.join()
 
-        # # This is for the linear version
-        # else:
-        #     print('Started Linear Runs')
-        #     for n in range( len( first_list ) ):
-        #         csv_printer_parallel(n, scenario_list, stable_scenarios, basic_header_elements, parameters_to_print, S_DICT_params_structure, params)
-
     #########################################################################################
     global scenario_list_print
     scenario_list_print = deepcopy( scenario_list ) # [params['BAU'],'OP15C',params['NDP']]
@@ -3911,13 +3905,6 @@ if __name__ == '__main__':
                 #
                 for process in processes:
                     process.join()
-
-        # # This is for the linear version
-        # else:
-        #     print('Started Linear Runs')
-        #     x = len(all_futures)*len(scenario_list_print)
-        #     for n in range( x ):
-        #         function_C_mathprog(n, stable_scenarios, packaged_useful_elements, params)
 
     #########################################################################################
     if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:

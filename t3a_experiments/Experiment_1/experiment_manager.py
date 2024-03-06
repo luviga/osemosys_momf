@@ -629,7 +629,6 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
           # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
-        print(str_outputs)
         os.system( str_start and str_outputs )
     
     time.sleep(1)
@@ -3556,13 +3555,7 @@ if __name__ == '__main__':
                     #
                     for process in processes:
                         process.join()
-
-                    # Delete log files when solver='cplex'
-                    if params['solver'] == 'cplex' and params['del_files']:
-                        shutil.os.remove('cplex.log')
-                        shutil.os.remove('clone1.log')
-                        shutil.os.remove('clone2.log')
-
+                        
                     end_1 = time.time()   
                     time_elapsed_1 = -start1 + end_1
                     print( str( time_elapsed_1 ) + ' seconds' )
@@ -3574,13 +3567,6 @@ if __name__ == '__main__':
                 for n in range( len( first_list ) ):
                     main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
                 #
-                    
-                # Delete log files when solver='cplex'
-                if params['solver'] == 'cplex' and params['del_files']:
-                    shutil.os.remove('cplex.log')
-                    shutil.os.remove('clone1.log')
-                    shutil.os.remove('clone2.log')
-
                 end_1 = time.time()   
                 time_elapsed_1 = -start1 + end_1
                 print( str( time_elapsed_1 ) + ' seconds' )
@@ -3589,6 +3575,11 @@ if __name__ == '__main__':
                 #
             #
         #
+        # Delete log files when solver='cplex'
+        if params['solver'] == 'cplex' and params['del_files']:
+            shutil.os.remove('cplex.log')
+            shutil.os.remove('clone1.log')
+            shutil.os.remove('clone2.log')
     #
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
     '''
