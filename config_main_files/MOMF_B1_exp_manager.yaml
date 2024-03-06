@@ -67,9 +67,6 @@ Tech_Adop: 'Tech_Adoption'
 Elec: 'Electrical'
 Smart_Grid: 'SmartGrid'
 Effi: 'Efficiency'
-# B1 Default Parameters
-# File
-B1_Default_Param: 'B1_Default_Param.xlsx'
 # Pickle Blend Shares 0
 # File
 Blend_Shares_0: 'Blend_Shares_0.pickle'
@@ -103,9 +100,6 @@ Ref_Occu_Rate: 'reference_occupancy_rate.pickle'
 # Experiment Dictionary
 # File
 Exper_Dict: 'experiment_dictionary.pickle'
-# Experiment Setup
-# File
-Exper_Setup: '_Experiment_Setup.xlsx'
 # Uncertainty Table
 # File
 Uncer_Table: 'Uncertainty_Table.xlsx'
