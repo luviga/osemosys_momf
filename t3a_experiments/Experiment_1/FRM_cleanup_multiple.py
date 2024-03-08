@@ -615,14 +615,13 @@ if __name__ == '__main__':
         params = yaml.safe_load(file)
 
     time_list = []
-    setup_table = pd.read_excel( params['Exper_Setup'] )
-    scenarios_to_reproduce = str(setup_table.loc[0 ,'Scenario_to_Reproduce'])
-    experiment_ID = str( setup_table.loc[0 ,'Experiment_ID'])
+    scenarios_to_reproduce = params['Scenario_to_Reproduce']
+    experiment_ID = params['Experiment_ID']
     gdp_dict_export = pickle.load( open( params['GDP_dict'], "rb" ) )
 
     global Initial_Year_of_Uncertainty
     Initial_Year_of_Uncertainty = \
-        int( setup_table.loc[0 ,'Initial_Year_of_Uncertainty'])
+        params['Initial_Year_of_Uncertainty']
 
     time_range_vector = [y for y in range(2018, 2050+1)]
     start_mod_idx = time_range_vector.index(Initial_Year_of_Uncertainty)
@@ -795,7 +794,7 @@ if __name__ == '__main__':
 
         x = len(store_cases)
 
-        max_x_per_iter = int( setup_table.loc[ 0 ,'Parallel_Use'] ) # FLAG: This is an input.
+        max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
 
         y = x / max_x_per_iter
         y_ceil = math.ceil( y )
