@@ -36,7 +36,7 @@ interpolation : implemented in a function for linear of non-linear time-series
 #
 def set_first_list( Executed_Scenario, params ):
     #
-    directory = './' + params['Futures'].replace('/','') + '/' + str( Executed_Scenario )
+    directory = './' + params['Futures'] + str( Executed_Scenario )
     print(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -941,45 +941,44 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
             #-----------------------------------------#
             g.write( ';\n\n' )
     #
-    # remember the default values for printing:
-    g.write('param AccumulatedAnnualDemand default 0 :=\n;\n')
+    g.write('param AccumulatedAnnualDemand default ' + str(params['default_val_params']['AccumulatedAnnualDemand']) + ' :=\n;\n')
     # if scenario_list[scen] == params['BAU']:
-    #     g.write('param AnnualEmissionLimit default 99999 :=\n;\n')
-    g.write('param AnnualEmissionLimit default 99999 :=\n;\n') # here we are using no Emission Limit
-    g.write('param AnnualExogenousEmission default 0 :=\n;\n')
-    g.write('param CapacityOfOneTechnologyUnit default 0 :=\n;\n')
-    g.write('param CapitalCostStorage default 0 :=\n;\n')
-    g.write('param Conversionld default 0 :=\n;\n')
-    g.write('param Conversionlh default 0 :=\n;\n')
-    g.write('param Conversionls default 0 :=\n;\n')
-    g.write('param DaySplit default 0.00137 :=\n;\n')
-    g.write('param DaysInDayType default 7 :=\n;\n')
-    g.write('param DepreciationMethod default 1 :=\n;\n')
-    g.write('param DiscountRate default 0.05 :=\n;\n')
-    # g.write('param EmissionsPenalty default 0 :=\n;\n')
-    g.write('param MinStorageCharge default 0 :=\n;\n')
-    g.write('param ModelPeriodEmissionLimit default 99999 :=\n;\n')
-    g.write('param ModelPeriodExogenousEmission default 0 :=\n;\n')
-    g.write('param OperationalLifeStorage default 1 :=\n;\n')
-    g.write('param REMinProductionTarget default 0 :=\n;\n')
-    g.write('param RETagFuel default 0 :=\n;\n')
-    g.write('param RETagTechnology default 0 :=\n;\n')
-    g.write('param ReserveMargin default 0 :=\n;\n')
-    g.write('param ReserveMarginTagFuel default 0 :=\n;\n')
-    g.write('param ReserveMarginTagTechnology default 0 :=\n;\n')
-    g.write('param ResidualStorageCapacity default 0 :=\n;\n')
-    g.write('param StorageLevelStart default 0 :=\n;\n')
-    g.write('param StorageMaxChargeRate default 0 :=\n;\n')
-    g.write('param StorageMaxDischargeRate default 0 :=\n;\n')
-    g.write('param TechnologyFromStorage default 0 :=\n;\n')
-    g.write('param TechnologyToStorage default 0 :=\n;\n')
-    # g.write('param TotalAnnualMaxCapacityInvestment default 99999 :=\n;\n')
+    #     g.write('param AnnualEmissionLimit default ' + str(params['default_val_params']['AnnualEmissionLimit']) + ' :=\n;\n')
+    g.write('param AnnualEmissionLimit default ' + str(params['default_val_params']['AnnualEmissionLimit']) + ' :=\n;\n') # here we are using no Emission Limit
+    g.write('param AnnualExogenousEmission default ' + str(params['default_val_params']['AnnualExogenousEmission']) + ' :=\n;\n')
+    g.write('param CapacityOfOneTechnologyUnit default ' + str(params['default_val_params']['CapacityOfOneTechnologyUnit']) + ' :=\n;\n')
+    g.write('param CapitalCostStorage default ' + str(params['default_val_params']['CapitalCostStorage'])  + ' :=\n;\n')
+    g.write('param Conversionld default ' + str(params['default_val_params']['Conversionld']) + ' :=\n;\n')
+    g.write('param Conversionlh default ' + str(params['default_val_params']['Conversionlh']) + ' :=\n;\n')
+    g.write('param Conversionls default ' + str(params['default_val_params']['Conversionls']) + ' :=\n;\n')
+    g.write('param DaySplit default ' + str(params['default_val_params']['DaySplit']) + ' :=\n;\n')
+    g.write('param DaysInDayType default ' + str(params['default_val_params']['DaysInDayType']) + ' :=\n;\n')
+    g.write('param DepreciationMethod default ' + str(params['default_val_params']['DepreciationMethod']) + ' :=\n;\n')
+    g.write('param DiscountRate default ' + str(params['default_val_params']['DiscountRate']) + ' :=\n;\n') # repalced from 0.05 // 0.0831
+    # g.write('param EmissionsPenalty default ' + str(params['default_val_params']['EmissionsPenalty']) + ' :=\n;\n')
+    g.write('param MinStorageCharge default ' + str(params['default_val_params']['MinStorageCharge']) + ' :=\n;\n')
+    g.write('param ModelPeriodEmissionLimit default ' + str(params['default_val_params']['ModelPeriodEmissionLimit']) + ' :=\n;\n')
+    g.write('param ModelPeriodExogenousEmission default ' + str(params['default_val_params']['ModelPeriodExogenousEmission']) + ' :=\n;\n')
+    g.write('param OperationalLifeStorage default ' + str(params['default_val_params']['OperationalLifeStorage']) + ' :=\n;\n')
+    g.write('param REMinProductionTarget default ' + str(params['default_val_params']['REMinProductionTarget']) + ' :=\n;\n')
+    g.write('param RETagFuel default ' + str(params['default_val_params']['RETagFuel']) + ' :=\n;\n')
+    g.write('param RETagTechnology default ' + str(params['default_val_params']['RETagTechnology']) + ' :=\n;\n')
+    g.write('param ReserveMargin default ' + str(params['default_val_params']['ReserveMargin']) + ' :=\n;\n')
+    g.write('param ReserveMarginTagFuel default ' + str(params['default_val_params']['ReserveMarginTagFuel']) + ' :=\n;\n')
+    g.write('param ReserveMarginTagTechnology default ' + str(params['default_val_params']['ReserveMarginTagTechnology']) + ' :=\n;\n')
+    g.write('param ResidualStorageCapacity default ' + str(params['default_val_params']['ResidualStorageCapacity']) + ' :=\n;\n')
+    g.write('param StorageLevelStart default ' + str(params['default_val_params']['StorageLevelStart']) + ' :=\n;\n')
+    g.write('param StorageMaxChargeRate default ' + str(params['default_val_params']['StorageMaxChargeRate']) + ' :=\n;\n')
+    g.write('param StorageMaxDischargeRate default ' + str(params['default_val_params']['StorageMaxDischargeRate']) + ' :=\n;\n')
+    g.write('param TechnologyFromStorage default ' + str(params['default_val_params']['TechnologyFromStorage']) + ' :=\n;\n')
+    g.write('param TechnologyToStorage default ' + str(params['default_val_params']['TechnologyToStorage']) + ' :=\n;\n')
+    # g.write('param TotalAnnualMaxCapacityInvestment default ' + str(params['default_val_params']['TotalAnnualMaxCapacityInvestment']) + ' :=\n;\n')
     if scenario_list[scen] == params['BAU']:
-        g.write('param TotalAnnualMinCapacity default 0 :=\n;\n')
-    # g.write('param TotalTechnologyAnnualActivityUpperLimit default 99999 :=\n;\n')
-    g.write('param TotalTechnologyModelPeriodActivityLowerLimit default 0 :=\n;\n')
-    g.write('param TotalTechnologyModelPeriodActivityUpperLimit default 99999 :=\n;\n')
-    g.write('param TradeRoute default 0 :=\n;\n')
+        g.write('param TotalAnnualMinCapacity default ' + str(params['default_val_params']['TotalAnnualMinCapacity']) + ' :=\n;\n')
+    # g.write('param TotalTechnologyAnnualActivityUpperLimit default ' + str(params['default_val_params']['TotalTechnologyAnnualActivityUpperLimit']) + ' :=\n;\n')
+    g.write('param TotalTechnologyModelPeriodActivityLowerLimit default ' + str(params['default_val_params']['TotalTechnologyModelPeriodActivityLowerLimit']) + ' :=\n;\n')
+    g.write('param TotalTechnologyModelPeriodActivityUpperLimit default ' + str(params['default_val_params']['TotalTechnologyModelPeriodActivityUpperLimit']) + ' :=\n;\n')
+    g.write('param TradeRoute default ' + str(params['default_val_params']['TradeRoute']) + ' :=\n;\n')
     #
     g.write('#\n' + 'end;\n')
     #
@@ -3555,7 +3554,7 @@ if __name__ == '__main__':
                     #
                     for process in processes:
                         process.join()
-                        
+
                     end_1 = time.time()   
                     time_elapsed_1 = -start1 + end_1
                     print( str( time_elapsed_1 ) + ' seconds' )
