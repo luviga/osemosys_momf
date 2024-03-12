@@ -124,13 +124,13 @@ glpk_option: 'new' # Could you use 'old' for the first method and 'new' for meth
 del_files: True
 
 # Maximun cores to use per iteration
-Number_of_Runs: 20
+Number_of_Runs: 2
 Scenario_to_Reproduce: 'All'
 Initial_Future_to_Print: 1
 Final_Future_to_Print: 10
 Initial_Year_of_Uncertainty: 2022
 Experiment_ID: 1
-max_x_per_iter: 20
+max_x_per_iter: 2
 
 # Choose if want run script in parallel or not
 parallel: True
@@ -632,6 +632,10 @@ TRMBUSHYD: 'TRMBUSHYD'
 TRMBUSELE: 'TRMBUSELE'
 TRYTKHYD: 'TRYTKHYD'
 TRYTKELE: 'TRYTKELE'
+PPPVT: 'PPPVT'
+PPWNDON: 'PPWNDON'
+PPPVDS: 'PPPVDS'
+hyd: 'HYD'
 ##############################################################################
 
 ################################# General Var #################################

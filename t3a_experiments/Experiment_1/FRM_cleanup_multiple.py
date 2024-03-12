@@ -303,27 +303,27 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                     #
                     ref_var_position_index = output_header.index( this_variable )
                     #
-                    if 'Trains' not in group_tech:
+                    if params['trains'] not in group_tech:
                         driven_distance =       float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
                         #
-                        if 'Motos' in group_tech or 'Freight' in group_tech:
+                        if params['motos'] in group_tech or params['fre'] in group_tech:
                             passenger_per_vehicle = 1
                         else:
                             passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
                         #
                         if this_variable == 'NewCapacity':
-                            var_position_index = output_header.index( 'NewFleet' )
+                            var_position_index = output_header.index( params['newfleet'] )
                             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, 4)
                         #
                         if this_variable == 'TotalTechnologyAnnualActivity':
                             #
-                            var_position_index = output_header.index( 'Fleet' )
+                            var_position_index = output_header.index( params['fleet'] )
                             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, 4)
                             #
-                            var_position_index = output_header.index( 'DistanceDriven' )
+                            var_position_index = output_header.index( params['dist_driven'] )
                             this_data_row[ var_position_index ] = round(driven_distance, 4)
                             #
-                            var_position_index = output_header.index( 'ProducedMobility' )
+                            var_position_index = output_header.index( params['produced_mob'] )
                             this_data_row[ var_position_index ] =  round( float( this_data_row[ ref_var_position_index ] )*passenger_per_vehicle, 4)
                         #
                         data_row_list[ ref_index ] = deepcopy( this_data_row )
@@ -339,7 +339,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
-                var_position_index = output_header.index( 'FilterFuelType' )
+                var_position_index = output_header.index( params['filt_fuel_type'] )
                 ############################################
                 # By Fuel Type
                 for r in range( len( df_fuel_2_code_fuel_list ) ):
@@ -347,7 +347,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                         this_data_row[ var_position_index ] = df_fuel_2_code_plain_english[ r ]
                         break
                 ############################################
-                var_position_index = output_header.index( 'FilterVehicleType' )
+                var_position_index = output_header.index( params['filt_veh_type'] )
                 # By vehicle type
                 for r in range( len( df_tech_2_code_fuel_list ) ):
                     if df_tech_2_code_fuel_list[r] in this_tech:
@@ -356,15 +356,15 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
             output_csv_r = 0.05*100
-            output_csv_year = 2021
+            output_csv_year = params['base_year']
             #
-            if this_combination[2] in ['Accidents', 'Health', 'Congestion'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
+            if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'AnnualTechnologyEmissionPenaltyByEmission' )
-                new_var_position_index = output_header.index( 'Externalities2021' )
-                new2_var_position_index = output_header.index( 'Externalities_GDP' )
+                new_var_position_index = output_header.index( params['externa_base_year'] )
+                new2_var_position_index = output_header.index( params['externa_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -378,13 +378,13 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
                 #
             #
-            if this_combination[2] in ['Accidents', 'Health', 'Congestion'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
+            if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'AnnualTechnologyEmissionPenaltyByEmission' )
-                new_var_position_index = output_header.index( 'Externalities2021' )
-                new2_var_position_index = output_header.index( 'Externalities_GDP' )
+                new_var_position_index = output_header.index( params['externa_base_year'] )
+                new2_var_position_index = output_header.index( params['externa_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -405,8 +405,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'CapitalInvestment' )
-                new_var_position_index = output_header.index( 'Capex2021' )
-                new2_var_position_index = output_header.index( 'Capex_GDP' )
+                new_var_position_index = output_header.index( params['capex_base_year'] )
+                new2_var_position_index = output_header.index( params['capex_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -430,8 +430,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'AnnualFixedOperatingCost' )
-                new_var_position_index = output_header.index( 'FixedOpex2021' )
-                new2_var_position_index = output_header.index( 'FixedOpex_GDP' )
+                new_var_position_index = output_header.index( params['fopex_base_year'] )
+                new2_var_position_index = output_header.index( params['fopex_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -450,8 +450,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'AnnualVariableOperatingCost' )
-                new_var_position_index = output_header.index( 'VarOpex2021' )
-                new2_var_position_index = output_header.index( 'VarOpex_GDP' )
+                new_var_position_index = output_header.index( params['vopex_base_year'] )
+                new2_var_position_index = output_header.index( params['vopex_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -470,8 +470,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
                 ref_var_position_index = output_header.index( 'OperatingCost' )
-                new_var_position_index = output_header.index( 'Opex2021' )
-                new2_var_position_index = output_header.index( 'Opex_GDP' )
+                new_var_position_index = output_header.index( params['opex_base_year'] )
+                new2_var_position_index = output_header.index( params['opex_gdp'] )
                 #
                 this_year = this_combination[4]
                 this_year_index = time_range_vector.index( int( this_year ) )
@@ -574,7 +574,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, params):
     file_aboslute_address = os.path.abspath(params['FRM_clean'])
     file_adress = re.escape( file_aboslute_address.replace( params['FRM_clean'], '' ) ).replace( '\:', ':' )
 
-    case_address = file_adress + r'Experimental_Platform\\Futures\\' + Executed_Scenario + '\\' + str( first_list[n1] )
+    case_address = file_adress + params['futures_2'] + Executed_Scenario + '\\' + str( first_list[n1] )
 
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
 
@@ -623,7 +623,7 @@ if __name__ == '__main__':
     Initial_Year_of_Uncertainty = \
         params['Initial_Year_of_Uncertainty']
 
-    time_range_vector = [y for y in range(2018, 2050+1)]
+    time_range_vector = [y for y in range(params['base_year_2'], params['final_year']+1)]
     start_mod_idx = time_range_vector.index(Initial_Year_of_Uncertainty)
 
     scenario_list = []
@@ -633,11 +633,11 @@ if __name__ == '__main__':
             if (stable_scenario_list_raw[n] not in ['_Base_Dataset', '_BACKUP']
                     and '.txt' not in stable_scenario_list_raw[n]):
                 scenario_list.append(stable_scenario_list_raw[n])
-    elif scenarios_to_reproduce == 'Experiment':
-        scenario_list.append('BAU')
-        scenario_list.append('NDP')
+    elif scenarios_to_reproduce == params['exper']:
+        scenario_list.append(params['BAU'])
+        scenario_list.append(params['NDP'])
     elif (scenarios_to_reproduce != 'All' and 
-            scenarios_to_reproduce != 'Experiment'):
+            scenarios_to_reproduce != params['exper']):
         scenario_list.append( scenarios_to_reproduce )
 
     # Expand the capacity of solar overall
@@ -647,7 +647,7 @@ if __name__ == '__main__':
     # test_first = True
     test_first = False
     if test_first is True:
-        scenario_list = [s for s in scenario_list if 'BAU' not in s]
+        scenario_list = [s for s in scenario_list if params['BAU'] not in s]
     ###
 
     # Step 1: find all the runs without outputs
@@ -711,19 +711,19 @@ if __name__ == '__main__':
                     for n in range(l, l+30):
                         next_line = line_list[n]
                         set_row = next_line.split(' ')[0]
-                        if (('PPPVT' in set_row or 'PPWNDON' in set_row or
-                                'PPPVDS' in set_row)
-                                and 'HYD' not in set_row
+                        if ((params['PPPVT'] in set_row or params['PPWNDON'] in set_row or
+                                params['PPPVDS'] in set_row)
+                                and params['hyd'] not in set_row
                                 and continue_search is True):
 
-                            if 'PPPVT' == set_row and 'PPPVT' not in expand_plants_store:
-                                expand_plants_store.append('PPPVT')
+                            if params['PPPVT'] == set_row and params['PPPVT'] not in expand_plants_store:
+                                expand_plants_store.append(params['PPPVT'])
                                 exp_mult = 2
-                            if 'PPWNDON' == set_row and 'PPWNDON' not in expand_plants_store:
-                                expand_plants_store.append('PPWNDON')
+                            if params['PPWNDON'] == set_row and params['PPWNDON'] not in expand_plants_store:
+                                expand_plants_store.append(params['PPWNDON'])
                                 exp_mult = 1.5
-                            if 'PPPVDS' == set_row and 'PPPVDS' not in expand_plants_store:
-                                expand_plants_store.append('PPPVDS')
+                            if params['PPPVDS'] == set_row and params['PPPVDS'] not in expand_plants_store:
+                                expand_plants_store.append(params['PPPVDS'])
                                 exp_mult = 2
 
                             interest_line_idx.append(n)
