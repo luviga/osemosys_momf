@@ -23,8 +23,8 @@ with open('MOMF_T3b_t3f.yaml', 'r') as file:
 
 #######################################################################
 # Step 1) call the results data
-ana_id = 1  # THIS IS AN INPUT
-exp_id = 1  # THIS IS AN INPUT
+ana_id = params['ana_id']  # THIS IS AN INPUT
+exp_id = params['exp_id']  # THIS IS AN INPUT
 
 sd_filename = 'sd_ana_' + str(ana_id) + '_exp_' + str(exp_id)
 sd_file = sd_filename + '.csv'
@@ -45,8 +45,8 @@ for uc in sd_cols:
 sd_driver_unique_raw = unique_content_dict['driver_col']
 sd_driver_unique = []
 for n in range(len(sd_driver_unique_raw)):
-    if 'Mode shift_' in sd_driver_unique_raw[n]:
-        sd_driver_unique.append(sd_driver_unique_raw[n].replace('Mode shift_', 'Mode shift '))
+    if params['mod_shi_1'] in sd_driver_unique_raw[n]:
+        sd_driver_unique.append(sd_driver_unique_raw[n].replace(params['mod_shi_1'], params['mod_shi_2']))
     else:
         sd_driver_unique.append(sd_driver_unique_raw[n])
 sd_driver_unique_name = [d.split('_')[0] for d in sd_driver_unique]
@@ -60,20 +60,20 @@ unique_periods = unique_content_dict['period']
 
 # also call the prim_structure to get the uncertainties, i.e., what matters:
 prim_structure = \
-    pd.read_excel(open('./Analysis_' + str(ana_id) + params['Prim_Struc'], 'rb'),
+    pd.read_excel(open(params['Analysis'] + str(ana_id) + params['Prim_Struc'], 'rb'),
                   sheet_name='Sequences')
 
 drivers_uncertainty_df = \
-    prim_structure.loc[(prim_structure['Driver_Type'] == 'Uncertainty')]
+    prim_structure.loc[(prim_structure['Driver_Type'] == params['Uncer'])]
 drivers_intermediary_df = \
-    prim_structure.loc[(prim_structure['Driver_Type'] == 'Intermediary')]
+    prim_structure.loc[(prim_structure['Driver_Type'] == params['Inter'])]
 drivers_metric_df = \
-    prim_structure.loc[(prim_structure['Driver_Type'] == 'Metric of interest')]
+    prim_structure.loc[(prim_structure['Driver_Type'] == params['met_int'])]
 
 drivers_uncertainty = list(set(drivers_uncertainty_df['Driver'].tolist()))
-mshft_idx = drivers_uncertainty.index('Mode shift')
-drivers_uncertainty[mshft_idx] = 'Mode shift public'
-drivers_uncertainty += ['Mode shift nonmot']
+mshft_idx = drivers_uncertainty.index(params['mod_shi_3'])
+drivers_uncertainty[mshft_idx] = params['mod_shi_4']
+drivers_uncertainty += [params['mod_shi_5']]
 
 drivers_intermediary = list(set(drivers_intermediary_df['Driver'].tolist()))
 drivers_metric = list(set(drivers_metric_df['Driver'].tolist()))
@@ -122,7 +122,7 @@ for outcome_type in outcome_type_list:
         drivers_all_intermediary_dict = {}
 
         for o in sd_outcome_unique:
-            if outcome_type == 'desirable':
+            if outcome_type == params['des']:
                 direction_outcome = desirable_outcomes[o]
             else:
                 direction_outcome = risk_outcomes[o]
@@ -151,8 +151,8 @@ for outcome_type in outcome_type_list:
             for l_idx in list_index:
                 # extract the driver's information:
                 this_driver_col_raw = local_df.loc[l_idx, 'driver_col']
-                if 'Mode shift_' in this_driver_col_raw:
-                    this_driver_col_raw = this_driver_col_raw.replace('Mode shift_', 'Mode shift ')
+                if params['mod_shi_1'] in this_driver_col_raw:
+                    this_driver_col_raw = this_driver_col_raw.replace(params['mod_shi_1'], params['mod_shi_2'])
                 else:
                     pass
                 this_driver_col = this_driver_col_raw.split('_')[0]
@@ -166,12 +166,12 @@ for outcome_type in outcome_type_list:
                 diff_max = 1 - row_data_maxnorm
                 # The region must be lower than max:
                 if diff_min < diff_max:
-                    this_e_dir = 'low'
+                    this_e_dir = params['low']
                     thld_val = deepcopy(row_data_max)
                     thld_val_norm = deepcopy(row_data_maxnorm)
                 # The region must be greater than min:
                 elif diff_max <= diff_min:
-                    this_e_dir = 'high'
+                    this_e_dir = params['high']
                     thld_val = deepcopy(row_data_min)
                     thld_val_norm = deepcopy(row_data_minnorm)
                 else:  # something is wrong
@@ -179,7 +179,7 @@ for outcome_type in outcome_type_list:
                     sys.exit()
 
                 # define a generic dictionary to store the data:
-                first_time_dict = {'thr_val':[], 'thr_val_norm':[], 'dir':[]}
+                first_time_dict = params['first_time_dict']
 
                 # let's add the cumulative information for each driver at a local and general (i.e., "all") metric dimensions:
                 if this_driver_col in drivers_uncertainty:
@@ -242,12 +242,12 @@ for outcome_type in outcome_type_list:
             this_d_count = 0
             for this_d in drivers_all_intermediary_local + drivers_all_uncertainty_local:
                 if this_d in drivers_all_intermediary_local:
-                    driver_type = 'intermediary'
+                    driver_type = params['inter']
                     thr_val = deepcopy(drivers_all_intermediary_local_dict[this_d]['thr_val'])
                     thr_val_norm = deepcopy(drivers_all_intermediary_local_dict[this_d]['thr_val_norm'])
                     the_dir = deepcopy(drivers_all_intermediary_local_dict[this_d]['dir'])
                 else:
-                    driver_type = 'uncertainty'
+                    driver_type = params['uncer']
                     thr_val = deepcopy(drivers_all_uncertainty_local_dict[this_d]['thr_val'])
                     thr_val_norm = deepcopy(drivers_all_uncertainty_local_dict[this_d]['thr_val_norm'])
                     the_dir = deepcopy(drivers_all_uncertainty_local_dict[this_d]['dir'])
@@ -257,36 +257,36 @@ for outcome_type in outcome_type_list:
                 dir_unique = list(set(the_dir))
                 direction_content = 'none'
                 if len(dir_unique) == 1:
-                    if 'high' in dir_unique:
-                        direction_content = 'high_unanimous'
-                    elif 'low' in dir_unique:
-                        direction_content = 'low_unanimous'
+                    if params['high'] in dir_unique:
+                        direction_content = params['high_una']
+                    elif params['low'] in dir_unique:
+                        direction_content = params['low_una']
                     else:
                         print('There is an issue here (1)')
                         sys.exit()
                 elif len(dir_unique) == 2:
                     high_count_list = \
-                        [1 for n in the_dir if 'high' in n]
+                        [1 for n in the_dir if params['high'] in n]
                     high_count = sum(high_count_list)
 
                     low_count_list = \
-                        [1 for n in the_dir if 'low' in n]
+                        [1 for n in the_dir if params['low'] in n]
                     low_count = sum(low_count_list)
 
                     # find the predominance:
                     if len(high_count_list) > len(low_count_list):
-                        direction_content = 'high_predominant'
+                        direction_content = params['high_pre']
                     elif len(high_count_list) < len(low_count_list):
-                        direction_content = 'low_predominant'
+                        direction_content = params['low_pre']
                     else:
-                        direction_content = 'tie'
+                        direction_content = params['direction_content_1']
                 else:
                     print('There is an issue here (2)')
                     sys.exit()
 
                 # calculate the thresholds
                 high_thlds_list = \
-                    [thr_val_norm[n] for n in range(len(the_dir)) if 'high' in the_dir[n]]
+                    [thr_val_norm[n] for n in range(len(the_dir)) if params['high'] in the_dir[n]]
                 if len(high_thlds_list) != 0:
                     high_thlds_avg = \
                         sum(high_thlds_list)/len(high_thlds_list)
@@ -298,7 +298,7 @@ for outcome_type in outcome_type_list:
                     high_thlds_avg = 99
 
                 low_thlds_list = \
-                    [thr_val_norm[n] for n in range(len(the_dir)) if 'low' in the_dir[n]]
+                    [thr_val_norm[n] for n in range(len(the_dir)) if params['low'] in the_dir[n]]
                 if len(low_thlds_list) != 0:
                     low_thlds_avg = \
                         sum(low_thlds_list)/len(low_thlds_list)
@@ -319,40 +319,40 @@ for outcome_type in outcome_type_list:
 
                 # find the range:
                 if low_thlds_avg < 0.9 and high_thlds_avg > 0.1 and high_thlds_avg != 99 and low_thlds_avg != 99:
-                    range_content = 'within'
+                    range_content = params['range_content_1']
                 elif low_thlds_avg > 0.9 and high_thlds_avg < 0.1 and high_thlds_avg != 99 and low_thlds_avg != 99:
-                    range_content = 'outside'
+                    range_content = params['range_content_2']
                 elif high_thlds_avg == 99 or low_thlds_avg == 99:
-                    range_content = 'one_sided'
+                    range_content = params['range_content_3']
                 else:  # this needs to be reviewed
-                    range_content = 'strange'
+                    range_content = params['range_content_4']
 
                 # so, identifying the cases:
                 case = 99
-                if direction_content in ['high_unanimous', 'low_unanimous']:
+                if direction_content in params['direction_content_2']:
                     case = 1  # this is going to be "one_sided"
-                elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['within', 'strange']:
+                elif direction_content in params['direction_content_3'] and range_content in params['range_content_5']:
                     case = 2
-                elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['outside']:
+                elif direction_content in params['direction_content_3'] and range_content in params['range_content_6']:
                     case = 3
-                elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['one_sided']:
+                elif direction_content in params['direction_content_3'] and range_content in params['range_content_7']:
                     case = 3
-                elif direction_content == 'tie' and range_content == 'within':
+                elif direction_content == params['direction_content_1'] and range_content == params['range_content_1']:
                     case = 4
-                elif direction_content == 'tie' and range_content == 'outside':
+                elif direction_content == params['direction_content_1'] and range_content == params['range_content_2']:
                     case = 5
-                elif direction_content == 'tie' and range_content == 'one_sided':
+                elif direction_content == params['direction_content_1'] and range_content == params['range_content_3']:
                     case = 1
                     if low_thlds_avg == 99:
-                        direction_content = 'high_predominant'
+                        direction_content = params['high_pre']
                     if high_thlds_avg == 99:
-                        direction_content = 'low_predominant'
-                elif direction_content == 'tie' and range_content == 'strange':
+                        direction_content = params['low_pre']
+                elif direction_content == params['direction_content_1'] and range_content == params['range_content_4']:
                     case = 2
                     if high_thlds_avg > 1-low_thlds_avg:
-                        direction_content = 'high_predominant'
+                        direction_content = params['high_pre']
                     else:
-                        direction_content = 'low_predominant'
+                        direction_content = params['low_pre']
                 else:
                     print('There is a combination that is not considered')
                     print(outcome_type, '|', per, '|', o, '|', this_d)
@@ -368,12 +368,12 @@ for outcome_type in outcome_type_list:
 
 
                 if case in [1, 2, 3]:  # definitive
-                    this_condition = 'definitive'
-                    this_tiebreaker = 'none'
-                    if 'high' in direction_content:
+                    this_condition = params['this_condition_1']
+                    this_tiebreaker = params['this_tiebreaker_2']
+                    if params['high'] in direction_content:
                         final_min_norm = high_thlds_avg
                         final_max_norm = 1
-                    elif 'low' in direction_content:
+                    elif params['low'] in direction_content:
                         final_min_norm = 0
                         final_max_norm = low_thlds_avg
                     else:
@@ -388,19 +388,19 @@ for outcome_type in outcome_type_list:
                             print('There is an issue here (4)')
                             sys.exit()
                 elif case == 4:
-                    this_condition = 'trade-off'
-                    this_tiebreaker = 'high/low average'
+                    this_condition = params['this_condition_2']
+                    this_tiebreaker = params['this_tiebreaker']
                     final_min_norm = (low_thlds_avg + high_thlds_avg)/2
                     final_max_norm = final_min_norm
                 elif case == 5:
-                    this_condition = 'inclusive'
-                    this_tiebreaker = 'none'
+                    this_condition = params['this_condition_3']
+                    this_tiebreaker = params['this_tiebreaker_2']
                     final_min_norm = high_thlds_avg
                     final_max_norm = low_thlds_avg
 
                 this_d_count += 1
                 # 3) Third, we must store the information related to the driver:
-                if outcome_type == 'desirable':
+                if outcome_type == params['des']:
                     desi_u_data[o]['driver_type'][per].append(driver_type)
                     desi_u_data[o]['drivers'][per].append(this_d)
                     desi_u_data[o]['drivers_min_norm'][per].append(final_min_norm)
@@ -430,12 +430,12 @@ for outcome_type in outcome_type_list:
         this_d_count = 0
         for this_d in drivers_all_intermediary + drivers_all_uncertainty:
             if this_d in drivers_all_intermediary:
-                driver_type = 'intermediary'
+                driver_type = params['inter']
                 thr_val = deepcopy(drivers_all_intermediary_dict[this_d]['thr_val'])
                 thr_val_norm = deepcopy(drivers_all_intermediary_dict[this_d]['thr_val_norm'])
                 the_dir = deepcopy(drivers_all_intermediary_dict[this_d]['dir'])
             else:
-                driver_type = 'uncertainty'
+                driver_type = params['uncer']
                 thr_val = deepcopy(drivers_all_uncertainty_dict[this_d]['thr_val'])
                 thr_val_norm = deepcopy(drivers_all_uncertainty_dict[this_d]['thr_val_norm'])
                 the_dir = deepcopy(drivers_all_uncertainty_dict[this_d]['dir'])
@@ -445,36 +445,36 @@ for outcome_type in outcome_type_list:
             dir_unique = list(set(the_dir))
             direction_content = 'none'
             if len(dir_unique) == 1:
-                if 'high' in dir_unique:
-                    direction_content = 'high_unanimous'
-                elif 'low' in dir_unique:
-                    direction_content = 'low_unanimous'
+                if params['high'] in dir_unique:
+                    direction_content = params['high_una']
+                elif params['low'] in dir_unique:
+                    direction_content = params['low_una']
                 else:
                     print('There is an issue here (1.all)')
                     sys.exit()
             elif len(dir_unique) == 2:
                 high_count_list = \
-                    [1 for n in the_dir if 'high' in n]
+                    [1 for n in the_dir if params['high'] in n]
                 high_count = sum(high_count_list)
 
                 low_count_list = \
-                    [1 for n in the_dir if 'low' in n]
+                    [1 for n in the_dir if params['low'] in n]
                 low_count = sum(low_count_list)
 
                 # find the predominance:
                 if len(high_count_list) > len(low_count_list):
-                    direction_content = 'high_predominant'
+                    direction_content = params['high_pre']
                 elif len(high_count_list) < len(low_count_list):
-                    direction_content = 'low_predominant'
+                    direction_content = params['low_pre']
                 else:
-                    direction_content = 'tie'
+                    direction_content = params['direction_content_1']
             else:
                 print('There is an issue here (2.all)')
                 sys.exit()
 
             # calculate the thresholds
             high_thlds_list = \
-                [thr_val_norm[n] for n in range(len(the_dir)) if 'high' in the_dir[n]]
+                [thr_val_norm[n] for n in range(len(the_dir)) if params['high'] in the_dir[n]]
             if len(high_thlds_list) != 0:
                 high_thlds_avg = \
                     sum(high_thlds_list)/len(high_thlds_list)
@@ -486,7 +486,7 @@ for outcome_type in outcome_type_list:
                 high_thlds_avg = 99
 
             low_thlds_list = \
-                [thr_val_norm[n] for n in range(len(the_dir)) if 'low' in the_dir[n]]
+                [thr_val_norm[n] for n in range(len(the_dir)) if params['low'] in the_dir[n]]
             if len(low_thlds_list) != 0:
                 low_thlds_avg = \
                     sum(low_thlds_list)/len(low_thlds_list)
@@ -499,40 +499,40 @@ for outcome_type in outcome_type_list:
 
             # find the range:
             if low_thlds_avg < 0.9 and high_thlds_avg > 0.1 and high_thlds_avg != 99 and low_thlds_avg != 99:
-                range_content = 'within'
+                range_content = params['range_content_1']
             elif low_thlds_avg > 0.9 and high_thlds_avg < 0.1 and high_thlds_avg != 99 and low_thlds_avg != 99:
-                range_content = 'outside'
+                range_content = params['range_content_2']
             elif high_thlds_avg == 99 or low_thlds_avg == 99:
-                range_content = 'one_sided'
+                range_content = params['range_content_3']
             else:  # this needs to be reviewed
-                range_content = 'strange'
+                range_content = params['range_content_4']
 
             # so, identifying the cases (2):
             case = 99
-            if direction_content in ['high_unanimous', 'low_unanimous']:
+            if direction_content in params['direction_content_2']:
                 case = 1  # this is going to be "one_sided"
-            elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['within', 'strange']:
+            elif direction_content in params['direction_content_3'] and range_content in params['range_content_5']:
                 case = 2
-            elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['outside']:
+            elif direction_content in params['direction_content_3'] and range_content in params['range_content_6']:
                 case = 3
-            elif direction_content in ['high_predominant', 'low_predominant'] and range_content in ['one_sided']:
+            elif direction_content in params['direction_content_3'] and range_content in params['range_content_7']:
                 case = 3
-            elif direction_content == 'tie' and range_content == 'within':
+            elif direction_content == params['direction_content_1'] and range_content == params['range_content_1']:
                 case = 4
-            elif direction_content == 'tie' and range_content == 'outside':
+            elif direction_content == params['direction_content_1'] and range_content == params['range_content_2']:
                 case = 5
-            elif direction_content == 'tie' and range_content == 'one_sided':
+            elif direction_content == params['direction_content_1'] and range_content == params['range_content_3']:
                 case = 1
                 if low_thlds_avg == 99:
-                    direction_content = 'high_predominant'
+                    direction_content = params['high_pre']
                 if high_thlds_avg == 99:
-                    direction_content = 'low_predominant'
-            elif direction_content == 'tie' and range_content == 'strange':
+                    direction_content = params['low_pre']
+            elif direction_content == params['direction_content_1'] and range_content == params['range_content_4']:
                 case = 2
                 if high_thlds_avg > 1-low_thlds_avg:
-                    direction_content = 'high_predominant'
+                    direction_content = params['high_pre']
                 else:
-                    direction_content = 'low_predominant'
+                    direction_content = params['low_pre']
             else:
                 print('There is a combination that is not considered')
                 print(outcome_type, '|', per, '|', 'All', '|', this_d)
@@ -540,12 +540,12 @@ for outcome_type in outcome_type_list:
                 sys.exit()
 
             if case in [1, 2, 3]:  # definitive
-                this_condition = 'definitive'
-                this_tiebreaker = 'none'
-                if 'high' in direction_content:
+                this_condition = params['this_condition_1']
+                this_tiebreaker = params['this_tiebreaker_2']
+                if params['high'] in direction_content:
                     final_min_norm = high_thlds_avg
                     final_max_norm = 1
-                elif 'low' in direction_content:
+                elif params['low'] in direction_content:
                     final_min_norm = 0
                     final_max_norm = low_thlds_avg
                 else:
@@ -560,19 +560,19 @@ for outcome_type in outcome_type_list:
                         print('There is an issue here (4.all)')
                         sys.exit()
             elif case == 4:
-                this_condition = 'trade-off'
-                this_tiebreaker = 'high/low average'
+                this_condition = params['this_condition_2']
+                this_tiebreaker = params['this_tiebreaker']
                 final_min_norm = (low_thlds_avg + high_thlds_avg)/2
                 final_max_norm = final_min_norm
             elif case == 5:
-                this_condition = 'inclusive'
-                this_tiebreaker = 'none'
+                this_condition = params['this_condition_3']
+                this_tiebreaker = params['this_tiebreaker_2']
                 final_min_norm = high_thlds_avg
                 final_max_norm = low_thlds_avg
 
             this_d_count += 1
             # 6) We must store the information related to the driver:
-            if outcome_type == 'desirable':
+            if outcome_type == params['des']:
                 desi_u_data['All']['driver_type'][per].append(driver_type)
                 desi_u_data['All']['drivers'][per].append(this_d)
                 desi_u_data['All']['drivers_min_norm'][per].append(final_min_norm)

@@ -3,7 +3,7 @@
 # Model external dependencies: Directories, Files, sheets and columns
 ########################################################################################
 # Directories
-Analysis: './Analysis_1'
+Analysis: './Analysis_'
 
 # Prim Strucutre
 # File (First letter of the word y uppercase)
@@ -20,6 +20,8 @@ SD_Man: 'sd_manager.txt'
 # Prim Structures
 # File
 Prim_Struc: '/prim_structure.xlsx'
+# Sheets
+Seq: 'Sequences'
 # t3f4 Prdominant Ranges
 # File
 Pre_Domi: 't3f4_predominant_ranges'
@@ -35,9 +37,34 @@ Sub_ana_1_exp_1: 'subtbl_ana_1_exp_1.pickle'
 # Validation analysis output
 # File
 Val_Ana_out: 't3f6_validation_analysis_output.xlsx'
+# Validation analysis input
+# File
+Val_Ana_inp: 't3f6_validation_analysis_inputs.xlsx'
 ########################################################################################
 
 ################################# Variable definitions #################################
+
+# Configuration
+#----------------------------------------------------------------------------------#
+list_exp_iter: [1]
+list_exp_iter_man_vali: [2]
+ana_id: 1
+exp_id: 1
+developing_phase: True
+list_ana_iter_int: [7]
+list_ana_iter_int_man: [1]
+bug_acts: False
+bug_acts_1: False
+bug_acts_2: False
+#----------------------------------------------------------------------------------#
+
+# Scenarios
+#----------------------------------------------------------------------------------#
+NDP: 'NDP'
+wrt_BAU: 'wrtBAU'
+direct: 'direct'
+#----------------------------------------------------------------------------------#
+
 # frml_ind_2_colinfo function
 #----------------------------------------------------------------------------------#
 col_title_suff_set: ['_LowEmissions', '_HighEmissions']
@@ -231,5 +258,92 @@ sensitivities_list: [
   '25%', '40%', '50%', '60%', '65%', '70%', '75%',
   '80%', '85%', '90%', '95%'
   ]
+
+first_time_dict: {
+  thr_val: [],
+  thr_val_norm: [],
+  dir: []
+  }
 #----------------------------------------------------------------------------------#
 ########################################################################################
+
+################################# Conditions #################################
+col_mngmt_ele_1: 'Str_Both_4 and 5 : Energy'
+col_mngmt_ele_2: 'Str_Only_4 : Transport'
+col_mngmt_ele_3: 'column_per_param'
+col_mngmt_ele_4: 'column_per_set'
+col_mngmt_ele_5: 'group_by_fuel'
+col_mngmt_ele_6: 'group_by_type'
+col_mngmt_ele_7: 'group_by_type_and_LowHighEmissions'
+col_mngmt_ele_8: 'group_by_use'
+col_mngmt_ele_9: 'group_fossil_elec_H2'
+col_mngmt_ele_10: 'none' 
+col_mngmt_ele_11: 'special_Biofuel'
+col_mngmt_ele_12: 'special_mode_shift'
+col_mngmt_ele_13: 'special_freight_shift'
+col_mngmt_ele_14: 'special_PT_dist'
+frml_dem_elmnts_1: 'Den_GDP'
+frml_dem_elmnts_2: 'none'
+frml_dem_elmnts_3: 'tracost_at2019'
+frml_dem_elmnts_4: 'totcost_at2019'
+frml_num_elmnts_1: 'GDP_growth'
+frml_num_elmnts_2: 'average_across'
+frml_num_elmnts_3: 'average_across_rel2018'
+frml_num_elmnts_4: 'direct'
+frml_num_elmnts_5: 'cumulative'
+frml_num_elmnts_6: 'direct_rel2018'
+frml_num_elmnts_7: 'multiply_sum_across'
+frml_num_elmnts_8: 'share_H2_of_total'
+frml_num_elmnts_9: 'share_ZEV_of_total'
+frml_num_elmnts_10: 'share_LPG_of_total'
+frml_num_elmnts_11: 'share_electric_of_total'
+frml_num_elmnts_12: 'special_elasticity'
+frml_num_elmnts_13: 'special_FiscalCost'
+frml_num_elmnts_14: 'special_FiscalCost_combine_set_type'
+frml_num_elmnts_15: 'sum_across'
+frml_num_elmnts_16: 'special_ussolarprod'
+frml_num_elmnts_17: 'special_disolarprod'
+frml_num_elmnts_18: 'special_windprod'
+frml_num_elmnts_19: 'special_gencost'
+frml_num_elmnts_20: 'special_t&dcost'
+frml_num_elmnts_21: 'special_powersectorcost'
+frml_num_elmnts_22: 'sum_across_combine_set_type'
+frml_num_elmnts_23: 'sum_across_rel2018'
+frml_num_elmnts_24: 'special_EaseImp'
+frml_num_elmnts_25: 'special_ExtMng'
+des: 'desirable'
+mod_shi_1: 'Mode shift_'
+mod_shi_2: 'Mode shift '
+mod_shi_3: 'Mode shift'
+mod_shi_4: 'Mode shift public' 
+mod_shi_5: 'Mode shift nonmot' 
+##############################################################################
+
+################################# General Vars #################################
+inter: 'intermediary'
+Inter: 'Intermediary'
+uncer: 'uncertainty'
+Uncer: 'Uncertainty'
+met_int: 'Metric of interest'
+high_una: 'high_unanimous'
+low_una: 'low_unanimous'
+high_pre: 'high_predominant'
+low_pre: 'low_predominant'
+direction_content_1: 'tie'
+direction_content_2: ['high_unanimous', 'low_unanimous']
+direction_content_3: ['high_predominant', 'low_predominant']
+range_content_1: 'within'
+range_content_2: 'outside'
+range_content_3: 'one_sided'
+range_content_4: 'strange'
+range_content_5: ['within', 'strange']
+range_content_6: ['outside']
+range_content_7: ['one_sided']
+this_condition_1: 'definitive'
+this_condition_2: 'trade-off'
+this_condition_3: 'inclusive'
+this_tiebreaker: 'high/low average'
+this_tiebreaker_2: 'none'
+high: 'high'
+low: 'low'
+################################################################################

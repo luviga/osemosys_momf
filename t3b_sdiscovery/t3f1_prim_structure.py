@@ -111,7 +111,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
     # this is a lenght=1 list to be called below
 
     # column_Management: in this section we create the name of the sets
-    if 'Str_Both_4 and 5 : Energy' in col_mngmt_ele:
+    if params['col_mngmt_ele_1'] in col_mngmt_ele:
         col_nums_by_set += 1
         col_title_suff_set.append('_energy')
         this_col_set_name = col_title_pref + col_title_suff_set[-1]
@@ -119,7 +119,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         this_col_sets = all_sets
         dict_sets_per_set_col.update({this_col_set_name: this_col_sets})
 
-    if 'Str_Only_4 : Transport' in col_mngmt_ele:
+    if params['col_mngmt_ele_2'] in col_mngmt_ele:
         col_nums_by_set += 1
         col_title_suff_set.append('_transport')
         this_col_set_name = col_title_pref + col_title_suff_set[-1]
@@ -130,7 +130,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         # to transport
 
     # This is the only column management that expands the parameters per column
-    if 'column_per_param' in col_mngmt_ele:
+    if params['col_mngmt_ele_3'] in col_mngmt_ele:
         col_nums_by_prm = len(all_prms)
         col_title_suff_prm = []  # replace the param suffix list menu
         for k in range(len(all_prms)):
@@ -139,14 +139,14 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         params_for_column = all_prms
         # this list is as long as *col_nums_by_prm*
 
-    if 'column_per_set' in col_mngmt_ele:
+    if params['col_mngmt_ele_4'] in col_mngmt_ele:
         col_nums_by_set += len(all_sets)
         for k in range(len(all_sets)):
             col_title_suff_set.append('_' + all_sets[k].replace(' ', '_'))
             this_col_set_name = col_title_pref + col_title_suff_set[-1]
             dict_sets_per_set_col.update({this_col_set_name: [all_sets[k]]})
 
-    if 'group_by_fuel' in col_mngmt_ele:
+    if params['col_mngmt_ele_5'] in col_mngmt_ele:
         # counting the number of fuels in these sets:
         unique_fuel_sets = []
         for k in range(len(all_sets)):
@@ -162,7 +162,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
             this_col_sets = [i for i in all_sets if unique_fuel_sets[k] in i]
             dict_sets_per_set_col.update({this_col_set_name: this_col_sets})
 
-    if 'group_by_type' in col_mngmt_ele:
+    if params['col_mngmt_ele_6'] in col_mngmt_ele:
         # counting the number of types in these sets:
         unique_type_sets = []
         for k in range(len(all_sets)):
@@ -178,7 +178,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
             this_col_sets = [i for i in all_sets if unique_type_sets[k] in i]
             dict_sets_per_set_col.update({this_col_set_name: this_col_sets})
 
-    if 'group_by_type_and_LowHighEmissions' in col_mngmt_ele:
+    if params['col_mngmt_ele_7'] in col_mngmt_ele:
         # separating the sets into low and high emission tecnologies
         low_emission_sets = []
         high_emission_sets = []
@@ -203,7 +203,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         this_col_set_name = col_title_pref + col_title_suff_set[1]
         dict_sets_per_set_col.update({this_col_set_name: high_emission_sets})
 
-    if 'group_by_use' in col_mngmt_ele:
+    if params['col_mngmt_ele_8'] in col_mngmt_ele:
         # counting the number of uses in these sets:
         unique_use_sets = []
         for k in range(len(all_sets)):
@@ -219,7 +219,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
             this_col_sets = [i for i in all_sets if unique_use_sets[k] in i]
             dict_sets_per_set_col.update({this_col_set_name: this_col_sets})
 
-    if 'group_fossil_elec_H2' in col_mngmt_ele:
+    if params['col_mngmt_ele_9'] in col_mngmt_ele:
         # separating the sets into fossil, electric, and hydrogen
         # (hybrids are not included in these sets)
         h2_emission_sets = []
@@ -257,7 +257,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         this_col_set_name = col_title_pref + col_title_suff_set[2]
         dict_sets_per_set_col.update({this_col_set_name: fossil_emission_sets})
 
-    if 'none' in col_mngmt_ele:
+    if params['col_mngmt_ele_10'] in col_mngmt_ele:
         col_nums_by_set += 1
         col_title_suff_set.append('')
         this_col_set_name = col_title_pref
@@ -265,7 +265,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         this_col_sets = all_sets
         dict_sets_per_set_col.update({this_col_set_name: this_col_sets})
 
-    if 'special_Biofuel' in col_mngmt_ele:  # the formula should be direct
+    if params['col_mngmt_ele_11'] in col_mngmt_ele:  # the formula should be direct
         col_nums_by_set += 2
         col_title_suff_set = params['col_title_suff_set_3']
         col_sets_special_Biofuel = params['col_sets_special_Biofuel']
@@ -277,7 +277,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
             dict_sets_per_set_col.update({this_col_set_name:
                                           [col_sets_special_Biofuel[k]]})
 
-    if 'special_mode_shift' in col_mngmt_ele:
+    if params['col_mngmt_ele_12'] in col_mngmt_ele:
         col_nums_by_set += 2
         col_title_suff_set = params['col_title_suff_set_4']
         col_sets_special_mode_shift = params['col_sets_special_mode_shift']
@@ -291,7 +291,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         dict_sets_per_set_col.update({this_col_set_name:
                                       col_sets_special_mode_shift})
 
-    if 'special_freight_shift' in col_mngmt_ele:
+    if params['col_mngmt_ele_13'] in col_mngmt_ele:
         col_nums_by_set += 1
         col_title_suff_set = params['col_title_suff_set_5']
         col_sets_special_freight_shift = params['col_sets_special_freight_shift']
@@ -305,7 +305,7 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
         dict_sets_per_set_col.update({this_col_set_name:
                                       col_sets_special_freight_shift})
 
-    if 'special_PT_dist' in col_mngmt_ele:
+    if params['col_mngmt_ele_14'] in col_mngmt_ele:
         col_nums_by_set += 3
         col_title_suff_set = params['col_title_suff_set_6']
         col_sets_special_PT_dist = params['col_sets_special_PT_dist']
@@ -326,141 +326,139 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
     # frml_denominator:
     # in this section we append the formulas for each parameter
     frml_den_list = []
-    if 'Den_GDP' in frml_den_elmnts:
-        for k in range(frml_den_elmnts.count('Den_GDP')):
-            frml_den_list.append('Den_GDP')
+    if params['frml_dem_elmnts_1'] in frml_den_elmnts:
+        for k in range(frml_den_elmnts.count(params['frml_dem_elmnts_1'])):
+            frml_den_list.append(params['frml_dem_elmnts_1'])
 
-    if 'none' in frml_den_elmnts:
-        for k in range(frml_den_elmnts.count('none')):
-            frml_den_list.append('none')
+    if params['frml_dem_elmnts_2'] in frml_den_elmnts:
+        for k in range(frml_den_elmnts.count(params['frml_dem_elmnts_2'])):
+            frml_den_list.append(params['frml_dem_elmnts_2'])
 
-    if 'tracost_at2019' in frml_den_elmnts:
-        for k in range(frml_den_elmnts.count('tracost_at2019')):
-            frml_den_list.append('tracost_at2019')
+    if params['frml_dem_elmnts_3'] in frml_den_elmnts:
+        for k in range(frml_den_elmnts.count(params['frml_dem_elmnts_3'])):
+            frml_den_list.append(params['frml_dem_elmnts_3'])
 
-    if 'totcost_at2019' in frml_den_elmnts:
-        for k in range(frml_den_elmnts.count('totcost_at2019')):
-            frml_den_list.append('totcost_at2019')
+    if params['frml_dem_elmnts_4'] in frml_den_elmnts:
+        for k in range(frml_den_elmnts.count(params['frml_dem_elmnts_4'])):
+            frml_den_list.append(params['frml_dem_elmnts_4'])
 
     # frml_numerator
     frml_num_list = []
-    if 'GDP_growth' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('GDP_growth')):
-            frml_num_list.append('GDP_growth')
+    if params['frml_num_elmnts_1'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_1'])):
+            frml_num_list.append(params['frml_num_elmnts_1'])
 
-    if 'average_across' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('average_across')):
-            frml_num_list.append('average_across')
+    if params['frml_num_elmnts_2'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_2'])):
+            frml_num_list.append(params['frml_num_elmnts_2'])
 
-    if 'average_across_rel2018' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('average_across_rel2018')):
-            frml_num_list.append('average_across_rel2018')
+    if params['frml_num_elmnts_3'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_3'])):
+            frml_num_list.append(params['frml_num_elmnts_3'])
 
-    if 'direct' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('direct')):
-            frml_num_list.append('direct')
+    if params['frml_num_elmnts_4'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_4'])):
+            frml_num_list.append(params['frml_num_elmnts_4'])
 
-    if 'cumulative' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('cumulative')):
-            frml_num_list.append('cumulative')
+    if params['frml_num_elmnts_5'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_5'])):
+            frml_num_list.append(params['frml_num_elmnts_5'])
 
-    if 'direct_rel2018' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('direct_rel2018')):
-            frml_num_list.append('direct_rel2018')
+    if params['frml_num_elmnts_6'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_6'])):
+            frml_num_list.append(params['frml_num_elmnts_6'])
 
-    if 'multiply_sum_across' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('multiply_sum_across')):
-            frml_num_list.append('multiply_sum_across')
+    if params['frml_num_elmnts_7'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_7'])):
+            frml_num_list.append(params['frml_num_elmnts_7'])
 
-    if 'share_H2_of_total' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('share_H2_of_total')):
-            frml_num_list.append('share_H2_of_total')
+    if params['frml_num_elmnts_8'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_8'])):
+            frml_num_list.append(params['frml_num_elmnts_8'])
 
-    if 'share_ZEV_of_total' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('share_ZEV_of_total')):
-            frml_num_list.append('share_ZEV_of_total')
+    if params['frml_num_elmnts_9'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_9'])):
+            frml_num_list.append(params['frml_num_elmnts_9'])
 
-    if 'share_LPG_of_total' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('share_LPG_of_total')):
-            frml_num_list.append('share_LPG_of_total')
+    if params['frml_num_elmnts_10'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_10'])):
+            frml_num_list.append(params['frml_num_elmnts_10'])
 
-    if 'share_electric_of_total' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('share_electric_of_total')):
-            frml_num_list.append('share_electric_of_total')
+    if params['frml_num_elmnts_11'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_11'])):
+            frml_num_list.append(params['frml_num_elmnts_11'])
 
-    if 'special_elasticity' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_elasticity')):
-            frml_num_list.append('special_elasticity')
+    if params['frml_num_elmnts_12'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_12'])):
+            frml_num_list.append(params['frml_num_elmnts_12'])
 
-    if 'special_Biofuel' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_Biofuel')):
-            frml_num_list.append('special_Biofuel')
+    if params['frml_num_elmnts_13'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_13'])):
+            frml_num_list.append(params['frml_num_elmnts_13'])
 
-    if 'special_PT_dist' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_PT_dist')):
-            frml_num_list.append('special_PT_dist')
+    if params['frml_num_elmnts_14'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_14'])):
+            frml_num_list.append(params['frml_num_elmnts_14'])
 
-    if 'special_mode_shift' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_mode_shift')):
-            frml_num_list.append('special_mode_shift')
+    if params['frml_num_elmnts_15'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_15'])):
+            frml_num_list.append(params['frml_num_elmnts_15'])
 
-    if 'special_freight_shift' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_freight_shift')):
-            frml_num_list.append('special_freight_shift')
+    if params['frml_num_elmnts_16'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_16'])):
+            frml_num_list.append(params['frml_num_elmnts_16'])
 
-    if 'special_FiscalCost' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_FiscalCost')):
-            frml_num_list.append('special_FiscalCost')
+    if params['frml_num_elmnts_17'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_17'])):
+            frml_num_list.append(params['frml_num_elmnts_17'])
 
-    if 'special_FiscalCost_combine_set_type' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.
-                       count('special_FiscalCost_combine_set_type')):
-            frml_num_list.append('special_FiscalCost_combine_set_type')
+    if params['frml_num_elmnts_18'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_18'])):
+            frml_num_list.append(params['frml_num_elmnts_18'])
 
-    if 'sum_across' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('sum_across')):
-            frml_num_list.append('sum_across')
+    if params['frml_num_elmnts_19'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_19'])):
+            frml_num_list.append(params['frml_num_elmnts_19'])
 
-    if 'special_ussolarprod' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_ussolarprod')):
-            frml_num_list.append('special_ussolarprod')
+    if params['frml_num_elmnts_20'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_20'])):
+            frml_num_list.append(params['frml_num_elmnts_20'])
 
-    if 'special_disolarprod' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_disolarprod')):
-            frml_num_list.append('special_disolarprod')
+    if params['frml_num_elmnts_21'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_21'])):
+            frml_num_list.append(params['frml_num_elmnts_21'])
 
-    if 'special_windprod' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_windprod')):
-            frml_num_list.append('special_windprod')
+    if params['frml_num_elmnts_22'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_22'])):
+            frml_num_list.append(params['frml_num_elmnts_22'])
 
-    if 'special_gencost' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_gencost')):
-            frml_num_list.append('special_gencost')
+    if params['frml_num_elmnts_23'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_23'])):
+            frml_num_list.append(params['frml_num_elmnts_23'])
 
-    if 'special_t&dcost' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_t&dcost')):
-            frml_num_list.append('special_t&dcost')
+    if params['frml_num_elmnts_24'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_24'])):
+            frml_num_list.append(params['frml_num_elmnts_24'])
 
-    if 'special_powersectorcost' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_powersectorcost')):
-            frml_num_list.append('special_powersectorcost')
+    if params['frml_num_elmnts_25'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['frml_num_elmnts_25'])):
+            frml_num_list.append(params['frml_num_elmnts_25'])
 
-    if 'sum_across_combine_set_type' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.
-                       count('sum_across_combine_set_type')):
-            frml_num_list.append('sum_across_combine_set_type')
+    if params['col_mngmt_ele_11'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['col_mngmt_ele_11'])):
+            frml_num_list.append(params['col_mngmt_ele_11'])
 
-    if 'sum_across_rel2018' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('sum_across_rel2018')):
-            frml_num_list.append('sum_across_rel2018')
+    if params['col_mngmt_ele_14'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['col_mngmt_ele_14'])):
+            frml_num_list.append(params['col_mngmt_ele_14'])
 
-    if 'special_EaseImp' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_EaseImp')):
-            frml_num_list.append('special_EaseImp')
+    if params['col_mngmt_ele_12'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['col_mngmt_ele_12'])):
+            frml_num_list.append(params['col_mngmt_ele_12'])
 
-    if 'special_ExtMng' in frml_num_elmnts:
-        for k in range(frml_num_elmnts.count('special_ExtMng')):
-            frml_num_list.append('special_ExtMng')
+    if params['col_mngmt_ele_13'] in frml_num_elmnts:
+        for k in range(frml_num_elmnts.count(params['col_mngmt_ele_13'])):
+            frml_num_list.append(params['col_mngmt_ele_13'])
 
     # Let's check the logic
     correct_logic = False
@@ -483,12 +481,12 @@ def frml_ind_2_colinfo(elmnt_id, o_OR_d, name, srce, frml, inv_sets, sup_sets,
     # using the size of *col_title_suffix_prm* as proxy of correct assignation:
     '''
     if (len(frml_num_elmnts) == len(all_prms) ==
-            len(frml_den_elmnts)) and ('column_per_param' in col_mngmt_ele):
+            len(frml_den_elmnts)) and (params['col_mngmt_ele_3'] in col_mngmt_ele):
     '''
     if (len(frml_num_elmnts) == len(all_prms) ==
-            len(frml_den_elmnts)) and ('column_per_param' in col_mngmt_ele):
+            len(frml_den_elmnts)) and (params['col_mngmt_ele_3'] in col_mngmt_ele):
         correct_logic_3 = True
-    elif 'column_per_param' not in col_mngmt_ele:
+    elif params['col_mngmt_ele_3'] not in col_mngmt_ele:
         correct_logic_3 = True
     else:
         print('    Error source: different number of parameters and formulas \
@@ -700,7 +698,7 @@ if __name__ == '__main__':
 
         # development task: extract the unique comment columns with
         # additional information to process the variables:
-        developing_phase = True
+        developing_phase = params['developing_phase']
         if developing_phase is True:
             # Unique numerator formulas:
             list_frml_num = []

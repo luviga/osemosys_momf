@@ -466,7 +466,7 @@ def f2_ipp(lvl, lvl_max, b, o, o_name, per_name, rep_csv, ad_df_grab,
            the_maxobase, rel_driv, rel_driv_min,
            rel_driv_max, rel_driv_tbase, rel_driv_t,
            rel_driv_o1_col, rel_driv_o1_fam, rel_driv_o2_col, rel_driv_o2_fam,
-           rel_driv_maxobase, qtype):
+           rel_driv_maxobase, qtype, params):
     # Define the function's outcome:
     astr_list = []
 
@@ -484,7 +484,7 @@ def f2_ipp(lvl, lvl_max, b, o, o_name, per_name, rep_csv, ad_df_grab,
         this_df_raw = ad_df_grab[this_fam]
 
         # Filter the normalized dataframe:
-        keys_IDs = ['Fut_ID', 'Run_Strat_ID', 'Scenario', 'Strat_ID']
+        keys_IDs = params['keys_IDs']
         unique_strats = list(set(this_df_raw['Strat_ID']))
         if (len(unique_strats) == 2 and 'none' in
                 unique_strats):
@@ -785,7 +785,7 @@ if __name__ == '__main__':
     # manually enter a custom and valid list to extract the data
     # list_ana_iter = analysis_list  # !!!Alternatively define any [int]!!!
     # list_ana_iter_int = [1, 2, 3]
-    list_ana_iter_int = [1]
+    list_ana_iter_int = params['list_ana_iter_int_man']
     # list_ana_iter_int = [2]  # USER ENTRY
     list_ana_iter = ['Analysis_' + str(i) for i in list_ana_iter_int]
 
@@ -837,7 +837,7 @@ if __name__ == '__main__':
         list_exp_iter = list(comp_pfd.
                              keys())  # !!!Alternatively define any [int]!!!
         '''
-        list_exp_iter = [1]  # USER ENTRY
+        list_exp_iter = params['list_exp_iter']  # USER ENTRY
         add_str = '\n2. We will now iterate across experiments: '
         print(add_str, list_exp_iter)
         pmrep.write(add_str)
@@ -869,7 +869,7 @@ if __name__ == '__main__':
             add_str = '4. Selecting the data to create tables'
             print(add_str)
             pmrep.write(add_str + '\n')
-            use_pfd = comp_pfd[exp_ID]['NDP']
+            use_pfd = comp_pfd[exp_ID][params['NDP']]
             future_list = list(use_pfd.keys())
             future_list.sort()
 
@@ -1019,15 +1019,15 @@ if __name__ == '__main__':
                         o_data = o_data_dict_per[per_name]  # remember: o_name
 
                         o_cols_list_direct = [i for i in o_cols_list
-                                              if 'direct' in i]
+                                              if params['direct'] in i]
                         o_cols_list_wrtBAU = [i for i in o_cols_list
-                                              if 'wrtBAU' in i]
-                        o_cols_list_root = [i.replace('_direct', '') for i in
+                                              if params['wrt_BAU'] in i]
+                        o_cols_list_root = [i.replace('_'+params['direct'], '') for i in
                                             o_cols_list_direct]
                         # If the strings does not have a '_direct', the root
                         # will be empty. Let's add 'wrtBAU' cases:
                         if len(o_cols_list_root) == 0:
-                            o_cols_list_root = [i.replace('_wrtBAU', '') for i
+                            o_cols_list_root = [i.replace('_'+params['wrt_BAU'], '') for i
                                                 in o_cols_list_wrtBAU]
                         o_cols_opt_pure, o_cols_opt_disag = \
                             f0_clean_options(o_cols_list_root)
@@ -1042,7 +1042,7 @@ if __name__ == '__main__':
 
                             # Extracting direct columns of drivers:
                             d_cols_ld_local = [i for i in d_cols_list
-                                               if 'direct' in i]
+                                               if params['direct'] in i]
 
                             d_cols_list_direct += [acol for acol in
                                                    d_cols_ld_local if acol not
@@ -1050,17 +1050,17 @@ if __name__ == '__main__':
 
                             # Extracting wrtBAU columns of drivers:
                             d_cols_lwb_local = [i for i in d_cols_list
-                                                if 'wrtBAU' in i]
+                                                if params['wrt_BAU'] in i]
 
                             d_cols_list_wrtBAU += [acol for acol in
                                                    d_cols_lwb_local if acol not
                                                    in d_cols_list_direct]
 
                             # Extracting root columns of drivers:
-                            d_cols_lr_local = [i.replace('_direct', '')
+                            d_cols_lr_local = [i.replace('_'+params['direct'], '')
                                                for i in d_cols_ld_local]
                             if len(d_cols_lr_local) == 0:
-                                d_cols_lr_local = [i.replace('_wrtBAU', '')
+                                d_cols_lr_local = [i.replace('_'+params['wrt_BAU'], '')
                                                    for i in d_cols_lwb_local]
 
                             d_cols_list_root += [acol for acol in
@@ -1087,29 +1087,29 @@ if __name__ == '__main__':
                             combinations
                         '''
                         o_cols_pure_direct = [i for i in o_cols_list_direct
-                                              if i.replace('_direct', '')
+                                              if i.replace('_'+params['direct'], '')
                                               in o_cols_opt_pure]
                         o_cols_disag_direct = [i for i in o_cols_list_direct
-                                               if i.replace('_direct', '')
+                                               if i.replace('_'+params['direct'], '')
                                                in o_cols_opt_disag]
                         o_cols_pure_wrtBAU = [i for i in o_cols_list_wrtBAU
-                                              if i.replace('_wrtBAU', '')
+                                              if i.replace('_'+params['wrt_BAU'], '')
                                               in o_cols_opt_pure]
                         o_cols_disag_wrtBAU = [i for i in o_cols_list_wrtBAU
-                                               if i.replace('_wrtBAU', '')
+                                               if i.replace('_'+params['wrt_BAU'], '')
                                                in o_cols_opt_disag]
 
                         d_cols_pure_direct = [i for i in d_cols_list_direct
-                                              if i.replace('_direct', '')
+                                              if i.replace('_'+params['direct'], '')
                                               in d_cols_opt_pure]
                         d_cols_disag_direct = [i for i in d_cols_list_direct
-                                               if i.replace('_direct', '')
+                                               if i.replace('_'+params['direct'], '')
                                                in d_cols_opt_disag]
                         d_cols_pure_wrtBAU = [i for i in d_cols_list_wrtBAU
-                                              if i.replace('_wrtBAU', '')
+                                              if i.replace('_'+params['wrt_BAU'], '')
                                               in d_cols_opt_pure]
                         d_cols_disag_wrtBAU = [i for i in d_cols_list_wrtBAU
-                                               if i.replace('_wrtBAU', '')
+                                               if i.replace('_'+params['wrt_BAU'], '')
                                                in d_cols_opt_disag]
 
                         # Above we defined all the column names, now let's
@@ -1159,34 +1159,34 @@ if __name__ == '__main__':
                         d_cols_dwb_ref = deepcopy(d_cols_disag_wrtBAU)
                         d_cols_dd_ref = deepcopy(d_cols_disag_direct)
 
-                        d_cols_pd_roots = [acol.replace('_direct', '') for
+                        d_cols_pd_roots = [acol.replace('_'+params['direct'], '') for
                                            acol in d_cols_pure_direct]
                         for acol in d_cols_pwb_ref:
-                            if acol.replace('_wrtBAU', '') not in \
+                            if acol.replace('_'+params['wrt_BAU'], '') not in \
                                     d_cols_pd_roots:
                                 d_cols_pure_direct.append(acol)
 
                         # - 2) Pure wrtBAU grabs from pure direct:
-                        d_cols_pwb_roots = [acol.replace('_wrtBAU', '') for
+                        d_cols_pwb_roots = [acol.replace('_'+params['wrt_BAU'], '') for
                                             acol in d_cols_pure_wrtBAU]
                         for acol in d_cols_pd_ref:
-                            if acol.replace('_direct', '') not in \
+                            if acol.replace('_'+params['direct'], '') not in \
                                     d_cols_pwb_roots:
                                 d_cols_pure_wrtBAU.append(acol)
 
                         # - 3) Disag direct grabs from disag wrtBAU:
-                        d_cols_dd_roots = [acol.replace('_direct', '') for
+                        d_cols_dd_roots = [acol.replace('_'+params['direct'], '') for
                                            acol in d_cols_disag_direct]
                         for acol in d_cols_dwb_ref:
-                            if acol.replace('_wrtBAU', '') not in \
+                            if acol.replace('_'+params['wrt_BAU'], '') not in \
                                     d_cols_dd_roots:
                                 d_cols_disag_direct.append(acol)
 
                         # - 4) Disag wrtBAU grabs from disag direct:
-                        d_cols_dwb_roots = [acol.replace('_wrtBAU', '') for
+                        d_cols_dwb_roots = [acol.replace('_'+params['wrt_BAU'], '') for
                                             acol in d_cols_disag_wrtBAU]
                         for acol in d_cols_dd_ref:
-                            if acol.replace('_direct', '') not in \
+                            if acol.replace('_'+params['direct'], '') not in \
                                     d_cols_dwb_roots:
                                 d_cols_disag_wrtBAU.append(acol)
 
@@ -1674,9 +1674,9 @@ if __name__ == '__main__':
                             # pero column.
                             dict_infos = {}
 
-                            bug_acts = False
-                            bug_acts_1 = False
-                            bug_acts_2 = False
+                            bug_acts = params['bug_acts']
+                            bug_acts_1 = params['bug_acts_1']
+                            bug_acts_2 = params['bug_acts_2']
 
                             for c in o_pssbl_cols:
                                 if float(this_df_raw[c].sum()) == 0:
@@ -1936,7 +1936,8 @@ if __name__ == '__main__':
                                                             rel_driv_o2_col_l2,
                                                             rel_driv_o2_fam_l2,
                                                             rel_driv_mb_l2,
-                                                            'structured')
+                                                            'structured',
+                                                            params)
                                                     # Report results:
                                                     for astr in astr_list:
                                                         add_str = \
@@ -2063,7 +2064,8 @@ if __name__ == '__main__':
                                                                     [], [], [],
                                                                     [], [], [],
                                                                     [],
-                                                                    'structured')
+                                                                    'structured',
+                                                                    params)
                                                             # Report results:
                                                             for astr in astr_list:
                                                                 add_str = \

@@ -124,10 +124,10 @@ dict_norm_df = {'22-30': data_df_22_30_norm,
 data_boxes_pickle = pickle.load( open( params['Sub_ana_1_exp_1'], "rb" ))
 # for example, find the names of the variables that are "metrics of interest"
 df_ana1_raw = \
-    pd.read_excel(open(params['Analysis'] + params['Prim_Struc'], 'rb'), sheet_name='Sequences')
+    pd.read_excel(open(params['Analysis'] + '1' + + params['Prim_Struc'], 'rb'), sheet_name=params['Seq'])
 df_ana1_mask = \
     ((~df_ana1_raw['Outcome_Source'].isna()) &
-     (df_ana1_raw['Outcome_Type'] == 'Metric of interest'))
+     (df_ana1_raw['Outcome_Type'] == params['met_int']))
 df_ana1 = df_ana1_raw.loc[df_ana1_mask]
 metric_of_interest_list = df_ana1['Outcome'].tolist()
 
@@ -143,10 +143,10 @@ drivers_2_columns = {}
 if (data_df_22_30_col_use == data_df_31_50_col_use) and (data_df_22_30_col_use == data_df_22_35_col_use):
     drivers_all_raw = list(set(data_df_22_30_col_use))
     for this_d in drivers_all_raw:
-        if 'Mode shift' in this_d and 'public' in this_d:
-            drivers_all.append('Mode shift public')
-        elif 'Mode shift' in this_d:
-            drivers_all.append('Mode shift nonmot')
+        if params['mod_shi_3'] in this_d and 'public' in this_d:
+            drivers_all.append(params['mod_shi_4'])
+        elif params['mod_shi_3'] in this_d:
+            drivers_all.append(params['mod_shi_5'])
         else:
             drivers_all.append(this_d.split('_')[0])
         drivers_2_columns.update({drivers_all[-1]:this_d})
@@ -191,7 +191,7 @@ i_period.sort()
 
 # let's open the "classes" sheet to know which ranges are available:
 df_classes = \
-    pd.read_excel(open('t3f6_validation_analysis_inputs.xlsx', 'rb'),
+    pd.read_excel(open(params['Val_Ana_inp'], 'rb'),
                   sheet_name='classes')
 
 # remember the selection of metric thresholds:
@@ -497,7 +497,7 @@ for ot in i_outcome_type:
             for g in unique_driver_groups:
                 this_g_d_list_raw, this_g_d_list = df_groups_2_drivers[g], []
                 for this_d in this_g_d_list_raw:
-                    if df_drivers_2_types[this_d] != 'Intermediary':
+                    if df_drivers_2_types[this_d] != params['Inter']:
                         this_g_d_list.append(this_d)
                 this_d_counter, unused_ds, used_ds = 0, [], []
                 for this_d in this_g_d_list:
@@ -833,4 +833,3 @@ for n in range(len(sheet_names)):
 writer_fn_end_result.save()
 
 print('The validation table is complete.')
-
