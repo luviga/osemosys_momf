@@ -377,7 +377,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                         break
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
-            output_csv_r = 0.05*100
+            output_csv_r = params['output_csv_r']*100
             output_csv_year = params['base_year']
             #
             if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
