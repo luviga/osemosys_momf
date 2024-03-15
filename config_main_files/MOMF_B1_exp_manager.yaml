@@ -70,6 +70,7 @@ Tech_Adop: 'Tech_Adoption'
 Elec: 'Electrical'
 Smart_Grid: 'SmartGrid'
 Effi: 'Efficiency'
+Waste: 'Waste'
 # Pickle Blend Shares 0
 # File
 Blend_Shares_0: 'Blend_Shares_0.pickle'
@@ -170,6 +171,10 @@ coun_initial: 'CR'
 output_csv_r: 0.05
 
 adjust_fre_rai: True
+
+# Sectors variables
+Use_Waste: False
+Use_Transport: True
 
 # Scenarios
 #--------------------------------------------------------------------------------------------------------------------#
@@ -668,6 +673,7 @@ PPPVT: 'PPPVT'
 PPWNDON: 'PPWNDON'
 PPPVDS: 'PPPVDS'
 hyd: 'HYD'
+group_tech: 'Telef'
 ##############################################################################
 
 ################################# General Var #################################

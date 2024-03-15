@@ -520,7 +520,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
                     #
                     ref_var_position_index = output_header.index( this_variable )
                     #
-                    if params['trains'] not in group_tech:
+                    if params['trains'] not in group_tech and params['group_tech'] not in group_tech:
                         driven_distance = float(Reference_driven_distance[this_strategy][group_tech][this_year_index])
                         driven_distance_change_year = \
                             float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['change_year'])])
@@ -662,7 +662,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
                 '''
                 if this_tech in list(Fleet_Groups_inv.keys()):
                     group_tech = Fleet_Groups_inv[this_tech]
-                    if params['trains'] not in group_tech:
+                    if params['trains'] not in group_tech  and params['group_tech'] not in group_tech:
                         driven_distance = float(Reference_driven_distance[this_strategy][group_tech][this_year_index])
                         driven_distance_change_year = \
                             float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['change_year'])])
@@ -1374,7 +1374,7 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
                     #
                     ref_var_position_index = input_params_table_headers.index( parameters_to_print[p] )
                     #
-                    if params['trains'] not in group_tech:
+                    if params['trains'] not in group_tech  and params['group_tech'] not in group_tech:
                         driven_distance = Reference_driven_distance[ scenario_list[scen] ][ group_tech ][ this_year_index ]
                         #
                         if parameters_to_print[p] == 'TotalAnnualMaxCapacity' or parameters_to_print[p] == 'FixedCost': # this will overwrite for zero-carbon techs, but will not fail.
@@ -2009,6 +2009,7 @@ if __name__ == '__main__':
     scenario_list = [ scenario_list_reference[i] for i in range( len( scenario_list_all ) ) if scenario_list_reference[i] != 'based' ]
     #
     base_configuration_overall = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Over_params'] )
+    base_configuration_waste = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Waste'])
     base_configuration_transport_elasticity = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['TElas'] )
     base_configuration_distance = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Dis_Levers'] )
     base_configuration_modeshift = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Mode_Shift'] )
@@ -2222,7 +2223,7 @@ if __name__ == '__main__':
     ##########################################################################
     '''
     transport_group_sets = list( Fleet_Groups.keys() )
-    transport_group_sets = [ i for i in transport_group_sets if params['train'] not in i ]
+    transport_group_sets = [ i for i in transport_group_sets if params['train'] not in i and 'Telef' not in i ]
     Reference_driven_distance = {}
     Reference_occupancy_rate = {}
     Reference_op_life = {}
@@ -2661,8 +2662,11 @@ if __name__ == '__main__':
                     relative_pkm_to_demand[ capacity_variables[capvar] ].update( { group_tech_PUBLIC[g]:deepcopy( this_pkm_share_rounded ) } )
                     #
                     if params['train'] not in group_tech_PUBLIC[g]: # we need to find the shares of non-rail modes:
-                        cap_indices_rail = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ capacity_variables[capvar] ][ this_set_type_initial ] ) if x == str( params['tech_train'] ) ]
-                        cap_values_rail = deepcopy( stable_scenarios[ scenario_list[s] ][ capacity_variables[capvar] ]['value'][ cap_indices_rail[0]:cap_indices_rail[-1]+1 ] )
+                        try:
+                            cap_indices_rail = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ capacity_variables[capvar] ][ this_set_type_initial ] ) if x == str( params['tech_train'] ) ]
+                            cap_values_rail = deepcopy( stable_scenarios[ scenario_list[s] ][ capacity_variables[capvar] ]['value'][ cap_indices_rail[0]:cap_indices_rail[-1]+1 ] )
+                        except Exception:
+                            cap_values_rail = [0 for i in range(len(time_range_vector))]
                         cap_values_rail = [ float( cap_values_rail[j] ) for j in range( len( cap_values_rail ) ) ]
                         demand_values_norail = [ demand_values[j] - cap_values_rail[j] for j in range( len( demand_values ) ) ]
                         #
@@ -2789,105 +2793,149 @@ if __name__ == '__main__':
             print('C', scenario_list[s], x.count('FSTCHRGER'))
         #########################################################################################
         ### BLOCK 6: modify demand ###
-        if scenario_list[s] in list(set(base_configuration_transport_elasticity['Scenario'].tolist())):            
-            ''' MODIFYING *base_configuration_transport_elasticity* '''
-            this_scenario_df = deepcopy( base_configuration_transport_elasticity.loc[ base_configuration_transport_elasticity['Scenario'].isin( [ scenario_list[s] ] ) ] )
-            #
-            set_list_group_dict = params['set_list_group_dict']
-            #
-            set_list_group = list( set( this_scenario_df[ 'Set' ].tolist() ) )
-            #
-            unique_demand_list = []
-            unique_demand = {}
-            #
-            elasticity_Params_built_in_all = list(set(this_scenario_df['Built-in Parameter-Set'].tolist()))[0]
-            elasticity_Params_reference_all = list(set(this_scenario_df['Reference'].tolist()))[0]
-            elasticity_Params_method_all = list(set(this_scenario_df['Method'].tolist()))[0]
-            elasticity_Params_setIndex_all = list(set(this_scenario_df['Set_Index'].tolist()))[0]
-            #
-            for l0 in range( len( set_list_group ) ):
-                this_scenario_tech_df = this_scenario_df.loc[ this_scenario_df['Set'] == set_list_group[l0] ]
-                set_list = set_list_group_dict[set_list_group[l0]]
+        
+        # Waste
+        if params['Use_Waste']:
+            if scenario_list[s] in list(set(base_configuration_waste['Scenario'].tolist())):            
+                ''' MODIFYING *base_configuration_waste* '''
+                this_scenario_df = deepcopy(base_configuration_waste.loc[base_configuration_waste['Scenario'].isin([scenario_list[s]])])
+
+                # Reset index for the filtered DataFrame and drop the old index
+                this_scenario_df.reset_index(drop=True, inplace=True)
+                
+                this_scenario_df_indices_list = this_scenario_df.index.tolist()         
                 #
-                for l in range( len( set_list ) ):
-                    param_list = list( set( this_scenario_tech_df[ 'Parameter' ].tolist() ) )
-                    for p in range( len( param_list ) ):
-                        this_scenario_tech_param_df = this_scenario_tech_df.loc[ this_scenario_tech_df['Parameter'] == param_list[p] ]
-                        #
-                        elasticity_Params_built_in  = this_scenario_tech_param_df['Built-in Parameter-Set'].tolist()[0]
-                        elasticity_Params_reference = this_scenario_tech_param_df['Reference'].tolist()[0]
-                        elasticity_Params_method    = this_scenario_tech_param_df['Method'].tolist()[0]
-                        elasticity_Params_setIndex    = this_scenario_tech_param_df['Set_Index'].tolist()[0]
-                        #
-                        if elasticity_Params_method == params['exact']: # only modify demands and capacities if this is turned on
-                            value_list_num = []
-                            this_index = this_scenario_tech_param_df.index.tolist()[0]
-                            for y in range( len( time_range_vector ) ):
-                                value_list_num.append( this_scenario_tech_param_df.loc[ this_index, time_range_vector[y] ] )
-                            #
-                            if set_list_group[l0] == params['pass']:
-                                value_list_mult = [value_list_num[i]/Total_Demand[i] for i in range(len(value_list_num))]
-                            elif set_list_group[l0] == params['fre']:
-                                value_list_mult = [value_list_num[i]/Total_Demand_Fre[i] for i in range(len(value_list_num))]
+                for i in range(len(this_scenario_df_indices_list)):
+                    #
+                    set_item = this_scenario_df['Set'].tolist()[i]
+                    #
+                    waste_Params_built_in = this_scenario_df['Built-in Parameter-Set'].tolist()[i]
+                    waste_Params_reference = this_scenario_df['Reference'].tolist()[i]
+                    waste_Params_method = this_scenario_df['Method'].tolist()[i]
+                    waste_Params_setIndex = this_scenario_df['Set_Index'].tolist()[i]
+                    #
+                    param_list = this_scenario_df['Parameter'].tolist()[i].split(' ; ')
+                    param_str = this_scenario_df['Parameter'].tolist()[i]
+
+                    for p in range(len(param_list)):
+                        this_scenario_set_param_df = this_scenario_df.loc[(this_scenario_df['Parameter'] == param_str) & (this_scenario_df['Set'] == set_item)]
+                        #                    
+                        if waste_Params_method == 'Exact': # only modify demands and capacities if this is turned on
+                            value_list_new_vals = []
+                            this_index = this_scenario_set_param_df.index.tolist()[0]
+                            for y in range(len(time_range_vector)):
+                                value_list_new_vals.append(this_scenario_set_param_df.loc[this_index, time_range_vector[y]])
                             #
                             # OBTAINED VALUES, NOW PRINTING
-                            if elasticity_Params_built_in == 'YES':
-                                this_param_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ param_list[p] ][ elasticity_Params_setIndex ] ) if x == str( set_list[l] ) ]
-                                value_list = deepcopy( stable_scenarios[ scenario_list[s] ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] )
+                            if waste_Params_built_in == 'YES':
+                                this_param_indices = [i for i, x in enumerate(stable_scenarios[scenario_list[s]][param_list[p]][waste_Params_setIndex]) if x == set_item]
+                                value_list = deepcopy(stable_scenarios[scenario_list[s]][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1])
                                 value_list = [float(e) for e in value_list]
                                 #
-                                if set_list[l] not in unique_demand_list:
-                                    unique_demand_list.append(set_list[l])
-                                    unique_demand.update({set_list[l]:deepcopy(value_list)})
-                                #
-                                new_value_list = [ round( value_list[e]*value_list_mult[e], 4 ) for e in range(len(value_list)) ]
-                                stable_scenarios[ scenario_list[s] ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] = deepcopy( new_value_list )
-            #
-            # Below we must adjust capacities:
-            if elasticity_Params_method_all == params['exact']:
-                Sets_Involved = params['Sets_Involved']
-                params_to_adjust = params['params_to_adjust']
-                for par in range( len( params_to_adjust ) ):
-                    for a_set in range( len( Sets_Involved ) ):
-                        this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ][ 't' ] ) if x == str( Sets_Involved[ a_set ] ) ]
-                        value_list = deepcopy( stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                        value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                        #
-                        '''
-                        demand_indices_BASE = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ) ]
-                        demand_list_BASE = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices_BASE[0]:demand_indices_BASE[-1]+1 ] )
-                        demand_list_BASE = [ float(demand_list_BASE[j]) for j in range(len(demand_list_BASE)) ]
-                        '''
-                        #
-                        demand_list_BASE = unique_demand[str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] )]
-                        #
-                        demand_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ) ]
-                        demand_list = deepcopy( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
-                        #
-                        if 'PUB' in str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ):
-                            # let's extract rail capacity to adjust this apropiately
-                            train_pass_capacity_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['tech_train'] ) ]
-                            train_pass_capacity_values = stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ train_pass_capacity_indices[0]:train_pass_capacity_indices[-1]+1 ]
-                            if Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] == params['tra_dem_pub'] and scenario_list[ s ] == params['NDP']:
-                                subtract_list = [float(train_pass_capacity_values[j]) for j in range(len(train_pass_capacity_values))]
-                            else:
-                                subtract_list = [0 for j in range(len(train_pass_capacity_values))]
+                                new_value_list = [round(value_list_new_vals, 4) for e in range(len(value_list))]
+                                stable_scenarios[scenario_list[s]][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1] = deepcopy(new_value_list)
+
+        # Transport
+        if params['Use_Transport']:
+            if scenario_list[s] in list(set(base_configuration_transport_elasticity['Scenario'].tolist())):            
+                ''' MODIFYING *base_configuration_transport_elasticity* '''
+                this_scenario_df = deepcopy( base_configuration_transport_elasticity.loc[ base_configuration_transport_elasticity['Scenario'].isin( [ scenario_list[s] ] ) ] )
+                #
+                set_list_group_dict = params['set_list_group_dict']
+                #
+                set_list_group = list( set( this_scenario_df[ 'Set' ].tolist() ) )
+                #
+                unique_demand_list = []
+                unique_demand = {}
+                #
+                elasticity_Params_built_in_all = list(set(this_scenario_df['Built-in Parameter-Set'].tolist()))[0]
+                elasticity_Params_reference_all = list(set(this_scenario_df['Reference'].tolist()))[0]
+                elasticity_Params_method_all = list(set(this_scenario_df['Method'].tolist()))[0]
+                elasticity_Params_setIndex_all = list(set(this_scenario_df['Set_Index'].tolist()))[0]
+                #
+                for l0 in range( len( set_list_group ) ):
+                    this_scenario_tech_df = this_scenario_df.loc[ this_scenario_df['Set'] == set_list_group[l0] ]
+                    set_list = set_list_group_dict[set_list_group[l0]]
+                    #
+                    for l in range( len( set_list ) ):
+                        param_list = list( set( this_scenario_tech_df[ 'Parameter' ].tolist() ) )
+                        for p in range( len( param_list ) ):
+                            this_scenario_tech_param_df = this_scenario_tech_df.loc[ this_scenario_tech_df['Parameter'] == param_list[p] ]
                             #
-                            new_value_list_old_base = deepcopy( value_list )
-                            new_value_list = []
-                            for n in range( len( new_value_list_old_base ) ):
-                                if n < index_change_year:
-                                    new_value_list.append( new_value_list_old_base[n] )
+                            elasticity_Params_built_in  = this_scenario_tech_param_df['Built-in Parameter-Set'].tolist()[0]
+                            elasticity_Params_reference = this_scenario_tech_param_df['Reference'].tolist()[0]
+                            elasticity_Params_method    = this_scenario_tech_param_df['Method'].tolist()[0]
+                            elasticity_Params_setIndex    = this_scenario_tech_param_df['Set_Index'].tolist()[0]
+                            #
+                            if elasticity_Params_method == params['exact']: # only modify demands and capacities if this is turned on
+                                value_list_num = []
+                                this_index = this_scenario_tech_param_df.index.tolist()[0]
+                                for y in range( len( time_range_vector ) ):
+                                    value_list_num.append( this_scenario_tech_param_df.loc[ this_index, time_range_vector[y] ] )
+                                #
+                                if set_list_group[l0] == params['pass']:
+                                    value_list_mult = [value_list_num[i]/Total_Demand[i] for i in range(len(value_list_num))]
+                                elif set_list_group[l0] == params['fre']:
+                                    value_list_mult = [value_list_num[i]/Total_Demand_Fre[i] for i in range(len(value_list_num))]
+                                #
+                                # OBTAINED VALUES, NOW PRINTING
+                                if elasticity_Params_built_in == 'YES':
+                                    this_param_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ param_list[p] ][ elasticity_Params_setIndex ] ) if x == str( set_list[l] ) ]
+                                    value_list = deepcopy( stable_scenarios[ scenario_list[s] ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] )
+                                    value_list = [float(e) for e in value_list]
+                                    #
+                                    if set_list[l] not in unique_demand_list:
+                                        unique_demand_list.append(set_list[l])
+                                        unique_demand.update({set_list[l]:deepcopy(value_list)})
+                                    #
+                                    new_value_list = [ round( value_list[e]*value_list_mult[e], 4 ) for e in range(len(value_list)) ]
+                                    stable_scenarios[ scenario_list[s] ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] = deepcopy( new_value_list )
+                #
+                # Below we must adjust capacities:
+                if elasticity_Params_method_all == params['exact']:
+                    Sets_Involved = params['Sets_Involved']
+                    params_to_adjust = params['params_to_adjust']
+                    for par in range( len( params_to_adjust ) ):
+                        for a_set in range( len( Sets_Involved ) ):
+                            this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ][ 't' ] ) if x == str( Sets_Involved[ a_set ] ) ]
+                            value_list = deepcopy( stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                            value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                            #
+                            '''
+                            demand_indices_BASE = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ) ]
+                            demand_list_BASE = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices_BASE[0]:demand_indices_BASE[-1]+1 ] )
+                            demand_list_BASE = [ float(demand_list_BASE[j]) for j in range(len(demand_list_BASE)) ]
+                            '''
+                            #
+                            demand_list_BASE = unique_demand[str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] )]
+                            #
+                            demand_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ) ]
+                            demand_list = deepcopy( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
+                            #
+                            if 'PUB' in str( Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] ):
+                                # let's extract rail capacity to adjust this apropiately
+                                train_pass_capacity_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['tech_train'] ) ]
+                                train_pass_capacity_values = stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ train_pass_capacity_indices[0]:train_pass_capacity_indices[-1]+1 ]
+                                if Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] == params['tra_dem_pub'] and scenario_list[ s ] == params['NDP']:
+                                    subtract_list = [float(train_pass_capacity_values[j]) for j in range(len(train_pass_capacity_values))]
                                 else:
-                                    new_value_list.append( (new_value_list_old_base[n]-subtract_list[n])*(demand_list[n]/demand_list_BASE[n]) )
-                                    new_value_list[-1] += subtract_list[n]
-                            new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
-                        else:
-                            new_value_list_old_base = deepcopy( value_list )
-                            new_value_list = [ new_value_list_old_base[n]*(demand_list[n]/demand_list_BASE[n]) for n in range( len( new_value_list_old_base ) )]
-                            new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
-                        #
-                        stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
+                                    subtract_list = [0 for j in range(len(train_pass_capacity_values))]
+                                #
+                                new_value_list_old_base = deepcopy( value_list )
+                                new_value_list = []
+                                for n in range( len( new_value_list_old_base ) ):
+                                    if n < index_change_year:
+                                        new_value_list.append( new_value_list_old_base[n] )
+                                    else:
+                                        new_value_list.append( (new_value_list_old_base[n]-subtract_list[n])*(demand_list[n]/demand_list_BASE[n]) )
+                                        new_value_list[-1] += subtract_list[n]
+                                new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
+                            else:
+                                new_value_list_old_base = deepcopy( value_list )
+                                new_value_list = [ new_value_list_old_base[n]*(demand_list[n]/demand_list_BASE[n]) for n in range( len( new_value_list_old_base ) )]
+                                new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
+                            #
+                            stable_scenarios[ scenario_list[s] ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
 
         if params['DDP'] in scenario_list:
             x = stable_scenarios[params['DDP']]['TotalAnnualMaxCapacity']['t']
@@ -2911,7 +2959,7 @@ if __name__ == '__main__':
              params['tr'] in e and params['in'] not in e and e not in ignore_techs]
         rewrite_techs_lowlim = \
             [e for e in unique_low_lim_techs if
-             params['tr'] in e and params['in'] not in e and e not in ignore_techs]
+             params['tr'] in e and params['in'] not in e and 'IMP' not in e and e not in ignore_techs]
 
         # Let's adjust existing restrictions to new capacities (transport sector);
         # First, max capacity:
