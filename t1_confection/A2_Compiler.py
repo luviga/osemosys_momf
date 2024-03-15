@@ -18,9 +18,8 @@ with open('MOMF_T1_A.yaml', 'r') as file:
     # Load content file
     params = yaml.safe_load(file)
 
-horizon_configuration = pd.read_excel( params['A1_inputs'] + params['Horizon_configuration'] )
-baseyear = horizon_configuration['Initial_Year'].tolist()[0]
-endyear = horizon_configuration['Final_Year'].tolist()[0]
+baseyear = params['base_year']
+endyear = params['final_year']
 global time_range_vector
 time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 #
@@ -35,6 +34,8 @@ for n in range( len( other_setup_params_name ) ):
     other_setup_params.update( { other_setup_params_name[n]:other_setup_params_param[n] } )
 #
 print_aid_parameter = False
+#------------------------------------------------------------------------------
+print('1 - Define Yearsplit')
 #
 df_Yearsplit = pd.DataFrame( columns = Wide_Param_Header )
 for y in range( len( time_range_vector ) ):
@@ -45,7 +46,7 @@ for y in range( len( time_range_vector ) ):
     df_Yearsplit = df_Yearsplit._append( this_dict_4_wide, ignore_index=True )
 #
 #------------------------------------------------------------------------------
-# BELOW WORKS WELL
+print('2 - Connect the model activity ratios.')
 #
 AR_Model_Base_Year = pd.ExcelFile(params['A1_outputs'] + params['Print_Base_Year'])
 AR_Projections = pd.ExcelFile(params['A1_outputs'] + params['Print_Proj'])
@@ -122,6 +123,8 @@ for g in range( len( groups_list ) ):
             All_Fuel_list_names.append( these_fuels_names[f] )
     #
     #------------------------------------------------------#
+    tech_plus_fuel_unique_oar, tech_plus_fuel_unique_iar = [], []
+
     # Let us continue with a useful dictionary gathering all the data:
     for t in range( len( this_df_techs ) ):
         this_tech = this_df_techs[t]
@@ -180,12 +183,13 @@ for g in range( len( groups_list ) ):
                 this_proj_df_new.loc[ mask , time_range_vector[y] ] = round( this_df_select_by_fo, 4 )
             #
             # Filling the data :
-            this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
-            df_OAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':output_fuel ,
-                                'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] ,
-                                'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-            df_OAR = df_OAR._append( df_OAR_dict, ignore_index=True )
+            if this_tech + '+' + output_fuel not in tech_plus_fuel_unique_oar:
+                this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
+                df_OAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
+                                    'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':output_fuel ,
+                                    'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] ,
+                                    'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
+                df_OAR = df_OAR._append( df_OAR_dict, ignore_index=True )
             #
             if groups_list[g] != params['primary']:
                 input_fuel_list = [ input_fuel ]
@@ -213,24 +217,73 @@ for g in range( len( groups_list ) ):
                     #
                     ###################################################################################################
                     # Filling the data :
-                    this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
-                    df_IAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':this_input_fuel ,
-                                        'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] , 
-                                        'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-                    df_IAR = df_IAR._append( df_IAR_dict, ignore_index=True )
+                    if this_tech + '+' + this_input_fuel not in tech_plus_fuel_unique_iar:
+                        this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
+                        df_IAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
+                                            'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':this_input_fuel ,
+                                            'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] , 
+                                            'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
+                        df_IAR = df_IAR._append( df_IAR_dict, ignore_index=True )
+                    
+                    # Create a tech + fuel string to show uniqueness in iar values:
+                    if (this_tech + '+' + this_input_fuel not in tech_plus_fuel_unique_iar) and y == len(time_range_vector)-1:
+                        tech_plus_fuel_unique_iar.append(this_tech + '+' + this_input_fuel)
                     #
                 #
             #
+        # Create a tech + fuel string to show uniqueness in oar values:
+        if this_tech + '+' + output_fuel not in tech_plus_fuel_unique_oar:
+            tech_plus_fuel_unique_oar.append(this_tech + '+' + output_fuel)
         #
     #
     AR_Base_proj_df_new.update( { groups_list[g]:this_proj_df_new } )
     #
 #
 # HERE WE HAVE A FUNCTIONING IAR AND OAR FOR BOTH NEEDS: WIDE AND LONG FORMATS
-#
+# After the completion of the IAR and OAR dictionaries, we can produce the dfs
+
+# These lines are for insert the values of each key as a list`
+df_OAR_dict_temp = {key: [value] for key, value in df_OAR_dict.items()}
+df_IAR_dict_temp = {key: [value] for key, value in df_IAR_dict.items()}
+
+df_OAR_gen = pd.DataFrame.from_dict(df_OAR_dict_temp)
+df_IAR_gen = pd.DataFrame.from_dict(df_IAR_dict_temp)
+
+df_OAR = pd.concat([df_OAR, df_OAR_gen], ignore_index=True)
+df_IAR = pd.concat([df_IAR, df_IAR_gen], ignore_index=True)
+
+# Define a test to check whether the connections are repeated or not:
+print('OAR techs and fuels connections unique/repeated')
+all_techs_plus_fuel_oar = []
+for atech in range(len(df_OAR['TECHNOLOGY'].index.tolist())):
+    this_techs_oar = df_OAR['TECHNOLOGY'].tolist()[atech]
+    this_fuels_oar = df_OAR['FUEL'].tolist()[atech]
+    all_techs_plus_fuel_oar.append(this_techs_oar+'+'+this_fuels_oar)
+
+all_techs_plus_fuel_oar_uni = list(set(all_techs_plus_fuel_oar))
+all_techs_plus_fuel_oar_sum = []
+for atech in range(len(all_techs_plus_fuel_oar_uni)):
+    all_indices_oars = [i for i, x in enumerate(all_techs_plus_fuel_oar) if x == all_techs_plus_fuel_oar_uni[atech] ]
+    all_techs_plus_fuel_oar_sum.append(len(all_indices_oars))
+
+print('IAR techs and fuels connections unique/repeated')
+all_techs_plus_fuel_iar = []
+for atech in range(len(df_IAR['TECHNOLOGY'].index.tolist())):
+    this_techs_iar = df_IAR['TECHNOLOGY'].tolist()[atech]
+    this_fuels_iar = df_IAR['FUEL'].tolist()[atech]
+    all_techs_plus_fuel_iar.append(this_techs_iar+'+'+this_fuels_iar)
+
+all_techs_plus_fuel_iar_uni = list(set(all_techs_plus_fuel_iar))
+all_techs_plus_fuel_iar_sum = []
+for atech in range(len(all_techs_plus_fuel_iar_uni)):
+    all_indices_iars = [i for i, x in enumerate(all_techs_plus_fuel_iar) if x == all_techs_plus_fuel_iar_uni[atech] ]
+    all_techs_plus_fuel_iar_sum.append(len(all_indices_iars))
+
+print('2 (end) - The model has ben connected.')
 #------------------------------------------------------------------------------
 # DEMAND
+print('3 - Process the model demand.')
+
 Demand = pd.ExcelFile(params['A1_outputs'] + params['Print_Demand'])
 Demand_df = Demand.parse( Demand.sheet_names[0] )
 
@@ -348,6 +401,7 @@ for m in range( len( list_demand_or_share ) ):
 
 # sys.exit()
 
+print('4 - Parameterize technologies.')
 # HERE WE HAVE A FUNCTIONING DEMAND *DF* // still have to add the wide format
 #------------------------------------------------------------------------------
 # THIS SECTION ONLY PARAMETERIZES TECHNOLOGIES:
@@ -387,6 +441,7 @@ for p in range( len( overall_param_list ) ):
     if overall_param_list[p] != 'OutputActivityRatio':
         overall_param_df_dict.update( { overall_param_list[p]:pd.DataFrame( columns = Wide_Param_Header ) } )
 #*****************************************************************************
+print('4.a. - Capacity limits.')
 # Let us do the capacity limits for the group technologies
 '''
 Description: this section changes the units from *Demand_df* in % to Gpkm for the modes of transport
@@ -439,6 +494,7 @@ for g in range( len( groups_list ) ):
                                           'Value':deepcopy( round( ref_cap, 4 ) ) } )
                 overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
 #
+print('4.b. - Remaining parameters.')
 for s in range( len( param_sheets ) ):
     params_dict.update( { param_sheets[s]:Parametrization.parse( param_sheets[s] ) } )
     this_df = params_dict[ param_sheets[s] ]
@@ -489,6 +545,7 @@ for s in range( len( param_sheets ) ):
                     if y != 0:
                         value_field_prior = this_df.loc[ n, time_range_vector[y-1] ]
                         if y > flatten_y_index and flatten_y_index != 0:
+                            flatten_y_value = this_df.loc[n, time_range_vector[y]]
                             xp_coord_known.append( y )
                             yp_coord_known.append( flatten_y_value )
                         if math.isnan(value_field) == False and math.isnan(value_field_prior) == True and time_range_vector[y] > final_year_to_interpolate:
@@ -719,6 +776,7 @@ for s in range( len( param_sheets ) ):
     #
 #
 #------------------------------------------------------------------------------
+print('5 - Include emissions.')
 Emissions = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Emi'])
 # Emissions.sheet_names # see all sheet names // this only need thes wide format
 Emissions_ghg_df = Emissions.parse( params['GHGs'] )
