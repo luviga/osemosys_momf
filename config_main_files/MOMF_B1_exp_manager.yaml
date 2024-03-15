@@ -7,6 +7,7 @@
 ########################################################################################
 # Directories
 Executables: './Executables'
+Executables_2: '.\Executables'
 A1_Inputs: './A1_Inputs/'
 A1_Outputs: './A1_Outputs/'
 A2_Output_Params: './A2_Output_Params/'
@@ -16,9 +17,11 @@ config: 'config\\'
 templates: 'templates'
 Experi_plat: './Experimental_Platform'
 Futures: '/Futures/'
+futures_2: 'Futures\\'
+Futures_3: '\Futures'
 From_Confection: './0_From_Confection/'
 Base_Model: '1_Baseline_Modelling'
-futures_2: 'Futures\\'
+
 
 # Files, sheets and columns
 # B1 script 
@@ -103,6 +106,27 @@ Exper_Dict: 'experiment_dictionary.pickle'
 # Uncertainty Table
 # File
 Uncer_Table: 'Uncertainty_Table.xlsx'
+# Broad output dataset creator f
+# File 
+Bro_out_dat_cre: 'Broad_Output_Dataset_Creator_f.py'
+# Output Dataset 0
+# File
+Out_dat_0: '\output_dataset_0.csv'
+# Output Dataset f
+# File
+Out_dat_f: '\output_dataset_f.csv'
+# Input Dataset 0
+# File
+In_dat_0: '\input_dataset_0.csv'
+# Input Dataset f
+# File
+In_dat_f: '\input_dataset_f.csv'
+# OSeMOSYS CR Input
+# File
+ose_cou_in: 'OSMOSYS_CR_Input'
+# OSeMOSYS CR Output
+# File
+ose_cou_out: 'OSMOSYS_CR_Output'
 ########################################################################################
 
 ################################# Variable definitions #################################
@@ -143,11 +167,15 @@ inputs_txt_csv: 'Both' # 'Both', 'csv'
 # Country
 coun_initial: 'CR'
 
+output_csv_r: 0.05
+
+adjust_fre_rai: True
 
 # Scenarios
 #--------------------------------------------------------------------------------------------------------------------#
 BAU: 'BAU'
 NDP: 'NDP'
+DDP: 'DDP'
 #--------------------------------------------------------------------------------------------------------------------#
 
 # Years variables
@@ -551,6 +579,9 @@ Blend_Shares_dict: {
   NDPWOSTh:{}
   }
 #----------------------------------------------------------------------------------#
+
+by_1: ['Strategy','Future.ID','Fuel','Technology','Emission','Year']
+by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Season','Year']
 ########################################################################################
 
 ################################# Conditions #################################
@@ -626,6 +657,7 @@ acci: 'Accidents'
 electri: 'Electrification'
 pen: 'Penetration'
 this_set: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD']
+this_set_2: 'TRNPASRAIELE'
 TRBUSHYD: 'TRBUSHYD'
 TRBUSELE: 'TRBUSELE'
 TRMBUSHYD: 'TRMBUSHYD'
@@ -663,6 +695,7 @@ context: 'Context'
 tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public
 tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private
 tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight
+tra_dem_med: 'DEMTRNFREMED'
 tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight
 tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize
 cost: 'Cost'
