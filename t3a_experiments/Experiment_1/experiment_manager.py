@@ -3896,7 +3896,9 @@ if __name__ == '__main__':
                         #
 
                         elif params['dis'] in X_Cat: # This is the last adjustment
-
+                            #
+                            enter_if_cycle = True
+                            #
                             if p == 0:
                                 dem_adj_public = True
                                 dem_adj_private = True
@@ -3933,7 +3935,8 @@ if __name__ == '__main__':
                                         subtract_list = [0 for j in range(len(train_pass_capacity_values))]
 
                                     demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( this_demand_set ) ]
-                                    demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
+                                    demand_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['value'][demand_indices[0]:demand_indices[-1]+1]]
+                                    # demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
                                     #
                                     new_value_list = []
                                     for n in range( len( value_list ) ):
@@ -3990,7 +3993,10 @@ if __name__ == '__main__':
                                             else:
                                                 new_value_list.append( value_list[n]*new_distance[n]/base_distance[n] )
                                         #
-                                        new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
+                                        if this_parameter == 'TotalAnnualMaxCapacity' and this_set in ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']:
+                                            new_value_list_rounded = [ round(elem*1.02, 4) for elem in new_value_list ]
+                                        else:
+                                            new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
                                         inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
 
                                         if this_set == params['tech_he_fre'] and scenario_list[s] != params['BAU']:  # here we need to adjust the capacity of freight rail for consistency
@@ -4043,7 +4049,40 @@ if __name__ == '__main__':
                                         adjustment_values_new_rounded = [ round(elem, 4) for elem in adjustment_values_new ]
                                         inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ adjust_cap_indices[0]:adjust_cap_indices[-1]+1 ] = deepcopy( adjustment_values_new_rounded )
 
+                            # !!! Here we override max cap to prevent infeasibilities
+                            # At this point we need to see if total annual max capacity factors have a negative rate at some point, in whcih case we would need to correct the trajectory.
+                            # Get all the technologies that belong to the max cap
+                            if this_parameter == 'TotalAnnualMaxCapacity':
+                                max_cap_t_all = inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ]['t']
+                                max_cap_groups = [i for i in max_cap_t_all if 'Techs' in i or 'TR' in i]
+                                for mcg in max_cap_groups:
+                                    adjust_cap_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 't' ] ) if x == mcg ]
+                                    adjustment_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ adjust_cap_indices[0]:adjust_cap_indices[-1]+1 ] )
+                                    adjustment_values = [ float( adjustment_values[j] ) for j in range( len( adjustment_values ) ) ]
+                                    adjusted_values = deepcopy(adjustment_values)
+
+                                    # Initialize the last non-decreasing value with the first element of the list
+                                    last_non_decreasing_value = adjusted_values[0]
                             
+                                    # Iterate through the list starting from the second element
+                                    for i in range(1, len(adjusted_values)):
+                                        # If the current element is less than the last non-decreasing value,
+                                        # update it to the last non-decreasing value
+                                        if adjusted_values[i] < last_non_decreasing_value:
+                                            adjusted_values[i] = last_non_decreasing_value
+                                        else:
+                                            # Otherwise, update the last non-decreasing value to the current element
+                                            last_non_decreasing_value = adjusted_values[i]
+
+                                    inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ adjust_cap_indices[0]:adjust_cap_indices[-1]+1 ] = deepcopy(adjusted_values)
+
+                                    # if scenario_list[ s ] == 'NDP' and 'Motos' in mcg:
+                                    #    print('review 2')
+                                    #    sys.exit()
+
+                        # Also check that things entered.
+                        if params['check_assignation']:
+                            print('    ', u, X_Cat, Parameters_Involved[p], enter_if_cycle)
 
                     # Here we now perform the demand adjustment for all demand types, as we must adjust the demands:
                     # if params['dis'] in X_Cat:
@@ -4146,6 +4185,8 @@ if __name__ == '__main__':
                 if params['adj_oar'] in X_Cat: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
                     ####### USE THIS LINE FOR AUTOMATIC ADJUSTMENT // BY DESIGN THIS CAN BE DONE AFTER MAXIMUM VEHICLE CAPACITY HAS BEEN MANIPULATED #######
                     # %% WE CAN TAKE ADVANTAGE HERE AND ADJUST ALL GROUP TECHS FOR COHERENCE %%
+                    #
+                    enter_if_cycle = True
                     #
                     # ADD AN EXCEPTION LIST BELOW TO SHOW THE GROUPS THAT SHOULD NOT BE ADJUSTED TO AVOID DOUBLING THE WORK:
                     except_techs = params['except_techs']
@@ -4268,6 +4309,44 @@ if __name__ == '__main__':
                                 #
                             #
                         #
+
+                    params_to_adjust = [ 'TotalAnnualMaxCapacity']
+                    for par in range( len( params_to_adjust ) ):
+                        for a_set in range( len( Sets_Involved ) ):
+                            #
+                            this_set = Sets_Involved[ a_set ]
+
+                            if this_set in ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']:  # except, pass
+                                this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ params_to_adjust[par] ][ 't' ] ) if x == this_set]
+                                value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                #
+                                if par == 'TotalAnnualMaxCapacity':
+                                    mult_public_adj = 1.02
+                                else:
+                                    mult_public_adj = 1
+                                #
+                                new_value_list = [ mult_public_adj*value_list[n] for n in range( len( value_list ) )]
+                                new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
+                                #
+                                inherited_scenarios[ scenario_list[s] ][ f ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
+                    
+
+                    #--------------------------------------------------------------------#
+
+                if 'NDP' == scenario_list[s] and u > 13:
+                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( 'TRYTKHYD') ]
+                    value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                    value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
+                    # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                    # value_list_min = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                    # value_list_min = [ float(value_list_min[j]) for j in range( len( value_list_min ) ) ]
+                    # diff = [i1 - i2 for i1, i2 in zip(value_list_max, value_list_min)]
+                    # has_negative = any(value < 0 for value in diff)
+                    # print('!!!!',  u, Exact_X, f, has_negative)
+
+                if params['check_assignation']:
+                    print(u, X_Cat, enter_if_cycle)  
 
 #                if f == 100:
 #
@@ -4439,10 +4518,39 @@ if __name__ == '__main__':
                     max_iter = x
                 #    
                 for n2 in range( n_ini , max_iter ):
-                    p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,params) )
-                    processes.append(p)
-                    p.start()
-            
+                    # let's apply the filter here for faster results:
+                    fut_index = n2
+                    if fut_index < len( all_futures ):
+                        fut = all_futures[fut_index]
+                        scen = 0
+                    if fut_index >= len( all_futures ) and fut_index < 2*len( all_futures ):
+                        fut = all_futures[fut_index - len( all_futures ) ]
+                        scen = 1
+                    if fut_index >= 2*len( all_futures ) and fut_index < 3*len( all_futures ):
+                        fut = all_futures[fut_index - 2*len( all_futures ) ]
+                        scen = 2
+                    if fut_index >= 3*len( all_futures ) and fut_index < 4*len( all_futures ):
+                        fut = all_futures[fut_index - 3*len( all_futures ) ]
+                        scen = 3
+                    if fut_index >= 4*len( all_futures ) and fut_index < 5*len( all_futures ):
+                        fut = all_futures[fut_index - 4*len( all_futures ) ]
+                        scen = 4
+                    if fut_index >= 5*len( all_futures ) and fut_index < 6*len( all_futures ):
+                        fut = all_futures[fut_index - 5*len( all_futures ) ]
+                        scen = 5
+                    if fut_index >= 6*len( all_futures ):
+                        fut = all_futures[fut_index - 6*len( all_futures ) ]
+                        scen = 6
+                    #
+                    fut = all_futures[fut_index - scen*len( all_futures ) ]
+                    #
+                    if scenario_list_print[scen] == 'NDP' or scenario_list_print[scen] == 'BAU':
+                        p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,params) )
+                        processes.append(p)
+                        p.start()
+                    else:
+                        print('!!! At generation, we skip: future ', fut, ' and scenario ', scenario_list[scen], ' !!!' )
+                                    
                 for process in processes:
                     process.join()
                 end_1 = time.time()
