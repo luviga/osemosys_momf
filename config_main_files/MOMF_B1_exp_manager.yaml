@@ -172,9 +172,13 @@ output_csv_r: 0.05
 
 adjust_fre_rai: True
 
+check_assignation: False
+
 # Sectors variables
 Use_Waste: False
 Use_Transport: True
+Use_AFOLU: False
+Use_PIUP: False
 
 # Scenarios
 #--------------------------------------------------------------------------------------------------------------------#
