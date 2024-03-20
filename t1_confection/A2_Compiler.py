@@ -366,6 +366,12 @@ for m in range( len( list_demand_or_share ) ):
         #
         demand_trajectory = [ this_net_value_BY ]
         for y in range( len( Projections_sheet['Year'].tolist() ) ):
+
+            gr_e_pass = Projections_sheet['e_Passenger'].tolist()[y]
+            gr_e_fre = Projections_sheet['e_Freight'].tolist()[y]
+            var_gdp = Projections_sheet['Variation_GDP'].tolist()[y]
+            this_yr = Projections_sheet['Year'].tolist()[y]
+
             if params['passenger'] in list_projection_param[m]:
                 demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Passenger'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
             if params['freight'] in list_projection_param[m]:
@@ -373,10 +379,106 @@ for m in range( len( list_demand_or_share ) ):
             Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( demand_trajectory[-1]*( this_value_BY/( this_value_BY + other_value_BY ) ), 4 )
         #
     #
-    if params['flat'] == list_projection_mode[m]:
-        this_value_BY = Demand_df.loc[ m, 2018 ]
-        for y in range( len( Projections_sheet['Year'].tolist() ) ):
-            Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( this_value_BY, 4 )
+    '''
+    The next four projetion mode have variation percentages (and do not need
+    to be divided by 100). In this project, the same applies to the projection
+    mode above.
+    '''
+    # # Use additional "extra" variables for the updated projections: check check
+    # var_km_pas_list = Projections_sheet['Variation_km_Passenger'].tolist()
+    # var_km_fre_list = Projections_sheet['Variation_km_Freight'].tolist()
+    # var_pop_list = Projections_sheet['Variation_Population'].tolist()
+    # var_gdp_pc_list = Projections_sheet['Variation_GDP_per_cap'].tolist()
+    # var_gdp_tra_list = Projections_sheet['Variation_GDP_transport'].tolist()
+
+    # var_ini_pass_list = Projections_sheet['Initial variation passenger'].tolist()
+    # var_ini_fre_list = Projections_sheet['Initial variation freight'].tolist()
+    # #
+    # # This is for passenger transport:
+    # if 'Population coupling' in list_projection_mode[m]:
+    #     this_tech = list_fuel_or_tech[m]
+    #     this_net_value_BY = Demand_df.loc[m, 2018]
+    #     demand_trajectory = [this_net_value_BY]
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         this_yr = Projections_sheet['Year'].tolist()[y]
+    #         if this_yr <= 2022:  # population affects passenger
+    #             apply_var = var_ini_pass_list[y]
+    #         else:  # grow with population:
+    #             apply_var = var_pop_list[y]            
+    #         demand_trajectory.append(demand_trajectory[-1]*(1 + apply_var))
+    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
+    #     #
+    # #
+    # # This is for freight transport:
+    # if 'GDP transport coupling' in list_projection_mode[m]:
+    #     this_tech = list_fuel_or_tech[m]
+    #     this_net_value_BY = Demand_df.loc[m, 2018]
+    #     demand_trajectory = [this_net_value_BY]
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         this_yr = Projections_sheet['Year'].tolist()[y]
+    #         if this_yr <= 2022:  # gdp transport affects affects freight
+    #             apply_var = var_ini_fre_list[y]
+    #         else:  # grow with population:
+    #             apply_var = var_gdp_tra_list[y]            
+    #         demand_trajectory.append(demand_trajectory[-1]*(1 + apply_var))
+    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
+    #     #
+    # #
+    # # This is for maritime transport:
+    # if 'GDP total coupling after last' in list_projection_mode[m]:
+    #     this_tech = list_fuel_or_tech[m]
+    #     this_net_value_BY = Demand_df.loc[m, 2018]
+    #     demand_trajectory = [this_net_value_BY]
+
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         this_yr = Projections_sheet['Year'].tolist()[y]
+    #         this_value_add_check = Demand_df.loc[m, this_yr]
+    #         # differentiating factor
+    #         apply_var = Projections_sheet['Variation_GDP'].tolist()[y]
+    #         if math.isnan(this_value_add_check):
+    #             this_value_add = demand_trajectory[-1]*(1 + apply_var)
+    #         else:
+    #             this_value_add = Demand_df.loc[m, this_yr]
+    #         demand_trajectory.append(this_value_add)
+    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
+    #     #
+    #     # print('review this projection')
+    #     # sys.exit()
+    # #
+    # # This is for air transport:
+    # if 'GDP per capita coupling after last' in list_projection_mode[m]:
+    #     this_tech = list_fuel_or_tech[m]
+    #     this_net_value_BY = Demand_df.loc[m, 2018]
+    #     demand_trajectory = [this_net_value_BY]
+
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         this_yr = Projections_sheet['Year'].tolist()[y]
+    #         this_value_add_check = Demand_df.loc[m, this_yr]
+    #         # differentiating factor
+    #         apply_var = var_gdp_pc_list[y]
+    #         if math.isnan(this_value_add_check):
+    #             this_value_add = demand_trajectory[-1]*(1 + apply_var)
+    #         else:
+    #             this_value_add = Demand_df.loc[m, this_yr]
+    #         demand_trajectory.append(this_value_add)
+    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
+    #     #
+    # #
+    # if 'Flat' == list_projection_mode[m]:
+    #     this_value_BY = Demand_df.loc[m, 2018]
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         Demand_df.loc[m, Projections_sheet['Year'].tolist()[y]] = round(this_value_BY, 4)
+    # #
+    # if 'Flat after last' == list_projection_mode[m]:
+    #     year_query_valid = []
+    #     for y in range(len(Projections_sheet['Year'].tolist())):
+    #         year_query = Projections_sheet['Year'].tolist()[y]
+    #         this_value_add = Demand_df.loc[m, year_query]
+    #         if math.isnan(this_value_add):
+    #             this_value_add = Demand_df.loc[m, year_query_valid[-1]]
+    #         else:
+    #             year_query_valid.append(deepcopy(year_query))
+    #         Demand_df.loc[m, Projections_sheet['Year'].tolist()[y]] = round(this_value_add, 4)
     #
     if Demand_df['Demand/Share'].tolist()[m] == params['demand']:
         this_fuel = list_fuel_or_tech[m]
@@ -783,6 +885,15 @@ Emissions_ghg_df = Emissions.parse( params['GHGs'] )
 Emissions_ext_df = Emissions.parse( params['Externalities'] )
 #
 emissions_list = list( set( Emissions_ghg_df['Emission'].tolist() + Emissions_ext_df['External Cost' ].tolist() ) )
+
+# Inputs data about emissions check check
+# Emissions_csc_df = Emissions.parse('Externalities_SCC')
+# #
+# emissions_list = list(set(
+#     Emissions_ghg_df['Emission'].tolist() + \
+#     Emissions_ext_df['External Cost'].tolist() + \
+#     Emissions_csc_df['Emission'].tolist()))
+
 #
 df_Emissions = pd.DataFrame( columns = Wide_Param_Header )
 these_emissions = Emissions_ghg_df['Emission'].tolist()
@@ -829,6 +940,42 @@ for e in range( len( these_emissions ) ):
         #
     #
 #
+# Other inputs data about emissions check check
+# # Fill the social cost of carbon based on the dataframe "Emissions_csc_df"
+# these_emissions = Emissions_csc_df['Emission'].tolist() 
+# these_e_techs = Emissions_csc_df['Tech'].tolist()
+# these_e_values = Emissions_csc_df['EmissionActivityRatio'].tolist()
+# these_e_penalty_factor = Emissions_csc_df['EmissionsPenalty_Factor'].tolist()
+# these_e_penalty_factor_multyr = {}
+# for y in range(len(time_range_vector)):
+#     these_e_penalty_factor_multyr.update({
+#         time_range_vector[y]:deepcopy(Emissions_csc_df[time_range_vector[y]])})
+# for e in range(len(these_emissions)):
+#     this_emission = these_emissions[e]
+#     this_tech = these_e_techs[e]
+#     #
+#     for y in range(len(time_range_vector)):
+#         this_dict_4_wide = {}
+#         this_dict_4_wide_2 = {}
+#         this_dict_4_wide.update({'PARAMETER':'EmissionActivityRatio', 'Scenario':other_setup_params['Main_Scenario'],
+#                                     'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
+#                                     'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
+#                                     'Value':these_e_values[e]})
+#         df_Emissions = df_Emissions._append(this_dict_4_wide, ignore_index=True)
+#         #
+#         if this_emission + ' ' + str(time_range_vector[y]) not in this_emission_unique:
+#             these_e_penalty = these_e_penalty_factor[e] * \
+#                 these_e_penalty_factor_multyr[time_range_vector[y]][e]
+#             this_dict_4_wide_2.update({'PARAMETER':'EmissionsPenalty', 'Scenario':other_setup_params['Main_Scenario'],
+#                                         'REGION':other_setup_params['Region'] , 'TECHNOLOGY':'', 'EMISSION':this_emission,
+#                                         'YEAR':time_range_vector[y],
+#                                         'Value':these_e_penalty})
+#             df_EmissionPenalty = df_EmissionPenalty._append(this_dict_4_wide_2, ignore_index=True)
+#             this_emission_unique.append(this_emission + ' ' + str(time_range_vector[y]))
+#         #
+#     #
+# #
+
 overall_param_df_dict.update( { 'EmissionActivityRatio':df_Emissions } )
 overall_param_df_dict.update( { 'EmissionsPenalty':df_EmissionPenalty } )
 #
