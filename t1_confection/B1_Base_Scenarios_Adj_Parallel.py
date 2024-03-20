@@ -1081,62 +1081,74 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
                             g.write('\n') #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             #%%%
             if len(this_param_keys) == 5:
+                print(5, p, this_param)
                 this_set_element_unique_all = []
-                for pkey in range( len(this_param_keys)-2 ):
-                    for i in range( 2, len(header_indices)-1 ):
+                last_set_element_unique = []
+                second_last_set_element_unique = []
+                for pkey in range(len(this_param_keys)-2):
+                    for i in range(2, len(header_indices)-1):
                         if header_indices[i] == this_param_keys[pkey]:
-                            this_set_element = this_scenario_data[ this_param ][ header_indices[i] ]
-                            this_set_element_unique_all.append( list( set( this_set_element ) ) )
+                            this_set_element = this_scenario_data[this_param][header_indices[i]]
+                            this_set_element_unique_all.append(list(set(this_set_element)))
+
                 #
-                this_set_element_unique_1 = deepcopy( this_set_element_unique_all[0] )
-                this_set_element_unique_2 = deepcopy( this_set_element_unique_all[1] )
-                this_set_element_unique_3 = deepcopy( this_set_element_unique_all[2] )
-                #
-                for n1 in range( len( this_set_element_unique_1 ) ):
-                    for n2 in range( len( this_set_element_unique_2 ) ):
-                        for n3 in range( len( this_set_element_unique_3 ) ): #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-                            # MOVE AFTER len() conditional // g.write( '[' + str( this_set_element_unique_1[n1] ) + ',' + str( this_set_element_unique_2[n2] ) + ',' + str( this_set_element_unique_3[n3] ) + ',*,*]:\n' )
-                            # get the last and second last parameters of the list:
-                            last_set_element = this_scenario_data[ this_param ][ this_param_keys[-1] ]
-                            last_set_element_unique = [] # list( set( last_set_element ) )
-                            for u in range( len( last_set_element ) ):
-                                if last_set_element[u] not in last_set_element_unique:
-                                    last_set_element_unique.append( last_set_element[u] )
-                            #
-                            #
-                            second_last_set_element = this_scenario_data[ this_param ][ this_param_keys[-2] ]
-                            second_last_set_element_unique = [] # list( set( second_last_set_element ) )
-                            for u in range( len( second_last_set_element ) ):
-                                if second_last_set_element[u] not in second_last_set_element_unique:
-                                    second_last_set_element_unique.append( second_last_set_element[u] )
-                            #
-                            for s in range( len( second_last_set_element_unique ) ):
-                                #  MOVE AFTER len() conditional // g.write( second_last_set_element_unique[s] + ' ' )
-                                value_indices_s = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[-2] ] ) if x == str( second_last_set_element_unique[s] ) ]
-                                value_indices_n1 = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[0] ] ) if x == str( this_set_element_unique_1[n1] ) ]
-                                value_indices_n2 = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[1] ] ) if x == str( this_set_element_unique_2[n2] ) ]
-                                value_indices_n3 = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[2] ] ) if x == str( this_set_element_unique_3[n3] ) ]
-                                #
-                                r_index = set(value_indices_s) & set(value_indices_n1) & set(value_indices_n2) & set(value_indices_n3)
-                                value_indices = list( r_index )
-                                value_indices.sort()
-                                #
-                                if len( value_indices ) != 0:
-                                    g.write( '[' + str( this_set_element_unique_1[n1] ) + ',' + str( this_set_element_unique_2[n2] ) + ',' + str( this_set_element_unique_3[n3] ) + ',*,*]:\n' )
-                                    #
-                                    for y in range( len( last_set_element_unique ) ):
-                                        g.write( str( last_set_element_unique[y] ) + ' ')
-                                    g.write(':=\n')
-                                    #
-                                    g.write( second_last_set_element_unique[s] + ' ' )
-                                    #
-                                    # these_values = this_scenario_data[ this_param ]['value'][ value_indices[0]:value_indices[-1]+1 ]
-                                    these_values = []
-                                    for val in range( len( value_indices ) ):
-                                        these_values.append( this_scenario_data[ this_param ]['value'][ value_indices[val] ] )
-                                    for val in range( len( these_values ) ):
-                                        g.write( str( these_values[val] ) + ' ' )
-                                    g.write('\n') #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                this_set_element_unique_1 = deepcopy(this_set_element_unique_all[0])
+                this_set_element_unique_2 = deepcopy(this_set_element_unique_all[1])
+                this_set_element_unique_3 = deepcopy(this_set_element_unique_all[2])
+
+                last_set_element = np.array(this_scenario_data[this_param][this_param_keys[-1]])
+                last_set_element_unique = np.unique(last_set_element)
+
+                second_last_set_element = np.array(this_scenario_data[this_param][this_param_keys[-2]])
+
+                second_last_set_element_unique = np.unique(second_last_set_element)
+
+                long_list1 = this_scenario_data[this_param][this_param_keys[1]]
+                long_list2 = this_scenario_data[this_param][this_param_keys[2]]
+                concat_result = list(map(lambda x, y: x + '-' + y, long_list1, long_list2))
+                concat_result_set = list(set(concat_result))
+
+                short_list1, short_list2 = \
+                    zip(*(s.split('-') for s in concat_result_set))
+                short_list1_set = list(set(short_list1))
+                short_list2_set = list(set(short_list2))
+
+                for n1 in range(len(this_set_element_unique_1)):
+                    # for n2 in range(len(this_set_element_unique_2)):
+                    # for n3 in range(len(this_set_element_unique_3)):
+                    for nx in range(len(concat_result_set)):
+                        n1_faster = concat_result_set[nx].split('-')[0]
+                        n2_faster = concat_result_set[nx].split('-')[1]
+
+                        for s in range(len(second_last_set_element_unique)):
+                            value_indices_s = [i for i, x in enumerate(this_scenario_data[this_param][this_param_keys[-2]]) if x == str(second_last_set_element_unique[s])]
+                            value_indices_n1 = [i for i, x in enumerate(this_scenario_data[this_param][this_param_keys[0]]) if x == str(this_set_element_unique_1[n1])]
+                            value_indices_n2 = [i for i, x in enumerate(this_scenario_data[this_param][this_param_keys[1]]) if x == str(n1_faster)]
+                            value_indices_n3 = [i for i, x in enumerate(this_scenario_data[this_param][this_param_keys[2]]) if x == str(n2_faster)]
+
+                            r_index = set(value_indices_s) & set(value_indices_n1) & set(value_indices_n2) & set(value_indices_n3)
+                            value_indices = list(r_index)
+                            value_indices.sort()
+
+                            if len(value_indices) != 0:
+                                g.write('[' + str(this_set_element_unique_1[n1]) + ',' + str(n1_faster) + ',' + str(n2_faster) + ',*,*]:\n')
+
+                                for y in range(len(last_set_element_unique)):
+                                    g.write(str(last_set_element_unique[y]) + ' ')
+                                g.write(':=\n')
+
+                                g.write(second_last_set_element_unique[s] + ' ')
+
+                                these_values = []
+                                for val in range(len(value_indices)):
+                                    these_values.append(this_scenario_data[this_param]['value'][value_indices[val]])
+                                for val in range(len(these_values)):
+                                    g.write(str(these_values[val]) + ' ')
+                                g.write('\n')
+
+                            else:
+                                print('Never happens right?')
+                                sys.exit()
             #
             #g.write('\n') 
             #-----------------------------------------#
@@ -2710,16 +2722,16 @@ if __name__ == '__main__':
                         # Initialize a dictionary to store the results to check if demands are decreasing
                         is_decreasing_dict = {}
 
-                        # Loop over the range of years
-                        for year in range(5, params['final_year'] - params['base_year_2'] + 1):  # start from 1 (params['base_year_3']) up to params['final_year'] - params['base_year_2'] + 1 (params['final_year'])
-                            # Check if the rate is decreasing
-                            is_decreasing = new_cap_values_rounded[year] < new_cap_values_rounded[year - 1]
-                            # Store the result in the dictionary
-                            is_decreasing_dict[params['base_year_2'] + year] = is_decreasing
-                        any_decreasing = any(is_decreasing_dict.values())
-                        if any_decreasing:
-                            print('There can be an issue with falling transport demand.')
-                            #sys.exit()
+                        # # Loop over the range of years check check
+                        # for year in range(5, params['final_year'] - params['base_year_2'] + 1):  # start from 1 (params['base_year_3']) up to params['final_year'] - params['base_year_2'] + 1 (params['final_year'])
+                        #     # Check if the rate is decreasing
+                        #     is_decreasing = new_cap_values_rounded[year] < new_cap_values_rounded[year - 1]
+                        #     # Store the result in the dictionary
+                        #     is_decreasing_dict[params['base_year_2'] + year] = is_decreasing
+                        # any_decreasing = any(is_decreasing_dict.values())
+                        # if any_decreasing:
+                        #     print('There can be an issue with falling transport demand.')
+                        #     sys.exit()
                         
                         stable_scenarios[ scenario_list[s] ][ capacity_variables[capvar] ]['value'][ cap_indices[0]:cap_indices[-1]+1 ] = deepcopy( new_cap_values_rounded )
                     #
