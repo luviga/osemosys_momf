@@ -785,7 +785,7 @@ if __name__ == '__main__':
     # manually enter a custom and valid list to extract the data
     # list_ana_iter = analysis_list  # !!!Alternatively define any [int]!!!
     # list_ana_iter_int = [1, 2, 3]
-    list_ana_iter_int = params['list_ana_iter_int_man']
+    list_ana_iter_int = params['list_ana_iter_int']
     # list_ana_iter_int = [2]  # USER ENTRY
     list_ana_iter = ['Analysis_' + str(i) for i in list_ana_iter_int]
 

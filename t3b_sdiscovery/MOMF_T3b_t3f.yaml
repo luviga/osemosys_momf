@@ -51,8 +51,7 @@ list_exp_iter_man_vali: [2]
 ana_id: 1
 exp_id: 1
 developing_phase: True
-list_ana_iter_int: [7]
-list_ana_iter_int_man: [1]
+list_ana_iter_int: [7] # Could it some ints of a list of ints
 bug_acts: False
 bug_acts_1: False
 bug_acts_2: False
