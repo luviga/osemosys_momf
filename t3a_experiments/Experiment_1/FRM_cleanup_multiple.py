@@ -36,83 +36,93 @@ import gc
 import shutil
 import pickle
 import yaml
+import xlrd
 
-def set_first_list(Executed_Scenario, params):
-    dir_of_interest = \
-        './' + params['Futures'] + str( Executed_Scenario )
-    first_list_raw = os.listdir(dir_of_interest)
-
-    first_list = [e for e in first_list_raw if ('.csv' not in e) and
-                  ('Table' not in e) and ('.py' not in e) and
-                  ('__pycache__' not in e)]
-    return first_list, dir_of_interest
+def set_first_list( Executed_Scenario, params ):
+    #
+    directory = './' + params['Futures'] + str( Executed_Scenario )
+    print(directory)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    first_list_raw = os.listdir( directory )
+    #
+    global first_list
+    first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) ]
+    return first_list, directory
 
 
 def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params ):
-    first_list, dir_of_interest = set_first_list( Executed_Scenario, params )
-
+    #
     Reference_driven_distance =     unpackaged_useful_elements[0]
     Reference_occupancy_rate =      unpackaged_useful_elements[1]
     Fleet_Groups_inv =              unpackaged_useful_elements[2]
     time_range_vector =             unpackaged_useful_elements[3]
     dict_gdp_ref      =             unpackaged_useful_elements[4]
-
+    #
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
+    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
-    table1 = xlrd.open_workbook(params['From_Confection'] + params['B1_model_Struct']) # works for all strategies
-    sheet_sets_structure = table1.sheet_by_index(0) # 11 columns
-    sheet_params_structure = table1.sheet_by_index(1) # 30 columns
-    sheet_vars_structure = table1.sheet_by_index(2) # 43 columns
-    #
-    S_DICT_sets_structure = {'set':[],'initial':[],'number_of_elements':[],'elements_list':[]}
-    for col in range(1,11+1):
-        S_DICT_sets_structure['set'].append( sheet_sets_structure.cell_value(rowx=0, colx=col) )
-        S_DICT_sets_structure['initial'].append( sheet_sets_structure.cell_value(rowx=1, colx=col) )
-        S_DICT_sets_structure['number_of_elements'].append( int( sheet_sets_structure.cell_value(rowx=2, colx=col) ) )
+    structure_filename = params['From_Confection'] + params['B1_model_Struct']
+    structure_file = pd.ExcelFile(structure_filename)
+    structure_sheetnames = structure_file.sheet_names  # see all sheet names
+    sheet_sets_structure = pd.read_excel(open(structure_filename, 'rb'),
+                                        header=None,
+                                        sheet_name=structure_sheetnames[0])
+    sheet_params_structure = pd.read_excel(open(structure_filename, 'rb'),
+                                        header=None,
+                                        sheet_name=structure_sheetnames[1])
+    sheet_vars_structure = pd.read_excel(open(structure_filename, 'rb'),
+                                        header=None,
+                                        sheet_name=structure_sheetnames[2])
+
+    S_DICT_sets_structure = params['S_DICT_sets_structure']
+    for col in range(1,11+1):  # 11 columns
+        S_DICT_sets_structure['set'].append( sheet_sets_structure.iat[0, col] )
+        S_DICT_sets_structure['initial'].append( sheet_sets_structure.iat[1, col] )
+        S_DICT_sets_structure['number_of_elements'].append( int( sheet_sets_structure.iat[2, col] ) )
         #
-        element_number = int( sheet_sets_structure.cell_value(rowx=2, colx=col) )
+        element_number = int( sheet_sets_structure.iat[2, col] )
         this_elements_list = []
         if element_number > 0:
             for n in range( 1, element_number+1 ):
-                this_elements_list.append( sheet_sets_structure.cell_value(rowx=2+n, colx=col) )
+                this_elements_list.append( sheet_sets_structure.iat[2+n, col] )
         S_DICT_sets_structure['elements_list'].append( this_elements_list )
     #
-    S_DICT_params_structure = {'category':[],'parameter':[],'number_of_elements':[],'index_list':[]}
+    S_DICT_params_structure = params['S_DICT_params_structure']
     param_category_list = []
-    for col in range(1,30+1):
-        if str( sheet_params_structure.cell_value(rowx=0, colx=col) ) != '':
-            param_category_list.append( sheet_params_structure.cell_value(rowx=0, colx=col) )
+    for col in range(1,30+1):  # 30 columns
+        if str( sheet_params_structure.iat[0, col] ) != '':
+            param_category_list.append( sheet_params_structure.iat[0, col] )
         S_DICT_params_structure['category'].append( param_category_list[-1] )
-        S_DICT_params_structure['parameter'].append( sheet_params_structure.cell_value(rowx=1, colx=col) )
-        S_DICT_params_structure['number_of_elements'].append( int( sheet_params_structure.cell_value(rowx=2, colx=col) ) )
+        S_DICT_params_structure['parameter'].append( sheet_params_structure.iat[1, col] )
+        S_DICT_params_structure['number_of_elements'].append( int( sheet_params_structure.iat[2, col] ) )
         #
-        index_number = int( sheet_params_structure.cell_value(rowx=2, colx=col) )
+        index_number = int( sheet_params_structure.iat[2, col] )
         this_index_list = []
         for n in range(1, index_number+1):
-            this_index_list.append( sheet_params_structure.cell_value(rowx=2+n, colx=col) )
+            this_index_list.append( sheet_params_structure.iat[2+n, col] )
         S_DICT_params_structure['index_list'].append( this_index_list )
     #
-    S_DICT_vars_structure = {'category':[],'variable':[],'number_of_elements':[],'index_list':[]}
+    S_DICT_vars_structure = params['S_DICT_vars_structure']
     var_category_list = []
-    for col in range(1,43+1):
-        if str( sheet_vars_structure.cell_value(rowx=0, colx=col) ) != '':
-            var_category_list.append( sheet_vars_structure.cell_value(rowx=0, colx=col) )
+    for col in range(1,43+1):  # 43 columns
+        if str( sheet_vars_structure.iat[0, col] ) != '':
+            var_category_list.append( sheet_vars_structure.iat[0, col] )
         S_DICT_vars_structure['category'].append( var_category_list[-1] )
-        S_DICT_vars_structure['variable'].append( sheet_vars_structure.cell_value(rowx=1, colx=col) )
-        S_DICT_vars_structure['number_of_elements'].append( int( sheet_vars_structure.cell_value(rowx=2, colx=col) ) )
+        S_DICT_vars_structure['variable'].append( sheet_vars_structure.iat[1, col] )
+        S_DICT_vars_structure['number_of_elements'].append( int( sheet_vars_structure.iat[2, col] ) )
         #
-        index_number = int( sheet_vars_structure.cell_value(rowx=2, colx=col) )
+        index_number = int( sheet_vars_structure.iat[2, col] )
         this_index_list = []
         for n in range(1, index_number+1):
-            this_index_list.append( sheet_vars_structure.cell_value(rowx=2+n, colx=col) )
+            this_index_list.append( sheet_vars_structure.iat[2+n, col] )
         S_DICT_vars_structure['index_list'].append( this_index_list )
     #-------------------------------------------#
     all_vars = params['all_vars']
@@ -138,7 +148,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = str( params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = str( '.' + params['Futures'] + str( Executed_Scenario ) + '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
     #
     n = 0
     break_this_while = False
@@ -147,7 +157,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
         structure_line_raw = linecache.getline(data_name, n)
         if 'No. Column name  St   Activity     Lower bound   Upper bound    Marginal' in structure_line_raw:
             ini_line = deepcopy( n+2 )
-        if 'Karush-Kuhn-Tucker' in structure_line_raw:
+        if params['KKT'] in structure_line_raw:
             end_line = deepcopy( n-1 )
             break_this_while = True
             break
@@ -217,7 +227,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     linecache.clearcache()
     #%%
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
+    output_adress = '.' + params['Futures'] + str( Executed_Scenario ) + '/' + str( first_list[case] )
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -304,6 +314,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                     ref_var_position_index = output_header.index( this_variable )
                     #
                     if params['trains'] not in group_tech:
+                        ''' Debug section start
+                        '''
                         try:
                             driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
                         except Exception:
@@ -322,6 +334,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                                 print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()))
                                 print('check alert')
                                 sys.exit()
+                        ''' Debug section end
+                        '''
                         #
                         if this_variable == 'NewCapacity':
                             var_position_index = output_header.index( params['newfleet'] )
@@ -367,7 +381,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                         break
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
-            output_csv_r = 0.05*100
+            output_csv_r = params['output_csv_r']*100
             output_csv_year = params['base_year']
             #
             if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
@@ -572,7 +586,8 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
         for n in range( len( data_row_list ) ):
             csvwriter.writerow( data_row_list[n] )
     #-----------------------------------------------------------------------------------------------------------%
-    shutil.os.remove(data_name)
+    if params['del_files']:
+        shutil.os.remove(data_name)
     #-----------------------------------------------------------------------------------------------------------%
     gc.collect(generation=2)
     time.sleep(0.05)
