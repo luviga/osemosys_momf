@@ -59,11 +59,11 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
 
     # Briefly open up the system coding to use when processing for visualization:
     df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code[params['code']].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code[params['plain_eng']].tolist()
+    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code[params['techs']].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code[params['plain_eng']].tolist()
+    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+    df_tech_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
@@ -304,12 +304,24 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                     ref_var_position_index = output_header.index( this_variable )
                     #
                     if params['trains'] not in group_tech:
-                        driven_distance =       float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
+                        try:
+                            driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
+                        except Exception:
+                            print(this_strategy)
+                            print(this_future)
+                            print(group_tech)
+                            print(this_year_index)
+                            print('error here')
                         #
                         if params['motos'] in group_tech or params['fre'] in group_tech:
                             passenger_per_vehicle = 1
                         else:
-                            passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
+                            try:
+                                passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
+                            except Exception:
+                                print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()))
+                                print('check alert')
+                                sys.exit()
                         #
                         if this_variable == 'NewCapacity':
                             var_position_index = output_header.index( params['newfleet'] )
@@ -659,19 +671,22 @@ if __name__ == '__main__':
         for f in first_list:
             spec_dir = dir_of_interest + '/' + f
             all_files_internal = os.listdir(spec_dir)
-            output_dir = spec_dir + '/' + [i for i in all_files_internal if
-                                        'Output' in i and '.csv' in i][0]
+            # output_dir = spec_dir + '/' + [i for i in all_files_internal if
+            #                             'Output' in i and '.csv' in i][0]
             output_txt = spec_dir + '/' + [i for i in all_files_internal if
                                         '.txt' in i][0]
             name_txt = [i for i in all_files_internal if '.txt' in i][0]
             mod_case = name_txt.replace('.txt', '')
     
-            file_size = os.stat(output_dir).st_size
-            if file_size < 3000:
+            file_size = os.stat(output_txt).st_size
+            print(output_txt, file_size)
+            if file_size > 3000:
+                print(file_size)
                 files_2_cleanup.append(output_txt)
                 dirs_4_cleanup.append(spec_dir)
                 store_names.append(name_txt)
                 store_cases.append(mod_case)
+            
 
         # only acts if len(files_2_cleanup) > 0
         keep_files_ask, mod_files_ask = True, True
@@ -767,10 +782,10 @@ if __name__ == '__main__':
         # Here the files would have been re-written
 
         # Before continuing, we must add a few additional inputs:
-        Fleet_Groups = pickle.load( open( params['Fleet_Group'], "rb" ))
-        Fleet_Techs_Distance = pickle.load( open( params['Fleet_Group_Dist'], "rb" ))
-        Fleet_Techs_OR = pickle.load( open( params['Fleet_Group_OR'], "rb" ))
-        Fleet_Groups_techs_2_dem = pickle.load( open( params['Fleet_Group_T2D'], "rb" ))
+        Fleet_Groups = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups'], "rb" ))
+        Fleet_Techs_Distance = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_Dist'], "rb" ))
+        Fleet_Techs_OR = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_OR'], "rb" ))
+        Fleet_Groups_techs_2_dem = pickle.load( open( params['From_Confection'] + params['Pickle_Fleet_Groups_T2D'], "rb" ))
 
         Fleet_Groups_inv = {}
         for k in range( len( list( Fleet_Groups.keys() ) ) ):
