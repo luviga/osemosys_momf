@@ -53,12 +53,12 @@ df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_c
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
 #----------------------------------------------------------------------------------------------------------#
-# Use this space to edit the column names of future zero resuls:
+# # Use this space to edit the column names of future zero resuls:
 # df_0_output = df_0_output.rename(columns={'Run.ID': 'Strategy'})
 
 # df_0_output['Strategy'] = df_0_output['Strategy'].replace('DDP50', 'DDP')
 
-# df_0_output.insert(1, 'Future.ID', [0]*len(df_0_output.index.tolist()))
+# # df_0_output.insert(1, 'Future.ID', [0]*len(df_0_output.index.tolist()))
 # #df_0_output['Capex2023'] = df_0_output['DiscountedCapitalInvestment']
 # #df_0_output['FixedOpex2023'] = #df_0_output['DiscountedOperatingCost']
 # #df_0_output['VarOpex2023'] = #df_0_output['DiscountedOperatingCost']
@@ -109,8 +109,9 @@ df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_c
 #     "FixedOpex_GDP", #
 #     "VarOpex_GDP",
 #     "Opex_GDP",
-#     'Externalities_GDP',
-#     'Scen_fut']
+#     'Externalities_GDP'
+#     ]
+
 
 # df_0_output = df_0_output[valid_column_names]
 #----------------------------------------------------------------------------------------------------------#
