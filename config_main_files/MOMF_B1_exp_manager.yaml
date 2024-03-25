@@ -669,6 +669,10 @@ electri: 'Electrification'
 pen: 'Penetration'
 this_set: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD']
 this_set_2: 'TRNPASRAIELE'
+this_set_3: ['INORG_RCY_OS', 'COMPOST']
+this_set_4: 'PP_WND_US'
+this_set_5: 'Cafe'
+this_set_6: 'Cana'
 TRBUSHYD: 'TRBUSHYD'
 TRBUSELE: 'TRBUSELE'
 TRMBUSHYD: 'TRMBUSHYD'
@@ -680,6 +684,10 @@ PPWNDON: 'PPWNDON'
 PPPVDS: 'PPPVDS'
 hyd: 'HYD'
 group_tech: 'Telef'
+no_orga_recy_org_comp: 'inorgánicos reciclados y orgánicos compostados'
+water_resi_mana: 'aguas residuales tratadas'
+
+
 ##############################################################################
 
 ################################# General Var #################################
@@ -732,6 +740,16 @@ exac_param_inv_ose: 'Exact_Parameters_Involved_in_Osemosys'
 x_pla_eng_desc: 'X_Plain_English_Description'
 x_num: 'X_Num'
 x_cat: 'X_Category'
+x_cat_2: ['Emisiones por aguas residuales industriales']
+x_cat_3: 'National waste production'
+x_cat_4: ['Electrical Demand']
+x_cat_5: ['Agricultural Demand', 'Agricultural Yield', 'Agricultural Yield Livestock']
+x_cat_6: 'Agricultural Demand'
+x_cat_7: 'Agricultural Yield Livestock'
+x_cat_8: 'Agricultural Yield'
+x_cat_9: 'ForestCover'
+
+
 exp_param_num: 'Explored_Parameter_Number'
 min_val: 'Min_Value'
 max_val: 'Max_Value'
@@ -743,8 +761,12 @@ time_series: 'Time_Series'
 adop_curve: 'Adoption_Curve'
 ini_year: 'Initial_Year'
 exact_x: 'Exact_X'
+exact_x_2: 'EXPLICIT'
 Cat: 'Category'
 math_type: 'Math_Type'
+math_type_2: 'Mult_Restriction'
+math_type_3: 'Start'
+math_type_4: 'End'
 rel_base: 'Relative_to_Baseline'
 e_pass: 'e_Passenger'
 e_fre: 'e_Freight'
@@ -791,4 +813,81 @@ valid_column_names: [
   "Opex_GDP",
   'Externalities_GDP'
   ]
+
+common_complement: [
+'LANDFILL', 'NO_CONTR_OD', 'OPEN_BURN', 'SIT_CLAN', 'NO_OSS_BLEND',
+'NO_OSS_NO_COLL', 'BLEND_NO_DCOLL', 'BLEND_NO_COLL', 'NO_SS']
+
+common_complement_2: [
+  #'WWWOT', 'WWWT', 'SEWERWWWOT', 'TWWWOT',
+  #'SEWERWW', 'STWW']
+  'LATR', 'EFLT_DISC',
+  'WWWOT', 'DIRECT_DISC']
+  # , 'AERO_PTAR', 'SEPT_SYST', 'WWWT', 'SEWERWW']
+
+this_parameter: ['SpecifiedAnnualDemand']
+
+this_parameter_2: ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit']
+
+this_parameter_3: ['CapitalCost']
+
+this_parameter_4: ['VariableCost']
+
+adjust_sets: [
+  'INORG_RCY_COLL', 'INORG_RCY_OS', 'AD', 'COMPOST', 'OTH_ORG_TEC', 'LANDFILL_BG', 'LANDFILL', 'CONTR_OD',
+  'NO_CONTR_OD', 'WWWOT', 'WWWT', 'WFIRU', 'OSS_INORG', 'OSS_ORG', 'NO_OSS_INORG', 'NO_OSS_ORG', 'NO_OSS_BLEND',
+  'INORG_DCOLL', 'ORG_DCOLL', 'INORG_NO_DCOLL', 'ORG_NO_DCOLL', 'BLEND_NO_DCOLL', 'INORG_SS', 'ORG_SS', 'NO_SS',
+  'SEWERWWWOT', 'SEWERWWWT', 'WWWTFIRU', 'TWWWOT', 'SEWERWW', 'STWW'
+  ]
+
+adjust_sets_2: [
+  'LANDFILL', 'OPEN_BURN', 'SIT_CLAN', 'NO_OSS_NO_COLL', 'BLEND_NO_COLL', 'ORG_DCOLL', 'INORG_DCOLL', 'NO_OSS_BLEND', 'INORG_SS', 'OSS_ORG', 'NO_SS',
+  'ORG_SS', 'BLEND_NO_DCOLL', 'OSS_INORG', 'INORG_RCY_OS',
+  'NO_CONTR_OD', 'COMPOST', 'AERO_PTAR', 'SEPT_SYST', 'LATR', 'EFLT_DISC', 'WWWT', 'WWWOT', 'SEWERWW', 'DIRECT_DISC'
+  ]
+
+support_params: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit']
+support_params_2: ['OutputActivityRatio']
+
+all_covers: [
+  "Banano", "Arroz", "Cacao", "Cafe", "Cana", "Maiz", "Palma",
+  "Soya", "Palmito", "Legumbres", "Cereales", "Tuberculos",
+  "Fruta", "Verduras", "Floricolas", "Otros_cultivos", "Pastizales",
+  "Humedal", "Zona_atropica", "Otras_tierras", "Bosque_nativo_protegido",
+  "Bosque_nativo_sinproteger", "Plantacion_forestal", "Pasturas"
+  ]
+
+all_covers_2: [
+  "Avicola",
+  "Azucar",
+  "Banano",
+  "Bovina",
+  "Cafe",
+  "Cardamomo",
+  "Conifero_adulto",
+  "Conifero_nuevo",
+  "Frijol",
+  "Huevos",
+  "Hule",
+  "Latifoleado_adulto",
+  "Latifoleado_nuevo",
+  "Leche",
+  "Maiz",
+  "Manglar_adulto",
+  "Manglar_nuevo",
+  "Matorrales",
+  "Mixto_adulto",
+  "Mixto_nuevo",
+  "Otras_coberturas",
+  "Otras_coberturas_pastos",
+  "Otros_adulto",
+  "Otros_cultivos",
+  "Otros_joven",
+  "Palma",
+  "Porcina",
+  "Suelos_productivos",
+  "Urbano",
+  "plantacion_forestal_conifero",
+  "plantacion_forestal_latifoleado"
+]
 ##############################################################################
