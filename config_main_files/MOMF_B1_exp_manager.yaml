@@ -8,6 +8,7 @@
 # Directories
 Executables: './Executables'
 Executables_2: '.\Executables'
+Executables_3: 'Executables'
 A1_Inputs: './A1_Inputs/'
 A1_Outputs: './A1_Outputs/'
 A2_Output_Params: './A2_Output_Params/'
@@ -19,6 +20,7 @@ Experi_plat: './Experimental_Platform'
 Futures: '/Futures/'
 futures_2: 'Futures\\'
 Futures_3: '\Futures'
+Futures_4: 'Futures'
 From_Confection: './0_From_Confection/'
 Base_Model: '1_Baseline_Modelling'
 
@@ -177,7 +179,7 @@ check_assignation: False
 # Sectors variables
 Use_Waste: False
 Use_Transport: True
-Use_AFOLU: False
+Use_AFOLU: True
 Use_PIUP: False
 
 # Scenarios
@@ -748,4 +750,45 @@ e_pass: 'e_Passenger'
 e_fre: 'e_Freight'
 i_nt_ele: 'i_NT_elec'
 i_nt_fossil: 'i_NT_fossil'
+columns: {Run.ID: 'Strategy'}
+valid_column_names: [
+  "Strategy",
+  "Future.ID",
+  "Fuel",
+  "Technology",
+  "Emission",
+  "Year",
+  "Demand",
+  "NewCapacity",
+  "AccumulatedNewCapacity",
+  "TotalCapacityAnnual",
+  "TotalTechnologyAnnualActivity",
+  "ProductionByTechnology",
+  "UseByTechnology",
+  "CapitalInvestment",
+  "DiscountedCapitalInvestment",
+  "SalvageValue",
+  "DiscountedSalvageValue",
+  "OperatingCost",
+  "DiscountedOperatingCost",
+  "AnnualVariableOperatingCost",
+  "AnnualFixedOperatingCost",
+  "TotalDiscountedCostByTechnology",
+  "TotalDiscountedCost",
+  "AnnualTechnologyEmission",
+  'AnnualTechnologyEmissionPenaltyByEmission',
+  'AnnualTechnologyEmissionsPenalty',
+  'DiscountedTechnologyEmissionsPenalty',
+  "AnnualEmissions",
+  "Capex2021",
+  'FixedOpex2021',
+  "VarOpex2021",
+  "Opex2021",
+  'Externalities2021',
+  "Capex_GDP",
+  "FixedOpex_GDP",
+  "VarOpex_GDP",
+  "Opex_GDP",
+  'Externalities_GDP'
+  ]
 ##############################################################################

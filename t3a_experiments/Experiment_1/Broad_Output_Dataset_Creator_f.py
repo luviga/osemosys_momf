@@ -5,12 +5,6 @@ import os
 import re
 import yaml
 
-sys.path.insert(0, 'Executables')
-import local_dataset_creator_0
-
-sys.path.insert(0, 'Futures')
-import local_dataset_creator_f
-
 def get_config_main_path(full_path):
     # Split the path into parts
     parts = full_path.split(os.sep)
@@ -35,6 +29,12 @@ with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
     # Load content file
     params = yaml.safe_load(file)
 
+sys.path.insert(0, params['Executables_3'])
+import local_dataset_creator_0
+
+sys.path.insert(0, params['Futures_4'])
+import local_dataset_creator_f
+
 'Define control parameters:'
 file_aboslute_address = os.path.abspath(params['Bro_out_dat_cre'])
 file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) ).replace( '\:', ':' )
@@ -54,7 +54,7 @@ df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_c
 # In case if you use solver='glpk' and glpk='old' uncomment this section
 #----------------------------------------------------------------------------------------------------------#
 # # Use this space to edit the column names of future zero resuls:
-# df_0_output = df_0_output.rename(columns={'Run.ID': 'Strategy'})
+# df_0_output = df_0_output.rename(columns=params['columns'])
 
 # df_0_output['Strategy'] = df_0_output['Strategy'].replace('DDP50', 'DDP')
 
@@ -71,47 +71,7 @@ df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_c
 # #df_0_output['Externalities_GDP'] = [0]*len(df_0_output.index.tolist())
 # df_0_output['Scen_fut'] = df_0_output['Strategy'].astype(str) + "_" + df_0_output['Future.ID'].astype(str)
 
-# valid_column_names = [
-#     "Strategy",
-#     "Future.ID",
-#     "Fuel",
-#     "Technology",
-#     "Emission",
-#     "Year",
-#     "Demand",
-#     "NewCapacity",
-#     "AccumulatedNewCapacity",
-#     "TotalCapacityAnnual",
-#     "TotalTechnologyAnnualActivity",
-#     "ProductionByTechnology",
-#     "UseByTechnology",
-#     "CapitalInvestment",
-#     "DiscountedCapitalInvestment",
-#     "SalvageValue", #
-#     "DiscountedSalvageValue", #
-#     "OperatingCost",
-#     "DiscountedOperatingCost",
-#     "AnnualVariableOperatingCost",
-#     "AnnualFixedOperatingCost", #
-#     "TotalDiscountedCostByTechnology",
-#     "TotalDiscountedCost",
-#     "AnnualTechnologyEmission",
-#     'AnnualTechnologyEmissionPenaltyByEmission',
-#     'AnnualTechnologyEmissionsPenalty',
-#     'DiscountedTechnologyEmissionsPenalty',
-#     "AnnualEmissions",
-#     "Capex2021",
-#     'FixedOpex2021', #
-#     "VarOpex2021",
-#     "Opex2021",
-#     'Externalities2021',
-#     "Capex_GDP",
-#     "FixedOpex_GDP", #
-#     "VarOpex_GDP",
-#     "Opex_GDP",
-#     'Externalities_GDP'
-#     ]
-
+# valid_column_names = params['valid_column_names']
 
 # df_0_output = df_0_output[valid_column_names]
 #----------------------------------------------------------------------------------------------------------#
