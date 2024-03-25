@@ -179,9 +179,9 @@ check_assignation: False
 ignore_biofuels: True
 
 # Sectors variables
-Use_Waste: False
+Use_Waste: True
 Use_Transport: True
-Use_AFOLU: True
+Use_AFOLU: False
 Use_PIUP: False
 
 # Scenarios
@@ -198,16 +198,19 @@ base_year: 2021
 R_base_year: 'R2021' 
 # R_base_year == R2021 Do not uncommented, this is a variable defined at the script
 # r_base_year_max == r2021max Do not uncommented, this is a variable defined at the script
-base_year_2: 2018 # Talk with Luis about this variable
-base_year_3: 2019 # Talk with Luis about this variable
-base_year_4: 2020 # Talk with Luis about this variable
-base_year_5: 2022 # Talk with Luis about this variable
+year_first_range: 2018 
+year_driven_distance: 2019 
+year_start_blend_point: 2020
+year_start_blend_point_2: 2026
+year_mid_blend_point: 2021
+year_final_blend_point: 2022
+year_final_blend_point_2: 2030
 
 # Changed year
 change_year: 2024
 # driven_distance_change_year == driven_distance_2024 Do not uncommented, this is a variable defined at the script
 # index_change_year == index_2024
-change_year_2: 2026 # Talk with Luis about this variable
+year_resticcion_tech: 2023
 
 # Final year
 final_year: 2050
@@ -220,14 +223,16 @@ v_final_year: 'v_2050'
 # float_v_final_year == float_v2050
 # the_final_year_value == the_2050_value
 # the_final_year_value_raw == the_2050_value_raw
+# target_final_year_increment == target_2050_increment
+# total_final_year_increment == total_2050_increment
 
-first_decade_year: 2030 # Talk with Luis about this variable
-v_first_decade_year: 'v_2030' # Talk with Luis about this variable
+first_decade_year: 2030 
+v_first_decade_year: 'v_2030' 
 # v_first_decade_year == 'v_2030' Do not uncommented, this is a variable defined at the script
 # float_v_first_decade_year == float_v2030
 
-sec_decade_year: 2040 # Talk with Luis about this variable
-v_sec_decade_year: 'v_2040' # Talk with Luis about this variable
+sec_decade_year: 2040 
+v_sec_decade_year: 'v_2040'
 # v_sec_decade_year == 'v_2040' Do not uncommented, this is a variable defined at the script
 # float_v_sec_decade_year == float_v2040
 #----------------------------------------------------------------------------------#
@@ -676,6 +681,7 @@ this_set_4: 'PP_WND_US'
 this_set_5: 'Cafe'
 this_set_6: 'Cana'
 this_set_7: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']
+this_set_8: 'PP_HYDAMARORLAR'
 TRBUSHYD: 'TRBUSHYD'
 TRBUSELE: 'TRBUSELE'
 TRMBUSHYD: 'TRMBUSHYD'
@@ -776,6 +782,7 @@ math_type_2: 'Mult_Restriction'
 math_type_3: 'Start'
 math_type_4: 'End'
 math_type_5: ['Adoption_Curve', 'Mult_Adoption_Curve']
+math_type_6: 'Discrete_Investments'
 rel_base: 'Relative_to_Baseline'
 e_pass: 'e_Passenger'
 e_fre: 'e_Freight'

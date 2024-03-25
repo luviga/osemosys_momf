@@ -702,7 +702,7 @@ if __name__ == '__main__':
     Initial_Year_of_Uncertainty = \
         params['Initial_Year_of_Uncertainty']
 
-    time_range_vector = [y for y in range(params['base_year_2'], params['final_year']+1)]
+    time_range_vector = [y for y in range(params['year_first_range'], params['final_year']+1)]
     start_mod_idx = time_range_vector.index(Initial_Year_of_Uncertainty)
 
     scenario_list = []

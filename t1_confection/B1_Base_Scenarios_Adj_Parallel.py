@@ -270,8 +270,6 @@ def data_processor( case, unpackaged_useful_elements, params ):
             index = S_DICT_vars_structure['variable'].index( the_variable )
             this_variable_indices = S_DICT_vars_structure['index_list'][ index ]
             #
-            # if ('y' in this_variable_indices) and ( ('2015' in set_list) or (f'{params['base_year_3']}' in set_list) or ('2025' in set_list) or (f'{params['first_decade_year']}' in set_list) or ('2035' in set_list) or (f'{params['sec_decade_year']}' in set_list) or ('2045' in set_list) or (params['final_year_str'] in set_list) ):
-            #--%
             if 'y' in this_variable_indices:
                 data_line = linecache.getline(data_name, n+1)
                 data_line_list_raw = data_line.split(' ')
@@ -542,12 +540,12 @@ def data_processor( case, unpackaged_useful_elements, params ):
                                 accum_new_cap = \
                                     aide_dict_accumnewcap[this_tech][this_year_index-1]
 
-                                if int(this_year) > params['base_year_2']+Reference_op_life[this_strategy][this_tech]:  # works with a timeframe by 2050; longer timeframes may need more lifetime cycle adjustments
+                                if int(this_year) > params['year_first_range']+Reference_op_life[this_strategy][this_tech]:  # works with a timeframe by 2050; longer timeframes may need more lifetime cycle adjustments
                                     subtract_index_accum_old = \
                                         int(Reference_op_life[this_strategy][this_tech])
                                     if int(this_year) - subtract_index_accum_old <= params['change_year']:
                                         driven_distance_17 = \
-                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['base_year_3'])])
+                                            float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['year_driven_distance'])])
                                     else:
                                         driven_distance_17 = \
                                             float(Reference_driven_distance[this_strategy][group_tech][this_year_index-subtract_index_accum_old])
@@ -676,12 +674,12 @@ def data_processor( case, unpackaged_useful_elements, params ):
                             accum_new_cap = \
                                 aide_dict_accumnewcap[this_tech][this_year_index-1]
 
-                            if int(this_year) > params['base_year_2']+Reference_op_life[this_strategy][this_tech]:
+                            if int(this_year) > params['year_first_range']+Reference_op_life[this_strategy][this_tech]:
                                 subtract_index_accum_old = \
                                     int(Reference_op_life[this_strategy][this_tech])
                                 if int(this_year) - subtract_index_accum_old <= params['change_year']:
                                     driven_distance_17 = \
-                                        float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['base_year_3'])])
+                                        float(Reference_driven_distance[this_strategy][group_tech][time_range_vector.index(params['year_driven_distance'])])
                                 else:
                                     driven_distance_17 = \
                                         float(Reference_driven_distance[this_strategy][group_tech][this_year_index-subtract_index_accum_old])
@@ -1877,7 +1875,7 @@ if __name__ == '__main__':
 
     # if config
 
-    all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+    all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
     index_change_year = all_years.index( params['change_year'] )
     initial_year = all_years[0]
     final_year = all_years[-1]
@@ -2723,11 +2721,11 @@ if __name__ == '__main__':
                         is_decreasing_dict = {}
 
                         # # Loop over the range of years check check
-                        # for year in range(5, params['final_year'] - params['base_year_2'] + 1):  # start from 1 (params['base_year_3']) up to params['final_year'] - params['base_year_2'] + 1 (params['final_year'])
+                        # for year in range(5, params['final_year'] - params['year_first_range'] + 1):  # start from 1 (2019) up to 2050 - 2018 + 1 (2050)
                         #     # Check if the rate is decreasing
                         #     is_decreasing = new_cap_values_rounded[year] < new_cap_values_rounded[year - 1]
                         #     # Store the result in the dictionary
-                        #     is_decreasing_dict[params['base_year_2'] + year] = is_decreasing
+                        #     is_decreasing_dict[params['year_first_range'] + year] = is_decreasing
                         # any_decreasing = any(is_decreasing_dict.values())
                         # if any_decreasing:
                         #     print('There can be an issue with falling transport demand.')
@@ -3072,7 +3070,7 @@ if __name__ == '__main__':
                     v_sec_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
                     v_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
                     #
-                    known_years_ini = [e for e in range(params['base_year_2'], int(y_ini)+1)]
+                    known_years_ini = [e for e in range(params['year_first_range'], int(y_ini)+1)]
                     known_years = known_years_ini + [params['first_decade_year'], params['sec_decade_year'], params['final_year'] ]
                     # First decade year
                     try:
@@ -3736,8 +3734,8 @@ if __name__ == '__main__':
                     value_list = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] )
                     value_list = [ float(value_list[j]) for j in range( len(value_list) ) ]
                     #
-                    start_blend_point = [params['change_year_2'], 1]
-                    final_blend_point = [params['first_decade_year'], 5]
+                    start_blend_point = [params['year_start_blend_point_2'], 1]
+                    final_blend_point = [params['year_final_blend_point_2'], 5]
                     new_value_list_rounded, biofuel_shares = interpolation_blend( start_blend_point, 'None', final_blend_point, value_list, time_range_vector )
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
@@ -3762,9 +3760,9 @@ if __name__ == '__main__':
                     value_list = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] )
                     value_list = [ float(value_list[j]) for j in range( len(value_list) ) ]
                     #
-                    start_blend_point = [params['base_year_4'], 2]
-                    mid_blend_point = [params['base_year'], 4]
-                    final_blend_point = [params['base_year_5'], 8]
+                    start_blend_point = [params['year_start_blend_point'], 2]
+                    mid_blend_point = [params['year_mid_blend_point'], 4]
+                    final_blend_point = [params['year_final_blend_point'], 8]
                     new_value_list_rounded, biofuel_shares = interpolation_blend( start_blend_point, mid_blend_point, final_blend_point, value_list, time_range_vector )
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )

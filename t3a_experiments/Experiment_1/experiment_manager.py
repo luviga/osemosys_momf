@@ -1163,15 +1163,15 @@ def interpolation_multiplier( time_list, value_list, new_relative_final_value):
     # We select a list that goes from the "Initial_Year_of_Uncertainty" to the Final Year of the Time Series
     initial_year_index = time_list.index( Initial_Year_of_Uncertainty )
     #
-    target_2050_increment = 2050 - Initial_Year_of_Uncertainty
-    total_2050_increment = new_relative_final_value-1
-    delta_increment = total_2050_increment/target_2050_increment
+    target_final_year_increment = params['final_year'] - Initial_Year_of_Uncertainty
+    total_final_year_increment = new_relative_final_value-1
+    delta_increment = total_final_year_increment/target_final_year_increment
     #
     multiplier_list = [1]*len(time_list)
     for n in range(len(time_list)):
-        if n > initial_year_index and time_list[n] < 2050:
+        if n > initial_year_index and time_list[n] < params['final_year']:
             multiplier_list[n] = delta_increment + multiplier_list[n-1]
-        elif time_list[n] >= 2050:
+        elif time_list[n] >= params['final_year']:
             multiplier_list[n] = new_relative_final_value
     #
     # We now recreate the new_value_list considering the fraction before and after the Initial_Year_of_Uncertainty
@@ -2156,7 +2156,7 @@ if __name__ == '__main__':
                                 sum_value_list_new_chg_target, list_apply_delta_ydata_new, fraction_list_counter = \
                                     AUX.interpolation_non_linear_final_lock(
                                         time_range_vector, sum_value_list_orig_chg,
-                                        float(Values_per_Future[fut_id]), 2050, Initial_Year_of_Uncertainty)
+                                        float(Values_per_Future[fut_id]), params['final_year'], Initial_Year_of_Uncertainty)
 
                                 sum_value_list_mult_chg = [
                                     sum_value_list_new_chg_target[i]/v for i, v in
@@ -2230,7 +2230,7 @@ if __name__ == '__main__':
                                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ all_indices_app[0]:all_indices_app[-1]+1 ] )
                                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                 
-                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
                                                 count_good += 1
                                     #
                                     ## LISTO
@@ -2247,7 +2247,7 @@ if __name__ == '__main__':
                                         if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                             #
                                             # this impacts normal variables
-                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
 
                                             if params['x_cat_3'] == X_Cat: # Perform additional adjustments:
                                                 mult_new_value_list = [v/value_list[i] for i, v in enumerate(new_value_list)]
@@ -2280,7 +2280,7 @@ if __name__ == '__main__':
                                         if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                             #
                                             # this impacts normal variables
-                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
                                             adjust_var1 = 'TotalTechnologyAnnualActivityLowerLimit'
                                             adjust_var2 = 'TotalTechnologyAnnualActivityUpperLimit'
 
@@ -2305,7 +2305,7 @@ if __name__ == '__main__':
                                         if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                             #
                                             # this impacts normal variables
-                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
 
                                             if params['x_cat_3'] == X_Cat: # Perform additional adjustments:
                                                 mult_new_value_list = [v/value_list[i] for i, v in enumerate(new_value_list)]
@@ -2341,7 +2341,7 @@ if __name__ == '__main__':
                                         if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                             #
                                             # this impacts normal variables
-                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
                                         #
                                         new_value_list_rounded = [ round(elem, 4) for elem in new_value_list ]
                                         # plt.plot(value_list)
@@ -2369,7 +2369,7 @@ if __name__ == '__main__':
                                             if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                                 #
                                                 # this impacts normal variables
-                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
                                                 #
                                             #--------------------------------------------------------------------#
                                             # Assign parameters back: for these subset of uncertainties
@@ -2385,7 +2385,7 @@ if __name__ == '__main__':
                                             if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                                 #
                                                 # this impacts normal variables
-                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
 
                                                 #
                                             
@@ -2459,7 +2459,7 @@ if __name__ == '__main__':
                                     distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
 
                             # # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                            # all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+                            # all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
                             # index_change_year = all_years.index( params['change_year'] )
                             # local_df_elasticities = deepcopy(df_elasticities)
                             # local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
@@ -2583,7 +2583,7 @@ if __name__ == '__main__':
                                 else:
                                     if X_Cat in params['fre_dem']:
                                         # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                                        all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+                                        all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
                                         index_change_year = all_years.index( params['change_year'] )
                                         local_df_elasticities = deepcopy(df_elasticities)
                                         local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_fre'])] = float(Values_per_Future[fut_id])
@@ -2688,14 +2688,14 @@ if __name__ == '__main__':
                                     operator.add, value_list_sh_sum,
                                     value_list_sh))
 
-                                #if this_set == 'PP_HYDAMARORLAR':
+                                #if this_set == params['this_set_8']:
                                 #    print('check')
                                 #    sys.exit()                           
 
                             if params['math_type_4'] in Math_Type:
 
                                 #for i in range(len(time_range_vector)):
-                                #    if time_range_vector[i] <= 2024:
+                                #    if time_range_vector[i] <= params['change_year']:
                                 #        new_value_list_sh_sum[i] = 1
                                 
                                 # Iterate again to apply normalization:
@@ -2799,7 +2799,7 @@ if __name__ == '__main__':
                                 new_value_list_3 = []
                                 if len(value_list_3) > 0:
                                     for i in range(len(time_range_vector)):
-                                        # if time_range_vector[i] <= 2023:
+                                        # if time_range_vector[i] <= params['year_resticcion_tech']:
                                         #     new_value_list_3.append(value_list_3[i])
                                         # else:
                                         #     new_value_list_3.append(99999)
@@ -2859,7 +2859,7 @@ if __name__ == '__main__':
                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                     #
                                     # print(this_set, this_parameter)
-                                    new_value_list = deepcopy( interpolation_non_linear_final( time_range_vector, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                    new_value_list = deepcopy( interpolation_non_linear_final( time_range_vector, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                     new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                     #
@@ -2890,11 +2890,11 @@ if __name__ == '__main__':
                                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                     #
                                                     if bool_mod_imp_exp:
-                                                        new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                        new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                         new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                                     if bool_mod_imp_adhoc:
                                                         if support_param == 'TotalTechnologyAnnualActivityLowerLimit':
-                                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                             new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                                         if support_param == 'TotalTechnologyAnnualActivityUpperLimit':
                                                             new_value_list = []
@@ -2903,7 +2903,7 @@ if __name__ == '__main__':
                                                                     new_value_list.append(999)
                                                                 else:
                                                                     new_value_list.append(time_list[y])
-                                                            # new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                            # new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                             new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                                     inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                         #
@@ -2921,7 +2921,7 @@ if __name__ == '__main__':
                                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                 #
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                 new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                         #
@@ -2946,7 +2946,7 @@ if __name__ == '__main__':
                                                     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                     #
-                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                     new_value_list_rounded = [ round(elem, 6) for elem in new_value_list ]
                                                     inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
 
@@ -3003,12 +3003,12 @@ if __name__ == '__main__':
                             sum_value_list_new_chg_target, list_apply_delta_ydata_new, fraction_list_counter = \
                                 interpolation_non_linear_final_lock(
                                     time_range_vector, sum_value_list_orig_chg,
-                                    float(Values_per_Future[fut_id]), 2050)
+                                    float(Values_per_Future[fut_id]), params['final_year'])
                             
                             # sum_value_list_new_chg_target_2 = \
                             #    interpolation_non_linear_final(
                             #        time_range_vector, sum_value_list_orig_chg,
-                            #        float(Values_per_Future[fut_id]), 2050)
+                            #        float(Values_per_Future[fut_id]), params['final_year'])
                             
                             # print('check if this is working')
                             # sys.exit()
@@ -3088,7 +3088,7 @@ if __name__ == '__main__':
                                     new_value_list_raw = \
                                         AUX.interpolation_non_linear_final(                                                                           
                                             time_range_vector, value_list,
-                                            float(Values_per_Future[fut_id]), 2050, Initial_Year_of_Uncertainty)
+                                            float(Values_per_Future[fut_id]), params['final_year'], Initial_Year_of_Uncertainty)
 
                                     # Adjust values in the list based on the conditions
                                     new_value_list = [0.60 if i < 0.60 else 1 if i > 1 else i for i in new_value_list_raw]
@@ -3138,7 +3138,7 @@ if __name__ == '__main__':
                                                 AUX.interpolation_non_linear_final(
                                                     time_list, value_list,
                                                     float(Values_per_Future[fut_id]),
-                                                    2050,Initial_Year_of_Uncertainty))
+                                                    params['final_year'],Initial_Year_of_Uncertainty))
                                             count_good += 1
 
                                         inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][all_indices_app[0]:all_indices_app[-1]+1] = deepcopy(new_value_list)
@@ -3160,7 +3160,7 @@ if __name__ == '__main__':
                                             AUX.interpolation_non_linear_final(
                                                 time_list, value_list,
                                                 float(Values_per_Future[fut_id]),
-                                                2050,Initial_Year_of_Uncertainty))
+                                                params['final_year'],Initial_Year_of_Uncertainty))
                                             #
                                         #
                                     #
@@ -3185,7 +3185,7 @@ if __name__ == '__main__':
                                                                                                                                             
                                                 time_list, value_list,
                                                 float(Values_per_Future[fut_id]),
-                                                2050,Initial_Year_of_Uncertainty))
+                                                params['final_year'],Initial_Year_of_Uncertainty))
                                             #
                                         #                                             
                                     #
@@ -3719,7 +3719,7 @@ if __name__ == '__main__':
                                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ all_indices_app[0]:all_indices_app[-1]+1 ] )
                                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                 
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050))
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                 
                                                 count_good += 1
                                     #
@@ -4108,7 +4108,7 @@ if __name__ == '__main__':
                                         for n in range( len( time_list ) ):
                                             if ( new_value_list[n] > the_group_value_list[n] - the_electric_tech_values[n] ) and ( this_parameter == 'TotalTechnologyAnnualActivityLowerLimit' ): # here we must leave the max capacity untouched
                                                 new_value_list_fix.append( ( the_group_value_list[n] - the_electric_tech_values[n] )*0.999 )
-                                                if int(time_list[n]) == 2050:
+                                                if int(time_list[n]) == params['final_year']:
                                                     print(fut_id, 'pay attention!')
                                                     # sys.exit()
                                             else:
@@ -4831,7 +4831,7 @@ if __name__ == '__main__':
     gdp_dict = experiment_dictionary[1]
     gdp_growth_values = gdp_dict['Values'] # start to apply in 2024
 
-    all_years = [ y for y in range( params['base_year_2'] , params['final_year']+1 ) ]
+    all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
     index_change_year = all_years.index( params['change_year'] )
     applicable_years = all_years[index_change_year+1:]
 
