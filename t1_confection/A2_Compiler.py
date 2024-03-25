@@ -84,8 +84,8 @@ for g in range( len( groups_list ) ):
     this_proj_df_new = deepcopy( this_proj_df )
     this_proj_df_new.replace( { 'Direction': 'Output'}, 'OutputActivityRatio', inplace=True )
     this_proj_df_new.replace( { 'Direction': 'Input'}, 'InputActivityRatio', inplace=True )
-    this_proj_df_new.rename( columns={ "Direction": "Parameter" }, inplace=True )
-    this_proj_df_new = this_proj_df_new.drop(columns=['Projection.Mode', 'Projection.Parameter'])
+    this_proj_df_new.rename( columns=params['columns2'], inplace=True )
+    this_proj_df_new = this_proj_df_new.drop(columns=params['columns3'])
     #
     if groups_list[g] != params['primary'] and groups_list[g] != params['transport']:
         this_df_fuel_i = this_df['Fuel.I'].tolist()
@@ -1084,7 +1084,7 @@ df_structure_emission = emissions_list + [ '' for n in range( mx-lx[4] ) ]
 df_structure_moo = [ other_setup_params['Mode_of_Operation'] ] + [ '' for n in range( mx-lx[5] ) ]
 df_structure_region = [ other_setup_params['Region'] ] + [ '' for n in range( mx-lx[6] ) ]
 #
-df_structure = pd.DataFrame( columns = [ 'Year','Tech','Timeslice','Fuel','Emission','MOO','Region' ] )
+df_structure = pd.DataFrame( columns = params['columns4'] )
 df_structure['Year'] = df_structure_year
 df_structure['Tech'] = df_structure_tech
 df_structure['Timeslice'] = df_structure_timeslice
