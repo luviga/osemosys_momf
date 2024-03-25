@@ -410,4 +410,7 @@ other_techs: 'Other_Techs'
 accor_dem: 'According to demand'
 ref_km_by: 'Ref.km.BY'
 columns1: ['Name', 'Param']
+columns2: { Direction: "Parameter" }
+columns3: ['Projection.Mode', 'Projection.Parameter']
+columns4: ['Year','Tech','Timeslice','Fuel','Emission','MOO','Region']
 ##############################################################################
