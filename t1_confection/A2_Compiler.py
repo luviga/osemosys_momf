@@ -26,7 +26,7 @@ time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 Wide_Param_Header = params['sets']
 #
 dict_xtra_scen = params['xtra_scen']
-other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=['Name', 'Param'])
+other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=params['columns1'])
 other_setup_params_name = other_setup_parameters['Name'].tolist()
 other_setup_params_param = other_setup_parameters['Param'].tolist() 
 other_setup_params = {}
@@ -581,7 +581,7 @@ for g in range( len( groups_list ) ):
                 overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
  
             #
-        Demand_df_new.loc[ this_group_tech_index, 'Target.Unit' ] = 'Gvkm'
+        Demand_df_new.loc[ this_group_tech_index, 'Target.Unit' ] = params['Gvkm']
     #
     elif oar == params['not_considered']: # THIS WORKS FOR RAIL
         # sys.exit()
@@ -735,7 +735,7 @@ for s in range( len( param_sheets ) ):
                 #
                 tech_list_from_demand_df = Demand_df['Fuel/Tech'].tolist()
                 index_call_demand_df = tech_list_from_demand_df.index( this_group )
-                ref_km = Demand_df.loc[ index_call_demand_df, 'Ref.km.BY' ]
+                ref_km = Demand_df.loc[ index_call_demand_df, params['ref_km_by'] ]
                 
                 # print( n, this_tech, ref_km )
                 
@@ -884,7 +884,7 @@ Emissions = pd.ExcelFile(params['A2_extra_inputs'] + params['Xtra_Emi'])
 Emissions_ghg_df = Emissions.parse( params['GHGs'] )
 Emissions_ext_df = Emissions.parse( params['Externalities'] )
 #
-emissions_list = list( set( Emissions_ghg_df['Emission'].tolist() + Emissions_ext_df['External Cost' ].tolist() ) )
+emissions_list = list( set( Emissions_ghg_df['Emission'].tolist() + Emissions_ext_df['External Cost'].tolist() ) )
 
 # Inputs data about emissions check check
 # Emissions_csc_df = Emissions.parse('Externalities_SCC')

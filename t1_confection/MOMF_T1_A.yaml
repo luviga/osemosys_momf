@@ -408,4 +408,6 @@ continuos: 'Continuous'
 empty: 'EMPTY'
 other_techs: 'Other_Techs'
 accor_dem: 'According to demand'
+ref_km_by: 'Ref.km.BY'
+columns1: ['Name', 'Param']
 ##############################################################################
