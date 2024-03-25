@@ -4131,11 +4131,11 @@ if __name__ == '__main__':
 
 
 
-                                        # This section is functional, but depend of the this technology 'TRYTKHD', check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                                        # This section is functional, but depend of the this technology params['TRYTKHD'], check check
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
                                         # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                         # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
 
 
 
@@ -4213,11 +4213,11 @@ if __name__ == '__main__':
 
 
 
-                                        # This section is functional, but depend of the this technology 'TRYTKHD', check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                                        # This section is functional, but depend of the this technology params['TRYTKHD'], check check
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
                                         # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                         # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
                                             
 
 
@@ -4716,9 +4716,9 @@ if __name__ == '__main__':
                     
 
                     #--------------------------------------------------------------------#
-                # This section is functional, but depend of the this technology 'TRYTKHD', check check
-                # if 'NDP' == scenario_list[s] and u > 13:
-                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                # This section is functional, but depend of the this technology params['TRYTKHD'], check check
+                # if params['NDP'] == scenario_list[s] and u > 13:
+                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
                 #     value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                 #     value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
 
@@ -4726,7 +4726,7 @@ if __name__ == '__main__':
 
 
 
-                    # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( 'TRYTKHD') ]
+                    # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
                     # value_list_min = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                     # value_list_min = [ float(value_list_min[j]) for j in range( len( value_list_min ) ) ]
                     # diff = [i1 - i2 for i1, i2 in zip(value_list_max, value_list_min)]

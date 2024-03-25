@@ -595,26 +595,78 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     print(  'We finished with printing the outputs.', case)
 
 
-def main_executer(n1, Executed_Scenario, packaged_useful_elements, params):
-    first_list, dir_of_interest = set_first_list( Executed_Scenario, params )
-    print('# ' + str(first_list[n1]) + ' of ' + Executed_Scenario )
-    file_aboslute_address = os.path.abspath(params['FRM_clean'])
-    file_adress = re.escape( file_aboslute_address.replace( params['FRM_clean'], '' ) ).replace( '\:', ':' )
+def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list_print, params, n2=None):  
+
+    set_first_list(Executed_Scenario, params)
+    file_aboslute_address = os.path.abspath(params['Manager'])
+    file_config_address = get_config_main_path(os.path.abspath(''))
+    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    #
+    
 
     case_address = file_adress + params['futures_2'] + Executed_Scenario + '\\' + str( first_list[n1] )
-
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
-
-    str1 = "start /B start cmd.exe @cmd /k cd " + file_adress
-
+    #
+    str_start = params['start'] + file_adress
+    #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
-    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output' + '.txt'
+    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
 
-    str2 = "glpsol -m " + params['OSeMOSYS_Model'] + " -d " + str( data_file )  +  " -o " + str(output_file)
-    os.system( str1 and str2 )
+    # Solve model
+    solver = params['solver']
+
+    if solver == 'glpk' and params['glpk_option'] == 'old':
+        # OLD GLPK
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
+        os.system( str_start and str_solve )
+        #
+        data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
+
+    elif solver == 'glpk'and params['glpk_option'] == 'new':
+        # GLPK
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
+        os.system( str_start and str_solve )        
+    else:      
+        # LP
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wlp ' + output_file + '.lp --check'
+        os.system( str_start and str_solve )
+        if solver == 'cbc':
+            # CBC
+            str_solve = 'cbc ' + output_file + '.lp solve -solu ' + output_file + '.sol'
+            os.system( str_start and str_solve )
+        elif solver == 'cplex':
+            # CPLEX
+            str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
+            os.system( str_start and str_solve )
+    
+    # If not existe yaml file to use with otoole
+    if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
+        str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
+        os.system( str_start and str_otoole_config )
+
+    # Conversion of outputs from .sol to csvs
+    if solver == 'glpk' and params['glpk_option'] == 'new':
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+    elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+        # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
+        os.system( str_start and str_outputs )
+    
     time.sleep(1)
- 
-    data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
+        
+    # Delete glp, lp, txt and sol files
+    if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
+        delete_files(output_file, solver)
+    
+#
+def delete_files(file, solver):
+    # Delete files
+    shutil.os.remove(file + '.sol')
+    
+    if solver == 'glpk':
+        shutil.os.remove(file + '.glp')        
+    else:
+        shutil.os.remove(file + '.lp')
 
 def get_config_main_path(full_path):
     # Split the path into parts
@@ -843,8 +895,9 @@ if __name__ == '__main__':
                 idx_apply = first_list.index(store_cases[n2])
                 print('index: ' + str(idx_apply), ' // case: ' + first_list[idx_apply])
                 p = mp.Process(target=main_executer,
-                               args=(idx_apply,
-                                     scen, packaged_useful_elements, params))
+                                args=(idx_apply,
+                                    scen, packaged_useful_elements, scenario_list, params)
+                                    )
                 processes.append(p)
                 p.start()
             for process in processes:
@@ -855,6 +908,13 @@ if __name__ == '__main__':
             print( str( time_elapsed_1 ) + ' seconds' )
             time_list.append( time_elapsed_1 )
         #'''
+            
+    # Delete log files when solver='cplex'
+    if params['solver'] == 'cplex' and params['del_files']:
+        shutil.os.remove('cplex.log')
+        shutil.os.remove('clone1.log')
+        shutil.os.remove('clone2.log')
+
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
     print( 'For all effects, this has been the end. It all took: ' + str( sum( time_list ) ) + ' seconds')
 
