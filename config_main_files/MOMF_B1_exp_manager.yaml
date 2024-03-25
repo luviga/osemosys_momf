@@ -176,6 +176,8 @@ adjust_fre_rai: True
 
 check_assignation: False
 
+ignore_biofuels: True
+
 # Sectors variables
 Use_Waste: False
 Use_Transport: True
@@ -673,12 +675,14 @@ this_set_3: ['INORG_RCY_OS', 'COMPOST']
 this_set_4: 'PP_WND_US'
 this_set_5: 'Cafe'
 this_set_6: 'Cana'
+this_set_7: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']
 TRBUSHYD: 'TRBUSHYD'
 TRBUSELE: 'TRBUSELE'
 TRMBUSHYD: 'TRMBUSHYD'
 TRMBUSELE: 'TRMBUSELE'
 TRYTKHYD: 'TRYTKHYD'
 TRYTKELE: 'TRYTKELE'
+TRYTKHD: 'TRYTKHD'
 PPPVT: 'PPPVT'
 PPWNDON: 'PPWNDON'
 PPPVDS: 'PPPVDS'
@@ -686,7 +690,7 @@ hyd: 'HYD'
 group_tech: 'Telef'
 no_orga_recy_org_comp: 'inorgánicos reciclados y orgánicos compostados'
 water_resi_mana: 'aguas residuales tratadas'
-
+a_fuel_set: 'CLK_PROD'
 
 ##############################################################################
 
@@ -718,6 +722,7 @@ tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight
 tra_dem_med: 'DEMTRNFREMED'
 tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight
 tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize
+tra_mot_gls: 'TRMOTGSL'
 cost: 'Cost'
 inter_escal: 'Interpolate_Escalate'
 fix_last: 'Fix_Last'
@@ -748,8 +753,10 @@ x_cat_6: 'Agricultural Demand'
 x_cat_7: 'Agricultural Yield Livestock'
 x_cat_8: 'Agricultural Yield'
 x_cat_9: 'ForestCover'
-
-
+x_cat_10: 'Adjustment clinker factor'
+x_cat_11: 'Electrification'
+x_cat_12: 'Penetration'
+x_cat_13: 'Electrification of Private Transport'
 exp_param_num: 'Explored_Parameter_Number'
 min_val: 'Min_Value'
 max_val: 'Max_Value'
@@ -759,6 +766,7 @@ fut_var: 'Futures'
 dis_invs: 'Discrete_Investments'
 time_series: 'Time_Series'
 adop_curve: 'Adoption_Curve'
+multi_adop_curve: 'Mult_Adoption_Curve'
 ini_year: 'Initial_Year'
 exact_x: 'Exact_X'
 exact_x_2: 'EXPLICIT'
@@ -767,6 +775,7 @@ math_type: 'Math_Type'
 math_type_2: 'Mult_Restriction'
 math_type_3: 'Start'
 math_type_4: 'End'
+math_type_5: ['Adoption_Curve', 'Mult_Adoption_Curve']
 rel_base: 'Relative_to_Baseline'
 e_pass: 'e_Passenger'
 e_fre: 'e_Freight'
@@ -833,6 +842,8 @@ this_parameter_3: ['CapitalCost']
 
 this_parameter_4: ['VariableCost']
 
+this_parameter_5: ['VariableCost','TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit']
+
 adjust_sets: [
   'INORG_RCY_COLL', 'INORG_RCY_OS', 'AD', 'COMPOST', 'OTH_ORG_TEC', 'LANDFILL_BG', 'LANDFILL', 'CONTR_OD',
   'NO_CONTR_OD', 'WWWOT', 'WWWT', 'WFIRU', 'OSS_INORG', 'OSS_ORG', 'NO_OSS_INORG', 'NO_OSS_ORG', 'NO_OSS_BLEND',
@@ -890,4 +901,9 @@ all_covers_2: [
   "plantacion_forestal_conifero",
   "plantacion_forestal_latifoleado"
 ]
+
+group_tech_set: 'Techs_Auto'
+
+exception_list: ['TRBPUHYD', 'TRYTKHYD']
+special_list_dict: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']}
 ##############################################################################
