@@ -1880,6 +1880,7 @@ if __name__ == '__main__':
                         #
                     #
                 #
+            
             #     if params['Use_Waste']:
             #         ###################################################################################################################################
             #         #
@@ -1893,7 +1894,7 @@ if __name__ == '__main__':
             #         experiment_dictionary[ X_Num_unique[-1] ].update({ 'Exact_Parameters_Involved_in_Osemosys':Exact_Parameters_Involved_in_Osemosys })
             #         experiment_dictionary[ X_Num_unique[-1] ].update({ 'Futures':[x for x in range( 1, N+1 ) ] })
             #         #
-            #         if math_type == 'Time_Series' or math_type == 'Discrete_Investments':
+            #         if math_type == params['time_series'] or math_type == params['math_type_6']:
             #             experiment_dictionary[ X_Num_unique[-1] ].update({ 'Explored_Parameter_of_X':Explored_Parameter_of_X } )
             #             experiment_dictionary[ X_Num_unique[-1] ].update({ 'Values':[0.0 for x in range( 1, N+1 ) ] })
             #             # We fill the data for future n=1 // it is important to note that the future n=0 can have completely different parameters when values are not relative to baseline
@@ -1942,21 +1943,21 @@ if __name__ == '__main__':
                     # len([i for i in experiment_dictionary[u]['Values'] if float(i) != 0.0])
                     )
                 
-    #             if params['Use_Waste']:
-    #                 if int( uncertainty_table.loc[ p ,'X_Num'] ) not in X_Num_unique: 
-    #                     #
-    #                     X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
-    #                     #
-    #                     if math_type == 'Time_Series' or math_type == 'Discrete_Investments':
-    #                         if str( uncertainty_table.loc[ p , 'Explored_Parameter_is_Relative_to_Baseline'] ) == 'YES':
-    #                             experiment_dictionary[ int( uncertainty_table.loc[ p ,'X_Num'] ) ][ 'Values' ][n] = this_future_X_change[-1]
-    #                         #
-    #                     #
-    #                 #
-    #             #
-    #         #
-    #     #
-    # #
+                if params['Use_Waste']:
+                    if int( uncertainty_table.loc[ p ,'X_Num'] ) not in X_Num_unique: 
+                        #
+                        X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
+                        #
+                        if math_type == params['time_series'] or math_type == params['math_type_6']:
+                            if str( uncertainty_table.loc[ p , 'Explored_Parameter_is_Relative_to_Baseline'] ) == 'YES':
+                                experiment_dictionary[ int( uncertainty_table.loc[ p ,'X_Num'] ) ][ 'Values' ][n] = this_future_X_change[-1]
+                            #
+                        #
+                    #
+                #
+            #
+        #
+    #
     '''''
     ################################# PART 2 #################################
     '''''
@@ -2559,7 +2560,7 @@ if __name__ == '__main__':
                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
 
-                                if params['EXPLICIT'] in Exact_X:
+                                if params['exact_x_2'] in Exact_X:
                                     new_value_list = \
                                         interpolation_multiplier(
                                             time_range_vector, value_list,
