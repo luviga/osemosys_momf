@@ -1,0 +1,84 @@
+# This file is to manage configuration parameters
+# of the script plot_csvs.py
+
+# Note: Make configuration from top to bottom
+
+# First: Select model
+model: 'MOMF' # two options: 'MOMF' or 'BULAC'
+
+# If model is MOMF, select what tier use
+tier: '3a' # two options: '1' or '3a'
+
+# Second: Select folders
+tier1_dir: '../t1_confection/Executables' # Don't change
+tier3a_dir: '../t3a_experiments/Experiment_1/Futures' # Don't change
+vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
+out_dir: '/Outputs' # Don't change
+
+# Third: Fill with scenarios
+scens: ['BAU', 'NDP']
+
+# Fourth: Select if you want see information
+# Recomendation: Ever put like true in the first run and run now
+info: False
+
+# Fifth: Set years for plots
+start_year: 2020 # This is the firts year for the ticks in the plot
+separation_years: 5 # This is the gap  between each tick in the plot
+
+# Sixth: Fill list of each parameter with technologies you want to plot
+techs_AccumulatedNewCapacity: ['DIST_DSL', 'DIST_GSL', 'DIST_LPG']
+techs_AnnualEmissions: []
+techs_AnnualFixedOperatingCost: []
+techs_AnnualTechnologyEmission: []
+techs_AnnualTechnologyEmissionByMode: []
+techs_AnnualVariableOperatingCost: []
+techs_CapitalInvestment: []
+techs_Demand: []
+techs_DiscountedSalvageValue: []
+techs_DiscountedTechnologyEmissionsPenalty: []
+techs_NewCapacity: []
+techs_ProductionByTechnology: []
+techs_ProductionByTechnologyAnnual: []
+techs_RateOfActivity: []
+techs_RateOfProductionByTechnology: []
+techs_RateOfProductionByTechnologyByMode: []
+techs_RateOfUseByTechnology: []
+techs_RateOfUseByTechnologyByMode: []
+techs_SalvageValue: []
+techs_TotalAnnualTechnologyActivityByMode: []
+techs_TotalCapacityAnnual: []
+techs_TotalDiscountedCost: []
+techs_TotalTechnologyAnnualActivity: []
+techs_TotalTechnologyModelPeriodActivity: []
+techs_UseByTechnology: []
+
+# Seventh: Select configuration of plots
+visible_legend: True # If you want to see legend box
+show_fig: False # If you want to show figure window
+save_fig: True  # If you want save figure
+plot_type: 'stacked_bar' # If you want stacked bar chart, options available: 'bar', 'stacked_bar'
+
+# Eighth: General variables
+# Don't change
+df_all: [
+  'Parameter',
+  'REGION',
+  'MODE_OF_OPERATION',
+  'TECHNOLOGY',
+  'FUEL',
+  'EMISSION',
+  'YEAR',
+  'TIMESLICE',
+  'VALUE'
+  ]
+
+oner: [
+  'REGION',
+  'MODE_OF_OPERATION',
+  'TECHNOLOGY',
+  'FUEL',
+  'EMISSION',
+  'YEAR',
+  'TIMESLICE'
+  ]
