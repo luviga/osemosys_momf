@@ -2201,8 +2201,7 @@ if __name__ == '__main__':
 
                             # The X type below is manipulated with immidiate restitution after adjustment for Waste sector.
                             elif ( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
-                                                                Explored_Parameter_of_X==params['fin_val'] ) )
-                                                                and params['Use_Waste']:
+                                                                Explored_Parameter_of_X==params['fin_val'] ) ) and params['Use_Waste']:
 
                                 #
                                 for a_set in range( len( Sets_Involved ) ):
@@ -2422,7 +2421,7 @@ if __name__ == '__main__':
                                 #--------------------------------------------------------------------#
                         #--------------------------------------------------------------------#
 
-                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_Transport']:):
+                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_Transport']):
                             #
                             enter_if_cycle = True
                             #
@@ -2562,7 +2561,7 @@ if __name__ == '__main__':
                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
 
-                                if params['exact_x_2'] in Exact_X and params['Use_Energy']::
+                                if params['exact_x_2'] in Exact_X and params['Use_Energy']:
                                     new_value_list = \
                                         interpolation_multiplier(
                                             time_range_vector, value_list,
@@ -2819,7 +2818,7 @@ if __name__ == '__main__':
 
 
                         
-                        elif X_Cat in params['x_cat_5'] and params['Use_AFOLU']::
+                        elif X_Cat in params['x_cat_5'] and params['Use_AFOLU']:
                             #------------------------------------------
                             for a_set in range( len( Sets_Involved ) ):
                                 # Control if you want to modify imports and exports:
@@ -3628,8 +3627,7 @@ if __name__ == '__main__':
                                                             and (params['dis'] not in X_Cat)
                                                             and (params['dem'] not in X_Cat)
                                                             and (params['non_rail'] not in X_Cat)
-                                                            and (params['mode_shift'] not in X_Cat) ) or ( Math_Type==params['dis_invs'] ))
-                                                            and params['Use_Energy']:
+                                                            and (params['mode_shift'] not in X_Cat) ) or ( Math_Type==params['dis_invs'] )) and params['Use_Energy']:
                             #
                             enter_if_cycle = True
                             #
@@ -3992,8 +3990,7 @@ if __name__ == '__main__':
                                             for useful_index in range( len( this_set_range_indices_useful ) ):
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ]  ] = new_value_list_rounded[ useful_index ]
 
-                        elif Math_Type in params['math_type_5'] and (params['x_cat_11'] in X_Cat or params['x_cat_12'] in X_Cat)
-                            and params['Use_Energy']:
+                        elif Math_Type in params['math_type_5'] and (params['x_cat_11'] in X_Cat or params['x_cat_12'] in X_Cat) and params['Use_Energy']:
                             #
                             #
                             enter_if_cycle = True
