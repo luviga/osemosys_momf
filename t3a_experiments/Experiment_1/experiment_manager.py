@@ -2199,9 +2199,10 @@ if __name__ == '__main__':
                                     sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
                                 sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
 
-                            # The X type below is manipulated with immidiate restitution after adjustment.
+                            # The X type below is manipulated with immidiate restitution after adjustment for Waste sector.
                             elif ( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
-                                                                Explored_Parameter_of_X==params['fin_val'] ) ):
+                                                                Explored_Parameter_of_X==params['fin_val'] ) )
+                                                                and params['Use_Waste']:
 
                                 #
                                 for a_set in range( len( Sets_Involved ) ):
@@ -2421,7 +2422,7 @@ if __name__ == '__main__':
                                 #--------------------------------------------------------------------#
                         #--------------------------------------------------------------------#
 
-                        if params['pass_dem'] in X_Cat:
+                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_Transport']:):
                             #
                             enter_if_cycle = True
                             #
@@ -2458,60 +2459,61 @@ if __name__ == '__main__':
                                     this_set_distribution = [ distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ][n] / TotalDemand_BASE_BAU[n] for n in range( len( TotalDemand_BASE_BAU ) ) ]
                                     distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
 
-                            # # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                            # all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
-                            # index_change_year = all_years.index( params['change_year'] )
-                            # local_df_elasticities = deepcopy(df_elasticities)
-                            # local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
-                            # local_df_elasticities[params['e_pass']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
-                            # list_e_pass = local_df_elasticities[params['e_pass']].tolist()
+                            # now that the value is extracted, we must manipulate the result and store in TotalDemand
+                            all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
+                            index_change_year = all_years.index( params['change_year'] )
+                            local_df_elasticities = deepcopy(df_elasticities)
+                            local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
+                            local_df_elasticities[params['e_pass']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
+                            list_e_pass = local_df_elasticities[params['e_pass']].tolist()
 
-                            # new_value_list = []
-                            # for y in range(len(all_years)):
-                            #     if y < index_change_year:
-                            #         new_value_list.append(summed_value_list[y])
-                            #     else:  # apply growth formula with demand elasticity
-                            #         gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
-                            #         last_value = new_value_list[-1]
-                            #         new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
+                            new_value_list = []
+                            for y in range(len(all_years)):
+                                if y < index_change_year:
+                                    new_value_list.append(summed_value_list[y])
+                                else:  # apply growth formula with demand elasticity
+                                    gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
+                                    last_value = new_value_list[-1]
+                                    new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
 
-                            if params['exact_x_2'] in Exact_X:
-                                new_value_list = [0]*len(time_list)
-                                for a_set in range( len( Sets_Involved ) ):
-                                    this_set = Sets_Involved[a_set]
-                                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
-                                    # for each index we extract the time and value in a list:
-                                    # extracting time:
-                                    time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                    time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
-                                    # extracting value:
-                                    value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                    value_list = [ float(value_list[j]) for j in range( len( value_list ) ) ]
+                            if params['Use_Energy']:
+                                if params['exact_x_2'] in Exact_X:
+                                    new_value_list = [0]*len(time_list)
+                                    for a_set in range( len( Sets_Involved ) ):
+                                        this_set = Sets_Involved[a_set]
+                                        this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                        # for each index we extract the time and value in a list:
+                                        # extracting time:
+                                        time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                        # extracting value:
+                                        value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        value_list = [ float(value_list[j]) for j in range( len( value_list ) ) ]
 
-                                    new_value_list_set = \
-                                        interpolation_multiplier(
-                                            time_list, value_list,
-                                            Values_per_Future[fut_id] )
+                                        new_value_list_set = \
+                                            interpolation_multiplier(
+                                                time_list, value_list,
+                                                Values_per_Future[fut_id] )
 
-                                    new_value_list = list(map(
-                                        operator.add, new_value_list,
-                                        new_value_list_set))
+                                        new_value_list = list(map(
+                                            operator.add, new_value_list,
+                                            new_value_list_set))
 
-                            else:
-                                # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                                local_df_elasticities = deepcopy(df_elasticities)
-                                local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc('e_Passenger')] = float(Values_per_Future[fut_id])
-                                local_df_elasticities['e_Passenger'].interpolate(method ='linear', limit_direction ='forward', inplace = True)
-                                list_e_pass = local_df_elasticities['e_Passenger'].tolist()
+                                else:
+                                    # now that the value is extracted, we must manipulate the result and store in TotalDemand
+                                    local_df_elasticities = deepcopy(df_elasticities)
+                                    local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc('e_Passenger')] = float(Values_per_Future[fut_id])
+                                    local_df_elasticities['e_Passenger'].interpolate(method ='linear', limit_direction ='forward', inplace = True)
+                                    list_e_pass = local_df_elasticities['e_Passenger'].tolist()
 
-                                new_value_list = []
-                                for y in range(len(time_range_vector)):
-                                    if y < index_change_year:
-                                        new_value_list.append(summed_value_list[y])
-                                    else:  # apply growth formula with demand elasticity
-                                        gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
-                                        last_value = new_value_list[-1]
-                                        new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
+                                    new_value_list = []
+                                    for y in range(len(time_range_vector)):
+                                        if y < index_change_year:
+                                            new_value_list.append(summed_value_list[y])
+                                        else:  # apply growth formula with demand elasticity
+                                            gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
+                                            last_value = new_value_list[-1]
+                                            new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
 
 
                             # store the results now:
@@ -2560,7 +2562,7 @@ if __name__ == '__main__':
                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
 
-                                if params['exact_x_2'] in Exact_X:
+                                if params['exact_x_2'] in Exact_X and params['Use_Energy']::
                                     new_value_list = \
                                         interpolation_multiplier(
                                             time_range_vector, value_list,
@@ -2633,7 +2635,7 @@ if __name__ == '__main__':
                             #
                         #
                                     
-                        elif params['math_type_2'] in Math_Type:
+                        elif params['math_type_2'] in Math_Type and params['Use_Energy']:
                             #
                             enter_if_cycle = True
                             #
@@ -2817,7 +2819,7 @@ if __name__ == '__main__':
 
 
                         
-                        elif X_Cat in params['x_cat_5']:
+                        elif X_Cat in params['x_cat_5'] and params['Use_AFOLU']::
                             #------------------------------------------
                             for a_set in range( len( Sets_Involved ) ):
                                 # Control if you want to modify imports and exports:
@@ -2954,7 +2956,7 @@ if __name__ == '__main__':
                                 #
                             #
                         #
-                        elif X_Cat == params['x_cat_9']:
+                        elif X_Cat == params['x_cat_9'] and params['Use_AFOLU']:
                             
                             # all_covers = params['all_covers]
                             
@@ -3071,7 +3073,7 @@ if __name__ == '__main__':
 
 
 
-                        if params['x_cat_10'] in X_Cat:
+                        elif params['x_cat_10'] in X_Cat and params['Use_PIUP']:
                             str_sets = Sets_Involved[0]
                             # Join the elements of x into a single string, replacing ', ' with ','
                             str_sets = ', '.join(Sets_Involved)
@@ -3101,8 +3103,8 @@ if __name__ == '__main__':
                             inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_param_indices_clk[0]:this_param_indices_clk[-1]+1] = deepcopy(new_value_list)
                             inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_param_indices_comp[0]:this_param_indices_comp[-1]+1] = deepcopy(new_value_list_comp)
 
-						# The X type below is manipulated with immidiate restitution after adjustment.
-                        elif ( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['fin_val'] ) and params['Use_PIUP']):                              
+						# The X type below is manipulated with immidiate restitution after adjustment for PIUP sector.
+                        elif ( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['fin_val'] )) and params['Use_PIUP']:                              
                             #
                             for a_set in range( len( Sets_Involved ) ):
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]                                                                         
@@ -3250,7 +3252,7 @@ if __name__ == '__main__':
                                 #
                             #
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif X_Cat == params['rail_dem']: # THIS SEEMS UNUSED
+                        elif X_Cat == params['rail_dem'] and params['Use_Energy']: # THIS SEEMS UNUSED
                             #
                             enter_if_cycle = True
                             #
@@ -3273,7 +3275,7 @@ if __name__ == '__main__':
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         # The X type below is manipulated with immediate restitution after adjustment.
-                        elif Math_Type in params['math_type_5'] and X_Cat == params['mode_shift']:
+                        elif Math_Type in params['math_type_5'] and X_Cat == params['mode_shift'] and params['Use_Energy']:
                             #
                             enter_if_cycle = True
                             #
@@ -3422,7 +3424,7 @@ if __name__ == '__main__':
                                     inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( passpriv_new_value_list_rounded )
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif Math_Type == params['time_series'] and X_Cat == params['mode_shift']:  # this generally applies to freight rail
+                        elif Math_Type == params['time_series'] and X_Cat == params['mode_shift'] and params['Use_Energy']:  # this generally applies to freight rail
                             #
                             enter_if_cycle = True
                             #
@@ -3500,7 +3502,7 @@ if __name__ == '__main__':
                             inherited_scenarios[scenario_list[s]][f][ this_parameter ]['value'][ this_set_complement_indices[0]:this_set_complement_indices[-1]+1 ] = deepcopy( new_value_list_comp_rounded )
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif Math_Type==params['time_series'] and params['pub_tra_dis'] in X_Cat:
+                        elif Math_Type==params['time_series'] and params['pub_tra_dis'] in X_Cat and params['Use_Transport']:
                             for a_set in range( len( Sets_Involved ) ):
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
                                 #
@@ -3618,15 +3620,16 @@ if __name__ == '__main__':
                                 #-----------------------------------------------------------------------#
                             #
                         #
-                        # The X type below is manipulated with immidiate restitution after adjustment.
-                        elif ( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
+                        # The X type below is manipulated with immidiate restitution after adjustment for Energy sector.
+                        elif (( Math_Type==params['time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
                                                             Explored_Parameter_of_X==params['fin_val'] or
                                                             Explored_Parameter_of_X==params['shift_per_ini_val']
                                                             or Explored_Parameter_of_X==params['year_when_rea_zero'] )
                                                             and (params['dis'] not in X_Cat)
                                                             and (params['dem'] not in X_Cat)
                                                             and (params['non_rail'] not in X_Cat)
-                                                            and (params['mode_shift'] not in X_Cat) ) or ( Math_Type==params['dis_invs'] ):
+                                                            and (params['mode_shift'] not in X_Cat) ) or ( Math_Type==params['dis_invs'] ))
+                                                            and params['Use_Energy']:
                             #
                             enter_if_cycle = True
                             #
@@ -3776,10 +3779,10 @@ if __name__ == '__main__':
                                             else:
                                                 #
                                                 # descomentar
-                                                # if 'CapacityFactor' in Parameters_Involved:
-                                                #     sec_mult_cf_ll = 0.99
-                                                # else:
-                                                #     sec_mult_cf_ll = 1
+                                                if 'CapacityFactor' in Parameters_Involved:
+                                                    sec_mult_cf_ll = 0.99
+                                                else:
+                                                    sec_mult_cf_ll = 1
                                                 new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
                                                 #
                                             #
@@ -3989,7 +3992,8 @@ if __name__ == '__main__':
                                             for useful_index in range( len( this_set_range_indices_useful ) ):
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ]  ] = new_value_list_rounded[ useful_index ]
 
-                        elif Math_Type in params['math_type_5'] and (params['x_cat_11'] in X_Cat or params['x_cat_12'] in X_Cat):
+                        elif Math_Type in params['math_type_5'] and (params['x_cat_11'] in X_Cat or params['x_cat_12'] in X_Cat)
+                            and params['Use_Energy']:
                             #
                             #
                             enter_if_cycle = True
@@ -4279,7 +4283,7 @@ if __name__ == '__main__':
                             #
                         #
 
-                        elif params['dis'] in X_Cat: # This is the last adjustment
+                        elif params['dis'] in X_Cat and params['Use_Transport']: # This is the last adjustment
                             #
                             enter_if_cycle = True
                             #
@@ -4566,7 +4570,7 @@ if __name__ == '__main__':
                     #     light_freight_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_lig'] ) ]
                     #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ light_freight_demand_indices[0]:light_freight_demand_indices[-1]+1 ] = deepcopy( new_light_freight_demand_rounded )
 
-                if params['adj_oar'] in X_Cat: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
+                if params['adj_oar'] in X_Cat and params['Use_Transport']: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
                     ####### USE THIS LINE FOR AUTOMATIC ADJUSTMENT // BY DESIGN THIS CAN BE DONE AFTER MAXIMUM VEHICLE CAPACITY HAS BEEN MANIPULATED #######
                     # %% WE CAN TAKE ADVANTAGE HERE AND ADJUST ALL GROUP TECHS FOR COHERENCE %%
                     #

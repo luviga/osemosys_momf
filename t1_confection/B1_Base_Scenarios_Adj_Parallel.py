@@ -20,6 +20,7 @@ import shutil
 import pickle
 import multiprocessing as mp
 import yaml
+import openpyxl
 
 '''
 We implement OSEMOSYS-CR in a csv based system for semi-automatic manipulation of parameters.
@@ -2019,8 +2020,49 @@ if __name__ == '__main__':
     scenario_list = [ scenario_list_reference[i] for i in range( len( scenario_list_all ) ) if scenario_list_reference[i] != 'based' ]
     #
     base_configuration_overall = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Over_params'] )
-    base_configuration_waste = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Waste'])
-    base_configuration_transport_elasticity = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['TElas'] )
+    if params['Use_Waste']:
+        try:
+            # First, check if the file exists and can be opened
+            workbook = openpyxl.load_workbook(params['B1_Scen_Config'])
+            
+            # Then, check if the 'Waste' sheet exists in the file
+            if params['Waste'] in workbook.sheetnames:
+                # If the sheet exists, proceed to read it
+                base_configuration_waste = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Waste'])
+            else:
+                # If the sheet does not exist, print a specific error message and terminate the script
+                print(f"Error: The sheet 'Waste' was not found in the specified file: {params['B1_Scen_Config']}. Please ensure the sheet name is correct and present in the file.")
+                sys.exit(1)
+        except FileNotFoundError:
+            # The specified file was not found
+            print(f"Error: The specified file was not found: {params['B1_Scen_Config']}")
+            sys.exit(1)
+        except Exception as e:
+            # Catch other unexpected errors
+            print(f"Unexpected error while attempting to read the Excel file or the workbook: {e}")
+            sys.exit(1)
+    if params['Use_Transport']:
+        try:
+            # First, check if the file exists and can be opened
+            workbook = openpyxl.load_workbook(params['B1_Scen_Config'])
+            
+            # Then, check if the 'TElas' sheet exists in the file
+            if params['TElas'] in workbook.sheetnames:
+                # If the sheet exists, proceed to read it
+                base_configuration_transport_elasticity = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['TElas'])
+            else:
+                # If the sheet does not exist, print a specific error message and terminate the script
+                print(f"Error: The sheet 'TElas' was not found in the specified file: {params['B1_Scen_Config']}. Please ensure the sheet name is correct and present in the file.")
+                sys.exit(1)
+        except FileNotFoundError:
+            # The specified file was not found
+            print(f"Error: The specified file was not found: {params['B1_Scen_Config']}")
+            sys.exit(1)
+        except Exception as e:
+            # Catch other unexpected errors
+            print(f"Unexpected error while attempting to read the Excel file or the workbook: {e}")
+            sys.exit(1)
+            
     base_configuration_distance = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Dis_Levers'] )
     base_configuration_modeshift = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Mode_Shift'] )
     base_configuration_or = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Occu_Rate'] )
@@ -2030,7 +2072,7 @@ if __name__ == '__main__':
     base_configuration_E_and_D = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Effi'] )
     #
     all_dataset_address = params['A2_Output_Params']
-    '''
+    ''' 
     # Call the default parameters for later use:
     '''
     dict_default_val_params = params['default_val_params']
