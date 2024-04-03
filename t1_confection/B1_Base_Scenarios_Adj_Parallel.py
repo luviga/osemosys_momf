@@ -2539,7 +2539,7 @@ if __name__ == '__main__':
                     new_value_range_set_group_rounded = [ round(elem, 4) for elem in new_value_range_set_group ]
                     #
                     # Store the value of passenger rail (electric) below
-                    if this_set == params['this_set_2']:
+                    if this_set == params['this_set_tra_pas_rai_ele']:
                         stable_scenarios[scenario_list[s]]['TotalAnnualMaxCapacity']['value'][this_set_group_range_indices[0]:this_set_group_range_indices[-1]+1] = deepcopy([1.0001*i for i in new_value_range_set_group_rounded])
                         stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['value'][this_set_group_range_indices_lm[0]:this_set_group_range_indices_lm[-1]+1] = deepcopy([0.9999*i for i in new_value_range_set_group_rounded])
                     

@@ -148,7 +148,7 @@ solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex'
 glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
 
 # Choose if want to delete or not the solver solutions files
-del_files: True
+del_files: False
 
 # Maximun cores to use per iteration
 Number_of_Runs: 2
@@ -179,11 +179,11 @@ check_assignation: False
 ignore_biofuels: True
 
 # Sectors variables
-Use_Energy: True
+Use_Energy: False
 Use_Waste: False
-Use_Transport: True
+Use_Transport: False
 Use_AFOLU: False
-Use_PIUP: True
+Use_PIUP: False
 
 # Scenarios
 #--------------------------------------------------------------------------------------------------------------------#
@@ -641,12 +641,13 @@ gen_or_exe_2: 'Both'
 gen_or_exe_3: 'Executor'
 gen_or_exe_4: 'Both'
 KKT: 'Karush-Kuhn-Tucker'
-motos: 'Motos'
+motrocy: 'Motos'
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost']
 down: 'down'
 up: 'up'
 exp_param_rel_base: 'Explored_Parameter_is_Relative_to_Baseline'
 year_when_rea_zero: 'Year_when_reaches_zero'
+over_dc_shift: 'Overall_DC_Shift'
 cte: 'Constant'
 ble_time_series: 'Blend_Time_Series'
 _base_data: '_Base_Dataset'
@@ -657,10 +658,8 @@ x_cat_list: ['Electrical Demand', 'Fuel Demand', 'Freight Demand']
 fre_dem: 'Freight Demand'
 ele_dem: 'Electrical Demand'
 fuel_dem: 'Fuel Demand'
-rail_dem: 'Rail Demand'
-mode_shift: 'Mode Shift'
 pub_tra_dis: 'Public Transport Distribution'
-techs_motos: 'Techs_Motos'
+techs_motrocy: 'Techs_Motos'
 techs_sedan: 'Techs_Sedan'
 techs_taxis: 'Techs_Taxis'
 techs_bus: 'Techs_Buses'
@@ -675,14 +674,14 @@ adj_oar: 'Adjustment OAR'
 acci: 'Accidents'
 electri: 'Electrification'
 pen: 'Penetration'
-this_set: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD']
-this_set_2: 'TRNPASRAIELE'
-this_set_3: ['INORG_RCY_OS', 'COMPOST']
-this_set_4: 'PP_WND_US'
-this_set_5: 'Cafe'
-this_set_6: 'Cana'
-this_set_7: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']
-this_set_8: 'PP_HYDAMARORLAR'
+this_set_tr_hyd: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD']
+this_set_tra_pas_rai_ele: 'TRNPASRAIELE' # Transport passenger rail electric
+this_set_waste: ['INORG_RCY_OS', 'COMPOST']
+this_set_pp_wdn: 'PP_WND_US'
+this_set_afolu_1: 'Cafe'
+this_set_afolu_2: 'Cana'
+this_set_techs_buses: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']
+this_set_pp_hy: 'PP_HYDAMARORLAR'
 TRBUSHYD: 'TRBUSHYD'
 TRBUSELE: 'TRBUSELE'
 TRMBUSHYD: 'TRMBUSHYD'
@@ -703,15 +702,15 @@ a_fuel_set: 'CLK_PROD'
 
 ################################# General Var #################################
 newfleet: 'NewFleet'
-externa_base_year: 'Externalities2021'
+externa_base_year: 'Externalities2021' # Check with dicts filter_vars and filter_vars_2
 externa_gdp: 'Externalities_GDP'
-capex_base_year: 'Capex2021'
+capex_base_year: 'Capex2021' # Check with dicts filter_vars and filter_vars_2
 capex_gdp: 'Capex_GDP'
-fopex_base_year: 'FixedOpex2021'
+fopex_base_year: 'FixedOpex2021' # Check with dicts filter_vars and filter_vars_2
 fopex_gdp: 'FixedOpex_GDP'
-vopex_base_year: 'VarOpex2021'
+vopex_base_year: 'VarOpex2021' # Check with dicts filter_vars and filter_vars_2
 vopex_gdp: 'VarOpex_GDP'
-opex_base_year: 'Opex2021'
+opex_base_year: 'Opex2021' # Check with dicts filter_vars and filter_vars_2
 opex_gdp: 'Opex_GDP'
 biofuel_shares: 'BiofuelShares'
 fleet: 'Fleet'
@@ -751,39 +750,44 @@ inv_sets_ose: 'Involved_Sets_in_Osemosys'
 exac_param_inv_ose: 'Exact_Parameters_Involved_in_Osemosys'
 x_pla_eng_desc: 'X_Plain_English_Description'
 x_num: 'X_Num'
-x_cat: 'X_Category'
-x_cat_2: ['Emisiones por aguas residuales industriales']
-x_cat_3: 'National waste production'
-x_cat_4: ['Electrical Demand']
-x_cat_5: ['Agricultural Demand', 'Agricultural Yield', 'Agricultural Yield Livestock']
-x_cat_6: 'Agricultural Demand'
-x_cat_7: 'Agricultural Yield Livestock'
-x_cat_8: 'Agricultural Yield'
-x_cat_9: 'ForestCover'
-x_cat_10: 'Adjustment clinker factor'
-x_cat_11: 'Electrification'
-x_cat_12: 'Penetration'
-x_cat_13: 'Electrification of Private Transport'
+x_cat_col_name: 'X_Category'
+x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales']
+x_cat_na_waste_pro: 'National waste production'
+x_cat_ele: ['Electrical Demand']
+x_cat_afolu_list: ['Agricultural Demand', 'Agricultural Yield', 'Agricultural Yield Livestock']
+x_cat_afolu_1: 'Agricultural Demand'
+x_cat_afolu_2: 'Agricultural Yield Livestock'
+x_cat_afolu_3: 'Agricultural Yield'
+x_cat_afolu_4: 'ForestCover'
+x_cat_piup: 'Adjustment clinker factor'
+x_cat_electri: 'Electrification'
+x_cat_pen: 'Penetration'
+x_cat_electri_priv_tra: 'Electrification of Private Transport'
+x_cat_rail_dem: 'Rail Demand'
+x_cat_mode_shift: 'Mode Shift'
+x_cat_bev_cost: 'Unit BEV Cost'
 exp_param_num: 'Explored_Parameter_Number'
 min_val: 'Min_Value'
 max_val: 'Max_Value'
 dep_pre_exp_param: 'Dependency_on_Previous_Explored_Parameter'
 sing_dep_spe_xs: 'Sign_Dependency_on_Specified_Xs'
 fut_var: 'Futures'
-dis_invs: 'Discrete_Investments'
-time_series: 'Time_Series'
-adop_curve: 'Adoption_Curve'
-multi_adop_curve: 'Mult_Adoption_Curve'
-ini_year: 'Initial_Year'
 exact_x: 'Exact_X'
 exact_x_2: 'EXPLICIT'
 Cat: 'Category'
 math_type: 'Math_Type'
-math_type_2: 'Mult_Restriction'
-math_type_3: 'Start'
-math_type_4: 'End'
-math_type_5: ['Adoption_Curve', 'Mult_Adoption_Curve']
-math_type_6: 'Discrete_Investments'
+math_type_mult_rest: 'Mult_Restriction'
+math_type_start: 'Start'
+math_type_end: 'End'
+math_type_curves_list: ['Adoption_Curve', 'Mult_Adoption_Curve']
+math_type_dis_inv: 'Discrete_Investments'
+math_type_cte: 'Constant'
+math_type_blend: 'Blend_Time_Series'
+math_type_dis_invs: 'Discrete_Investments'
+math_type_time_series: 'Time_Series'
+math_type_adop_curve: 'Adoption_Curve'
+math_type_multi_adop_curve: 'Mult_Adoption_Curve'
+ini_year: 'Initial_Year'
 rel_base: 'Relative_to_Baseline'
 e_pass: 'e_Passenger'
 e_fre: 'e_Freight'
@@ -842,6 +846,7 @@ common_complement_2: [
   'WWWOT', 'DIRECT_DISC']
   # , 'AERO_PTAR', 'SEPT_SYST', 'WWWT', 'SEWERWW']
 
+# Variables this_parameter... are list with parameters of OSeMOSYS
 this_parameter: ['SpecifiedAnnualDemand']
 
 this_parameter_2: ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit']
@@ -865,6 +870,7 @@ adjust_sets_2: [
   'NO_CONTR_OD', 'COMPOST', 'AERO_PTAR', 'SEPT_SYST', 'LATR', 'EFLT_DISC', 'WWWT', 'WWWOT', 'SEWERWW', 'DIRECT_DISC'
   ]
 
+# Variables support_params... are list with parameters of OSeMOSYS
 support_params: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit']
 support_params_2: ['OutputActivityRatio']
 

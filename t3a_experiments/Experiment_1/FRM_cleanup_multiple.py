@@ -325,7 +325,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                             print(this_year_index)
                             print('error here')
                         #
-                        if params['motos'] in group_tech or params['fre'] in group_tech:
+                        if params['motrocy'] in group_tech or params['fre'] in group_tech:
                             passenger_per_vehicle = 1
                         else:
                             try:
@@ -747,7 +747,8 @@ if __name__ == '__main__':
     
             file_size = os.stat(output_txt).st_size
             print(output_txt, file_size)
-            if file_size > 3000:
+
+            if file_size < 3000:
                 print(file_size)
                 files_2_cleanup.append(output_txt)
                 dirs_4_cleanup.append(spec_dir)
