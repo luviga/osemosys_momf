@@ -37,6 +37,7 @@ with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
     params = yaml.safe_load(file)
 # Select dict with default values parameters
 default_val_params = params['default_val_params']
+default_val_sets = params['sets_otoole']
 
 # Create defaul yaml file by otoole
 file_path = file_config_address + 'config\\conversion_format.yaml'
@@ -59,9 +60,27 @@ temp_defaut_params = deepcopy(default_format)
 
 # Delete parameters that are not in 'MOMF_T1_B1.yaml'
 for old_key, attributes in temp_defaut_params.items():
-    if attributes['type'] == 'param' and not old_key in default_val_params:
-        default_format.pop(old_key)
+    if attributes['type'] == 'param':
+        for index in attributes['indices']:
+            if index not in default_val_sets:
+                default_format[old_key]['indices'].remove(index)
+                    
+        if not old_key in default_val_params:
+            default_format.pop(old_key)
+            shutil.os.remove(file_config_address + 'config\\templates\\' + old_key + '.csv')
+        
+    elif attributes['type'] == 'set' and not old_key in default_val_sets:
+        a = default_format.pop(old_key)
         shutil.os.remove(file_config_address + 'config\\templates\\' + old_key + '.csv')
+    
+    elif attributes['type'] == 'result':
+        for index in attributes['indices']:
+            if index not in default_val_sets:
+                default_format[old_key]['indices'].remove(index)
+                # shutil.os.remove(file_config_address + 'config\\templates\\' + index + '.csv')
+        
+    
+            
         
 # Change default value
 for old_key, attributes in default_format.items():
