@@ -2445,7 +2445,7 @@ if __name__ == '__main__':
                                 #--------------------------------------------------------------------#
                         #--------------------------------------------------------------------#
 
-                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_Transport'] or params['Use_AFOLU']):
+                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_AFOLU']):
                             print('AFOLU_2')
                             #
                             enter_if_cycle = True
@@ -2557,7 +2557,7 @@ if __name__ == '__main__':
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( updated_value_list_rounded )
                         #
                         
-                        elif X_Cat in params['x_cat_list'] and (params['Use_Energy'] or params['Use_Transport'] or params['Use_AFOLU']):
+                        elif X_Cat in params['x_cat_list'] and (params['Use_Energy'] or params['Use_AFOLU']):
                             print('AFOLU_3')
                             #
                             enter_if_cycle = True
@@ -2602,7 +2602,7 @@ if __name__ == '__main__':
                                             value_list))
 
                                 else:
-                                    if X_Cat in params['fre_dem'] and (params['Use_Transport'] or params['Use_AFOLU']):
+                                    if X_Cat in params['fre_dem'] and params['Use_AFOLU']:
                                         print('AFOLU_4')
                                         # now that the value is extracted, we must manipulate the result and store in TotalDemand
                                         all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
@@ -3274,7 +3274,7 @@ if __name__ == '__main__':
                                 #
                             #
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif X_Cat == params['x_cat_rail_dem'] and params['Use_Transport']: # THIS SEEMS UNUSED
+                        elif X_Cat == params['x_cat_rail_dem'] and params['Use_Energy']: # THIS SEEMS UNUSED
                             #
                             enter_if_cycle = True
                             #
@@ -3297,7 +3297,7 @@ if __name__ == '__main__':
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         # The X type below is manipulated with immediate restitution after adjustment.
-                        elif Math_Type in params['math_type_curves_list'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Transport'] and params['Use_Energy']:
+                        elif Math_Type in params['math_type_curves_list'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy']:
                             #
                             enter_if_cycle = True
                             #
@@ -3446,7 +3446,7 @@ if __name__ == '__main__':
                                     inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( passpriv_new_value_list_rounded )
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif Math_Type == params['math_type_time_series'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Transport'] and params['Use_Energy']:  # this generally applies to freight rail
+                        elif Math_Type == params['math_type_time_series'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy']:  # this generally applies to freight rail
                             #
                             enter_if_cycle = True
                             #
@@ -3524,7 +3524,7 @@ if __name__ == '__main__':
                             inherited_scenarios[scenario_list[s]][f][ this_parameter ]['value'][ this_set_complement_indices[0]:this_set_complement_indices[-1]+1 ] = deepcopy( new_value_list_comp_rounded )
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        elif Math_Type==params['math_type_time_series'] and params['pub_tra_dis'] in X_Cat and params['Use_Transport']:
+                        elif Math_Type==params['math_type_time_series'] and params['pub_tra_dis'] in X_Cat and params['Use_Energy']:
                             for a_set in range( len( Sets_Involved ) ):
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
                                 #
@@ -3651,7 +3651,7 @@ if __name__ == '__main__':
                                                             and (params['dem'] not in X_Cat)
                                                             and (params['non_rail'] not in X_Cat)
                                                             and (params['x_cat_mode_shift'] not in X_Cat) ) or ( Math_Type==params['math_type_dis_invs'] )) \
-                                                            and (params['Use_Transport'] or params['Use_Energy'] or params['Use_AFOLU']):
+                                                            and (params['Use_Energy'] or params['Use_AFOLU']):
                             print('AFOLU_7')
                             #
                             enter_if_cycle = True
@@ -4016,7 +4016,7 @@ if __name__ == '__main__':
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ]  ] = new_value_list_rounded[ useful_index ]
 
                         elif Math_Type in params['math_type_curves_list'] and (params['x_cat_electri'] in X_Cat or params['x_cat_pen'] in X_Cat) \
-                                                                and params['Use_Transport'] and params['Use_Energy']:
+                                        and params['Use_Energy']:
                             #
                             #
                             enter_if_cycle = True
@@ -4306,7 +4306,7 @@ if __name__ == '__main__':
                             #
                         #
 
-                        elif params['dis'] in X_Cat and params['Use_Transport']: # This is the last adjustment
+                        elif params['dis'] in X_Cat and params['Use_Energy']: # This is the last adjustment
                             #
                             enter_if_cycle = True
                             #
@@ -4593,7 +4593,7 @@ if __name__ == '__main__':
                     #     light_freight_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_lig'] ) ]
                     #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ light_freight_demand_indices[0]:light_freight_demand_indices[-1]+1 ] = deepcopy( new_light_freight_demand_rounded )
 
-                if params['adj_oar'] in X_Cat and params['Use_Transport']: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
+                if params['adj_oar'] in X_Cat and params['Use_Energy']: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
                     ####### USE THIS LINE FOR AUTOMATIC ADJUSTMENT // BY DESIGN THIS CAN BE DONE AFTER MAXIMUM VEHICLE CAPACITY HAS BEEN MANIPULATED #######
                     # %% WE CAN TAKE ADVANTAGE HERE AND ADJUST ALL GROUP TECHS FOR COHERENCE %%
                     #
