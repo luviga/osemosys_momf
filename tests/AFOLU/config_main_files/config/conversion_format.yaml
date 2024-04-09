@@ -1,0 +1,593 @@
+AccumulatedAnnualDemand:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+AnnualEmissionLimit:
+  indices:
+  - EMISSION
+  - YEAR
+  type: param
+  dtype: float
+  default: 99999
+AnnualExogenousEmission:
+  indices:
+  - EMISSION
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+AvailabilityFactor:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 1
+CapacityFactor:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 1
+CapacityOfOneTechnologyUnit:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+CapacityToActivityUnit:
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 1
+CapitalCost:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0.0001
+CapitalCostStorage:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+Conversionld:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+Conversionlh:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+Conversionls:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+DaysInDayType:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 7
+DaySplit:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0.00137
+DepreciationMethod:
+  indices: []
+  type: param
+  dtype: float
+  default: 1
+DiscountRate:
+  indices: []
+  type: param
+  dtype: float
+  default: 0.05
+EMISSION:
+  dtype: str
+  type: set
+EmissionActivityRatio:
+  indices:
+  - TECHNOLOGY
+  - EMISSION
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+EmissionsPenalty:
+  indices:
+  - EMISSION
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+FixedCost:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+FUEL:
+  dtype: str
+  type: set
+InputActivityRatio:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+MinStorageCharge:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ModelPeriodEmissionLimit:
+  indices:
+  - EMISSION
+  type: param
+  dtype: float
+  default: 99999
+ModelPeriodExogenousEmission:
+  indices:
+  - EMISSION
+  type: param
+  dtype: float
+  default: 0
+OperationalLife:
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 1
+OperationalLifeStorage:
+  indices: []
+  type: param
+  dtype: float
+  default: 1
+OutputActivityRatio:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+REMinProductionTarget:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ReserveMargin:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ReserveMarginTagFuel:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ReserveMarginTagTechnology:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ResidualCapacity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+ResidualStorageCapacity:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+RETagFuel:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+RETagTechnology:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+SpecifiedAnnualDemand:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+SpecifiedDemandProfile:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+StorageLevelStart:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+StorageMaxChargeRate:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+StorageMaxDischargeRate:
+  indices: []
+  type: param
+  dtype: float
+  default: 0
+TECHNOLOGY:
+  dtype: str
+  type: set
+TechnologyFromStorage:
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 0
+TechnologyToStorage:
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 0
+TotalAnnualMaxCapacity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 99999
+TotalAnnualMaxCapacityInvestment:
+  short_name: TotalAnnualMaxCapacityInvestmen
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 99999
+TotalAnnualMinCapacity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+TotalAnnualMinCapacityInvestment:
+  short_name: TotalAnnualMinCapacityInvestmen
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+TotalTechnologyAnnualActivityLowerLimit:
+  short_name: TotalTechnologyAnnualActivityLo
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+TotalTechnologyAnnualActivityUpperLimit:
+  short_name: TotalTechnologyAnnualActivityUp
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 99999
+TotalTechnologyModelPeriodActivityLowerLimit:
+  short_name: TotalTechnologyModelPeriodActLo
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 0
+TotalTechnologyModelPeriodActivityUpperLimit:
+  short_name: TotalTechnologyModelPeriodActUp
+  indices:
+  - TECHNOLOGY
+  type: param
+  dtype: float
+  default: 99999
+TradeRoute:
+  indices:
+  - FUEL
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+VariableCost:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: param
+  dtype: float
+  default: 0.0001
+YEAR:
+  dtype: int
+  type: set
+YearSplit:
+  indices:
+  - YEAR
+  type: param
+  dtype: float
+  default: 0
+AnnualEmissions:
+  indices:
+  - EMISSION
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AccumulatedNewCapacity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AnnualFixedOperatingCost:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AnnualTechnologyEmission:
+  indices:
+  - TECHNOLOGY
+  - EMISSION
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AnnualTechnologyEmissionByMode:
+  indices:
+  - TECHNOLOGY
+  - EMISSION
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AnnualVariableOperatingCost:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+CapitalInvestment:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+Demand:
+  indices:
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+DiscountedSalvageValue:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+DiscountedTechnologyEmissionsPenalty:
+  short_name: DiscountedTechEmissionsPenalty
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+NewCapacity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+NewStorageCapacity:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+NumberOfNewTechnologyUnits:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+ProductionByTechnology:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+ProductionByTechnologyAnnual:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+RateOfActivity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+RateOfProductionByTechnology:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+RateOfProductionByTechnologyByMode:
+  short_name: RateOfProductionByTechByMode
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+RateOfUseByTechnology:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+RateOfUseByTechnologyByMode:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+SalvageValue:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+SalvageValueStorage:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+StorageLevelDayTypeFinish:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+StorageLevelDayTypeStart:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+StorageLevelSeasonStart:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+StorageLevelYearStart:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+StorageLevelYearFinish:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+TotalAnnualTechnologyActivityByMode:
+  short_name: TotalAnnualTechActivityByMode
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+TotalCapacityAnnual:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+TotalDiscountedCost:
+  indices:
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+TotalTechnologyAnnualActivity:
+  indices:
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+TotalTechnologyModelPeriodActivity:
+  short_name: TotalTechModelPeriodActivity
+  indices:
+  - TECHNOLOGY
+  type: result
+  dtype: float
+  default: 0
+Trade:
+  indices:
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+UseByTechnology:
+  indices:
+  - TECHNOLOGY
+  - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
