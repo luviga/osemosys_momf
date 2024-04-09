@@ -178,6 +178,13 @@ check_assignation: False
 
 ignore_biofuels: True
 
+manipulate_param_keys_2: True
+
+initial_year_index: 1
+
+# Number to round
+round_#: 4
+
 # Sectors variables
 Use_Energy: False
 Use_Waste: False
@@ -294,6 +301,29 @@ default_val_params: {
   VariableCost: 0.0001,
   YearSplit: 0
   }
+
+sets_otoole: [
+  YEAR,
+  TECHNOLOGY,
+  # TIEMSLICE,
+  FUEL,
+  EMISSION
+  # MODE_OF_OPERATION,
+  # REGION,
+  # SEASON,
+  # DAYTYPE,
+  # DAILYTIMEBRACKET,
+  # STORAGE
+  ]
+
+new_results_otoole: {
+  AnnualTechnologyEmissionPenaltyByEmission,
+  AnnualTechnologyEmissionsPenalty,
+  DiscountedCapitalInvestment,
+  DiscountedOperatingCost,
+  OperatingCost,
+  TotalDiscountedCostByTechnology
+}
 #----------------------------------------------------------------------------------#
 
 # Data Processor function
@@ -498,39 +528,6 @@ Gasoline_Techs_Emissions: {
 basic_header_elements: [
   'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel',
   'Technology', 'Emission', 'Season', 'Year'
-  ]
-
-parameters_to_print: [
-  'AnnualEmissionLimit',
-  'AvailabilityFactor',
-  'CapacityFactor',
-  'CapacityToActivityUnit',
-  'CapitalCost',
-  'DepreciationMethod',
-  'DiscountRate',
-  'EmissionActivityRatio',
-  'EmissionsPenalty',
-  'FixedCost',
-  'InputActivityRatio',
-  'ModelPeriodEmissionLimit',
-  'OperationalLife',
-  'OutputActivityRatio',
-  'REMinProductionTarget',
-  'ResidualCapacity',
-  'RETagFuel',
-  'RETagTechnology',
-  'SpecifiedAnnualDemand',
-  'SpecifiedDemandProfile',
-  'TotalAnnualMaxCapacity',
-  'TotalAnnualMaxCapacityInvestment',
-  'TotalAnnualMinCapacity',
-  'TotalAnnualMinCapacityInvestment',
-  'TotalTechnologyAnnualActivityLowerLimit',
-  'TotalTechnologyAnnualActivityUpperLimit',
-  'TotalTechnologyModelPeriodActivityLowerLimit',
-  'TotalTechnologyModelPeriodActivityUpperLimit',
-  'VariableCost',
-  'YearSplit'
   ]
 
 blend_shares: {
@@ -857,6 +854,10 @@ this_parameter_4: ['VariableCost']
 
 this_parameter_5: ['VariableCost','TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit']
 
+this_parameter_6: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit']
+
+this_parameter_7: ['OutputActivityRatio']
+
 adjust_sets: [
   'INORG_RCY_COLL', 'INORG_RCY_OS', 'AD', 'COMPOST', 'OTH_ORG_TEC', 'LANDFILL_BG', 'LANDFILL', 'CONTR_OD',
   'NO_CONTR_OD', 'WWWOT', 'WWWT', 'WFIRU', 'OSS_INORG', 'OSS_ORG', 'NO_OSS_INORG', 'NO_OSS_ORG', 'NO_OSS_BLEND',
@@ -869,10 +870,6 @@ adjust_sets_2: [
   'ORG_SS', 'BLEND_NO_DCOLL', 'OSS_INORG', 'INORG_RCY_OS',
   'NO_CONTR_OD', 'COMPOST', 'AERO_PTAR', 'SEPT_SYST', 'LATR', 'EFLT_DISC', 'WWWT', 'WWWOT', 'SEWERWW', 'DIRECT_DISC'
   ]
-
-# Variables support_params... are list with parameters of OSeMOSYS
-support_params: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit']
-support_params_2: ['OutputActivityRatio']
 
 all_covers: [
   "Banano", "Arroz", "Cacao", "Cafe", "Cana", "Maiz", "Palma",
