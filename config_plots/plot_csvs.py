@@ -13,53 +13,6 @@ import yaml
 import sys
 from copy import deepcopy
 
-# Functions
-
-def process_csv_files(tier_dir, params):
-    csv_file_list = os.listdir(tier_dir)
-    
-    df_list = []
-    parameter_list = []
-    parameter_dict = {}
-    
-    if params['vis_dir'] in csv_file_list:
-        csv_file_list.remove(params['vis_dir'])
-    
-    for f in csv_file_list:
-        local_df = pd.read_csv(os.path.join(tier_dir, f))
-        local_df['Parameter'] = f.split('.')[0]
-        
-        parameter_list.append(f.split('.')[0])
-        parameter_dict.update({parameter_list[-1]: local_df})
-        
-        df_list.append(local_df)
-    
-    df_all = pd.concat(df_list, ignore_index=True, sort=False)
-    df_all = df_all[params['df_all']]
-    
-    return df_all, parameter_list, parameter_dict
-
-def rename_and_combine(parameter_list, parameter_dict):
-    df_list_2 = []
-    
-    for p in parameter_list:
-        local_df_2 = parameter_dict[p].rename(columns={'VALUE': p})
-        df_list_2.append(local_df_2)
-    
-    df_all_2 = pd.concat(df_list_2, ignore_index=True, sort=False)
-    return df_all_2
-
-def merge_on_dimensions(df_all, parameter_list, params):
-    first_param = parameter_list[0]
-    df_all_3 = df_all[df_all['Parameter'] == first_param].rename(columns={'VALUE': first_param}).drop('Parameter', axis=1)
-    
-    for p in parameter_list[1:]:
-        local_df_3 = df_all[df_all['Parameter'] == p].rename(columns={'VALUE': p}).drop('Parameter', axis=1)
-        df_all_3 = pd.merge(df_all_3, local_df_3, on=params_tiers['sets_otoole'], how='outer')
-    
-    return df_all_3
-
-
 if __name__ == '__main__':
     # Read yaml file with parameterization
     with open('plots_config.yaml', 'r') as file:
@@ -67,13 +20,20 @@ if __name__ == '__main__':
         params = yaml.safe_load(file)
         
     # Read yaml file with parameterization
-    with open('../config_main_files/MOMF_B1_exp_manager.yaml', 'r') as file:
+    with open( params['dir_main_script_yaml'] + '/MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params_tiers = yaml.safe_load(file)
         
     sets_corrects = deepcopy(params_tiers['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
     sets_corrects.append('VALUE')
+    
+
+    sets_csv = ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION']
+    sets_csv_temp = deepcopy(sets_csv)
+    sets_csv_temp.insert(0,'Parameter')
+    sets_csv_temp.append('VALUE')
+    set_no_needed = [item for item in params_tiers['sets_otoole'] if item not in sets_csv]
     
     if params['model']=='MOMF':
         dict_scen_folder_unique = {}
@@ -84,7 +44,7 @@ if __name__ == '__main__':
             elif params['tier']=='3a':
                 all_files_internal = os.listdir(params['tier3a_dir'] + '/' + scen)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-        
+        count = 0
         for scen in dict_scen_folder_unique:
             for case in dict_scen_folder_unique[f'{scen}']:
                 # Select folder path
@@ -108,9 +68,13 @@ if __name__ == '__main__':
                     
                     local_df = pd.read_csv(tier_dir + '/' + f)
                     
+                    
                     # Delete columns of sets do not use in otoole config yaml
                     columns_check = [column for column in local_df.columns if column in sets_corrects]
+                    # columns_check.insert(0,'Parameter')
                     local_df = local_df[columns_check]
+                    # if f == 'AnnualEmissions.csv':
+                    #     sys.exit()
                     
                     local_df['Parameter'] = f.split('.')[0]
                     
@@ -119,10 +83,12 @@ if __name__ == '__main__':
                     #(f, local_df.columns.tolist())
                     
                     df_list.append(local_df)
-                
+                columns_check.insert(0,'Parameter')
                 df_all = pd.concat(df_list, ignore_index=True, sort=False)
                 
-                df_all = df_all[ sets_corrects ]
+                # df_all = df_all[ columns_check ]
+                df_all = df_all[ sets_csv_temp ]
+                # df_all = df_all[ params['df_all'] ]
                 
                 # df_all.to_csv('df_all.csv')
                 
@@ -146,9 +112,13 @@ if __name__ == '__main__':
                 # Assuming parameter_list and parameter_dict are defined
                 # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
                 first_param = parameter_list[0]
+                df_all_3 = pd.DataFrame()
                 df_all_3 = df_all[df_all['Parameter'] == first_param]
                 df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
                 df_all_3 = df_all_3.drop('Parameter', axis=1)
+                df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
+                df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
+
                 
                 
                 # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
@@ -156,10 +126,18 @@ if __name__ == '__main__':
                     local_df_3 = df_all[df_all['Parameter'] == p]
                     local_df_3 = local_df_3.rename(columns={'VALUE': p})
                     local_df_3 = local_df_3.drop('Parameter', axis=1)
-                    df_all_3 = pd.merge(df_all_3, local_df_3, on=params_tiers['sets_otoole'], how='outer')
+                    local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
+                    local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
+                    # if count == 2:
+                    #     print('Check',count)
+                    #     sys.exit()
+                    count+=1
+
+                    df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                 
                 # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
                 df_all_3.to_csv(f'{params["excel_data_file_dir"]}{scen}/{case}/Data_Output_{case[-1]}.csv')
+                
                 
                 
                 # Assuming df is your pandas DataFrame with the relevant data
@@ -176,7 +154,6 @@ if __name__ == '__main__':
                     print(f'These are the years availables:\n{years}')
                 
                 # Plot attempts:
-                count = 0
                 techs_desired = {}
                 for parameter in parameters:
                     if not params['info']:
