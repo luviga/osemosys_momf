@@ -157,92 +157,237 @@ def compare_dataframes_with_key_columns(df1, df2, key_columns=['YEAR', 'TECHNOLO
 
     return column_diffs
 
-# Original case
-file_path = 'BAU_1_Output.csv'
-columns_to_remove = [
-    'Strategy',
-    'Future.ID',
-    # 'Fuel',
-    # 'Technology',
-    # 'Emission',
-    # 'Year',
-    'ProducedMobility',
-    'DistanceDriven',     
-    'Fleet',
-    'NewFleet',
-    'FilterFuelType',
-    'FilterVehicleType',
-    'Capex2023',
-    'FixedOpex2023',
-    'VarOpex2023',
-    'Opex2023',
-    'Externalities2023',
-    'Capex_GDP',
-    'FixedOpex_GDP',
-    'VarOpex_GDP',
-    'Opex_GDP',
-    'Externalities_GDP'
-]
+def compare_dataframes_with_key_columns_with_tolerance(df1, df2, key_columns=['Year', 'Technology', 'Fuel', 'Emission'], tolerance=0.05):
+    """
+    Compare two DataFrames based on specific key columns, and for matching rows,
+    compare cell by cell for all other columns, ignoring rows where both compared values are NaN or within a specified tolerance percentage.
+    Additionally, include 'TECHNOLOGY', 'YEAR', 'FUEL', and 'EMISSION' in the comparison and results.
+    Return a dictionary of DataFrames with differences, including key contextual information.
 
-out_original = modify_and_sort_columns(file_path, columns_to_remove)
+    Parameters:
+    df1 (pandas.DataFrame): The first DataFrame to compare.
+    df2 (pandas.DataFrame): The second DataFrame to compare.
+    key_columns (list): List of columns to use as keys for comparison.
+    tolerance (float): The tolerance percentage for considering values as equal.
 
-out_original.rename(columns={'Technology': 'TECHNOLOGY'}, inplace=True)
-out_original.rename(columns={'Year': 'YEAR'}, inplace=True)
-out_original.rename(columns={'Fuel': 'FUEL'}, inplace=True)
-out_original.rename(columns={'Emission': 'EMISSION'}, inplace=True)
+    Returns:
+    dict: A dictionary with column names as keys and DataFrames of differences as values.
+    """
+    # Ensure key columns are present in both DataFrames
+    if not all(col in df1.columns and col in df2.columns for col in key_columns):
+        raise ValueError("One of the key columns is missing in one of the DataFrames.")
+    
+    # Merge DataFrames on key columns
+    merged_df = pd.merge(df1, df2, on=key_columns, suffixes=('_original', '_yaml'))
 
-out_original = out_original.round(5)
+    # Initialize dictionary for differences
+    column_diffs = {}
 
-# Yaml case
-file_path = 'Data_Output_1.csv'
-# file_path = 'BAU_1_Output_Copy.csv'
-# To use with new xlsl
-columns_to_remove = [
-    # 'REGION',
-    # 'MODE_OF_OPERATION',
-    # 'TECHNOLOGY',
-    # 'FUEL',
-    # 'EMISSION',
-    #'YEAR',
-    # 'TIMESLICE',
-    'Unnamed: 0'
+    # Loop through columns excluding key columns
+    comparison_columns = [col for col in merged_df.columns if col not in key_columns and ('_original' in col or '_yaml' in col)]
+    for col in comparison_columns:
+        col_name = col.rsplit('_', 1)[0]
+        if col_name + '_original' in merged_df and col_name + '_yaml' in merged_df:
+            col_original = col_name + '_original'
+            col_yaml = col_name + '_yaml'
+
+            # Calculate the absolute percentage difference
+            percentage_diff = np.abs((merged_df[col_original] - merged_df[col_yaml]) / merged_df[col_original].replace(0, np.nan))
+            
+            # Identify rows with differences outside the tolerance
+            diff_mask = (percentage_diff > tolerance) & (~(np.isnan(merged_df[col_original]) & np.isnan(merged_df[col_yaml])))
+
+            if diff_mask.any():
+                diff_df = merged_df[diff_mask][key_columns + [col_original, col_yaml]]
+                diff_df.rename(columns={col_original: f'Value in original ({col_name})', col_yaml: f'Value in yaml ({col_name})'}, inplace=True)
+                column_diffs[col_name] = diff_df
+
+    return column_diffs
+
+def add_case_column_for_glpk_case(df1, df2):
+    """
+    Add a 'Case' column to the beginning of two DataFrames. 
+    The first DataFrame gets all values in this column set to 'Benchmark',
+    and the second DataFrame gets all values set to 'Yaml'.
+
+    Parameters:
+    df1 (pandas.DataFrame): The first DataFrame to modify.
+    df2 (pandas.DataFrame): The second DataFrame to modify.
+
+    Returns:
+    tuple: A tuple containing the modified DataFrames (df1_modified, df2_modified).
+    """
+    df1.insert(0, 'Case', 'Benchmark') # original
+    df2.insert(0, 'Case', 'Yaml') # yaml
+    
+    return df1, df2
+
+def concatenate_dataframes(df1, df2):
+    """
+    Concatenate two DataFrames vertically, appending df2 below df1.
+
+    Parameters:
+    df1 (pandas.DataFrame): The first DataFrame to concatenate.
+    df2 (pandas.DataFrame): The second DataFrame to concatenate.
+
+    Returns:
+    pandas.DataFrame: The concatenated DataFrame.
+    """
+    # Concatenar los DataFrames verticalmente
+    concatenated_df = pd.concat([df1, df2], axis=0, ignore_index=True)
+    
+    return concatenated_df
+
+def manipulate_dataframe_columns(df, sce, num):
+    """
+    Manipulate the columns of a DataFrame by removing a specific column, adding new columns at the beginning, 
+    and reordering columns to a specified sequence.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to manipulate.
+    sce (str): The value to fill the 'Strategy' column.
+    num (str): The value to fill the 'Future.ID' column.
+
+    Returns:
+    pandas.DataFrame: The manipulated DataFrame.
+    """
+    # 1. Remove the 'Unnamed: 0' column if it exists
+    if 'Unnamed: 0' in df.columns:
+        df = df.drop('Unnamed: 0', axis=1)
+
+    # 2. Add 'Strategy' and 'Future.ID' columns at the beginning with sce and num as their respective values
+    df.insert(0, 'Future.ID', num)
+    df.insert(0, 'Strategy', sce)
+    
+    # 3. Define the desired order of the initial columns
+    initial_columns = ['Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year', 'Demand', 'NewCapacity']
+    
+    # Ensure all desired initial columns are in the DataFrame; filter out any that are not present to avoid errors
+    initial_columns = [col for col in initial_columns if col in df.columns]
+
+    # Create a list of the rest of the columns that aren't in the initial_columns list
+    remaining_columns = [col for col in df.columns if col not in initial_columns]
+    
+    # Concatenate the two lists to form the new column order
+    new_column_order = initial_columns + remaining_columns
+    
+    # Reorder the DataFrame according to the new column order
+    df = df[new_column_order]
+
+    return df
+
+
+if __name__ == '__main__':
+    
+    sector = 'PIUP'
+    sce = 'BAU'
+    num = 1
+    scen = f'{sector}/{sce}/{num}/'
+    out_name = f'{sector}_{sce}_{num}' 
+    case = 'old' # 'old' or 'new'
+    
+    # Original case
+    file_path = scen + 'BAU_1_Output.csv'
+    columns_to_remove = [
+        'Strategy',
+        'Future.ID',
+        # 'Fuel',
+        # 'Technology',
+        # 'Emission',
+        # 'Year',
+        'ProducedMobility',
+        'DistanceDriven',     
+        'Fleet',
+        'NewFleet',
+        'FilterFuelType',
+        'FilterVehicleType',
+        'Capex2023',
+        'FixedOpex2023',
+        'VarOpex2023',
+        'Opex2023',
+        'Externalities2023',
+        'Capex_GDP',
+        'FixedOpex_GDP',
+        'VarOpex_GDP',
+        'Opex_GDP',
+        'Externalities_GDP'
     ]
-# To use with old xlsl
-# columns_to_remove = [
-#     'Strategy',
-#     'Strategy.ID',
-#     'Future.ID',
-#     #'Fuel',
-#     'Technology',
-#     #'Emission',
-#     'Year',
-#     'ProducedMobility',
-#     'DistanceDriven',     
-#     'Fleet',
-#     'NewFleet',
-#     'FilterFuelType',
-#     'FilterVehicleType',
-#     'Capex2023',
-#     'FixedOpex2023',
-#     'VarOpex2023',
-#     'Opex2023',
-#     'Externalities2023',
-#     'Capex_GDP',
-#     'FixedOpex_GDP',
-#     'VarOpex_GDP',
-#     'Opex_GDP',
-#     'Externalities_GDP'
-# ]
+    
+    out_original = modify_and_sort_columns(file_path, columns_to_remove)
+    out_original_to_merge = pd.read_csv(file_path, sep=',')
+    
+    # out_original.rename(columns={'Technology': 'TECHNOLOGY'}, inplace=True)
+    # out_original.rename(columns={'Year': 'YEAR'}, inplace=True)
+    # out_original.rename(columns={'Fuel': 'FUEL'}, inplace=True)
+    # out_original.rename(columns={'Emission': 'EMISSION'}, inplace=True)
+    out_original = out_original.round(5)
+    
+    
+    # Yaml case
+    if case == 'old':
+        file_path = scen + 'BAU_1_Output_yaml.csv'
+        # To use with new workflow but with glpk old dataprocessor
+        columns_to_remove = [
+            'Strategy',
+            'Strategy.ID',
+            'Future.ID',
+            #'Fuel',
+            # 'Technology',
+            #'Emission',
+            # 'Year',
+            'ProducedMobility',
+            'DistanceDriven',     
+            'Fleet',
+            'NewFleet',
+            'FilterFuelType',
+            'FilterVehicleType',
+            'Capex2023',
+            'FixedOpex2023',
+            'VarOpex2023',
+            'Opex2023',
+            'Externalities2023',
+            'Capex_GDP',
+            'FixedOpex_GDP',
+            'VarOpex_GDP',
+            'Opex_GDP',
+            'Externalities_GDP'
+        ]
+    
+    if case == 'new':
+        file_path = scen + 'Data_Output_1.csv'
+        # To use with new workflow with otoole
+        columns_to_remove = [
+            'REGION',
+            'MODE_OF_OPERATION',
+            # 'TECHNOLOGY',
+            # 'FUEL',
+            # 'EMISSION',
+            # 'YEAR',
+            'TIMESLICE',
+            'Unnamed: 0'
+            ]
+    
+    out_yaml = modify_and_sort_columns(file_path, columns_to_remove)
+    out_yaml_to_merge = pd.read_csv(file_path, sep=',')
+    
+    if case == 'new':
+        out_yaml.rename(columns={'TECHNOLOGY': 'Technology'}, inplace=True)
+        out_yaml.rename(columns={'YEAR': 'Year'}, inplace=True)
+        out_yaml.rename(columns={'FUEL': 'Fuel'}, inplace=True)
+        out_yaml.rename(columns={'EMISSION': 'Emission'}, inplace=True)
+        out_yaml_to_merge = manipulate_dataframe_columns(out_yaml_to_merge, sce, num)
+    out_yaml = out_yaml.round(5)
 
-
-out_yaml = modify_and_sort_columns(file_path, columns_to_remove)
-
-# out_yaml.rename(columns={'Emission': 'YEAR'}, inplace=True)
-# out_yaml.rename(columns={'Fuel': 'TECHNOLOGY'}, inplace=True)
-
-out_yaml = out_yaml.round(5)
-
-compare_dataframe_columns(out_original, out_yaml)
-
-# differences_df = compare_dataframes(out_original, out_yaml)
-differences_df = compare_dataframes_with_key_columns(out_original, out_yaml)
+    # Diferences of columns    
+    compare_dataframe_columns(out_original, out_yaml)
+    
+    # differences_df = compare_dataframes(out_original, out_yaml)
+    # differences_df_keys = compare_dataframes_with_key_columns(out_original, out_yaml)
+    differences_df_keys_tolerance = compare_dataframes_with_key_columns_with_tolerance(out_original, out_yaml, tolerance=0.05)
+    
+    
+    
+    # Create new dfs with the indentifier column
+    df_ori_modified, df_yaml_modified = add_case_column_for_glpk_case(out_original_to_merge, out_yaml_to_merge)
+    combined_df = concatenate_dataframes(df_ori_modified, df_yaml_modified)
+    combined_df.to_csv(scen + f'outputs_merge_{case}_workflow_{out_name}.csv')
