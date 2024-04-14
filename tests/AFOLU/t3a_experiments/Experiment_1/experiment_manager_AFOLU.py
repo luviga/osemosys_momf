@@ -58,12 +58,13 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     dict_gdp_ref      =             unpackaged_useful_elements[4]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
+    if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
+        df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+        df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
+        df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+        df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+        df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
@@ -614,6 +615,8 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
+            if os.path.exists(output_file + '.sol'):
+                shutil.os.remove(output_file + '.sol')
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
             os.system( str_start and str_solve )
     
@@ -621,13 +624,13 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
         str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
         os.system( str_start and str_otoole_config )
-
+        
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
         os.system( str_start and str_outputs )
     
     time.sleep(1)
@@ -662,12 +665,13 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
-    df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-    df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
-    df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-    df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
+    if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
+        df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+        df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
+        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
+        df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+        df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
+        df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     if fut_index < len( all_futures ):
         fut = all_futures[fut_index]
@@ -1136,8 +1140,8 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                 ref_parameter_index = input_params_table_headers.index( parameters_to_print[p] )
                 synthesized_all_data_row[ ref_combination_index ][ ref_parameter_index ] = deepcopy( single_data_row_partial[ ref_parameter_index-len( basic_header_elements ) ] )
                 #
-            #5796_49
-        #89475700
+            #
+        #
     #
     ###########################################################################################################################
     #
@@ -1907,6 +1911,7 @@ if __name__ == '__main__':
                 #
                 # Waste problem related with this variable "Explored_Parameter_of_X" check check
             #     if params['Use_Waste']:
+            #         print('Waste_1')
             #         ###################################################################################################################################
             #         #
             #         X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
@@ -1969,6 +1974,7 @@ if __name__ == '__main__':
                     )
                 
                 if params['Use_Waste']:
+                    print('Waste_2')
                     if int( uncertainty_table.loc[ p ,'X_Num'] ) not in X_Num_unique: 
                         #
                         X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
@@ -1976,6 +1982,16 @@ if __name__ == '__main__':
                         if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_inv']:
                             if str( uncertainty_table.loc[ p , 'Explored_Parameter_is_Relative_to_Baseline'] ) == 'YES':
                                 experiment_dictionary[ int( uncertainty_table.loc[ p ,'X_Num'] ) ][ 'Values' ][n] = this_future_X_change[-1]
+                            
+                if params['Use_PIUP']:
+                    print('PIUP_1')
+                    X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
+                    #
+                    if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']:
+                        if str( uncertainty_table.loc[ p , 'Explored_Parameter_is_Relative_to_Baseline'] ) == 'YES':        
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,'X_Num'] ) ][ 'Values' ][n] = this_future_X_change[-1]                                                                                     
+                        elif str( uncertainty_table.loc[ p , 'Explored_Parameter_is_Relative_to_Baseline'] ) == 'NO':
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,'X_Num'] ) ][ 'Values' ][n] = this_future_X_param[-1]
                             #
                         #
                     #
@@ -2144,6 +2160,7 @@ if __name__ == '__main__':
                         #
 
                         if params['Use_Waste']:
+                            print('Waste_3')
                             ## FALTA CHEQUEAR
                             if X_Cat in list_variation_waste:
                                 # print('##############')
@@ -2226,6 +2243,7 @@ if __name__ == '__main__':
                             # The X type below is manipulated with immidiate restitution after adjustment for Waste sector.
                             elif ( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
                                                                 Explored_Parameter_of_X==params['fin_val'] ) ) and params['Use_Waste']:
+                                print('Waste_4')
 
                                 #
                                 for a_set in range( len( Sets_Involved ) ):
@@ -3096,6 +3114,7 @@ if __name__ == '__main__':
 
 
                         elif params['x_cat_piup'] in X_Cat and params['Use_PIUP']:
+                            print('PIUP_2')
                             str_sets = Sets_Involved[0]
                             # Join the elements of x into a single string, replacing ', ' with ','
                             str_sets = ', '.join(Sets_Involved)
@@ -3127,6 +3146,7 @@ if __name__ == '__main__':
 
         					  # The X type below is manipulated with immidiate restitution after adjustment for PIUP sector.
                         elif ( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['fin_val'] )) and params['Use_PIUP']:                              
+                            print('PIUP_3')
                             #
                             for a_set in range( len( Sets_Involved ) ):
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]                                                                         

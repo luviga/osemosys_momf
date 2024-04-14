@@ -142,10 +142,10 @@ results: 'Executables\\'
 start: 'start cmd.exe /k cd '
 
 # Solver
-solver: 'glpk' # Could you use 'glpk', 'cbc' or 'cplex'
+solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex'
 
 # For GLPK use
-glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
 
 # Choose if want to delete or not the solver solutions files
 del_files: False
@@ -157,7 +157,7 @@ Initial_Future_to_Print: 1
 Final_Future_to_Print: 2
 Initial_Year_of_Uncertainty: 2024
 Experiment_ID: 1
-max_x_per_iter: 6
+max_x_per_iter: 8
 
 # Choose if want run script in parallel or not
 parallel: True
@@ -305,15 +305,15 @@ default_val_params: {
 sets_otoole: [
   YEAR,
   TECHNOLOGY,
-  # TIEMSLICE,
+  TIMESLICE,
   FUEL,
-  EMISSION
-  # MODE_OF_OPERATION,
-  # REGION,
-  # SEASON,
-  # DAYTYPE,
-  # DAILYTIMEBRACKET,
-  # STORAGE
+  EMISSION,
+  MODE_OF_OPERATION,
+  REGION,
+  SEASON,
+  DAYTYPE,
+  DAILYTIMEBRACKET,
+  STORAGE
   ]
 
 new_results_otoole: {
@@ -602,6 +602,14 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 
 ################################# Conditions #################################
 trains: 'Trains'
+tra_techs_1: ['Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em
+tra_techs_2: ['Techs_Auto', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em
+trn_list: [ # em
+  'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri',
+  'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef',
+  'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight',
+  'Techs_Li_Freight'
+  ] 
 train: 'Train'
 tech_train: 'Techs_Trains'
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost']
@@ -679,13 +687,15 @@ this_set_afolu_1: 'Cafe'
 this_set_afolu_2: 'Cana'
 this_set_techs_buses: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains']
 this_set_pp_hy: 'PP_HYDAMARORLAR'
-TRBUSHYD: 'TRBUSHYD'
-TRBUSELE: 'TRBUSELE'
-TRMBUSHYD: 'TRMBUSHYD'
-TRMBUSELE: 'TRMBUSELE'
-TRYTKHYD: 'TRYTKHYD'
-TRYTKELE: 'TRYTKELE'
-TRYTKHD: 'TRYTKHD'
+TTRA_BUS_HYD: 'TRBUSHYD' # em
+TRA_BUS_ELE: 'TRBUSELE' # em
+TRM_BUS_HYD: 'TRMBUSHYD' # em
+TRM_BUS_ELE: 'TRMBUSELE' # em
+TRA_PUB_HYD: 'TRBPUHYD' # em
+TRA_PUB_ELE: 'TRBPUELE' # em
+TRY_TK_HYD: 'TRYTKHYD' # em
+TRY_TK_ELE: 'TRYTKELE' # em
+TRY_TK_HD: 'TRYTKHD' # em
 PPPVT: 'PPPVT'
 PPWNDON: 'PPWNDON'
 PPPVDS: 'PPPVDS'
@@ -784,6 +794,8 @@ math_type_dis_invs: 'Discrete_Investments'
 math_type_time_series: 'Time_Series'
 math_type_adop_curve: 'Adoption_Curve'
 math_type_multi_adop_curve: 'Mult_Adoption_Curve'
+math_type_list_types: ['Time_Series', 'Discrete_Investments', 'Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em
+math_type_list_mult: ['Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em
 ini_year: 'Initial_Year'
 rel_base: 'Relative_to_Baseline'
 e_pass: 'e_Passenger'
@@ -915,6 +927,6 @@ all_covers_2: [
 
 group_tech_set: 'Techs_Auto'
 
-exception_list: ['TRBPUHYD', 'TRYTKHYD']
-special_list_dict: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']}
+exception_list_TRAN: ['TRBPUHYD', 'TRYTKHYD']
+special_list_dict_TRAN: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']}
 ##############################################################################
