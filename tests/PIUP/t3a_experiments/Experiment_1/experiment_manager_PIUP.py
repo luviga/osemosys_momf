@@ -3253,13 +3253,6 @@ if __name__ == '__main__':
                                     # Assign parameters back: for these subset of uncertainties
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                     ### AQUI DEBO METER LA RESTRICCION
-                                    
-                                    ### DESPUES DE METER LA RESTRICCION SE DEBE PROBAR EL CODIGO COMENTADO ABAJO
-                                    ### YA QUE ACTUALMENTE NO FUNCIONA PORQUE INTRODUCE PARA EL PARAMETRO
-                                    ### 'TotalTechnologyAnnualActivityUpperLimit' Y LA TECNOLOGIA 'PROD_CEM'
-                                    ### MUCHOS MAS VALORES DE LOS QUE DEBE, POR LO TANTO, EL MODELO FALLA POR
-                                    ### INCOSISTENCIAS CON LA LONGITUD DE LOS DATOS, ENTONCES HAY QUE REVISAR 
-                                    ### QUE DESPUES DE INTRODUCIR LA RESTRICCION LIMITE Y CORRIJA EL PROBLEMA
 
                                     for q in range(len(time_range_vector)):
                                         #print(time_range_vector[q])
