@@ -58,7 +58,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     dict_gdp_ref      =             unpackaged_useful_elements[4]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    if not params['Use_PIUP'] or params['Use_Energy']:
+    if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
         df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
         df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
         df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
@@ -300,59 +300,65 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 #
             #
             if this_variable == 'TotalTechnologyAnnualActivity' or this_variable == 'NewCapacity':
+                print('PIUP_PIUP_PIUP_PIUP_1')
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
-                #
-                this_tech = this_combination[1]
-                if this_tech in list( Fleet_Groups_inv.keys() ):
-                    group_tech = Fleet_Groups_inv[ this_tech ]
-                    #
-                    this_year = this_combination[4]
-                    this_year_index = time_range_vector.index( int( this_year ) )
-                    #
-                    ref_var_position_index = output_header.index( this_variable )
-                    #
-                    if params['trains'] not in group_tech:
-                        ''' Debug section start
-                        '''
-                        try:
-                            driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
-                        except Exception:
-                            print(this_strategy)
-                            print(this_future)
-                            print(group_tech)
-                            print(this_year_index)
-                            print('error here')
-                        #
-                        if params['motrocy'] in group_tech or params['fre'] in group_tech:
-                            passenger_per_vehicle = 1
-                        else:
-                            try:
-                                passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
-                            except Exception:
-                                print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()))
-                                print('check alert')
-                                sys.exit()
-                        ''' Debug section end
-                        '''
-                        #
-                        if this_variable == 'NewCapacity':
-                            var_position_index = output_header.index( params['newfleet'] )
-                            this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
-                        #
-                        if this_variable == 'TotalTechnologyAnnualActivity':
-                            #
-                            var_position_index = output_header.index( params['fleet'] )
-                            this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
-                            #
-                            var_position_index = output_header.index( params['dist_driven'] )
-                            this_data_row[ var_position_index ] = round(driven_distance, params['round_#'])
-                            #
-                            var_position_index = output_header.index( params['produced_mob'] )
-                            this_data_row[ var_position_index ] =  round( float( this_data_row[ ref_var_position_index ] )*passenger_per_vehicle, params['round_#'])
-                        #
-                        data_row_list[ ref_index ] = deepcopy( this_data_row )
-                        #
+                # #
+                # this_tech = this_combination[1]
+                # if this_tech in list( Fleet_Groups_inv.keys() ):
+                #     group_tech = Fleet_Groups_inv[ this_tech ]
+                #     #
+                #     this_year = this_combination[4]
+                #     this_year_index = time_range_vector.index( int( this_year ) )
+                #     #
+                #     ref_var_position_index = output_header.index( this_variable )
+                #     #
+                #     #if params['trains'] not in group_tech:
+                #     '''
+                #     'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef', 'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight', 'Techs_Li_Freight'
+                #     '''
+                #     if group_tech in params['tra_techs_1']:                                                                                                                                                                                     
+                #         ''' Debug section start
+                #         '''
+                #         try:
+                #             driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
+                #         except Exception:
+                #             print(this_strategy)
+                #             print(this_future)
+                #             print(group_tech)
+                #             print(this_year_index)
+                #             print('error here')
+                #         #
+                #         #if params['motrocy'] in group_tech or params['fre'] in group_tech:
+                #         if group_tech not in params['tra_techs_2']:
+                #             passenger_per_vehicle = 1
+                #         else:
+                #             try:
+                #                 passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
+                #             except Exception:
+                #                 print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()))
+                #                 print('check alert')
+                #                 sys.exit()
+                #         ''' Debug section end
+                #         '''
+                #         #
+                #         if this_variable == 'NewCapacity':
+                #             var_position_index = output_header.index( params['newfleet'] )
+                #             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
+                #         #
+                #         if this_variable == 'TotalTechnologyAnnualActivity':
+                #             #
+                #             var_position_index = output_header.index( params['fleet'] )
+                #             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
+                #             #
+                #             var_position_index = output_header.index( params['dist_driven'] )
+                #             this_data_row[ var_position_index ] = round(driven_distance, params['round_#'])
+                #             #
+                #             var_position_index = output_header.index( params['produced_mob'] )
+                #             this_data_row[ var_position_index ] =  round( float( this_data_row[ ref_var_position_index ] )*passenger_per_vehicle, params['round_#'])
+                #         #
+                #         data_row_list[ ref_index ] = deepcopy( this_data_row )
+                #         #
                     #
                     ###################################################################################################
                     #
@@ -361,6 +367,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
             # Creating convinience filters for the analysis of model outputs:
             this_tech = this_combination[1]
             if this_tech in list( Fleet_Groups_inv.keys() ):
+                print('PIUP_PIUP_PIUP_PIUP_2')
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
@@ -381,7 +388,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 data_row_list[ ref_index ] = deepcopy( this_data_row )
             #
             output_csv_r = params['output_csv_r']*100
-            output_csv_year = params['base_year']
+            output_csv_year = params['output_csv_year']
             #
             if this_combination[2] in params['this_combina'] and this_variable == 'AnnualTechnologyEmissionPenaltyByEmission':
                 ref_index = combination_list.index( this_combination )
@@ -615,6 +622,8 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
+            if os.path.exists(output_file + '.sol'):
+                shutil.os.remove(output_file + '.sol')
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
             os.system( str_start and str_solve )
     
@@ -622,14 +631,15 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
         str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
         os.system( str_start and str_otoole_config )
-
+        
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol .' + params['Futures'] + Executed_Scenario + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
-        os.system( str_start and str_outputs )
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
+    os.system( str_start and str_outputs )
+        
     
     time.sleep(1)
         
@@ -663,7 +673,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    if not params['Use_PIUP'] or params['Use_Energy']:
+    if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
         df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
         df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
         df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
@@ -1500,12 +1510,8 @@ if __name__ == '__main__':
     '''
     Let us define some control inputs internally:
     '''
-    # generator_or_executor = 'None'
     generator_or_executor = params['generator_or_executor']
-    # generator_or_executor = 'Generator'
-    # generator_or_executor = 'Executor'
     inputs_txt_csv = params['inputs_txt_csv']
-    # inputs_txt_csv = 'csv'
     #
     #############################################################################################################################
     '''
@@ -1621,6 +1627,8 @@ if __name__ == '__main__':
     index_change_year = params['change_year']
     global initial_year
     initial_year = params['base_year']
+    # Define the techs that are transport technology groups:
+    trn_list = params['trn_list']                                                        
 
     # We must open useful GDP data for demand projection
     df_gdp_ref = pd.read_excel(params['GDP_REF'], params['GDP'])
@@ -1693,7 +1701,7 @@ if __name__ == '__main__':
             col_idx.update({p:p-subtracter})    
 
     # sys.exit()
-
+    #hypercube = lhs( P-subtracter , samples = N )
     hypercube = lhs( P , samples = N )
     # hypercube[p] gives vector with values of variable p across the N futures, hence len( hypercube[p] ) = N
     #
@@ -1823,22 +1831,22 @@ if __name__ == '__main__':
                 #
                 this_future_X_param.append('n.a.')
             #
-            elif str( uncertainty_table.loc[ p , params['exp_param_rel_base'] ] ) == 'NO':
-                this_future_X_change_direction.append('n.a.')
-                this_future_X_change.append( 'n.a.' )
-                #
-                if 'C (' in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
-                    this_future_X_param.append( [ Q, k, M ] )
-                #
-                else:
-                    if params['year_when_rea_zero'] in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
-                        this_future_X_param.append( int( evaluation_value ) )
-                    #
-                    elif ( 'C (' not in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) ) or ( params['ble_time_series'] in str( uncertainty_table.loc[ p , params['x_math__type'] ] ) ):
-                        this_future_X_param.append( evaluation_value )
-                    #
-                    elif str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) == params['cte']:
-                        this_future_X_param.append( evaluation_value )
+            # elif str( uncertainty_table.loc[ p , params['exp_param_rel_base'] ] ) == 'NO':
+            #     this_future_X_change_direction.append('n.a.')
+            #     this_future_X_change.append( 'n.a.' )
+            #     #
+            #     if 'C (' in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
+            #         this_future_X_param.append( [ Q, k, M ] )
+            #     #
+            #     else:
+            #         if params['year_when_rea_zero'] in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
+            #             this_future_X_param.append( int( evaluation_value ) )
+            #         #
+            #         elif ( 'C (' not in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) ) or ( params['ble_time_series'] in str( uncertainty_table.loc[ p , params['x_math__type'] ] ) ):
+            #             this_future_X_param.append( evaluation_value )
+            #         #
+            #         elif str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) == params['cte']:
+            #             this_future_X_param.append( evaluation_value )
                         #
                 #
             #
@@ -1875,7 +1883,8 @@ if __name__ == '__main__':
                     experiment_dictionary[ X_Num_unique[-1] ].update({ params['exac_param_inv_ose']:Exact_Parameters_Involved_in_Osemosys })
                     experiment_dictionary[ X_Num_unique[-1] ].update({ params['fut_var']:[x for x in range( 1, N+1 ) ] })
                     #
-                    if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']:
+                    #if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']:
+                    if math_type in params['math_type_list_types']:                                                                                                                                                     
                         experiment_dictionary[ X_Num_unique[-1] ].update({ params['exp_param_x']:Explored_Parameter_of_X } )
                         experiment_dictionary[ X_Num_unique[-1] ].update({ 'Values':[0.0 for x in range( 1, N+1 ) ] })
                         # We fill the data for future n=1 // it is important to note that the future n=0 can have completely different parameters when values are not relative to baseline
@@ -1909,6 +1918,7 @@ if __name__ == '__main__':
                 #
                 # Waste problem related with this variable "Explored_Parameter_of_X" check check
             #     if params['Use_Waste']:
+            #         print('Waste_1')
             #         ###################################################################################################################################
             #         #
             #         X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
@@ -1947,7 +1957,7 @@ if __name__ == '__main__':
                     #
                     X_Num_unique.append( int( uncertainty_table.loc[ p ,params['x_num']] ) )
                     #
-                    if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']:
+                    if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs'] or math_type in params['math_type_list_mult']:
                         if str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'YES':
                             experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_change[-1]
                         elif str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'NO':
@@ -1971,6 +1981,7 @@ if __name__ == '__main__':
                     )
                 
                 if params['Use_Waste']:
+                    print('Waste_2')
                     if int( uncertainty_table.loc[ p ,'X_Num'] ) not in X_Num_unique: 
                         #
                         X_Num_unique.append( int( uncertainty_table.loc[ p ,'X_Num'] ) )
@@ -2113,6 +2124,7 @@ if __name__ == '__main__':
 
         for f in range( 1, len( all_futures )+1 ):
             this_f = f
+            spec_store_freheaele.update({this_f:[]})
             #
             reference_driven_distance[ scenario_list[s] ].update( { f:{} } )
             reference_occupancy_rate[ scenario_list[s] ].update( { f:{} } )
@@ -2123,6 +2135,7 @@ if __name__ == '__main__':
             TotalDemand = []
             TotalDemand_BASE_BAU = []
             for u in range( 1, len(experiment_dictionary)+1 ): # u is for the uncertainty number // start at 2 because the GDP is assigned to the first row
+                enter_if_cycle = False                     
                 Exact_X = experiment_dictionary[u][params['exact_x']]
                 X_Cat = experiment_dictionary[u][params['Cat']]
                 # Extract crucial sets and parameters to be manipulated in the model:
@@ -2156,6 +2169,7 @@ if __name__ == '__main__':
                         #
 
                         if params['Use_Waste']:
+                            print('Waste_3')
                             ## FALTA CHEQUEAR
                             if X_Cat in list_variation_waste:
                                 # print('##############')
@@ -2238,6 +2252,7 @@ if __name__ == '__main__':
                             # The X type below is manipulated with immidiate restitution after adjustment for Waste sector.
                             elif ( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
                                                                 Explored_Parameter_of_X==params['fin_val'] ) ) and params['Use_Waste']:
+                                print('Waste_4')
 
                                 #
                                 for a_set in range( len( Sets_Involved ) ):
@@ -2458,7 +2473,10 @@ if __name__ == '__main__':
                         #--------------------------------------------------------------------#
 
                         elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_AFOLU']):
-                            print('AFOLU_2')
+                            if params['Use_AFOLU']:
+                                print('AFOLU_2')
+                            elif params['Use_Energy']:
+                                print('Energy_1')
                             #
                             enter_if_cycle = True
                             #
@@ -2570,7 +2588,10 @@ if __name__ == '__main__':
                         #
                         
                         elif X_Cat in params['x_cat_list'] and (params['Use_Energy'] or params['Use_AFOLU']):
-                            print('AFOLU_3')
+                            if params['Use_AFOLU']:
+                                print('AFOLU_3')
+                            elif params['Use_Energy']:
+                                print('Energy_2')
                             #
                             enter_if_cycle = True
                             #
@@ -2614,8 +2635,7 @@ if __name__ == '__main__':
                                             value_list))
 
                                 else:
-                                    if X_Cat in params['fre_dem'] and params['Use_AFOLU']:
-                                        print('AFOLU_4')
+                                    if X_Cat in params['fre_dem']:
                                         # now that the value is extracted, we must manipulate the result and store in TotalDemand
                                         all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
                                         index_change_year = all_years.index( params['change_year'] )
@@ -2668,6 +2688,7 @@ if __name__ == '__main__':
                         #
                                     
                         elif params['math_type_mult_rest'] in Math_Type and params['Use_Energy']:
+                            print('Energy_3')
                             #
                             enter_if_cycle = True
                             #
@@ -2852,7 +2873,7 @@ if __name__ == '__main__':
 
                         
                         elif X_Cat in params['x_cat_afolu_list'] and params['Use_AFOLU']:
-                            print('AFOLU_5', X_Cat)
+                            print('AFOLU_4', X_Cat)
                             #------------------------------------------
                             for a_set in range( len( Sets_Involved ) ):
                                 # Control if you want to modify imports and exports:
@@ -2990,7 +3011,7 @@ if __name__ == '__main__':
                             #
                         #
                         elif X_Cat == params['x_cat_afolu_4'] and params['Use_AFOLU']:
-                            print('AFOLU_6', X_Cat)
+                            print('AFOLU_5', X_Cat)
                             
                             # all_covers = params['all_covers]
                             
@@ -3240,14 +3261,14 @@ if __name__ == '__main__':
                                     ### INCOSISTENCIAS CON LA LONGITUD DE LOS DATOS, ENTONCES HAY QUE REVISAR 
                                     ### QUE DESPUES DE INTRODUCIR LA RESTRICCION LIMITE Y CORRIJA EL PROBLEMA
 
-                                    # for q in range(len(time_range_vector)):
-                                    #     #print(time_range_vector[q])
-                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['r'].append(params['coun_initial'])
+                                    for q in range(len(time_range_vector)):
+                                        #print(time_range_vector[q])
+                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['r'].append(params['coun_initial'])
 
-                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['t'].append('PROD_CEM')
-                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['y'].append(str(time_range_vector[q]))
-                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['value'].append(new_value_list_rounded[q])
-                                    #
+                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['t'].append('PROD_CEM')
+                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['y'].append(str(time_range_vector[q]))
+                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['value'].append(new_value_list_rounded[q])
+                                    
                                 #--------------------------------------------------------------------#
                             #--------------------------------------------------------------------#
 
@@ -3289,6 +3310,7 @@ if __name__ == '__main__':
                             #
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         elif X_Cat == params['x_cat_rail_dem'] and params['Use_Energy']: # THIS SEEMS UNUSED
+                            print('Energy_4')
                             #
                             enter_if_cycle = True
                             #
@@ -3312,6 +3334,7 @@ if __name__ == '__main__':
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         # The X type below is manipulated with immediate restitution after adjustment.
                         elif Math_Type in params['math_type_curves_list'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy']:
+                            print('Energy_5')
                             #
                             enter_if_cycle = True
                             #
@@ -3461,6 +3484,7 @@ if __name__ == '__main__':
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         elif Math_Type == params['math_type_time_series'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy']:  # this generally applies to freight rail
+                            print('Energy_6')
                             #
                             enter_if_cycle = True
                             #
@@ -3539,6 +3563,7 @@ if __name__ == '__main__':
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
                         elif Math_Type==params['math_type_time_series'] and params['pub_tra_dis'] in X_Cat and params['Use_Energy']:
+                            print('Energy_7')
                             for a_set in range( len( Sets_Involved ) ):
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
                                 #
@@ -3666,7 +3691,10 @@ if __name__ == '__main__':
                                                             and (params['non_rail'] not in X_Cat)
                                                             and (params['x_cat_mode_shift'] not in X_Cat) ) or ( Math_Type==params['math_type_dis_invs'] )) \
                                                             and (params['Use_Energy'] or params['Use_AFOLU']):
-                            print('AFOLU_7')
+                            if params['Use_AFOLU']:
+                                print('AFOLU_6')
+                            elif params['Use_Energy']:
+                                print('Energy_8')
                             #
                             enter_if_cycle = True
                             #
@@ -3708,7 +3736,7 @@ if __name__ == '__main__':
                                         value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                         #
                                         if Explored_Parameter_of_X==params['fin_val']:
-                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id], params['final_year'] ) ) )
+                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year'] ) )
                                         #
                                         if Explored_Parameter_of_X==params['shift_per_ini_val']:
                                             new_value_list = deepcopy( time_series_shift( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
@@ -3782,7 +3810,7 @@ if __name__ == '__main__':
                                                 else:
                                                     # Store the pre-modification values for the BAU
                                                     reference_occupancy_rate[ params['BAU'] ][f].update( { this_set:value_list } )
-                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id], params['final_year'] ) ) )
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year'] ) )
                                                     reference_occupancy_rate[ scenario_list[s] ][f].update( { this_set:new_value_list } )
                                                     #
                                                 ###############################################################################
@@ -3815,7 +3843,6 @@ if __name__ == '__main__':
                                             #
                                             else:
                                                 #
-                                                # descomentar
                                                 if 'CapacityFactor' in Parameters_Involved:
                                                     sec_mult_cf_ll = 0.99
                                                 else:
@@ -4021,7 +4048,7 @@ if __name__ == '__main__':
                                             #--------------------------------------------------------------------#
                                             # now that the value is extracted, we must manipulate the result and assign back
                                             if Explored_Parameter_of_X==params['fin_val']: # By design, this must always happen.
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id], params['final_year'] ) ) )
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year']  ) )
                                             #--------------------------------------------------------------------#``
                                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                             #
@@ -4031,6 +4058,7 @@ if __name__ == '__main__':
 
                         elif Math_Type in params['math_type_curves_list'] and (params['x_cat_electri'] in X_Cat or params['x_cat_pen'] in X_Cat) \
                                         and params['Use_Energy']:
+                            print('Energy_9')
                             #
                             #
                             enter_if_cycle = True
@@ -4059,7 +4087,7 @@ if __name__ == '__main__':
                                     #
                                     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                                    if this_set == params['TRYTKELE']:
+                                    if this_set == params['TRY_TK_ELE']:
                                         spec_store_freheaele[this_f] = deepcopy(value_list)
                                     #
                                     group_tech_set = Fleet_Groups_inv[ this_set ]
@@ -4131,12 +4159,14 @@ if __name__ == '__main__':
                                     # Here we must include the exceptions for hydrgoen for the NDP no to surpass the limit of the group technology:
                                     if this_set in params['this_set_tr_hyd']:
                                         # We know Hydrogen only has TotalTechnologyAnnualActivityLowerLimit. We must compare each Hydrogen technology with the corresponding electric technology (previously determined).
-                                        if this_set == params['TRBUSHYD']:
-                                            corresponding_set = params['TRBUSELE']
-                                        if this_set == params['TRMBUSHYD']:
-                                            corresponding_set = params['TRMBUSELE']
-                                        if this_set == params['TRYTKHYD']:
-                                            corresponding_set = params['TRYTKELE']
+                                        if this_set == params['TRA_BUS_HYD']:
+                                            corresponding_set = params['TRA_BUS_ELE']
+                                        if this_set == params['TRM_BUS_HYD']:
+                                            corresponding_set = params['TRM_BUS_ELE']
+                                        if this_set == params['TRA_PUB_HYD']:
+                                            corresponding_set = params['TRA_PUB_ELE']
+                                        if this_set == params['TRY_TK_HYD']:
+                                            corresponding_set = params['TRY_TK_ELE']             
                                         #
                                         the_group_value_list = deepcopy( group_value_list )
                                         #
@@ -4163,9 +4193,9 @@ if __name__ == '__main__':
                                     #-----------------------------------------------------------------------#
                                     # 
                                     # All the technologies that are not electric, we need to modify
-                                    exception_list = params['exception_list'] # this should happen when hydrogen is modified afterwards
+                                    exception_list = params['exception_list_TRAN'] # this should happen when hydrogen is modified afterwards
                                     special_list = ['']
-                                    special_list_dict = params['special_list_dict']
+                                    special_list_dict = params['special_list_dict_TRAN']
 
                                     # if this_set not in exception_list and this_parameter in ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity']:
                                     # if this_set not in exception_list and this_parameter in ['TotalTechnologyAnnualActivityLowerLimit']:
@@ -4173,11 +4203,11 @@ if __name__ == '__main__':
 
 
 
-                                        # This section is functional, but depend of the this technology params['TRYTKHD'], check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                                        # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
                                         # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                         # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
 
 
 
@@ -4255,11 +4285,11 @@ if __name__ == '__main__':
 
 
 
-                                        # This section is functional, but depend of the this technology params['TRYTKHD'], check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                                        # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
                                         # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                         # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
                                             
 
 
@@ -4321,6 +4351,7 @@ if __name__ == '__main__':
                         #
 
                         elif params['dis'] in X_Cat and params['Use_Energy']: # This is the last adjustment
+                            print('Energy_10')
                             #
                             enter_if_cycle = True
                             #
@@ -4341,7 +4372,7 @@ if __name__ == '__main__':
                                 #
                                 base_distance = Fleet_Groups_Distance[this_set]
 
-                                new_distance = deepcopy( interpolation_non_linear_final( time_range_vector, base_distance, float(Values_per_Future[fut_id], params['final_year'] ) ) )
+                                new_distance = deepcopy( interpolation_non_linear_final( time_range_vector, base_distance, float(Values_per_Future[fut_id]), params['final_year'] ) )
                                 reference_driven_distance[ scenario_list[s] ][f].update( {this_set:new_distance} )
 
                                 this_demand_set = Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ]
@@ -4610,6 +4641,7 @@ if __name__ == '__main__':
                 if params['adj_oar'] in X_Cat and params['Use_Energy']: # right after maximum vehicle capacity, for all scenarios, to include the changes in OutputActivityRatio
                     ####### USE THIS LINE FOR AUTOMATIC ADJUSTMENT // BY DESIGN THIS CAN BE DONE AFTER MAXIMUM VEHICLE CAPACITY HAS BEEN MANIPULATED #######
                     # %% WE CAN TAKE ADVANTAGE HERE AND ADJUST ALL GROUP TECHS FOR COHERENCE %%
+                    print('Energy_11')
                     #
                     enter_if_cycle = True
                     #
@@ -4758,9 +4790,9 @@ if __name__ == '__main__':
                     
 
                     #--------------------------------------------------------------------#
-                # This section is functional, but depend of the this technology params['TRYTKHD'], check check
+                # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
                 # if params['NDP'] == scenario_list[s] and u > 13:
-                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
                 #     value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                 #     value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
 
@@ -4768,7 +4800,7 @@ if __name__ == '__main__':
 
 
 
-                    # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRYTKHD']) ]
+                    # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
                     # value_list_min = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                     # value_list_min = [ float(value_list_min[j]) for j in range( len( value_list_min ) ) ]
                     # diff = [i1 - i2 for i1, i2 in zip(value_list_max, value_list_min)]
