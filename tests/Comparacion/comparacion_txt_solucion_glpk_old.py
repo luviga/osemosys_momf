@@ -51,4 +51,4 @@ def compare_files_in_directory(directory_path, output_type='df'):
         raise ValueError("output_type debe ser 'list', 'dict' o 'df'")
 
 
-differences = compare_files_in_directory('PIUP/BAU/1', 'df')
+differences = compare_files_in_directory('Energy/BAU/1', 'df')

@@ -110,7 +110,7 @@ def compare_dataframes(df1, df2):
 
     return column_diffs
 
-def compare_dataframes_with_key_columns(df1, df2, key_columns=['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION']):
+def compare_dataframes_with_key_columns(df1, df2, key_columns=['Year', 'Technology', 'Fuel', 'Emission']):
     """
     Compare two DataFrames based on specific key columns, and for matching rows,
     compare cell by cell for all other columns, ignoring rows where both compared values are NaN.
@@ -279,15 +279,19 @@ def manipulate_dataframe_columns(df, sce, num):
 
 if __name__ == '__main__':
     
-    sector = 'PIUP'
+    # Control variables
+    sector = 'Energy'
     sce = 'BAU'
     num = 1
-    scen = f'{sector}/{sce}/{num}/'
-    out_name = f'{sector}_{sce}_{num}' 
-    case = 'old' # 'old' or 'new'
+    scen = f'{sector}/{sce}/{num}/' # Do not change
+    out_name = f'{sector}_{sce}_{num}' # Do not change
+    case = 'new' # 'old' or 'new'
+    sf_round = 5
+    tolerance = 0.05
+    
     
     # Original case
-    file_path = scen + 'BAU_1_Output.csv'
+    file_path = scen + f'{sce}_{num}_Output.csv'
     columns_to_remove = [
         'Strategy',
         'Future.ID',
@@ -320,12 +324,12 @@ if __name__ == '__main__':
     # out_original.rename(columns={'Year': 'YEAR'}, inplace=True)
     # out_original.rename(columns={'Fuel': 'FUEL'}, inplace=True)
     # out_original.rename(columns={'Emission': 'EMISSION'}, inplace=True)
-    out_original = out_original.round(5)
+    out_original = out_original.round(sf_round)
     
     
     # Yaml case
     if case == 'old':
-        file_path = scen + 'BAU_1_Output_yaml.csv'
+        file_path = scen + f'{sce}_{num}_Output_yaml.csv'
         # To use with new workflow but with glpk old dataprocessor
         columns_to_remove = [
             'Strategy',
@@ -354,7 +358,7 @@ if __name__ == '__main__':
         ]
     
     if case == 'new':
-        file_path = scen + 'Data_Output_1.csv'
+        file_path = scen + f'Data_Output_{num}.csv'
         # To use with new workflow with otoole
         columns_to_remove = [
             'REGION',
@@ -376,14 +380,17 @@ if __name__ == '__main__':
         out_yaml.rename(columns={'FUEL': 'Fuel'}, inplace=True)
         out_yaml.rename(columns={'EMISSION': 'Emission'}, inplace=True)
         out_yaml_to_merge = manipulate_dataframe_columns(out_yaml_to_merge, sce, num)
-    out_yaml = out_yaml.round(5)
+    # Check why Emission column of AFOLU sector is empty
+    if sector == 'AFOLU':
+        out_yaml.insert(5, 'Emission', 'nan')
+    out_yaml = out_yaml.round(sf_round)
 
     # Diferences of columns    
     compare_dataframe_columns(out_original, out_yaml)
     
-    # differences_df = compare_dataframes(out_original, out_yaml)
-    # differences_df_keys = compare_dataframes_with_key_columns(out_original, out_yaml)
-    differences_df_keys_tolerance = compare_dataframes_with_key_columns_with_tolerance(out_original, out_yaml, tolerance=0.05)
+    differences_df = compare_dataframes(out_original, out_yaml)
+    differences_df_keys = compare_dataframes_with_key_columns(out_original, out_yaml)
+    differences_df_keys_tolerance = compare_dataframes_with_key_columns_with_tolerance(out_original, out_yaml, tolerance=tolerance)
     
     
     
