@@ -300,65 +300,64 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
                 #
             #
             if this_variable == 'TotalTechnologyAnnualActivity' or this_variable == 'NewCapacity':
-                print('PIUP_PIUP_PIUP_PIUP_1')
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
-                # #
-                # this_tech = this_combination[1]
-                # if this_tech in list( Fleet_Groups_inv.keys() ):
-                #     group_tech = Fleet_Groups_inv[ this_tech ]
-                #     #
-                #     this_year = this_combination[4]
-                #     this_year_index = time_range_vector.index( int( this_year ) )
-                #     #
-                #     ref_var_position_index = output_header.index( this_variable )
-                #     #
-                #     #if params['trains'] not in group_tech:
-                #     '''
-                #     'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef', 'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight', 'Techs_Li_Freight'
-                #     '''
-                #     if group_tech in params['tra_techs_1']:                                                                                                                                                                                     
-                #         ''' Debug section start
-                #         '''
-                #         try:
-                #             driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
-                #         except Exception:
-                #             print(this_strategy)
-                #             print(this_future)
-                #             print(group_tech)
-                #             print(this_year_index)
-                #             print('error here')
-                #         #
-                #         #if params['motrocy'] in group_tech or params['fre'] in group_tech:
-                #         if group_tech not in params['tra_techs_2']:
-                #             passenger_per_vehicle = 1
-                #         else:
-                #             try:
-                #                 passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
-                #             except Exception:
-                #                 print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()))
-                #                 print('check alert')
-                #                 sys.exit()
-                #         ''' Debug section end
-                #         '''
-                #         #
-                #         if this_variable == 'NewCapacity':
-                #             var_position_index = output_header.index( params['newfleet'] )
-                #             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
-                #         #
-                #         if this_variable == 'TotalTechnologyAnnualActivity':
-                #             #
-                #             var_position_index = output_header.index( params['fleet'] )
-                #             this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
-                #             #
-                #             var_position_index = output_header.index( params['dist_driven'] )
-                #             this_data_row[ var_position_index ] = round(driven_distance, params['round_#'])
-                #             #
-                #             var_position_index = output_header.index( params['produced_mob'] )
-                #             this_data_row[ var_position_index ] =  round( float( this_data_row[ ref_var_position_index ] )*passenger_per_vehicle, params['round_#'])
-                #         #
-                #         data_row_list[ ref_index ] = deepcopy( this_data_row )
-                #         #
+                #
+                this_tech = this_combination[1]
+                if this_tech in list( Fleet_Groups_inv.keys() ):
+                    group_tech = Fleet_Groups_inv[ this_tech ]
+                    #
+                    this_year = this_combination[4]
+                    this_year_index = time_range_vector.index( int( this_year ) )
+                    #
+                    ref_var_position_index = output_header.index( this_variable )
+                    #
+                    #if params['trains'] not in group_tech:
+                    '''
+                    'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef', 'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight', 'Techs_Li_Freight'
+                    '''
+                    if group_tech in params['tra_techs']:                                                                                                                                                                                     
+                        ''' Debug section start
+                        '''
+                        try:
+                            driven_distance = float( Reference_driven_distance[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ] )
+                        except Exception:
+                            print(this_strategy)
+                            print(this_future)
+                            print(group_tech)
+                            print(this_year_index)
+                            print('error here')
+                        #
+                        #if params['motrocy'] in group_tech or params['fre'] in group_tech:
+                        if group_tech not in params['tra_techs_for_passengers']:
+                            passenger_per_vehicle = 1
+                        else:
+                            try:
+                                passenger_per_vehicle = float( Reference_occupancy_rate[ this_strategy ][int(this_future)][ group_tech ][ this_year_index ]  )
+                            except Exception:
+                                print(list(Reference_occupancy_rate[ this_strategy ][int(this_future)].keys()), group_tech)
+                                print('check alert')
+                                sys.exit()
+                        ''' Debug section end
+                        '''
+                        #
+                        if this_variable == 'NewCapacity':
+                            var_position_index = output_header.index( params['newfleet'] )
+                            this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
+                        #
+                        if this_variable == 'TotalTechnologyAnnualActivity':
+                            #
+                            var_position_index = output_header.index( params['fleet'] )
+                            this_data_row[ var_position_index ] =  round( (10**9)*float( this_data_row[ ref_var_position_index ] )/driven_distance, params['round_#'])
+                            #
+                            var_position_index = output_header.index( params['dist_driven'] )
+                            this_data_row[ var_position_index ] = round(driven_distance, params['round_#'])
+                            #
+                            var_position_index = output_header.index( params['produced_mob'] )
+                            this_data_row[ var_position_index ] =  round( float( this_data_row[ ref_var_position_index ] )*passenger_per_vehicle, params['round_#'])
+                        #
+                        data_row_list[ ref_index ] = deepcopy( this_data_row )
+                        #
                     #
                     ###################################################################################################
                     #
@@ -367,7 +366,6 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
             # Creating convinience filters for the analysis of model outputs:
             this_tech = this_combination[1]
             if this_tech in list( Fleet_Groups_inv.keys() ):
-                print('PIUP_PIUP_PIUP_PIUP_2')
                 ref_index = combination_list.index( this_combination )
                 this_data_row = deepcopy( data_row_list[ ref_index ] ) # this must be updated in a further position of the list
                 #
@@ -586,6 +584,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     set_first_list(Executed_Scenario, params)
     file_aboslute_address = os.path.abspath(params['Manager'])
     file_config_address = get_config_main_path(os.path.abspath(''))
+    file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
     file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
     #
     
@@ -635,11 +634,14 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        os.system( str_start and str_outputs )
+        
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
-    os.system( str_start and str_outputs )
-        
+        os.system( str_start and str_outputs )
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+        os.system( str_start and str_otoole_concate_csv )
     
     time.sleep(1)
         
@@ -670,7 +672,8 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     Reference_driven_distance =         unpackaged_useful_elements[7]
     Fleet_Groups_inv =                  unpackaged_useful_elements[8]
     time_range_vector =                 unpackaged_useful_elements[9]
-    Blend_Shares =                      unpackaged_useful_elements[10]
+    if params['Use_Blend_Shares']:
+        Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
     if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
@@ -763,12 +766,13 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
             manipulate_param_keys_2 = params['manipulate_param_keys_2']
             if len(this_param_keys) != 2:
                 g.write( 'param ' + this_param + ' default ' + str( default_value ) + ' :=\n' )
-            elif manipulate_param_keys_2 is True:
+            #elif manipulate_param_keys_2 is True:
+            else:
                 g.write( 'param ' + this_param + ' default ' + str( default_value ) + ' :\n' )
             #
             #-----------------------------------------#
             
-            if len(this_param_keys) == 2 and manipulate_param_keys_2 is True: #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if len(this_param_keys) == 2: # and manipulate_param_keys_2 is True: #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 # get the last and second last parameters of the list:
                 last_set_element = this_scenario_data[ this_param ][ this_param_keys[-1] ] # header_indices.index( this_param_keys[-1] ) ]
                 last_set_element_unique = [] # list( set( last_set_element ) )
@@ -956,54 +960,20 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
 																								   
 			 
                                 g.write('\n')
+                            else:
+                                print('Never happens right?')
+                                sys.exit()
             #-----------------------------------------#
             g.write( ';\n\n' )
     #
-    g.write('param AccumulatedAnnualDemand default ' + str(params['default_val_params']['AccumulatedAnnualDemand']) + ' :=\n;\n')
-    # if scenario_list[scen] == params['BAU']:
-    #     g.write('param AnnualEmissionLimit default ' + str(params['default_val_params']['AnnualEmissionLimit']) + ' :=\n;\n')
-    g.write('param AnnualEmissionLimit default ' + str(params['default_val_params']['AnnualEmissionLimit']) + ' :=\n;\n') # here we are using no Emission Limit
-    g.write('param AnnualExogenousEmission default ' + str(params['default_val_params']['AnnualExogenousEmission']) + ' :=\n;\n')
-    #g.write('param AvailabilityFactor default ' + str(params['default_val_params']['AvailabilityFactor'])  + ' :=\n;\n')
-    #g.write('param CapacityFactor default ' + str(params['default_val_params']['CapacityFactor'])  + ' :=\n;\n')
-    g.write('param CapacityOfOneTechnologyUnit default ' + str(params['default_val_params']['CapacityOfOneTechnologyUnit']) + ' :=\n;\n')
-    #g.write('param CapacityToActivityUnit default ' + str(params['default_val_params']['CapacityToActivityUnit'])  + ' :=\n;\n')
-    g.write('param CapitalCostStorage default ' + str(params['default_val_params']['CapitalCostStorage'])  + ' :=\n;\n')
-    g.write('param Conversionld default ' + str(params['default_val_params']['Conversionld']) + ' :=\n;\n')
-    g.write('param Conversionlh default ' + str(params['default_val_params']['Conversionlh']) + ' :=\n;\n')
-    g.write('param Conversionls default ' + str(params['default_val_params']['Conversionls']) + ' :=\n;\n')
-    g.write('param DaySplit default ' + str(params['default_val_params']['DaySplit']) + ' :=\n;\n')
-    g.write('param DaysInDayType default ' + str(params['default_val_params']['DaysInDayType']) + ' :=\n;\n')
-    g.write('param DepreciationMethod default ' + str(params['default_val_params']['DepreciationMethod']) + ' :=\n;\n')
-    g.write('param DiscountRate default ' + str(params['default_val_params']['DiscountRate']) + ' :=\n;\n') # repalced from 0.05 // 0.0831
-    g.write('param EmissionsPenalty default ' + str(params['default_val_params']['EmissionsPenalty']) + ' :=\n;\n')
-    g.write('param MinStorageCharge default ' + str(params['default_val_params']['MinStorageCharge']) + ' :=\n;\n')
-    g.write('param ModelPeriodEmissionLimit default ' + str(params['default_val_params']['ModelPeriodEmissionLimit']) + ' :=\n;\n')
-    g.write('param ModelPeriodExogenousEmission default ' + str(params['default_val_params']['ModelPeriodExogenousEmission']) + ' :=\n;\n')
-    g.write('param OperationalLifeStorage default ' + str(params['default_val_params']['OperationalLifeStorage']) + ' :=\n;\n')
-    g.write('param REMinProductionTarget default ' + str(params['default_val_params']['REMinProductionTarget']) + ' :=\n;\n')
-    g.write('param RETagFuel default ' + str(params['default_val_params']['RETagFuel']) + ' :=\n;\n')
-    g.write('param RETagTechnology default ' + str(params['default_val_params']['RETagTechnology']) + ' :=\n;\n')
-    g.write('param ReserveMargin default ' + str(params['default_val_params']['ReserveMargin']) + ' :=\n;\n')
-    g.write('param ReserveMarginTagFuel default ' + str(params['default_val_params']['ReserveMarginTagFuel']) + ' :=\n;\n')
-    g.write('param ReserveMarginTagTechnology default ' + str(params['default_val_params']['ReserveMarginTagTechnology']) + ' :=\n;\n')
-    g.write('param ResidualStorageCapacity default ' + str(params['default_val_params']['ResidualStorageCapacity']) + ' :=\n;\n')
-    #g.write('param ResidualCapacity default ' + str(params['default_val_params']['ResidualCapacity']) + ' :=\n;\n')
-    g.write('param StorageLevelStart default ' + str(params['default_val_params']['StorageLevelStart']) + ' :=\n;\n')
-    g.write('param StorageMaxChargeRate default ' + str(params['default_val_params']['StorageMaxChargeRate']) + ' :=\n;\n')
-    g.write('param StorageMaxDischargeRate default ' + str(params['default_val_params']['StorageMaxDischargeRate']) + ' :=\n;\n')
-    g.write('param TechnologyFromStorage default ' + str(params['default_val_params']['TechnologyFromStorage']) + ' :=\n;\n')
-    g.write('param TechnologyToStorage default ' + str(params['default_val_params']['TechnologyToStorage']) + ' :=\n;\n')
-    g.write('param TotalAnnualMaxCapacity default ' + str(params['default_val_params']['TotalAnnualMaxCapacity']) + ' :=\n;\n')
-    g.write('param TotalAnnualMaxCapacityInvestment default ' + str(params['default_val_params']['TotalAnnualMaxCapacityInvestment']) + ' :=\n;\n')
-    # if scenario_list[scen] == params['BAU']:
-    #     g.write('param TotalAnnualMinCapacity default ' + str(params['default_val_params']['TotalAnnualMinCapacity']) + ' :=\n;\n')
-    g.write('param TotalAnnualMinCapacity default ' + str(params['default_val_params']['TotalAnnualMinCapacity']) + ' :=\n;\n')
-    g.write('param TotalAnnualMinCapacityInvestment default ' + str(params['default_val_params']['TotalAnnualMinCapacityInvestment']) + ' :=\n;\n')
-    # g.write('param TotalTechnologyAnnualActivityUpperLimit default ' + str(params['default_val_params']['TotalTechnologyAnnualActivityUpperLimit']) + ' :=\n;\n')
-    g.write('param TotalTechnologyModelPeriodActivityLowerLimit default ' + str(params['default_val_params']['TotalTechnologyModelPeriodActivityLowerLimit']) + ' :=\n;\n')
-    g.write('param TotalTechnologyModelPeriodActivityUpperLimit default ' + str(params['default_val_params']['TotalTechnologyModelPeriodActivityUpperLimit']) + ' :=\n;\n')
-    g.write('param TradeRoute default ' + str(params['default_val_params']['TradeRoute']) + ' :=\n;\n')
+    # Print parameters with it default value
+    for parm in params['params_inputs_data']:
+        g.write(f'param {parm} default ' + str(params['default_val_params'][parm]) + ' :=\n;\n')
+    for sna, val_parm in params['params_inputs_data_excep_by_scen'].items():
+        if scenario_list[scen] == params[sna]:
+            if params['params_inputs_data_excep_by_scen'][params[sna]] != []:
+                for parm_2 in val_parm:
+                    g.write(f'param {parm_2} default ' + str(params['default_val_params'][parm_2]) + ' :=\n;\n')
     #
     g.write('#\n' + 'end;\n')
     #
@@ -1147,8 +1117,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                 ref_combination_index = combination_list.index( this_combination )
                 ref_parameter_index = input_params_table_headers.index( parameters_to_print[p] )
                 synthesized_all_data_row[ ref_combination_index ][ ref_parameter_index ] = deepcopy( single_data_row_partial[ ref_parameter_index-len( basic_header_elements ) ] )
-                #
-            #
+                #                                                                                                                            
         #
     #
     ###########################################################################################################################
@@ -1261,7 +1230,46 @@ def interpolation_non_linear_final_lock(time_list, value_list, new_relative_fina
     return new_value_list, list_apply_delta_ydata_new, fraction_list_counter
 
 
-def interpolation_non_linear_final( time_list, value_list, new_relative_final_value, finyear ):
+def interpolation_non_linear_final( time_list, value_list, new_relative_final_value ):
+    # Rememeber that the 'old_relative_final_value' is 1
+    old_relative_final_value = 1
+    new_value_list = []
+    # We select a list that goes from the "Initial_Year_of_Uncertainty" to the Final Year of the Time Series
+    initial_year_index = time_list.index( Initial_Year_of_Uncertainty )
+    fraction_time_list = time_list[initial_year_index:]
+    fraction_value_list = value_list[initial_year_index:]
+    # We now perform the 'non-linear OR linear adjustment':
+    xdata = [ fraction_time_list[i] - fraction_time_list[0] for i in range( len( fraction_time_list ) ) ]
+    ydata = [ float( fraction_value_list[i] ) for i in range( len( fraction_value_list ) ) ]
+    delta_ydata = [ ydata[i]-ydata[i-1] for i in range( 1,len( ydata ) ) ]
+    #
+    m_original = ( ydata[-1]-ydata[0] ) / ( xdata[-1]-xdata[0] )
+    #
+    m_new = ( ydata[-1]*(new_relative_final_value/old_relative_final_value) - ydata[0] ) / ( xdata[-1]-xdata[0] )
+    #
+    if int(m_original) == 0:
+        delta_ydata_new = [m_new for i in range( 1,len( ydata ) ) ]
+    else:
+        delta_ydata_new = [ (m_new/m_original)*(ydata[i]-ydata[i-1]) for i in range( 1,len( ydata ) ) ]
+    #
+    ydata_new = [ 0 for i in range( len( ydata ) ) ]
+    ydata_new[0] = ydata[0]
+    for i in range( 0, len( delta_ydata ) ):
+        ydata_new[i+1] = ydata_new[i] + delta_ydata_new[i]
+    #
+    # We now recreate the new_value_list considering the fraction before and after the Initial_Year_of_Uncertainty
+    fraction_list_counter = 0
+    for n in range( len( time_list ) ):
+        if time_list[n] >= Initial_Year_of_Uncertainty:
+            new_value_list.append( ydata_new[ fraction_list_counter ] )
+            fraction_list_counter += 1
+        else:
+            new_value_list.append( float( value_list[n] ) )
+    #
+    # We return the list:
+    return new_value_list
+
+def interpolation_non_linear_final_year( time_list, value_list, new_relative_final_value, finyear ):
     # Rememeber that the 'old_relative_final_value' is 1
     old_relative_final_value = 1
     new_value_list = []
@@ -1315,6 +1323,7 @@ def interpolation_non_linear_final( time_list, value_list, new_relative_final_va
     #
     # We return the list:
     return new_value_list
+
 
 '''
 Function 2: Notes
@@ -1482,7 +1491,7 @@ def interpolation_blend( start_blend_point, final_blend_point, value_list, time_
     return new_value_list_rounded, biofuel_shares
     #
 #
-def get_config_main_path(full_path):
+def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
     parts = full_path.split(os.sep)
     
@@ -1496,17 +1505,52 @@ def get_config_main_path(full_path):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, 'tests\PIUP\config_main_files') + os.sep
+    appended_path = os.path.join(base_path, base_folder) + os.sep
     
     return appended_path
+
+def load_and_process_yaml(path):
+    """
+    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+    Args:
+    path (str): The path to the YAML file.
+    
+    Returns:
+    dict: The updated data from the YAML file where the specific placeholder is replaced.
+    """
+    with open(path, 'r') as file:
+        # Load the YAML content into 'params'
+        params = yaml.safe_load(file)
+
+    # Retrieve the reference year from the YAML file and convert it to string for replacement
+    reference_year = str(params['year_apply_discount_rate'])
+
+    # Function to recursively update strings containing the placeholder
+    def update_strings(obj):
+        if isinstance(obj, dict):
+            return {k: update_strings(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [update_strings(element) for element in obj]
+        elif isinstance(obj, str):
+            # Replace the specific placeholder with the reference year
+            return obj.replace('${year_apply_discount_rate}', reference_year)
+        else:
+            return obj
+
+    # Update all string values in the loaded YAML structure
+    updated_params = update_strings(params)
+
+    return updated_params
 
 if __name__ == '__main__':
     #
     # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(''))
-    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
+    file_config_address = get_config_main_path(os.path.abspath(''),'tests\PIUP\config_main_files')
+    # with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
-        params = yaml.safe_load(file)
+        # params = yaml.safe_load(file)
+    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
     '''
     Let us define some control inputs internally:
     '''
@@ -1597,36 +1641,39 @@ if __name__ == '__main__':
         if Fleet_Groups_inv[ Fleet_Techs_with_Distance[u] ] not in Fleet_Groups_list:
             Fleet_Groups_list.append( Fleet_Groups_inv[ Fleet_Techs_with_Distance[u] ] )
             Fleet_Groups_Distance.update( { Fleet_Groups_list[-1]:Fleet_Techs_Distance[ Fleet_Techs_with_Distance[u] ] } )
+
     #
-    group_tech_PUBLIC = []
-    group_tech_PRIVATE = []
-    group_tech_FREIGHT_HEA = []
-    group_tech_FREIGHT_LIG = []
+    if params['Use_AFOLU'] or params['Use_PIUP'] or params['Use_Waste']:
+        group_tech_PUBLIC = []
+        group_tech_PRIVATE = []
+        group_tech_FREIGHT_HEA = []
+        group_tech_FREIGHT_LIG = []
+        #
+        for t in range( len( list( Fleet_Groups_techs_2_dem.keys() ) ) ):
+            tech_key = list( Fleet_Groups_techs_2_dem.keys() )[t]
+            this_fuel = Fleet_Groups_techs_2_dem[ tech_key ]
+            if params['PRI'] in this_fuel:
+                group_tech_PRIVATE.append( tech_key )
+            if params['PUB'] in this_fuel:
+                group_tech_PUBLIC.append( tech_key )
+            if params['FEAHEA'] in this_fuel:
+                group_tech_FREIGHT_HEA.append( tech_key )
+            if params['FRELIG'] in this_fuel:
+                group_tech_FREIGHT_LIG.append( tech_key )
+        #
+        group_tech_PASSENGER = group_tech_PUBLIC + group_tech_PRIVATE
+        group_tech_FREIGHT = group_tech_FREIGHT_HEA + group_tech_FREIGHT_LIG
     #
-    for t in range( len( list( Fleet_Groups_techs_2_dem.keys() ) ) ):
-        tech_key = list( Fleet_Groups_techs_2_dem.keys() )[t]
-        this_fuel = Fleet_Groups_techs_2_dem[ tech_key ]
-        if params['PRI'] in this_fuel:
-            group_tech_PRIVATE.append( tech_key )
-        if params['PUB'] in this_fuel:
-            group_tech_PUBLIC.append( tech_key )
-        if params['FEAHEA'] in this_fuel:
-            group_tech_FREIGHT_HEA.append( tech_key )
-        if params['FRELIG'] in this_fuel:
-            group_tech_FREIGHT_LIG.append( tech_key )
-    #
-    group_tech_PASSENGER = group_tech_PUBLIC + group_tech_PRIVATE
-    group_tech_FREIGHT = group_tech_FREIGHT_HEA + group_tech_FREIGHT_LIG
-    #
+    
     global time_range_vector # This is the variable that manages time throughout the experiment
     time_range_vector = [ int(i) for i in S_DICT_sets_structure[ 'elements_list' ][0] ]
+    global index_change_year
+    index_change_year = time_range_vector.index( params['change_year'] )                 
     #
     global final_year
     final_year = params['final_year']
-    global index_change_year
-    index_change_year = params['change_year']
     global initial_year
-    initial_year = params['base_year']
+    initial_year = time_range_vector[0]
     # Define the techs that are transport technology groups:
     trn_list = params['trn_list']                                                        
 
@@ -1701,8 +1748,8 @@ if __name__ == '__main__':
             col_idx.update({p:p-subtracter})    
 
     # sys.exit()
-    #hypercube = lhs( P-subtracter , samples = N )
-    hypercube = lhs( P , samples = N )
+    hypercube = lhs( P-subtracter , samples = N )
+    #hypercube = lhs( P , samples = N )
     # hypercube[p] gives vector with values of variable p across the N futures, hence len( hypercube[p] ) = N
     #
     experiment_dictionary = {}
@@ -1831,22 +1878,22 @@ if __name__ == '__main__':
                 #
                 this_future_X_param.append('n.a.')
             #
-            # elif str( uncertainty_table.loc[ p , params['exp_param_rel_base'] ] ) == 'NO':
-            #     this_future_X_change_direction.append('n.a.')
-            #     this_future_X_change.append( 'n.a.' )
-            #     #
-            #     if 'C (' in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
-            #         this_future_X_param.append( [ Q, k, M ] )
-            #     #
-            #     else:
-            #         if params['year_when_rea_zero'] in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
-            #             this_future_X_param.append( int( evaluation_value ) )
-            #         #
-            #         elif ( 'C (' not in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) ) or ( params['ble_time_series'] in str( uncertainty_table.loc[ p , params['x_math__type'] ] ) ):
-            #             this_future_X_param.append( evaluation_value )
-            #         #
-            #         elif str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) == params['cte']:
-            #             this_future_X_param.append( evaluation_value )
+            elif str( uncertainty_table.loc[ p , params['exp_param_rel_base'] ] ) == 'NO' and not params['Use_PIUP']:
+                this_future_X_change_direction.append('n.a.')
+                this_future_X_change.append( 'n.a.' )
+                #
+                if 'C (' in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
+                    this_future_X_param.append( [ Q, k, M ] )
+                #
+                else:
+                    if params['year_when_rea_zero'] in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
+                        this_future_X_param.append( int( evaluation_value ) )
+                    #
+                    elif ( 'C (' not in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) ) or ( params['ble_time_series'] in str( uncertainty_table.loc[ p , params['x_math__type'] ] ) ):
+                        this_future_X_param.append( evaluation_value )
+                    #
+                    elif str( uncertainty_table.loc[ p , params['exp_param_x'] ] ) == params['cte']:
+                        this_future_X_param.append( evaluation_value )
                         #
                 #
             #
@@ -1883,8 +1930,16 @@ if __name__ == '__main__':
                     experiment_dictionary[ X_Num_unique[-1] ].update({ params['exac_param_inv_ose']:Exact_Parameters_Involved_in_Osemosys })
                     experiment_dictionary[ X_Num_unique[-1] ].update({ params['fut_var']:[x for x in range( 1, N+1 ) ] })
                     #
-                    #if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']:
-                    if math_type in params['math_type_list_types']:                                                                                                                                                     
+                    if math_type in params['math_type_list_types'] and params['Use_Energy']:                                                                                                                                                     
+                        experiment_dictionary[ X_Num_unique[-1] ].update({ params['exp_param_x']:Explored_Parameter_of_X } )
+                        experiment_dictionary[ X_Num_unique[-1] ].update({ 'Values':[0.0 for x in range( 1, N+1 ) ] })
+                        # We fill the data for future n=1 // it is important to note that the future n=0 can have completely different parameters when values are not relative to baseline
+                        if str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'YES':
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][0] = this_future_X_change[-1] # here n=0
+                        elif str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'NO':
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][0] = this_future_X_param[-1] # here n=0
+                    #
+                    elif (math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']) and not params['Use_Energy']:                                                                                                                                                  
                         experiment_dictionary[ X_Num_unique[-1] ].update({ params['exp_param_x']:Explored_Parameter_of_X } )
                         experiment_dictionary[ X_Num_unique[-1] ].update({ 'Values':[0.0 for x in range( 1, N+1 ) ] })
                         # We fill the data for future n=1 // it is important to note that the future n=0 can have completely different parameters when values are not relative to baseline
@@ -1957,11 +2012,17 @@ if __name__ == '__main__':
                     #
                     X_Num_unique.append( int( uncertainty_table.loc[ p ,params['x_num']] ) )
                     #
-                    if math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs'] or math_type in params['math_type_list_mult']:
+                    if (math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs'] or math_type in params['math_type_list_mult']) and params['Use_Energy']:
                         if str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'YES':
                             experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_change[-1]
                         elif str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'NO':
                             experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_param[-1]
+                    elif (math_type == params['math_type_time_series'] or math_type == params['math_type_dis_invs']) and not params['Use_Energy']:
+                        if str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'YES':
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_change[-1]
+                        elif str( uncertainty_table.loc[ p , params['exp_param_rel_base']] ) == 'NO':
+                            experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_param[-1]
+                    #
                     #
                     elif math_type == params['math_type_adop_curve']:
                         if 'L (' in str( uncertainty_table.loc[ p , params['exp_param_x'] ] ):
@@ -1974,7 +2035,7 @@ if __name__ == '__main__':
                     elif math_type == params['math_type_cte']:
                         experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_param[-1]
 
-                u = int( uncertainty_table.loc[ p ,'X_Num'] )
+                u = int( uncertainty_table.loc[ p ,params['x_num']] )
                 print(u, len(experiment_dictionary[u].keys()),
                     experiment_dictionary[u]['Category'],
                     # len([i for i in experiment_dictionary[u]['Values'] if float(i) != 0.0])
@@ -2066,11 +2127,18 @@ if __name__ == '__main__':
                     if row[ header_row[-1] ] != None and row[ header_row[-1] ] != '':
                         #
                         for h in range( 2, len(header_row)-1 ):
-                            if row[ header_row[h] ] != None and row[ header_row[h] ] != '' and row[ header_row[h] ] != ' ':
+                            if row[ header_row[h] ] != None and row[ header_row[h] ] != '' and not params['Use_AFOLU']:
                                 set_index  = S_DICT_sets_structure['set'].index( header_row[h] )
                                 set_initial = S_DICT_sets_structure['initial'][ set_index ]
                                 stable_scenarios[ scenario_list[scen] ][ this_param ][ set_initial ].append( row[ header_row[h] ] )
-                        stable_scenarios[ scenario_list[scen] ][ this_param ][ 'value' ].append( round(float(row[ header_row[-1] ] ), 16 ) )
+                            elif row[ header_row[h] ] != None and row[ header_row[h] ] != '' and row[ header_row[h] ] != ' ' and params['Use_AFOLU']:
+                                set_index  = S_DICT_sets_structure['set'].index( header_row[h] )
+                                set_initial = S_DICT_sets_structure['initial'][ set_index ]
+                                stable_scenarios[ scenario_list[scen] ][ this_param ][ set_initial ].append( row[ header_row[h] ] )
+                        if params['Use_AFOLU'] or params['Use_PIUP'] or params['Use_Waste']:
+                            stable_scenarios[ scenario_list[scen] ][ this_param ][ 'value' ].append( round(float(row[ header_row[-1] ] ), 16 ) )
+                        else:
+                            stable_scenarios[ scenario_list[scen] ][ this_param ][ 'value' ].append( float(row[ header_row[-1] ] ))
                         #
     '''
     # 2.C) We call the default parameters for later use:
@@ -2101,7 +2169,8 @@ if __name__ == '__main__':
     #
     reference_driven_distance = {}
     reference_occupancy_rate = {}
-    Blend_Shares = params['Blend_Shares_dict']
+    if params['Use_Blend_Shares']:
+        Blend_Shares = params['Blend_Shares_dict']
     # We need to store some values for some adjustments:
     spec_store_freheaele = {}
     #
@@ -2128,7 +2197,7 @@ if __name__ == '__main__':
             #
             reference_driven_distance[ scenario_list[s] ].update( { f:{} } )
             reference_occupancy_rate[ scenario_list[s] ].update( { f:{} } )
-            if scenario_list[s] != params['BAU']:
+            if scenario_list[s] != params['BAU'] and params['Use_Blend_Shares']:
                 Blend_Shares[ scenario_list[s] ].update( { f:{} } )
             #
             # NOTE 0: TotalDemand and Mode Shift must take the BAU SpeecifiedAnnualDemand for coherence.
@@ -2513,22 +2582,23 @@ if __name__ == '__main__':
                                     this_set_distribution = [ distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ][n] / TotalDemand_BASE_BAU[n] for n in range( len( TotalDemand_BASE_BAU ) ) ]
                                     distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
 
-                            # now that the value is extracted, we must manipulate the result and store in TotalDemand
-                            all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
-                            index_change_year = all_years.index( params['change_year'] )
-                            local_df_elasticities = deepcopy(df_elasticities)
-                            local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
-                            local_df_elasticities[params['e_pass']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
-                            list_e_pass = local_df_elasticities[params['e_pass']].tolist()
+                            # print('Energy_check_7')
+                            # # now that the value is extracted, we must manipulate the result and store in TotalDemand
+                            # all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
+                            # index_change_year = all_years.index( params['change_year'] )
+                            # local_df_elasticities = deepcopy(df_elasticities)
+                            # local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_pass'])] = float(Values_per_Future[fut_id])
+                            # local_df_elasticities[params['e_pass']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
+                            # list_e_pass = local_df_elasticities[params['e_pass']].tolist()
 
-                            new_value_list = []
-                            for y in range(len(all_years)):
-                                if y < index_change_year:
-                                    new_value_list.append(summed_value_list[y])
-                                else:  # apply growth formula with demand elasticity
-                                    gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
-                                    last_value = new_value_list[-1]
-                                    new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
+                            # new_value_list = []
+                            # for y in range(len(all_years)):
+                            #     if y < index_change_year:
+                            #         new_value_list.append(summed_value_list[y])
+                            #     else:  # apply growth formula with demand elasticity
+                            #         gdp_growth_apply = experiment_dictionary[1]['Values'][fut_id]  # the first element in the uncertainty table
+                            #         last_value = new_value_list[-1]
+                            #         new_value_list.append(last_value*(1 + list_e_pass[y-1]*gdp_growth_apply/100))
 
                             if params['Use_Energy']:
                                 if params['exact_x_2'] in Exact_X:
@@ -2637,8 +2707,9 @@ if __name__ == '__main__':
                                 else:
                                     if X_Cat in params['fre_dem']:
                                         # now that the value is extracted, we must manipulate the result and store in TotalDemand
+                                        # print('Energy_check_8')
                                         all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
-                                        index_change_year = all_years.index( params['change_year'] )
+                                        # index_change_year = all_years.index( params['change_year'] )
                                         local_df_elasticities = deepcopy(df_elasticities)
                                         local_df_elasticities.iloc[-1, local_df_elasticities.columns.get_loc(params['e_fre'])] = float(Values_per_Future[fut_id])
                                         local_df_elasticities[params['e_fre']].interpolate(method ='linear', limit_direction ='forward', inplace = True)
@@ -2915,7 +2986,7 @@ if __name__ == '__main__':
                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                     #
                                     # print(this_set, this_parameter)
-                                    new_value_list = deepcopy( interpolation_non_linear_final( time_range_vector, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                    new_value_list = deepcopy( interpolation_non_linear_final_year( time_range_vector, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                     new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                     #
@@ -2946,11 +3017,11 @@ if __name__ == '__main__':
                                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                     #
                                                     if bool_mod_imp_exp:
-                                                        new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                        new_value_list = deepcopy( interpolation_non_linear_final_year( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                         new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                                     if bool_mod_imp_adhoc:
                                                         if support_param == 'TotalTechnologyAnnualActivityLowerLimit':
-                                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                            new_value_list = deepcopy( interpolation_non_linear_final_year( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                                         if support_param == 'TotalTechnologyAnnualActivityUpperLimit':
                                                             new_value_list = []
@@ -2959,7 +3030,7 @@ if __name__ == '__main__':
                                                                     new_value_list.append(999)
                                                                 else:
                                                                     new_value_list.append(time_list[y])
-                                                            # new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                            # new_value_list = deepcopy( interpolation_non_linear_final_year( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                                     inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                         #
@@ -2977,7 +3048,7 @@ if __name__ == '__main__':
                                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                 #
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                new_value_list = deepcopy( interpolation_non_linear_final_year( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                 new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                                         #
@@ -3002,10 +3073,9 @@ if __name__ == '__main__':
                                                     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                                     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                     #
-                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                    new_value_list = deepcopy( interpolation_non_linear_final_year( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
                                                     new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                                     inherited_scenarios[ scenario_list[s] ][ f ][ support_param ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
-
                                     #-----------------------------------------------------------------------#
                                 #
                             #
@@ -3063,7 +3133,7 @@ if __name__ == '__main__':
                                     float(Values_per_Future[fut_id]), params['final_year'])
                             
                             # sum_value_list_new_chg_target_2 = \
-                            #    interpolation_non_linear_final(
+                            #    interpolation_non_linear_final_year(
                             #        time_range_vector, sum_value_list_orig_chg,
                             #        float(Values_per_Future[fut_id]), params['final_year'])
                             
@@ -3271,7 +3341,7 @@ if __name__ == '__main__':
 
 
 
-                        elif Math_Type == params['math_type_blend']:  # we can enter this snippet at "Adjustment OAR" if we want to ignore biofuel variations
+                        elif Math_Type == params['math_type_blend'] and params['Use_Blend_Shares']:  # we can enter this snippet at "Adjustment OAR" if we want to ignore biofuel variations
                             #
                             Techs_Emissions = params['Techs_Emissions']
                             #
@@ -3594,7 +3664,7 @@ if __name__ == '__main__':
                                 New_Final_Value_Porportion = Existing_Final_Value_Porportion*Values_per_Future[fut_id]
                                 # the final value of the Time_Series of the capacity set is given by:
                                 Final_Value_Porportion = (New_Final_Value_Porportion*d_values_BASE[-1]/or_values_BASE[-1])/value_list[-1]
-                                new_value_list_pre = deepcopy( interpolation_non_linear_final( time_list, value_list, Final_Value_Porportion, params['final_year'] ) )
+                                new_value_list_pre = deepcopy( interpolation_non_linear_final( time_list, value_list, Final_Value_Porportion ) )
                                 new_value_list = [ new_value_list_pre[n]*d_values_FUT[n]/d_values_BASE[n] for n in range( len( time_list ) ) ]
                                 #
                                 new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
@@ -3683,11 +3753,9 @@ if __name__ == '__main__':
                                                             and (params['dem'] not in X_Cat)
                                                             and (params['non_rail'] not in X_Cat)
                                                             and (params['x_cat_mode_shift'] not in X_Cat) ) or ( Math_Type==params['math_type_dis_invs'] )) \
-                                                            and (params['Use_Energy'] or params['Use_AFOLU']):
-                            if params['Use_AFOLU']:
-                                print('AFOLU_6')
-                            elif params['Use_Energy']:
-                                print('Energy_8')
+                                                            and params['Use_Energy']:
+
+                            print('Energy_8')
                             #
                             enter_if_cycle = True
                             #
@@ -3729,7 +3797,383 @@ if __name__ == '__main__':
                                         value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                         #
                                         if Explored_Parameter_of_X==params['fin_val']:
-                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year'] ) )
+                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]) ) )
+                                        #
+                                        if Explored_Parameter_of_X==params['shift_per_ini_val']:
+                                            new_value_list = deepcopy( time_series_shift( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
+                                        #--------------------------------------------------------------------#
+                                        new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                        #
+                                        for i_list_idx in range(len(this_set_range_indices)):
+                                            i_list = this_set_range_indices[i_list_idx]
+                                            inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ i_list ] = deepcopy( new_value_list_rounded[i_list_idx] )
+                                        #
+                                        '''
+                                        if X_Cat == params['x_cat_bev_cost']:
+                                            xx1 = value_list
+                                            xx2 = new_value_list
+                                            print('check this IAR issue internal')
+                                            sys.exit()
+                                        '''
+                                    #
+                                    '''
+                                    if X_Cat == params['x_cat_bev_cost']:
+                                        print('check this IAR issue')
+                                        sys.exit()
+                                    '''
+                                    #
+                                #
+                            #
+                            #
+                            else:
+                                for a_set in range( len( Sets_Involved ) ):
+                                    this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
+                                    #
+                                    this_set = Sets_Involved[a_set]
+                                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                    # # print('Energy_check_9')
+                                    # if this_parameter == 'EmissionActivityRatio':
+                                        
+                                    #     count_good = 0
+                                        
+                                    #     emis_list = list(set(inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['e'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ]))
+                                    #     for e in emis_list:
+                                    #         this_set_range_indices_e = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 'e' ] ) if x == str( e ) ]
+                                    #         all_indices_app = list(set(this_set_range_indices) & set(this_set_range_indices_e))
+                                    #         all_indices_app.sort()
+                                    #         if len(all_indices_app) != 0:
+                                    #             time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ all_indices_app[0]:all_indices_app[-1]+1 ] )
+                                    #             time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                                
+                                    #             value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ all_indices_app[0]:all_indices_app[-1]+1 ] )
+                                    #             value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                                
+                                    #             new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] )))
+                                                
+                                    #             count_good += 1
+                                    #
+                                    if this_parameter != 'CapacityFactor' and len(this_set_range_indices) != 0:
+                                        # for each index we extract the time and value in a list:
+                                        # extracting time:
+                                        time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                        # extracting value:
+                                        value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                        #--------------------------------------------------------------------#
+                                        # now that the value is extracted, we must manipulate the result and assign back
+                                        if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
+                                            if this_parameter == 'OutputActivityRatio' and params['adj_oar'] not in X_Cat:
+                                                if scenario_list[s] == params['BAU']:  # bypass this
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
+                                                    reference_occupancy_rate[ scenario_list[s] ][f].update( { this_set:new_value_list } )
+                                                #
+                                                else:
+                                                    # Store the pre-modification values for the BAU
+                                                    reference_occupancy_rate[ params['BAU'] ][f].update( { this_set:value_list } )
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]) ) )
+                                                    reference_occupancy_rate[ scenario_list[s] ][f].update( { this_set:new_value_list } )
+                                                    #
+                                                ###############################################################################
+                                                # # print('Energy_check_10')
+                                                # # Take advantage of this action and make adjustment to accident externalities with changed occupancy rate:
+                                                # oar_indices_BASE = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( this_set ) ]
+                                                # oar_values_BASE = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'OutputActivityRatio' ]['value'][ oar_indices_BASE[0]:oar_indices_BASE[-1]+1 ] )
+                                                # oar_values_BASE = [ float(oar_values_BASE[j]) for j in range( len(oar_values_BASE) )]
+                                                # #
+                                                # time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                                # time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                                # #
+                                                # # Use 'new_value_list' to adjust the system:
+                                                # base_set_range_indices_tech = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                                # base_set_range_indices_emission = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ][ 'e' ] ) if x == str( params['acci'] ) ]
+                                                # base_set_range_indices_adjust = list( set(base_set_range_indices_tech) & set(base_set_range_indices_emission) )
+                                                # base_set_range_indices_adjust.sort()
+                                                # #--#
+                                                # this_set_range_indices_tech = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'EmissionActivityRatio' ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                                # this_set_range_indices_emission = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'EmissionActivityRatio' ][ 'e' ] ) if x == str( params['acci'] ) ]
+                                                # this_set_range_indices_adjust = list( set(this_set_range_indices_tech) & set(this_set_range_indices_emission) )
+                                                # this_set_range_indices_adjust.sort()
+                                                # #
+                                                # this_tech_externality_emission = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ base_set_range_indices_adjust[0]:base_set_range_indices_adjust[-1]+1 ] )
+                                                # #
+                                                # new_tech_externality_emission = [ float( this_tech_externality_emission[n] )*float( new_value_list[n] )/float( oar_values_BASE[n] ) for n in range( len( this_tech_externality_emission ) ) ]
+                                                # new_tech_externality_emission_rounded = [ round(elem, params['round_#']) for elem in new_tech_externality_emission ]
+                                                # #
+                                                # inherited_scenarios[ scenario_list[s] ][ f ][ 'EmissionActivityRatio' ]['value'][ this_set_range_indices_adjust[0]:this_set_range_indices_adjust[-1]+1 ] = deepcopy( new_tech_externality_emission_rounded )
+                                                ################################################################################
+                                            #
+                                            else:
+                                                #
+                                                if 'CapacityFactor' in Parameters_Involved:
+                                                    sec_mult_cf_ll = 0.99
+                                                else:
+                                                    sec_mult_cf_ll = 1
+                                                new_value_list = deepcopy(interpolation_non_linear_final(time_list, value_list, sec_mult_cf_ll*float(Values_per_Future[fut_id])))
+                                                #
+                                            #
+                                        #
+                                        elif Explored_Parameter_of_X==params['ini_val']:
+                                            new_value_list = deepcopy( interpolation_non_linear_initial( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
+                                        elif Explored_Parameter_of_X==params['shift_per_ini_val']:
+                                            new_value_list = deepcopy( time_series_shift( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
+                                        elif Explored_Parameter_of_X==params['year_when_rea_zero']:
+                                            new_value_list = deepcopy( year_when_reaches_zero( time_list, value_list, int(Values_per_Future[fut_id] ) ) )
+                                        elif Explored_Parameter_of_X==params['over_dc_shift']:
+                                            new_value_list = deepcopy( dc_shift( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
+                                        #
+                                        new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                        #--------------------------------------------------------------------#
+                                        #
+                                        if this_parameter == 'OutputActivityRatio' and params['adj_oar'] not in X_Cat: # We must adjust the transport group capacities once we obtain new occupancy rates.
+
+                                            # let's extract rail capacity to adjust this apropiately
+                                            train_pass_capacity_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['tech_train'] ) ]
+                                            train_pass_capacity_values = inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ train_pass_capacity_indices[0]:train_pass_capacity_indices[-1]+1 ]
+                                            if Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ] == params['tra_dem_pub'] and scenario_list[ s ] == params['NDP']:
+                                                subtract_list = [float(train_pass_capacity_values[j]) for j in range(len(train_pass_capacity_values))]
+                                            else:
+                                                subtract_list = [0 for j in range(len(train_pass_capacity_values))]
+
+                                            # let's extract the initial demand
+                                            demand_indices_BASE = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ this_set ] ) ]
+                                            demand_values_BASE = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices_BASE[0]:demand_indices_BASE[-1]+1 ] )
+                                            demand_values_BASE = [ float( demand_values_BASE[j] ) - subtract_list[j] for j in range( len( demand_values_BASE ) ) ]
+                                            # let's extract the newly assigned demand
+                                            demand_indices_NEW = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( Fleet_Groups_techs_2_dem[ this_set ] ) ]
+                                            demand_values_NEW = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices_NEW[0]:demand_indices_NEW[-1]+1 ] )
+                                            demand_values_NEW = [ float( demand_values_NEW[j] ) - subtract_list[j] for j in range( len( demand_values_NEW ) ) ]
+                                            #
+                                            this_set_range_indices_max_cap = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                            old_max_cap_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_max_cap[0]:this_set_range_indices_max_cap[-1]+1 ] )
+                                            old_max_cap_values = [ float( old_max_cap_values[j] ) for j in range( len( old_max_cap_values ) ) ]
+                                            #
+                                            ### if (this_set in group_tech_PRIVATE and s != 0) or s==0:
+                                            new_max_cap_values = [0 for n in range( len( old_max_cap_values ) )]
+                                            for n in range( len( time_list ) ):
+                                                if time_list[n] >= Initial_Year_of_Uncertainty:
+                                                    new_max_cap_values[n] = 1.01*old_max_cap_values[n]*( ( demand_values_NEW[n] / new_value_list[n] ) / ( demand_values_BASE[n] / value_list[n] ) )
+                                                else:
+                                                    new_max_cap_values[n] = old_max_cap_values[n]
+                                            ### elif (this_set in group_tech_PUBLIC and s != 0) or s==0: # this is done because the distribution of public transport is done earlier
+                                            ###     new_max_cap_values = [ old_max_cap_values[n]*( ( demand_values_NEW[n] / new_value_list_rounded[n] ) / ( demand_values_BASE[n] / value_list[n] ) ) for n in range( len( old_max_cap_values ) ) ]
+                                            ###     #
+                                            #
+                                            new_max_cap_values_rounded = [ round(elem, params['round_#']) for elem in new_max_cap_values ]
+                                            inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_max_cap[0]:this_set_range_indices_max_cap[-1]+1 ] = deepcopy( new_max_cap_values_rounded )
+                                            #
+                                            this_set_range_indices_min_cap = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                            old_min_cap_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices_min_cap[0]:this_set_range_indices_min_cap[-1]+1 ] )
+                                            old_min_cap_values = [ float( old_min_cap_values[j] ) for j in range( len( old_min_cap_values ) ) ]
+                                            #
+                                            ### if (this_set in group_tech_PRIVATE and s != 0) or s==0:
+                                            new_min_cap_values = [0 for n in range( len( old_min_cap_values ) )]
+                                            for n in range( len( time_list ) ):
+                                                if time_list[n] >= Initial_Year_of_Uncertainty:
+                                                    new_min_cap_values[n] = 0.99*old_min_cap_values[n]*( ( demand_values_NEW[n] / new_value_list[n] ) / ( demand_values_BASE[n] / value_list[n] ) )
+                                                else:
+                                                    new_min_cap_values[n] = old_min_cap_values[n]
+                                            ### new_min_cap_values = [ old_min_cap_values[n]*( ( demand_values_NEW[n] / new_value_list[n] ) / ( demand_values_BASE[n] / value_list[n] ) ) for n in range( len( old_min_cap_values ) ) ]
+                                            ### elif this_set in group_tech_PUBLIC and s != 0:
+                                            ###     new_min_cap_values = [ old_min_cap_values[n]*( ( demand_values_NEW[n] / new_value_list_rounded[n] ) / ( demand_values_BASE[n] / value_list[n] ) ) for n in range( len( old_min_cap_values ) ) ]
+                                            #
+                                            new_min_cap_values_rounded = [ round(elem, params['round_#']) for elem in new_min_cap_values ]
+                                            inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices_min_cap[0]:this_set_range_indices_min_cap[-1]+1 ] = deepcopy( new_min_cap_values_rounded )
+                                            #
+                                            if this_set == params['techs_sedan']: # we must adjust motorcycles for demand, as it is not explored for occupancy rate
+                                                #
+                                                motorcycle_range_indices_max_cap = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ][ this_set_type_initial ] ) if x == str( params['techs_motrocy'] ) ]
+                                                old_max_cap_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ motorcycle_range_indices_max_cap[0]:motorcycle_range_indices_max_cap[-1]+1 ] )
+                                                old_max_cap_values = [ float( old_max_cap_values[j] ) for j in range( len( old_max_cap_values ) ) ]
+                                                #
+                                                new_max_cap_values = [ old_max_cap_values[n]*( demand_values_NEW[n] / demand_values_BASE[n] ) for n in range( len( old_max_cap_values ) ) ]
+                                                new_max_cap_values_rounded = [ round(elem, params['round_#']) for elem in new_max_cap_values ]
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ motorcycle_range_indices_max_cap[0]:motorcycle_range_indices_max_cap[-1]+1 ] = deepcopy( new_max_cap_values_rounded )
+                                                #
+                                                motorcycle_range_indices_min_cap = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ this_set_type_initial ] ) if x == str( params['techs_motrocy'] ) ]
+                                                old_min_cap_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ motorcycle_range_indices_min_cap[0]:motorcycle_range_indices_min_cap[-1]+1 ] )
+                                                old_min_cap_values = [ float( old_min_cap_values[j] ) for j in range( len( old_min_cap_values ) ) ]
+                                                #
+                                                new_min_cap_values = [ old_min_cap_values[n]*( demand_values_NEW[n] / demand_values_BASE[n] ) for n in range( len( old_min_cap_values ) ) ]
+                                                new_min_cap_values_rounded = [ round(elem, params['round_#']) for elem in new_min_cap_values ]
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ motorcycle_range_indices_min_cap[0]:motorcycle_range_indices_min_cap[-1]+1 ] = deepcopy( new_min_cap_values_rounded )
+
+                                            # # if scenario_list[s] != params['BAU']:
+                                            # if params['techs_taxis'] == this_set:  # this is the capacity check
+                                            # 
+                                            #     # CHECK BEFORE ANY OAR ADJUSTMENT
+                                            #     # LET'S ADJUST FOR PUBLIC TRANSPORT:
+                                            #     new_public_passenger_demand = [ 0 for n in range( len( time_range_vector ) ) ]
+                                            #     for n in range( len( group_tech_PUBLIC) ): # this includes rail
+                                            #         or_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( group_tech_PUBLIC[n] ) ]
+                                            #         or_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ]['value'][ or_group_tech_indices[0]:or_group_tech_indices[-1]+1 ] )
+                                            #         or_group_tech_values = [ float( or_group_tech_values[j] ) for j in range( len( or_group_tech_values ) ) ]
+                                            #         #
+                                            #         cap_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_PUBLIC[n] ) ]
+                                            #         cap_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ cap_group_tech_indices[0]:cap_group_tech_indices[-1]+1 ] )
+                                            #         cap_group_tech_values = [ float( cap_group_tech_values[j] ) for j in range( len( cap_group_tech_values ) ) ]
+                                            #         #
+                                            #         for n2 in range( len( time_range_vector ) ):
+                                            #             new_public_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00)*or_group_tech_values[n2] #*applicable_distance_dictionaries[group_tech_PUBLIC[n]][n2]
+                                            #     
+                                            #     # LET'S ADJUST FOR PRIVATE TRANSPORT:
+                                            #     new_private_passenger_demand = [ 0 for n in range( len( time_range_vector ) ) ]
+                                            #     for n in range( len( group_tech_PRIVATE) ):
+                                            #         or_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( group_tech_PRIVATE[n] ) ]
+                                            #         or_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ]['value'][ or_group_tech_indices[0]:or_group_tech_indices[-1]+1 ] )
+                                            #         or_group_tech_values = [ float( or_group_tech_values[j] ) for j in range( len( or_group_tech_values ) ) ]
+                                            #         #
+                                            #         cap_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_PRIVATE[n] ) ]
+                                            #         cap_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ cap_group_tech_indices[0]:cap_group_tech_indices[-1]+1 ] )
+                                            #         cap_group_tech_values = [ float( cap_group_tech_values[j] ) for j in range( len( cap_group_tech_values ) ) ]
+                                            #         #
+                                            #         for n2 in range( len( time_range_vector ) ):
+                                            #             new_private_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00)*or_group_tech_values[n2] # *applicable_distance_dictionaries[group_tech_PRIVATE[n]][n2]
+                                            #         #
+                                            #     #
+                                            #     new_public_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_public_passenger_demand ]
+                                            #     public_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_pub'] ) ]
+                                            #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ public_demand_indices[0]:public_demand_indices[-1]+1 ] = deepcopy( new_public_passenger_demand_rounded )
+                                            #     #
+                                            #     new_private_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_private_passenger_demand ]
+                                            #     private_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_pri'] ) ]
+                                            #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ private_demand_indices[0]:private_demand_indices[-1]+1 ] = deepcopy( new_private_passenger_demand_rounded )
+
+                                        #--------------------------------------------------------------------#``
+                                        # Assign parameters back: for these subset of uncertainties
+                                        inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
+
+                                        # if scenario_list[s] != params['BAU']:
+                                        # if params['techs_taxis'] == this_set and this_parameter == 'OutputActivityRatio' and params['adj_oar'] not in X_Cat:  # this is the capacity check
+                                        # 
+                                        #     # CHECK BEFORE ANY OAR ADJUSTMENT
+                                        #     # LET'S ADJUST FOR PUBLIC TRANSPORT:
+                                        #     new_public_passenger_demand = [ 0 for n in range( len( time_range_vector ) ) ]
+                                        #     for n in range( len( group_tech_PUBLIC) ): # this includes rail
+                                        #         or_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( group_tech_PUBLIC[n] ) ]
+                                        #         or_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ]['value'][ or_group_tech_indices[0]:or_group_tech_indices[-1]+1 ] )
+                                        #         or_group_tech_values = [ float( or_group_tech_values[j] ) for j in range( len( or_group_tech_values ) ) ]
+                                        #         #
+                                        #         # TotalTechnologyAnnualActivityLowerLimit // TotalAnnualMaxCapacity
+                                        #         #
+                                        #         cap_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_PUBLIC[n] ) ]
+                                        #         cap_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ cap_group_tech_indices[0]:cap_group_tech_indices[-1]+1 ] )
+                                        #         cap_group_tech_values = [ float( cap_group_tech_values[j] ) for j in range( len( cap_group_tech_values ) ) ]
+                                        #         #
+                                        #         for n2 in range( len( time_range_vector ) ):
+                                        #             new_public_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00)*or_group_tech_values[n2] #*applicable_distance_dictionaries[group_tech_PUBLIC[n]][n2]
+                                        #     
+                                        #     # LET'S ADJUST FOR PRIVATE TRANSPORT:
+                                        #     new_private_passenger_demand = [ 0 for n in range( len( time_range_vector ) ) ]
+                                        #     for n in range( len( group_tech_PRIVATE) ):
+                                        #         or_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( group_tech_PRIVATE[n] ) ]
+                                        #         or_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ]['value'][ or_group_tech_indices[0]:or_group_tech_indices[-1]+1 ] )
+                                        #         or_group_tech_values = [ float( or_group_tech_values[j] ) for j in range( len( or_group_tech_values ) ) ]
+                                        #         #
+                                        #         cap_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_PRIVATE[n] ) ]
+                                        #         cap_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ cap_group_tech_indices[0]:cap_group_tech_indices[-1]+1 ] )
+                                        #         cap_group_tech_values = [ float( cap_group_tech_values[j] ) for j in range( len( cap_group_tech_values ) ) ]
+                                        #         #
+                                        #         for n2 in range( len( time_range_vector ) ):
+                                        #             new_private_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00)*or_group_tech_values[n2] # *applicable_distance_dictionaries[group_tech_PRIVATE[n]][n2]
+                                        #         #
+                                        #     #
+                                        #     new_public_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_public_passenger_demand ]
+                                        #     public_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_pub'] ) ]
+                                        #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ public_demand_indices[0]:public_demand_indices[-1]+1 ] = deepcopy( new_public_passenger_demand_rounded )
+                                        #     #
+                                        #     new_private_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_private_passenger_demand ]
+                                        #     private_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_pri'] ) ]
+                                        #     inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ private_demand_indices[0]:private_demand_indices[-1]+1 ] = deepcopy( new_private_passenger_demand_rounded )
+
+
+                                        #
+                                    #--------------------------------------------------------------------#
+                                    elif this_parameter == 'CapacityFactor':
+                                        season_list = ['All']
+                                        for season in range( len( season_list ) ):
+                                            this_l_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 'l' ] ) if x == str( season_list[season] ) ]
+                                            #
+                                            this_set_range_indices_useful = intersection(this_set_range_indices, this_l_range_indices)
+                                            #
+                                            # for each index we extract the time and value in a list:
+                                            # extracting time:
+                                            time_list = []
+                                            for useful_index in range( len( this_set_range_indices_useful ) ):
+                                                time_list.append( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices_useful[ useful_index ] ] )
+                                            time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                            # extracting value:
+                                            value_list = []
+                                            for useful_index in range( len( this_set_range_indices_useful ) ):
+                                                value_list.append( deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ] ] ) )
+                                            value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                            #--------------------------------------------------------------------#
+                                            # now that the value is extracted, we must manipulate the result and assign back
+                                            if Explored_Parameter_of_X==params['fin_val']: # By design, this must always happen.
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]) ) )
+                                            #--------------------------------------------------------------------#``
+                                            new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                            #
+                                            # Assign parameters back: for these subset of uncertainties
+                                            for useful_index in range( len( this_set_range_indices_useful ) ):
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ]  ] = new_value_list_rounded[ useful_index ]
+
+                        # The X type below is manipulated with immidiate restitution after adjustment for AFOLU sector.
+                        elif (( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
+                                                            Explored_Parameter_of_X==params['fin_val'] or
+                                                            Explored_Parameter_of_X==params['shift_per_ini_val']
+                                                            or Explored_Parameter_of_X==params['year_when_rea_zero'] )
+                                                            and (params['dis'] not in X_Cat)
+                                                            and (params['dem'] not in X_Cat)
+                                                            and (params['non_rail'] not in X_Cat)
+                                                            and (params['x_cat_mode_shift'] not in X_Cat) ) or ( Math_Type==params['math_type_dis_invs'] )) \
+                                                            and params['Use_AFOLU']:
+												   
+                            print('AFOLU_6')
+													  
+												 
+                            #
+                            enter_if_cycle = True
+                            #
+                            if 'InputActivityRatio' == this_parameter: # we must carefully select the fuels for IAR!
+                                #
+                                for a_set in range( len( Sets_Involved ) ):
+                                    #
+                                    this_set = Sets_Involved[a_set]
+                                    this_set_range_indices_tech = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 't' ] ) if x == str( this_set ) ]
+                                    #
+                                    this_set_fuel_list = []
+                                    for test_j in range( len( this_set_range_indices_tech ) ):
+                                        if float( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_tech[test_j] ] ) != 1.0:
+                                            this_set_fuel_list.append( deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['f'][ this_set_range_indices_tech[test_j] ] ) )
+                                        #
+                                    #
+                                    this_set_fuel_list_unique = list( set( this_set_fuel_list ) )
+                                    #
+                                    for a_fuel in range( len( this_set_fuel_list_unique ) ):
+                                        this_set_fuel = this_set_fuel_list_unique[ a_fuel ]
+                                        #
+                                        this_set_range_indices_fuel = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 'f' ] ) if x == str( this_set_fuel ) ]
+                                        #
+                                        r_index = set(this_set_range_indices_tech) & set(this_set_range_indices_fuel)
+                                        this_set_range_indices = list( r_index )
+                                        this_set_range_indices.sort()
+                                        #
+                                        # extracting time:
+                                        time_list = []
+                                        for i_list in this_set_range_indices:
+                                            # time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            time_list.append(deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ i_list ] ))
+                                        time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                        # extracting value:
+                                        value_list = []
+                                        for i_list in this_set_range_indices:
+                                            # value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            value_list.append(deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ i_list ] ))
+                                        value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                        #
+                                        if Explored_Parameter_of_X==params['fin_val']:
+                                            new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id], params['final_year'] ) ) )
                                         #
                                         if Explored_Parameter_of_X==params['shift_per_ini_val']:
                                             new_value_list = deepcopy( time_series_shift( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
@@ -3780,7 +4224,7 @@ if __name__ == '__main__':
                                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ all_indices_app[0]:all_indices_app[-1]+1 ] )
                                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                                 
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] )))
                                                 
                                                 count_good += 1
                                     #
@@ -3797,16 +4241,17 @@ if __name__ == '__main__':
                                         if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                             if this_parameter == 'OutputActivityRatio' and params['adj_oar'] not in X_Cat:
                                                 if scenario_list[s] == params['BAU']:  # bypass this
-                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id], params['final_year'] ) ) )
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
                                                     reference_occupancy_rate[ scenario_list[s] ][f].update( { this_set:new_value_list } )
                                                 #
                                                 else:
                                                     # Store the pre-modification values for the BAU
                                                     reference_occupancy_rate[ params['BAU'] ][f].update( { this_set:value_list } )
-                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year'] ) )
+                                                    new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
                                                     reference_occupancy_rate[ scenario_list[s] ][f].update( { this_set:new_value_list } )
                                                     #
                                                 ###############################################################################
+																			
                                                 # Take advantage of this action and make adjustment to accident externalities with changed occupancy rate:
                                                 oar_indices_BASE = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( this_set ) ]
                                                 oar_values_BASE = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'OutputActivityRatio' ]['value'][ oar_indices_BASE[0]:oar_indices_BASE[-1]+1 ] )
@@ -3840,7 +4285,7 @@ if __name__ == '__main__':
                                                     sec_mult_cf_ll = 0.99
                                                 else:
                                                     sec_mult_cf_ll = 1
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year'] ) )
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]) ) )
                                                 #
                                             #
                                         #
@@ -4041,13 +4486,14 @@ if __name__ == '__main__':
                                             #--------------------------------------------------------------------#
                                             # now that the value is extracted, we must manipulate the result and assign back
                                             if Explored_Parameter_of_X==params['fin_val']: # By design, this must always happen.
-                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id]), params['final_year']  ) )
+                                                new_value_list = deepcopy( interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ) ) )
                                             #--------------------------------------------------------------------#``
                                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                             #
                                             # Assign parameters back: for these subset of uncertainties
                                             for useful_index in range( len( this_set_range_indices_useful ) ):
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices_useful[ useful_index ]  ] = new_value_list_rounded[ useful_index ]
+
 
                         elif Math_Type in params['math_type_curves_list'] and (params['x_cat_electri'] in X_Cat or params['x_cat_pen'] in X_Cat) \
                                         and params['Use_Energy']:
@@ -4197,10 +4643,11 @@ if __name__ == '__main__':
 
 
                                         # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
-                                        # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
+                                        if params['TRY_TK_HD'] != '':
+                                            this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
+                                            value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
+                                            this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
 
 
 
@@ -4221,16 +4668,16 @@ if __name__ == '__main__':
                                                 r_value_list = [float(r_value_list[j]) for j in range(len(r_value_list))]
                                                 rem_sets_sum = [sum(x) for x in zip(rem_sets_sum, r_value_list)]
 
-                                        for i in range(len(rem_sets_sum)):
-                                            if rem_sets_sum[i] == 0:
-                                                rem_sets_sum[i] = 0.1
-                                                print('print problem')
+                                        # for i in range(len(rem_sets_sum)):
+                                        #     if rem_sets_sum[i] == 0:
+                                        #         rem_sets_sum[i] = 0.1
+                                        #         print('print problem')
                                                 # sys.exit()
 
-                                        # if any(x == 0 for x in rem_sets_sum):
-                                        #     rem_sets_sum[-1] = 0.1
-                                        #     print('print problem')
-                                        #     sys.exit()
+                                        if any(x == 0 for x in rem_sets_sum):
+                                            rem_sets_sum[-1] = 0.1
+                                            # print('print problem')
+                                            # sys.exit()
                                         
                                         # Now get the complement:
                                         difference_list = [
@@ -4244,32 +4691,32 @@ if __name__ == '__main__':
                                             rem_sets_sum_adj_mult = [
                                                 rem_sum_adj/rem_sum for rem_sum, rem_sum_adj in zip(rem_sets_sum, rem_sets_sum_adj)]
                                             
-                                        if -math.inf in rem_sets_sum_adj_mult:
-                                            sys.exit()
+                                        # if -math.inf in rem_sets_sum_adj_mult:
+                                        #     sys.exit()
 
-                                        # # Adjust: check check
-                                        # for r_set in rem_sets:
-                                        #     r_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(r_set)]
-                                        #     r_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity'][this_set_type_initial]) if x == str(r_set)]
-                                        #     if len(r_set_range_indices) != 0:
-                                        #         r_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1])
-                                        #         r_value_list = [float(r_value_list[j]) for j in range(len(r_value_list))]
-                                        #         multer_low = [1]*7 + [0.98]*(len(time_range_vector)-7)
-                                        #         r_value_list_new = [
-                                        #             a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list)]
-                                        #         inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1] = deepcopy(r_value_list_new)
+                                        # Adjust: check check
+                                        for r_set in rem_sets:
+                                            r_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(r_set)]
+                                            r_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity'][this_set_type_initial]) if x == str(r_set)]
+                                            if len(r_set_range_indices) != 0:
+                                                r_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1])
+                                                r_value_list = [float(r_value_list[j]) for j in range(len(r_value_list))]
+                                                multer_low = [1]*7 + [0.98]*(len(time_range_vector)-7)
+                                                r_value_list_new = [
+                                                    a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list)]
+                                                inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1] = deepcopy(r_value_list_new)
 
-                                        #         # We must additionally adjust the TotalAnnualMaxCapacity if it exists, because we want to avoid inconsistencies
-                                        #         if len(r_set_range_indices_2) != 0:
-                                        #             r_value_list_2 = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1])
-                                        #             if any(r2 > 500 for r2 in [float(value2) for value2 in r_value_list_2]):
-                                        #                 pass
-                                        #             else:
-                                        #                 multer_max = [1]*7 + [1.02]*(len(time_range_vector)-7)
-                                        #                 r_value_list_new_2 = [
-                                        #                     a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_max, rem_sets_sum_adj_mult, r_value_list)]
-                                        #                 if r_set_range_indices_2:
-                                        #                     inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1] = deepcopy(r_value_list_new_2)
+                                                # We must additionally adjust the TotalAnnualMaxCapacity if it exists, because we want to avoid inconsistencies
+                                                if len(r_set_range_indices_2) != 0:
+                                                    r_value_list_2 = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1])
+                                                    if any(r2 > 500 for r2 in [float(value2) for value2 in r_value_list_2]):
+                                                        pass
+                                                    else:
+                                                        multer_max = [1]*7 + [1.02]*(len(time_range_vector)-7)
+                                                        r_value_list_new_2 = [
+                                                            a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_max, rem_sets_sum_adj_mult, r_value_list)]
+                                                        if r_set_range_indices_2:
+                                                            inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1] = deepcopy(r_value_list_new_2)
 
                                         # print('*', rem_sets_sum_adj_mult)
                                         # if params['tra_mot_gls'] not in rem_sets:
@@ -4279,11 +4726,11 @@ if __name__ == '__main__':
 
 
                                         # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
-                                        # value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        # value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
-                                        # this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
-                                            
+                                        if params['TRY_TK_HD'] != '':
+                                            this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
+                                            value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
+                                            this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
 
 
 
@@ -4365,7 +4812,7 @@ if __name__ == '__main__':
                                 #
                                 base_distance = Fleet_Groups_Distance[this_set]
 
-                                new_distance = deepcopy( interpolation_non_linear_final( time_range_vector, base_distance, float(Values_per_Future[fut_id]), params['final_year'] ) )
+                                new_distance = deepcopy( interpolation_non_linear_final( time_range_vector, base_distance, float(Values_per_Future[fut_id]) ) )
                                 reference_driven_distance[ scenario_list[s] ][f].update( {this_set:new_distance} )
 
                                 this_demand_set = Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ]
@@ -4384,15 +4831,15 @@ if __name__ == '__main__':
                                         subtract_list = [0 for j in range(len(train_pass_capacity_values))]
 
                                     demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( this_demand_set ) ]
-                                    demand_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['value'][demand_indices[0]:demand_indices[-1]+1]]
-                                    # demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
+                                    #demand_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['value'][demand_indices[0]:demand_indices[-1]+1]]
+                                    demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
                                     #
                                     new_value_list = []
                                     for n in range( len( value_list ) ):
                                         if n < index_change_year:
-                                            new_value_list.append( float(demand_list[n]) )
+                                            new_value_list.append( demand_list[n] )
                                         else:
-                                            new_value_list.append( (float(demand_list[n])-subtract_list[n])*new_distance[n]/base_distance[n] )
+                                            new_value_list.append( (demand_list[n]-subtract_list[n])*new_distance[n]/base_distance[n] )
                                             new_value_list[-1] += subtract_list[n]
                                     new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                     #
@@ -4400,14 +4847,14 @@ if __name__ == '__main__':
                                     #                                       
                                     if this_demand_set == params['tra_dem_pri']:
                                         demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_non_mot'] ) ]
-                                        demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
+                                        demand_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['value'][demand_indices[0]:demand_indices[-1]+1]]
                                         #
                                         new_value_list = []
                                         for n in range( len( value_list ) ):
                                             if n < index_change_year:
-                                                new_value_list.append( float(demand_list[n]) )
+                                                new_value_list.append( demand_list[n] )
                                             else:
-                                                new_value_list.append( float(demand_list[n])*new_distance[n]/base_distance[n] )
+                                                new_value_list.append( demand_list[n]*new_distance[n]/base_distance[n] )
                                         new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                         #
                                         inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
@@ -4425,7 +4872,7 @@ if __name__ == '__main__':
                                     if this_demand_set == params['tra_dem_lig']:
                                         dem_adj_ligfre = False
 
-                                if (params['techs_'] in this_set and this_parameter in params['cap_vars_cond_2'] ): # THIS CONDITION WILL ALWAYS BE TRUE
+                                if (this_set in trn_list and this_parameter in params['cap_vars_cond_2'] ): # THIS CONDITION WILL ALWAYS BE TRUE
                                     #
                                     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
                                     #
@@ -4448,17 +4895,18 @@ if __name__ == '__main__':
                                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                         inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
 
-                                        if this_set == params['tech_he_fre'] and scenario_list[s] != params['BAU']:  # here we need to adjust the capacity of freight rail for consistency
-                                            tsri_frerail = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( params['tech_train_fre'] ) ]
-                                            value_list_frerail = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] )
-                                            value_list_frerail = [ float(value_list_frerail[j]) for j in range( len(value_list_frerail) ) ]
-                                            #
-                                            new_value_list_frerail = []
-                                            for n in range( len( value_list_frerail ) ):
-                                                new_value_list_frerail.append( value_list_frerail[n]*new_distance[n]/base_distance[n] )
-                                            #
-                                            new_value_list_frerail_rounded = [ round(elem, params['round_#']) for elem in new_value_list_frerail ]
-                                            inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] = deepcopy( new_value_list_frerail_rounded )
+                                        # print('Energy_check_1')
+                                        # if this_set == params['tech_he_fre'] and scenario_list[s] != params['BAU']:  # here we need to adjust the capacity of freight rail for consistency
+                                        #     tsri_frerail = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( params['tech_train_fre'] ) ]
+                                        #     value_list_frerail = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] )
+                                        #     value_list_frerail = [ float(value_list_frerail[j]) for j in range( len(value_list_frerail) ) ]
+                                        #     #
+                                        #     new_value_list_frerail = []
+                                        #     for n in range( len( value_list_frerail ) ):
+                                        #         new_value_list_frerail.append( value_list_frerail[n]*new_distance[n]/base_distance[n] )
+                                        #     #
+                                        #     new_value_list_frerail_rounded = [ round(elem, params['round_#']) for elem in new_value_list_frerail ]
+                                        #     inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] = deepcopy( new_value_list_frerail_rounded )
 
                                 # Me must act upon the parameters that get affected by the distance change. We must the read the scenario and extract a list of the technologies that require the change.
                                 go_to_file = all_dataset_address + scenario_list[s] + '/' + this_parameter + '.csv'
@@ -4585,7 +5033,7 @@ if __name__ == '__main__':
                     #         #
                     #         # we must pick a this_k_adjust to manipulate the non-motrized demand based on the private demand // we arbitrarily choose Techs_Sedan
                     #         base_distance = reference_driven_distance[params['BAU']][f][ params['techs_sedan'] ]
-                    #         base_distance = deepcopy( interpolation_non_linear_final( time_list, base_distance, 1, params['final_year'] ) )
+                    #         base_distance = deepcopy( interpolation_non_linear_final( time_list, base_distance, 1 ) )
                     #         this_k_adjust = [ applicable_distance_dictionaries[params['techs_sedan']][n]/base_distance[n] for n in range( len( non_motorized_passenger_demand_values ) ) ]
                     #         #
                     #         new_non_motorized_passenger_demand = []
@@ -4662,7 +5110,7 @@ if __name__ == '__main__':
                                 demand_list = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ demand_indices[0]:demand_indices[-1]+1 ] )
                                 #
                                 new_value_list_old_base = deepcopy( value_list )
-                                new_value_list = [ new_value_list_old_base[n]*(float(demand_list[n])/demand_list_BASE[n]) for n in range( len( new_value_list_old_base ) )]
+                                new_value_list = [ new_value_list_old_base[n]*(demand_list[n]/demand_list_BASE[n]) for n in range( len( new_value_list_old_base ) )]
                                 new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                                 #
                                 inherited_scenarios[ scenario_list[s] ][ f ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
@@ -4741,7 +5189,8 @@ if __name__ == '__main__':
                         #
                         for n in range( len( Sets_Involved ) ):
                             #
-                            Blend_Shares[ scenario_list[s] ][f].update( { Sets_Involved[n]:{} } )
+                            if params['Use_Blend_Shares']:
+                                Blend_Shares[ scenario_list[s] ][f].update( { Sets_Involved[n]:{} } )
                             #
                             for n2 in range( len( Techs_Emissions[ Sets_Involved[n] ] ) ):
                                 this_tech_emission_indices_fuel = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ][ 't' ] ) if x == Sets_Involved[n] ] # it is actually a tech representing a fuel, so it is all OK
@@ -4784,10 +5233,11 @@ if __name__ == '__main__':
 
                     #--------------------------------------------------------------------#
                 # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
-                # if params['NDP'] == scenario_list[s] and u > 13:
-                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
-                #     value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                #     value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
+                # print('Energy_check_3')
+                if params['NDP'] == scenario_list[s] and u > 13 and params['TRY_TK_HD'] != '':
+                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
+                    value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                    value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
 
 
 
@@ -4932,12 +5382,13 @@ if __name__ == '__main__':
     with open(params['Exper_Dict'], 'wb') as handle:
         pickle.dump(experiment_dictionary, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
-
-    blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares_0'], "rb" ) )
-    Blend_Shares[params['NDP']].update({0: blend_shares_zero[params['NDP']]})
-    with open(params['Blend_Shares_0'], 'wb') as handle:
-        pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    handle.close()
+    
+    if params['Use_Blend_Shares']:
+        blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares_0'], "rb" ) )
+        Blend_Shares[params['NDP']].update({0: blend_shares_zero[params['NDP']]})
+        with open(params['Blend_Shares_0'], 'wb') as handle:
+            pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        handle.close()
     '''
     print('brake this already processed')
     sys.exit()
@@ -4947,10 +5398,16 @@ if __name__ == '__main__':
         print('4: We will now print the input .txt files of diverse future scenarios.')
         #
         print_adress = './' + params['Futures'].replace('/', '')
-        packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure,
-                                    list_param_default_value_params, list_param_default_value_value,
-                                    print_adress, all_futures, reference_driven_distance,
-                                    Fleet_Groups_inv, time_range_vector, Blend_Shares ]
+        if params['Use_Blend_Shares']:
+            packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure,
+                                        list_param_default_value_params, list_param_default_value_value,
+                                        print_adress, all_futures, reference_driven_distance,
+                                        Fleet_Groups_inv, time_range_vector, Blend_Shares ]
+        else:
+            packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure,
+                                        list_param_default_value_params, list_param_default_value_value,
+                                        print_adress, all_futures, reference_driven_distance,
+                                        Fleet_Groups_inv, time_range_vector]
         #
         if params['parallel']:
             print('Entered Parallelization')

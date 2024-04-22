@@ -82,6 +82,9 @@ conv_format: 'conversion_format.yaml'
 # Script to create and change values of the yaml file to use with otoole
 # File
 otoole_config: change_default_vals_params.py
+# Script to concatenate the csvs otoole's outputs
+# File
+concat_csvs: create_csv_concatenate.py                                                 
 # Classifier Modes Transport
 # File
 Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx'
@@ -130,14 +133,13 @@ ose_cou_in: 'OSMOSYS_CR_Input'
 # OSeMOSYS CR Output
 # File
 ose_cou_out: 'OSMOSYS_CR_Output'
+# Results folder
+results: 'Executables\\'                
 ########################################################################################
 
 ################################# Variable definitions #################################
 # Configuration variables
 #----------------------------------------------------------------------------------#
-# Results folder
-results: 'Executables\\'
-
 # Start command line
 start: 'start cmd.exe /k cd '
 
@@ -145,10 +147,10 @@ start: 'start cmd.exe /k cd '
 solver: 'glpk' # Could you use 'glpk', 'cbc' or 'cplex'
 
 # For GLPK use
-glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
+glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate 
 
 # Choose if want to delete or not the solver solutions files
-del_files: False
+del_files: True
 
 # Maximun cores to use per iteration
 Number_of_Runs: 5 # em
@@ -192,7 +194,10 @@ Use_Transport: False
 Use_AFOLU: False
 Use_PIUP: True
 
+Use_Blend_Shares: False # You musn't change
+
 # Scenarios
+# Only use the three main letters                                 
 #--------------------------------------------------------------------------------------------------------------------#
 BAU: 'BAU'
 NDP: 'NDP'
@@ -201,6 +206,8 @@ DDP: 'DDP'
 
 # Years variables
 #----------------------------------------------------------------------------------#
+# Year to apply discount rate
+year_apply_discount_rate: 2023
 # Base year
 base_year: 2023
 R_base_year: 'R2023' 
@@ -303,6 +310,64 @@ default_val_params: {
   YearSplit: 0
   }
 
+params_inputs_data:
+  - AccumulatedAnnualDemand
+  - AnnualEmissionLimit
+  - AnnualExogenousEmission
+  #- AvailabilityFactor
+  #- CapacityFactor
+  - CapacityOfOneTechnologyUnit
+  #- CapacityToActivityUnit
+  #- CapitalCost
+  - CapitalCostStorage
+  - Conversionld
+  - Conversionlh
+  - Conversionls
+  - DaySplit
+  - DaysInDayType
+  - DepreciationMethod
+  - DiscountRate
+  #- EmissionActivityRatio
+  - EmissionsPenalty
+  #- FixedCost
+  #- InputActivityRatio
+  - MinStorageCharge
+  - ModelPeriodEmissionLimit
+  - ModelPeriodExogenousEmission
+  #- OperationalLife
+  - OperationalLifeStorage
+  #- OutputActivityRatio
+  - REMinProductionTarget
+  - RETagFuel
+  - RETagTechnology
+  - ReserveMargin
+  - ReserveMarginTagFuel
+  - ReserveMarginTagTechnology
+  #- ResidualCapacity
+  - ResidualStorageCapacity
+  #- SpecifiedAnnualDemand
+  #- SpecifiedDemandProfile
+  - StorageLevelStart
+  - StorageMaxChargeRate
+  - StorageMaxDischargeRate
+  - TechnologyFromStorage
+  - TechnologyToStorage
+  - TotalAnnualMaxCapacity
+  - TotalAnnualMaxCapacityInvestment
+  - TotalAnnualMinCapacity
+  - TotalAnnualMinCapacityInvestment
+  #- TotalTechnologyAnnualActivityLowerLimit
+  #- TotalTechnologyAnnualActivityUpperLimit
+  - TotalTechnologyModelPeriodActivityLowerLimit
+  - TotalTechnologyModelPeriodActivityUpperLimit
+  - TradeRoute
+  #- VariableCost
+  #- YearSplit
+
+params_inputs_data_excep_by_scen: {
+  BAU: [],
+  NDP: []
+}                   
 sets_otoole: [
   YEAR,
   TECHNOLOGY,
@@ -361,16 +426,16 @@ more_vars: [
   'ProducedMobility'
   ]
 
-filter_vars: [
+filter_vars: [ # em
   'FilterFuelType',
   'FilterVehicleType',
   # 'DiscountedTechnEmissionsPen',
   #
-  'Capex2023', # CapitalInvestment
-  'FixedOpex2023', # AnnualFixedOperatingCost
-  'VarOpex2023', # AnnualVariableOperatingCost
-  'Opex2023', # OperatingCost
-  'Externalities2023', # AnnualTechnologyEmissionPenaltyByEmission
+  'Capex${year_apply_discount_rate}', # CapitalInvestment
+  'FixedOpex${year_apply_discount_rate}', # AnnualFixedOperatingCost
+  'VarOpex${year_apply_discount_rate}', # AnnualVariableOperatingCost
+  'Opex${year_apply_discount_rate}', # OperatingCost
+  'Externalities${year_apply_discount_rate}', # AnnualTechnologyEmissionPenaltyByEmission
   #
   'Capex_GDP', # CapitalInvestment
   'FixedOpex_GDP', # AnnualFixedOperatingCost
@@ -379,16 +444,16 @@ filter_vars: [
   'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
   ]
 
-filter_vars_2: [ # this list is for B1 file
+filter_vars_2: [ # B1
   'FilterFuelType',
   'FilterVehicleType',
   # 'DiscountedTechnEmissionsPen',
   #
-  'Capex2021', # CapitalInvestment
-  'FixedOpex2021', # AnnualFixedOperatingCost
-  'VarOpex2021', # AnnualVariableOperatingCost
-  'Opex2021', # OperatingCost
-  'Externalities2021' # AnnualTechnologyEmissionPenaltyByEmission
+  'Capex${year_apply_discount_rate}', # CapitalInvestment
+  'FixedOpex${year_apply_discount_rate}', # AnnualFixedOperatingCost
+  'VarOpex${year_apply_discount_rate}', # AnnualVariableOperatingCost
+  'Opex${year_apply_discount_rate}', # OperatingCost
+  'Externalities${year_apply_discount_rate}' # AnnualTechnologyEmissionPenaltyByEmission
   ]
 
 output_header: [ 'Strategy', 'Future.ID','Fuel','Technology','Emission','Year']
@@ -603,8 +668,8 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 
 ################################# Conditions #################################
 trains: 'Trains'
-tra_techs_1: ['Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em
-tra_techs_2: ['Techs_Auto', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em
+tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em
+tra_techs_for_passengers: ['Techs_Auto', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em
 trn_list: [ # em
   'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri',
   'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef',
@@ -710,15 +775,16 @@ a_fuel_set: 'CLK_PROD'
 
 ################################# General Var #################################
 newfleet: 'NewFleet'
-externa_base_year: 'Externalities2023' # Check with dicts filter_vars and filter_vars_2
-externa_gdp: 'Externalities_GDP'
-capex_base_year: 'Capex2023' # Check with dicts filter_vars and filter_vars_2
-capex_gdp: 'Capex_GDP'
-fopex_base_year: 'FixedOpex2023' # Check with dicts filter_vars and filter_vars_2
-fopex_gdp: 'FixedOpex_GDP'
-vopex_base_year: 'VarOpex2023' # Check with dicts filter_vars and filter_vars_2
-vopex_gdp: 'VarOpex_GDP'
-opex_base_year: 'Opex2023' # Check with dicts filter_vars and filter_vars_2
+externa_base_year: 'Externalities${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # em
+externa_gdp: 'Externalities_GDP' # em
+capex_base_year: 'Capex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # em
+capex_gdp: 'Capex_GDP' # em
+fopex_base_year: 'FixedOpex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # em
+fopex_gdp: 'FixedOpex_GDP' # em
+vopex_base_year: 'VarOpex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # em
+vopex_gdp: 'VarOpex_GDP' # em
+opex_base_year: 'Opex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # em
+opex_gdp: 'Opex_GDP' # em
 opex_gdp: 'Opex_GDP'
 biofuel_shares: 'BiofuelShares'
 fleet: 'Fleet'
@@ -833,11 +899,11 @@ valid_column_names: [
   'AnnualTechnologyEmissionsPenalty',
   'DiscountedTechnologyEmissionsPenalty',
   "AnnualEmissions",
-  "Capex2023",
-  'FixedOpex2023',
-  "VarOpex2023",
-  "Opex2023",
-  'Externalities2023',
+  "Capex${year_apply_discount_rate}",
+  'FixedOpex${year_apply_discount_rate}',
+  "VarOpex${year_apply_discount_rate}",
+  "Opex${year_apply_discount_rate}",
+  'Externalities${year_apply_discount_rate}',
   "Capex_GDP",
   "FixedOpex_GDP",
   "VarOpex_GDP",
