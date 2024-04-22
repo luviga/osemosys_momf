@@ -11,7 +11,7 @@ from copy import deepcopy
 import shutil
 import sys
 
-def get_config_main_path(full_path):
+def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
     parts = full_path.split(os.sep)
     
@@ -25,7 +25,7 @@ def get_config_main_path(full_path):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    appended_path = os.path.join(base_path, base_folder) + os.sep
     
     return appended_path
 
