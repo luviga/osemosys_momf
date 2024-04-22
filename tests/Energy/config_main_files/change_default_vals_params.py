@@ -25,7 +25,7 @@ def get_config_main_path(full_path):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    appended_path = os.path.join(base_path, 'tests\Energy\config_main_files') + os.sep
     
     return appended_path
 
@@ -48,7 +48,7 @@ if not os.path.exists(directory):
 os.system(f'otoole setup --overwrite config {file_path}')
 
 # Create folder with csv templates
-os.system(f'otoole setup --overwrite csv ' + file_config_address + 'config\\templates')
+os.system('otoole setup --overwrite csv ' + file_config_address + 'config\\templates')
 
 # Read yaml file with parameterization to conversion format by otoole
 with open(file_path, 'r') as file:
