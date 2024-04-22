@@ -64,82 +64,10 @@ if __name__ == '__main__':
                 if params['vis_dir'] in csv_file_list:
                     csv_file_list.remove(f'{params["vis_dir"]}')
                 
-                for f in csv_file_list:
-                    
-                    local_df = pd.read_csv(tier_dir + '/' + f)
-                    
-                    
-                    # Delete columns of sets do not use in otoole config yaml
-                    columns_check = [column for column in local_df.columns if column in sets_corrects]
-                    # columns_check.insert(0,'Parameter')
-                    local_df = local_df[columns_check]
-                    # if f == 'AnnualEmissions.csv':
-                    #     sys.exit()
-                    
-                    local_df['Parameter'] = f.split('.')[0]
-                    
-                    parameter_list.append(f.split('.')[0])
-                    parameter_dict.update({parameter_list[-1]: local_df})
-                    #(f, local_df.columns.tolist())
-                    
-                    df_list.append(local_df)
-                columns_check.insert(0,'Parameter')
-                df_all = pd.concat(df_list, ignore_index=True, sort=False)
-                
-                # df_all = df_all[ columns_check ]
-                df_all = df_all[ sets_csv_temp ]
-                # df_all = df_all[ params['df_all'] ]
-                
-                # df_all.to_csv('df_all.csv')
-                
-                
-                # 2nd try
-                df_list_2 = []
-                
-                for p in parameter_list:
-                    local_df_2 = parameter_dict[p]
-                    local_df_2 = local_df_2.rename(columns={
-                        'VALUE': p
-                        # Add more columns as needed
-                        })
-                    df_list_2.append(local_df_2)
-                
-                
-                df_all_2 = pd.concat(df_list_2, ignore_index=True, sort=False)
-                
-                
-                # 3rd try
-                # Assuming parameter_list and parameter_dict are defined
-                # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
-                first_param = parameter_list[0]
-                df_all_3 = pd.DataFrame()
-                df_all_3 = df_all[df_all['Parameter'] == first_param]
-                df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
-                df_all_3 = df_all_3.drop('Parameter', axis=1)
-                df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
-                df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
+                # Read dataframe with csv concatenates in the script create_csv_concatenate.py
+                df_all = pd.read_csv(f'{params["excel_data_file_dir"]}{scen}/{case}/Data_plots_{case[-1]}.csv')
+                df_all.drop('Unnamed: 0', axis=1, inplace=True, errors='ignore')
 
-                
-                
-                # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
-                for p in parameter_list[1:]:  # Skip the first parameter since it's already added
-                    local_df_3 = df_all[df_all['Parameter'] == p]
-                    local_df_3 = local_df_3.rename(columns={'VALUE': p})
-                    local_df_3 = local_df_3.drop('Parameter', axis=1)
-                    local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
-                    local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
-                    # if count == 2:
-                    #     print('Check',count)
-                    #     sys.exit()
-                    count+=1
-
-                    df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
-                
-                # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                df_all_3.to_csv(f'{params["excel_data_file_dir"]}{scen}/{case}/Data_Output_{case[-1]}.csv')
-                
-                
-                
                 # Assuming df is your pandas DataFrame with the relevant data
                 parameters = df_all['Parameter'].unique()  # Replace with your actual parameters column
                 
@@ -149,13 +77,19 @@ if __name__ == '__main__':
                 years.sort()
                 
                 # Print info about years, only in the base case
-                if params['info'] and int(case[-1])==0:
+                if params['info']: # and int(case[-1])==0:
                     print(f'Data information of this scenario: {case[0:3]}')
                     print(f'These are the years availables:\n{years}')
                 
                 # Plot attempts:
                 techs_desired = {}
                 for parameter in parameters:
+                    # Print info about technologies, only in the base case
+                    if params['info']: # and int(case[-1])==0:
+                        df_tech_filtered = df_all[df_all['Parameter'] == parameter]
+                        technologies =  df_tech_filtered['TECHNOLOGY'].unique()
+                        print(f'For {parameter}, these are the technologies availables:\n{technologies}')
+                        continue
                     if not params['info']:
                         try:
                             if params[f'techs_{parameter}'] != []:
@@ -164,11 +98,7 @@ if __name__ == '__main__':
                             print(f'{parameter} do not has any technology select.')
                         
                     if parameter in techs_desired:
-                        # Print info about technologies, only in the base case
-                        if params['info'] and int(case[-1])==0:
-                            technologies = df_all['TECHNOLOGY'].unique()
-                            print(f'For {parameter}, these are the technologies availables:\n{technologies}')
-                            continue
+                        
                         
                         # Info about ticks years 
                         start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label
@@ -177,8 +107,10 @@ if __name__ == '__main__':
                         # Filter the DataFrame for the current parameter
                         parameter_df = df_all[df_all['Parameter'] == parameter]
                         # Filter the DataFrame for the techcologies selected
+                        
                         parameter_df = parameter_df[parameter_df['TECHNOLOGY'].isin(techs_desired[parameter])]
-                    
+                        # sys.exit()
+                        
                         # If the filtered DataFrame is empty, skip this parameter
                         if parameter_df.empty:
                             print(f"No data for parameter {parameter}. Skipping plot.")
