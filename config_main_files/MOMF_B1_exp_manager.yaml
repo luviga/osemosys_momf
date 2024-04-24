@@ -994,3 +994,19 @@ group_tech_set: 'Techs_Auto'
 exception_list_TRAN: ['TRBPUHYD', 'TRYTKHYD'] # em
 special_list_dict_TRAN: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']} # em
 ##############################################################################
+
+# Parameters to script create_csv_concatenate.py
+# First: Select model
+model: 'MOMF' # two options: 'MOMF' or 'BULAC'
+
+# If model is MOMF, select what tier use
+tier: '3a' # two options: '1' or '3a'
+
+# Second: Select folders
+tier1_dir: '\\t1_confection\\Executables' # Don't change
+tier3a_dir: '..\\t3a_experiments\\Experiment_1\\Futures' #'../t3a_experiments/Experiment_1/Futures'
+excel_data_file_dir:  '..\\t3a_experiments\\Experiment_1\\Futures\\'
+vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
+# out_dir: '/Outputs' # Don't change
+dir_main_script_yaml: '..\\config_main_files'
+scens: ['BAU', 'NDP']

@@ -635,6 +635,8 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     if solver == 'glpk' and params['glpk_option'] == 'new':
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
         os.system( str_start and str_outputs )
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+        os.system( str_start and str_otoole_concate_csv )
         
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file

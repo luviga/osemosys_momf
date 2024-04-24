@@ -9,6 +9,7 @@ import os
 import pandas as pd
 import yaml
 from copy import deepcopy
+import sys
 
 def get_config_main_path(full_path, base_folder='config_plots'):
     # Split the path into parts
@@ -30,18 +31,18 @@ def get_config_main_path(full_path, base_folder='config_plots'):
 
 if __name__ == '__main__':
     # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(''))
-    with open(file_config_address + '\\' + 'plots_config.yaml', 'r') as file:
+    file_config_address = get_config_main_path(os.path.abspath(''), 'tests/Waste/config_main_files')
+    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
         
-    # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
-    with open( file_config_address + '\\' + '/MOMF_B1_exp_manager.yaml', 'r') as file:
-        # Load content file
-        params_tiers = yaml.safe_load(file)
+    # # Read yaml file with parameterization
+    # file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
+    # with open( file_config_address + '\\' + '/MOMF_B1_exp_manager.yaml', 'r') as file:
+    #     # Load content file
+    #     params_tiers = yaml.safe_load(file)
         
-    sets_corrects = deepcopy(params_tiers['sets_otoole'])
+    sets_corrects = deepcopy(params['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
     sets_corrects.append('VALUE')
     
@@ -49,19 +50,23 @@ if __name__ == '__main__':
     sets_csv_temp = deepcopy(sets_csv)
     sets_csv_temp.insert(0,'Parameter')
     sets_csv_temp.append('VALUE')
-    set_no_needed = [item for item in params_tiers['sets_otoole'] if item not in sets_csv]
+    set_no_needed = [item for item in params['sets_otoole'] if item not in sets_csv]
     
     if params['model']=='MOMF':
         dict_scen_folder_unique = {}
         for scen in params['scens']:
             if params['tier']=='1':
-                dir_tier = params['tier1_dir'].replace('../','')
+                dir_tier = params['tier1_dir'].replace('..\\','')
                 dir_tier = get_config_main_path(os.path.abspath(''), dir_tier + '\\' + scen)
+                dir_tier = dir_tier = dir_tier.replace('\\', '\\\\')
+                dir_tier = dir_tier = dir_tier.replace('\\', '/')
                 all_files_internal = os.listdir(dir_tier)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
             elif params['tier']=='3a':
-                dir_tier = params['tier3a_dir'].replace('../','')
-                dir_tier = get_config_main_path(os.path.abspath(''), dir_tier + '\\' + scen)
+                dir_tier = params['tier3a_dir'].replace('..\\\\','')
+                dir_tier = get_config_main_path(os.path.abspath('').replace('\\config_plots',''), dir_tier + '\\' + scen)
+                dir_tier = dir_tier = dir_tier.replace('\\\\', '/')
+                dir_tier = dir_tier = dir_tier.replace('\\', '/')
                 all_files_internal = os.listdir(dir_tier)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
         count = 0
@@ -69,12 +74,16 @@ if __name__ == '__main__':
             for case in dict_scen_folder_unique[f'{scen}']:
                 # Select folder path
                 if params['tier']=='1':
-                    tier_dir = params['tier1_dir'] + '/' + case + params['out_dir']
+                    tier_dir = params['tier1_dir'] + '\\\\' + case + params['outputs']
                 elif params['tier']=='3a':
-                    tier_dir = params['tier3a_dir'] + '/' + scen + '/' + case + params['out_dir']
+                    tier_dir = params['tier3a_dir'] + '\\\\' + scen + '\\\\' + case + params['outputs']
     
                 # 1st try
-                tier_dir = tier_dir.replace('../','')
+                tier_dir = tier_dir.replace('/','\\\\')
+                tier_dir = tier_dir.replace('..\\\\','')
+                
+                tier_dir = tier_dir.replace('\\\\', '\\')
+                # sys.exit()
                 tier_dir = get_config_main_path(os.path.abspath(''), tier_dir)
                 csv_file_list = os.listdir(tier_dir)
                 
@@ -105,8 +114,9 @@ if __name__ == '__main__':
                 df_all = pd.concat(df_list, ignore_index=True, sort=False)
                 df_all = df_all[ sets_csv_temp ]
                 file_df_dir = params["excel_data_file_dir"].replace('../','')
-                file_df_dir = get_config_main_path(os.path.abspath(''), file_df_dir)
-                df_all.to_csv(f'{file_df_dir}{scen}\\{case}\\Data_plots_{case[-1]}.csv')
+                out_quick = params['outputs'].replace('/','')
+                file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
+                df_all.to_csv(f'{file_df_dir}\\Data_plots_{case[-1]}.csv')
                 
                 # 3rd try
                 # Assuming parameter_list and parameter_dict are defined
@@ -133,4 +143,4 @@ if __name__ == '__main__':
                     df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                 
                 # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                df_all_3.to_csv(f'{file_df_dir}{scen}/{case}/Data_Output_{case[-1]}.csv')
+                df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
