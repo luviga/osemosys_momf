@@ -635,6 +635,8 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     if solver == 'glpk' and params['glpk_option'] == 'new':
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
         os.system( str_start and str_outputs )
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+        os.system( str_start and str_otoole_concate_csv )
         
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
@@ -2541,11 +2543,8 @@ if __name__ == '__main__':
                                 #--------------------------------------------------------------------#
                         #--------------------------------------------------------------------#
 
-                        elif params['pass_dem'] in X_Cat and (params['Use_Energy'] or params['Use_AFOLU']):
-                            if params['Use_AFOLU']:
-                                print('AFOLU_2')
-                            elif params['Use_Energy']:
-                                print('Energy_1')
+                        elif params['pass_dem'] in X_Cat and params['Use_Energy']:
+                            print('Energy_1')
                             #
                             enter_if_cycle = True
                             #
@@ -2657,11 +2656,8 @@ if __name__ == '__main__':
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( updated_value_list_rounded )
                         #
                         
-                        elif X_Cat in params['x_cat_list'] and (params['Use_Energy'] or params['Use_AFOLU']):
-                            if params['Use_AFOLU']:
-                                print('AFOLU_3')
-                            elif params['Use_Energy']:
-                                print('Energy_2')
+                        elif X_Cat in params['x_cat_list'] and params['Use_Energy']:
+                            print('Energy_2')
                             #
                             enter_if_cycle = True
                             #
@@ -2944,7 +2940,7 @@ if __name__ == '__main__':
 
                         
                         elif X_Cat in params['x_cat_afolu_list'] and params['Use_AFOLU']:
-                            print('AFOLU_4', X_Cat)
+                            print('AFOLU_2', X_Cat)
                             #------------------------------------------
                             for a_set in range( len( Sets_Involved ) ):
                                 # Control if you want to modify imports and exports:
@@ -3081,7 +3077,7 @@ if __name__ == '__main__':
                             #
                         #
                         elif X_Cat == params['x_cat_afolu_4'] and params['Use_AFOLU']:
-                            print('AFOLU_5', X_Cat)
+                            print('AFOLU_3', X_Cat)
                             
                             # all_covers = params['all_covers]
                             
@@ -4129,7 +4125,7 @@ if __name__ == '__main__':
                                                             and (params['x_cat_mode_shift'] not in X_Cat) ) or ( Math_Type==params['math_type_dis_invs'] )) \
                                                             and params['Use_AFOLU']:
 												   
-                            print('AFOLU_6')
+                            print('AFOLU_4')
 													  
 												 
                             #
