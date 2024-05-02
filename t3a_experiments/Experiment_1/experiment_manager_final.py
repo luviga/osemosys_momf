@@ -2230,10 +2230,10 @@ if __name__ == '__main__':
                         enter_if_cycle = False
                         #
 
-                        if params['Use_Waste']:
+                        if params['Use_Waste'] and Sectors_Involved[0][2]=="W":
                             print('Waste_3')
                             ## FALTA CHEQUEAR
-                            if X_Cat in list_variation_waste and Sectors_Involved[0][2]=="W":
+                            if X_Cat in list_variation_waste:
                                 # print('##############')
                                 # print('ENTRA 1')
                                 # print(this_parameter)
@@ -2296,8 +2296,10 @@ if __name__ == '__main__':
                                     new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
 
                                     inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1] = deepcopy(new_value_list)
-                                    # if nvs == 'LATR':
-                                    #     inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1] = deepcopy(new_value_list)
+                                    if nvs == 'LATR':
+                                        this_nvs_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t']) if x == str(nvs)]
+                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_nvs_indices2[0]:this_nvs_indices2[-1]+1] = deepcopy(new_value_list)
+
 
                                     sum_value_list_new_nvs = [sum(x) for x in zip(sum_value_list_new_nvs, new_value_list)]
 
@@ -2377,7 +2379,10 @@ if __name__ == '__main__':
                                                     adj_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1])
                                                     new_adj_value_list = [mult_new_value_list[i]*v for i, v in enumerate(adj_value_list)]
 
-                                                    inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1] = deepcopy(new_adj_value_list)    
+                                                    inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1] = deepcopy(new_adj_value_list)
+                                                    if adj_set == "LATR":
+                                                        this_adj_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t'] ) if x == str(adj_set)]
+                                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['value'][this_adj_indices2[0]:this_adj_indices2[-1]+1] = deepcopy(new_adj_value_list)
                                                 inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list)
 
                                     ## LISTO
@@ -2490,7 +2495,47 @@ if __name__ == '__main__':
                                             #--------------------------------------------------------------------#
                                             # Assign parameters back: for these subset of uncertainties
                                             inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list)
-                                        else:
+                                        # else:
+                                        #     time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        #     time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                        #     # extracting value:
+                                        #     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                        #     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                        #     #--------------------------------------------------------------------#
+                                        #     # now that the value is extracted, we must manipulate the result and assign back
+                                        #     if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
+                                        #         #
+                                        #         # this impacts normal variables
+                                        #         new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
+
+                                        #         #
+                                            
+                                        #     #--------------------------------------------------------------------#
+                                        #     # Assign parameters back: for these subset of uncertainties
+                                        #     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list)
+                                            
+                                        #     # Asignar restriccion
+                                        #     activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
+                                        #     technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
+                                        #     anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
+                                        #     region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
+                                        #     list_aux_activity=list()
+                                        #     list_aux_technology=list()
+                                        #     list_aux_anios=list()
+                                        #     list_aux_region=list()
+
+                                        #     for ite in range(len(technology)):
+                                        #         if technology[ite] == this_set:
+                                        #             list_aux_region.append(region[ite])
+                                        #             list_aux_anios.append(anios[ite])
+                                        #             list_aux_technology.append(technology[ite])
+                                        #             list_aux_activity.append(activity[ite])
+                                        #     for ite in range(len(list_aux_activity)):
+                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
+                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
+                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
+                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])
+                                        elif this_set in ['INORG_RCY_OS']:
                                             time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                             time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
                                             # extracting value:
@@ -2498,11 +2543,10 @@ if __name__ == '__main__':
                                             value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
                                             #--------------------------------------------------------------------#
                                             # now that the value is extracted, we must manipulate the result and assign back
-                                            if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
+                                            if Explored_Parameter_of_X == 'Final_Value': # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
                                                 #
                                                 # this impacts normal variables
-                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
-
+                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
                                                 #
                                             
                                             #--------------------------------------------------------------------#
@@ -2518,7 +2562,6 @@ if __name__ == '__main__':
                                             list_aux_technology=list()
                                             list_aux_anios=list()
                                             list_aux_region=list()
-
                                             for ite in range(len(technology)):
                                                 if technology[ite] == this_set:
                                                     list_aux_region.append(region[ite])
@@ -2530,104 +2573,66 @@ if __name__ == '__main__':
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])
-                                        # elif this_set in ['INORG_RCY_OS']:
-                                        #     time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        #     time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
-                                        #     # extracting value:
-                                        #     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        #     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                                        #     #--------------------------------------------------------------------#
-                                        #     # now that the value is extracted, we must manipulate the result and assign back
-                                        #     if Explored_Parameter_of_X == 'Final_Value': # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
-                                        #         #
-                                        #         # this impacts normal variables
-                                        #         new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
-                                        #         #
-                                            
-                                        #     #--------------------------------------------------------------------#
-                                        #     # Assign parameters back: for these subset of uncertainties
-                                        #     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list)
-                                            
-                                        #     # Asignar restriccion
-                                        #     activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
-                                        #     technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
-                                        #     anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
-                                        #     region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
-                                        #     list_aux_activity=list()
-                                        #     list_aux_technology=list()
-                                        #     list_aux_anios=list()
-                                        #     list_aux_region=list()
-                                        #     for ite in range(len(technology)):
-                                        #         if technology[ite] == this_set:
-                                        #             list_aux_region.append(region[ite])
-                                        #             list_aux_anios.append(anios[ite])
-                                        #             list_aux_technology.append(technology[ite])
-                                        #             list_aux_activity.append(activity[ite])
-                                        #     for ite in range(len(list_aux_activity)):
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])
                                         
-                                        # elif this_set in ['COMPOST']:
-                                        #     time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        #     time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
-                                        #     # extracting value:
-                                        #     value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        #     value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                                        #     #--------------------------------------------------------------------#
-                                        #     # now that the value is extracted, we must manipulate the result and assign back
-                                        #     if Explored_Parameter_of_X == 'Final_Value': # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
-                                        #         #
-                                        #         # this impacts normal variables
-                                        #         new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
-                                        #         #
+                                        elif this_set in ['COMPOST']:
+                                            time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                            # extracting value:
+                                            value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                            value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                            #--------------------------------------------------------------------#
+                                            # now that the value is extracted, we must manipulate the result and assign back
+                                            if Explored_Parameter_of_X == 'Final_Value': # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
+                                                #
+                                                # this impacts normal variables
+                                                new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), 2050, Initial_Year_of_Uncertainty))
+                                                #
                                             
-                                        #     #--------------------------------------------------------------------#
-                                        #     # Assign parameters back: for these subset of uncertainties
-                                        #     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list)
+                                            #--------------------------------------------------------------------#
+                                            # Assign parameters back: for these subset of uncertainties
+                                            inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list)
                                             
-                                        #     # Asignar restriccion
-                                        #     activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
-                                        #     technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
-                                        #     anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
-                                        #     region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
-                                        #     list_aux_activity=list()
-                                        #     list_aux_technology=list()
-                                        #     list_aux_anios=list()
-                                        #     list_aux_region=list()
-                                        #     for ite in range(len(technology)):
-                                        #         if technology[ite] == this_set:
-                                        #             list_aux_region.append(region[ite])
-                                        #             list_aux_anios.append(anios[ite])
-                                        #             list_aux_technology.append(technology[ite])
-                                        #             list_aux_activity.append(activity[ite])
-                                        #     for ite in range(len(list_aux_activity)):
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
-                                        #         inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])
+                                            # Asignar restriccion
+                                            activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
+                                            technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
+                                            anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
+                                            region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
+                                            list_aux_activity=list()
+                                            list_aux_technology=list()
+                                            list_aux_anios=list()
+                                            list_aux_region=list()
+                                            for ite in range(len(technology)):
+                                                if technology[ite] == this_set:
+                                                    list_aux_region.append(region[ite])
+                                                    list_aux_anios.append(anios[ite])
+                                                    list_aux_technology.append(technology[ite])
+                                                    list_aux_activity.append(activity[ite])
+                                            for ite in range(len(list_aux_activity)):
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])
                                             
-                                        #     # Asignar restriccion a Letrinas
-                                        #     # activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
-                                        #     # technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
-                                        #     # anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
-                                        #     # region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
-                                        #     # list_aux_activity=list()
-                                        #     # list_aux_technology=list()
-                                        #     # list_aux_anios=list()
-                                        #     # list_aux_region=list()
-                                        #     # for ite in range(len(technology)):
-                                        #     #     if technology[ite] == 'LATR':# or technology[ite] == 'SIT_CLAN': #or technology[ite] == 'NO_CONTR_OD':
-                                        #     #         list_aux_region.append(region[ite])
-                                        #     #         list_aux_anios.append(anios[ite])
-                                        #     #         list_aux_technology.append(technology[ite])
-                                        #     #         list_aux_activity.append(activity[ite])
-                                        #     # for ite in range(len(list_aux_activity)):
-                                        #     #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
-                                        #     #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
-                                        #     #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
-                                        #     #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])                                                
+                                            # Asignar restriccion a Letrinas
+                                            # activity=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'] )
+                                            # technology=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['t'] )
+                                            # anios=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['y'] )
+                                            # region=deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['r'] )
+                                            # list_aux_activity=list()
+                                            # list_aux_technology=list()
+                                            # list_aux_anios=list()
+                                            # list_aux_region=list()
+                                            # for ite in range(len(technology)):
+                                            #     if technology[ite] == 'LATR':# or technology[ite] == 'SIT_CLAN': #or technology[ite] == 'NO_CONTR_OD':
+                                            #         list_aux_region.append(region[ite])
+                                            #         list_aux_anios.append(anios[ite])
+                                            #         list_aux_technology.append(technology[ite])
+                                            #         list_aux_activity.append(activity[ite])
+                                            # for ite in range(len(list_aux_activity)):
+                                            #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['r'].append(list_aux_region[ite])
+                                            #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['y'].append(list_aux_anios[ite])
+                                            #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['t'].append(list_aux_technology[ite])
+                                            #     inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ]['value'].append(list_aux_activity[ite])                                                
                                             
                                         #
                                     #--------------------------------------------------------------------#
@@ -3408,14 +3413,15 @@ if __name__ == '__main__':
                                     # Assign parameters back: for these subset of uncertainties
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                     ### AQUI DEBO METER LA RESTRICCION
+                                    this_set_range_indices2 = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ][ 't' ] ) if x == 'PROD_CEM' ]
+                                    inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['value'][ this_set_range_indices2[0]:this_set_range_indices2[-1]+1 ] = deepcopy(new_value_list_rounded)
+                                    # for q in range(len(time_range_vector)):
+                                    #     #print(time_range_vector[q])
+                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['r'].append(params['coun_initial'])
 
-                                    for q in range(len(time_range_vector)):
-                                        #print(time_range_vector[q])
-                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['r'].append(params['coun_initial'])
-
-                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['t'].append('PROD_CEM')
-                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['y'].append(str(time_range_vector[q]))
-                                        inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['value'].append(new_value_list_rounded[q])
+                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['t'].append('PROD_CEM')
+                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['y'].append(str(time_range_vector[q]))
+                                    #     inherited_scenarios[ scenario_list[s] ][ f ]['TotalTechnologyAnnualActivityUpperLimit']['value'].append(new_value_list_rounded[q])
                                     
                                 #--------------------------------------------------------------------#
                             #--------------------------------------------------------------------#
@@ -4299,7 +4305,8 @@ if __name__ == '__main__':
                                     if this_parameter == 'EmissionActivityRatio':
                                         
                                         count_good = 0
-                                        
+                                        print("indices:",this_set_range_indices)
+                                        print("set:",this_set)
                                         emis_list = list(set(inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['e'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ]))
                                         for e in emis_list:
                                             this_set_range_indices_e = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 'e' ] ) if x == str( e ) ]

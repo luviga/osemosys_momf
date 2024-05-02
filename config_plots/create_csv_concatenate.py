@@ -31,7 +31,7 @@ def get_config_main_path(full_path, base_folder='config_plots'):
 
 if __name__ == '__main__':
     # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(''), 'tests/Waste/config_main_files')
+    file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
     with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
         # Load content file
         params = yaml.safe_load(file)
