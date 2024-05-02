@@ -1,7 +1,17 @@
 # MOMF Tier 1 B1 (normal and parallel files) build parameterization yaml file
 
 # Note:
-# em: for experiment_manager
+# em: for experiment_manager.py
+# B1: for B1_Base_Scenarios_Adj_Parallel.py
+# FRM: for FRM_.py
+##@: Maybe you need to make changes
+###: You need make changes
+####: Not probably make changes, maybe you need to add new parameters condition into de script experiment_manager.py, this parameter is from Uncertainty_Tables
+#####: Is variable possible change inot the Uncertainty_Tables, so maybe you need to adjust
+######: In that moment doesn't use the code related with this parameter
+## From Where: I don't know from where I search the information to make changes.
+
+########################################################################################
 
 # Model external dependencies: Directories, Files, sheets and columns
 ########################################################################################
@@ -28,13 +38,13 @@ Base_Model: '1_Baseline_Modelling' # em
 # Files, sheets and columns
 # B1 script 
 # File (First letter of the word y uppercase)
-B1_script: 'B1_Base_Scenarios.py' # B1
+B1_script: 'B1_Base_Scenarios.py' # B1, em
 # OSeMOSYS Model
 # File
-OSeMOSYS_Model: 'OSeMOSYS_Model.txt' # B1
+OSeMOSYS_Model: 'OSeMOSYS_Model.txt' # B1, em
 # Sheets (First letter of the word y uppercase)
-Fuel_Code: 'Fuel_to_Code' # B1
-Tech_Code: 'Tech_to_Code' # B1
+Fuel_Code: 'Fuel_to_Code' # B1, em
+Tech_Code: 'Tech_to_Code' # B1, em
 # B1 model structure
 # File
 B1_model_Struct: 'B1_Model_Structure.xlsx' # B1, em
@@ -75,19 +85,19 @@ Effi: 'Efficiency' # B1
 Waste: 'Waste' # B1
 # Pickle Blend Shares 0
 # File
-Blend_Shares_0: 'Blend_Shares_0.pickle'
+Blend_Shares_0: 'Blend_Shares_0.pickle' # em
 # Yaml conversion format
 # File
-conv_format: 'conversion_format.yaml'
+conv_format: 'conversion_format.yaml' # em
 # Script to create and change values of the yaml file to use with otoole
 # File
-otoole_config: change_default_vals_params.py
+otoole_config: change_default_vals_params.py # em
 # Script to concatenate the csvs otoole's outputs
 # File
-concat_csvs: create_csv_concatenate.py                                                 
+concat_csvs: create_csv_concatenate.py # em                                           
 # Classifier Modes Transport
 # File
-Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx'
+Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx' # em
 # Experiment Manager Script
 # File
 Manager: 'experiment_manager.py' # em
@@ -96,19 +106,19 @@ Manager: 'experiment_manager.py' # em
 FRM_clean: 'FRM_cleanup.py'
 # Pickle GDP dictionary
 # File
-GDP_dict: 'GDP_dict.pickle'
+GDP_dict: 'GDP_dict.pickle' # em
 # Pickle reference driven distance
 # File
-Ref_Dri_Dist: 'reference_driven_distance.pickle'
+Ref_Dri_Dist: 'reference_driven_distance.pickle' # em
 # Pickle reference occupancy rate
 # File
-Ref_Occu_Rate: 'reference_occupancy_rate.pickle'
+Ref_Occu_Rate: 'reference_occupancy_rate.pickle' # em
 # Experiment Dictionary
 # File
-Exper_Dict: 'experiment_dictionary.pickle'
+Exper_Dict: 'experiment_dictionary.pickle' # em
 # Uncertainty Table
 # File
-Uncer_Table: 'Uncertainty_Table.xlsx'
+Uncer_Table: 'Uncertainty_Tables_RD.xlsx' # em
 # Broad output dataset creator f
 # File 
 Bro_out_dat_cre: 'Broad_Output_Dataset_Creator_f.py'
@@ -124,12 +134,12 @@ In_dat_0: '\input_dataset_0.csv'
 # Input Dataset f
 # File
 In_dat_f: '\input_dataset_f.csv'
-# OSeMOSYS CR Input
+# OSeMOSYS Country Input
 # File
-ose_cou_in: 'OSMOSYS_CR_Input'
-# OSeMOSYS CR Output
+ose_cou_in: 'OSMOSYS_RD_Input'
+# OSeMOSYS Country Output
 # File
-ose_cou_out: 'OSMOSYS_CR_Output'
+ose_cou_out: 'OSMOSYS_RD_Output'
 # Results folder
 results: 'Executables\\' # B1
 ########################################################################################
@@ -147,14 +157,14 @@ solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # Choose if want to delete or not the solver solutions files
-del_files: True # B1, em, FRM
+del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 2 # em
+Number_of_Runs: 1 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
-Initial_Year_of_Uncertainty: 2022 # em
+Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
 max_x_per_iter: 2 # B1, em
 
@@ -171,15 +181,15 @@ gen_or_exe_4: 'Both' # B1, em
 inputs_txt_csv: 'Both' # 'Both', 'csv' # B1, em
 
 # Country
-coun_initial: 'CR' # B1
+coun_initial: 'RD' # B1
 
-output_csv_r: 0.08 # em
+output_csv_r: 0.05 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
 
 adjust_fre_rai: True # B1
 
 check_assignation: False
 
-ignore_biofuels: True
+ignore_biofuels: False
 
 manipulate_param_keys_2: True # em
 
@@ -190,10 +200,10 @@ round_#: 4 # B1, em
 
 # Sectors variables
 Use_Energy: True # em 
-Use_Waste: False # B1, em
-Use_Transport: False # B1, em
-Use_AFOLU: False # em
-Use_PIUP: False # em
+Use_Waste: True # B1, em
+Use_Transport: False # B1
+Use_AFOLU: True # em
+Use_PIUP: True # em
 
 
 Use_Blend_Shares: False # You musn't change # B1, em
@@ -201,18 +211,22 @@ Use_Blend_Shares: False # You musn't change # B1, em
 # Scenarios
 # Only use the three main letters                                 
 #--------------------------------------------------------------------------------------------------------------------#
+# These parameter you can change for your two mains scenarios, but only the string, You musn't change the name of the variable
 BAU: 'BAU' # B1, em, FRM
-NDP: 'NDP' # B1, em, FRM
+NDP: 'LTS' # B1, em, FRM ###
+
+# You need define whatever new scenario name you use 
 DDP: 'DDP' # B1, em, FRM
+LTS: 'LTS' # em
 #--------------------------------------------------------------------------------------------------------------------#
 
 # Years variables
 #----------------------------------------------------------------------------------#
 # Year to apply discount rate
-year_apply_discount_rate: 2023 # B1, em
+year_apply_discount_rate: 2024 # B1, em ###
 # Base year
-base_year: 2021 # em
-R_base_year: 'R2021' # em
+base_year: 2018 # em ###
+R_base_year: 'R2021' # em #check
 # R_base_year == R2021 Do not uncommented, this is a variable defined at the script
 # r_base_year_max == r2021max Do not uncommented, this is a variable defined at the script
 year_first_range: 2018 # B1, em
@@ -224,14 +238,14 @@ year_final_blend_point: 2022 # B1
 year_final_blend_point_2: 2030 # B1
 
 # Changed year
-change_year: 2024 # B1, em
+change_year: 2024 # B1, em ###
 # driven_distance_change_year == driven_distance_2024 Do not uncommented, this is a variable defined at the script
 # index_change_year == index_2024
-year_resticcion_tech: 2023 # em
-output_csv_year: 2023 # B1, em
+year_resticcion_tech: 2024 # em ###
+output_csv_year: 2024 # B1, em ###
 
 # Final year
-final_year: 2050 # B1, em
+final_year: 2050 # B1, em ###
 final_year_str: '2050'
 R_final_year: 'R2050' # B1, em
 v_final_year: 'v_2050' # B1, em
@@ -257,9 +271,9 @@ v_sec_decade_year: 'v_2040' # B1
 
 # General values
 #----------------------------------------------------------------------------------#
-default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params
+default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   AccumulatedAnnualDemand: 0,
-  AnnualEmissionLimit: 99999,
+  AnnualEmissionLimit: 999999999999999999999,
   AnnualExogenousEmission: 0,
   AvailabilityFactor: 1,
   CapacityFactor: 1,
@@ -273,13 +287,13 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params
   DaySplit: 0.00137,
   DaysInDayType: 7,
   DepreciationMethod: 1,
-  DiscountRate: 0.05,
+  DiscountRate: 0.05, ###
   EmissionActivityRatio: 0,
   EmissionsPenalty: 0,
   FixedCost: 0,
   InputActivityRatio: 0,
   MinStorageCharge: 0,
-  ModelPeriodEmissionLimit: 99999,
+  ModelPeriodEmissionLimit: 999999999999999999999,
   ModelPeriodExogenousEmission: 0,
   OperationalLife: 1,
   OperationalLifeStorage: 1,
@@ -299,22 +313,22 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params
   StorageMaxDischargeRate: 0,
   TechnologyFromStorage: 0,
   TechnologyToStorage: 0,
-  TotalAnnualMaxCapacity: 99999,
-  TotalAnnualMaxCapacityInvestment: 99999,
+  TotalAnnualMaxCapacity: 999999999999999999999,
+  TotalAnnualMaxCapacityInvestment: 999999999999999999999,
   TotalAnnualMinCapacity: 0,
   TotalAnnualMinCapacityInvestment: 0,
   TotalTechnologyAnnualActivityLowerLimit: 0,
-  TotalTechnologyAnnualActivityUpperLimit: 99999,
+  TotalTechnologyAnnualActivityUpperLimit: 999999999999999999999,
   TotalTechnologyModelPeriodActivityLowerLimit: 0,
-  TotalTechnologyModelPeriodActivityUpperLimit: 99999,
+  TotalTechnologyModelPeriodActivityUpperLimit: 999999999999999999999,
   TradeRoute: 0,
   VariableCost: 0.0001,
   YearSplit: 0
   }
 
-params_inputs_data: # B1, em, FRM
+params_inputs_data: # B1, em, FRM ###
   - AccumulatedAnnualDemand
-  - AnnualEmissionLimit
+  #- AnnualEmissionLimit
   - AnnualExogenousEmission
   #- AvailabilityFactor
   #- CapacityFactor
@@ -355,7 +369,7 @@ params_inputs_data: # B1, em, FRM
   - TechnologyFromStorage
   - TechnologyToStorage
   #- TotalAnnualMaxCapacity
-  #- TotalAnnualMaxCapacityInvestment
+  - TotalAnnualMaxCapacityInvestment
   #- TotalAnnualMinCapacity
   #- TotalAnnualMinCapacityInvestment
   #- TotalTechnologyAnnualActivityLowerLimit
@@ -366,9 +380,9 @@ params_inputs_data: # B1, em, FRM
   #- VariableCost
   #- YearSplit
 
-params_inputs_data_excep_by_scen: { # B1, em, FRM
-  BAU: ['TotalAnnualMinCapacity'],
-  NDP: []
+params_inputs_data_excep_by_scen: { # B1, em, FRM ###
+  BAU: ['TotalAnnualMinCapacity', 'AnnualEmissionLimit'],
+  LTS: []
 }                   
 
 
@@ -477,6 +491,7 @@ parameters_to_print: [ # B1, em, FRM
   'InputActivityRatio',
   'OutputActivityRatio',
   'EmissionActivityRatio',
+  'EmissionsPenalty',
   'CapitalCost',
   'VariableCost',
   'FixedCost',
@@ -555,10 +570,10 @@ set_list_group_dict: { # B1
   Freight: ['E6TDFREHEA', 'E6TDFRELIG']
   }
 
-Sets_Involved: [ # B1
+Sets_Involved: [ # B1, em  ##@
   'Techs_He_Freight', 'Techs_Li_Freight', 'Techs_Trains_Freight',
-  'Techs_SUVMIV', 'Techs_Sedan', 'Techs_Motos', 'Techs_Buses',
-  'Techs_Microbuses', 'Techs_Taxis'
+  'Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi',
+  'Techs_Buses_Pub', 'Techs_Buses_Micro'
   ]
 
 # Sets_Involved: [ # em
@@ -567,7 +582,7 @@ Sets_Involved: [ # B1
 #   'T4GSL_PUB', 'DIST_GSL'
 #   ]
 
-params_to_adjust: [ # B1, EM
+params_to_adjust: [ # B1, em
   'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'
   ]
 
@@ -645,12 +660,13 @@ Techs_Emissions: { # em
   DIST_GSL: ['CO2e_sources']
   }
 
-except_techs: [ # em
-  'Techs_SUVMIV', 'Techs_Sedan', 'Techs_Motos', 'Techs_Buses',
-  'Techs_Microbuses', 'Techs_Taxis'
+except_techs: [ # em ##From Where ###
+  'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri',
+  'Techs_Buses_Pub', 'Techs_He_Freight', 'Techs_Li_Freigth',
+  'Techs_Buses_Micro'
   ]
 
-except_scen: ['NDP'] # em
+except_scen: ['LTS'] # em  ###
 #----------------------------------------------------------------------------------#
 
 ################################# PART 3 #################################
@@ -670,18 +686,19 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 
 ################################# Conditions #################################
 trains: 'Trains' # B1, em
-tra_techs_1: ['Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em
-tra_techs_2: ['Techs_Auto', 'Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em
-trn_list: [ # em
-  'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri',
+tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em ###
+tra_techs_for_passengers: ['Techs_Auto', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em ###
+trn_list_tech_groups: [ # em ### # Susana
+  'Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi',
   'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef',
   'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight',
   'Techs_Li_Freight'
   ] 
+
 train: 'Train' # B1, em
 tech_train: 'Techs_Trains' # B1, em
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost'] # B1, em
-this_combina: ['Accidents', 'Health', 'Congestion'] # B1, em
+this_combina: ['salud_residuos', 'FERT_ORG','RM','contam_agua','Health','Accidents','turismo_residuos','Congestion'] # B1, em ##@
 PRI: 'PRI' # B1, em
 PUB: 'PUB' # B1, em
 FEAHEA: 'FREHEA' # B1, em
@@ -714,56 +731,60 @@ motrocy: 'Motos' # em
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost'] # B1, em
 down: 'down' # em
 up: 'up' # em
+######################################################################
+# Uncertainty_Tables columns
 exp_param_rel_base: 'Explored_Parameter_is_Relative_to_Baseline' # em
-year_when_rea_zero: 'Year_when_reaches_zero' # em
-over_dc_shift: 'Overall_DC_Shift' # em
-cte: 'Constant' # em
-ble_time_series: 'Blend_Time_Series' # em
+xlrm_id: 'XLRM_ID' # em
+exp_param_x: 'Explored_Parameter_of_X' # em
+x_math__type: 'X_Mathematical_Type' # em
+inv_scen: 'Involved_Scenarios' # em
+inv_sets_ose: 'Involved_Sets_in_Osemosys' # em
+exac_param_inv_ose: 'Exact_Parameters_Involved_in_Osemosys' # em
+x_pla_eng_desc: 'X_Plain_English_Description' # em
+x_num: 'X_Num' # em
+x_cat_col_name: 'X_Category' # em
+#####################################################################
+year_when_rea_zero: 'Year_when_reaches_zero' # em ####
+over_dc_shift: 'Overall_DC_Shift' # em ####
+cte: 'Constant' # em ####
+ble_time_series: 'Blend_Time_Series' # em ####
 _base_data: '_Base_Dataset' # em
 _backup: '_BACKUP' # em 
 exper: 'Experiment' # em
-fuel_dem: 'Fuel Demand' # em
-pub_tra_dis: 'Public Transport Distribution' # em
+x_cat_fuel_dem: 'Fuel Demand' # em #####
+x_cat_pub_tra_dis: 'Public Transport Distribution' # em #####
 techs_motrocy: 'Techs_Motos' # em
-techs_sedan: 'Techs_Sedan' # em
-techs_taxis: 'Techs_Taxis' # em
+techs_sedan: 'Techs_Auto' # em ###
+techs_taxis: 'Techs_Taxis' # em  
 techs_bus: 'Techs_Buses' # em
-techs_mibus: 'Techs_Microbuses' # em
-ini_val: 'Initial_Value' # em
-fin_val: 'Final_Value' # em
-shift_per_ini_val: 'Shift_as_percent_of_Initial_Value' # em
-dis: 'Distance' # em
-dem: 'Demand' # em
-non_rail: 'Non-Rail' # em
-adj_oar: 'Adjustment OAR' # em
+techs_mibus: 'Techs_Buses_Micro' # em
+ini_val: 'Initial_Value' # em ##@
+fin_val: 'Final_Value' # em ##@
+shift_per_ini_val: 'Shift_as_percent_of_Initial_Value' # em ####
 acci: 'Accidents' # em
-electri: 'Electrification' # em
-pen: 'Penetration' # em
-this_set_tr_hyd: ['TRBUSHYD', 'TRMBUSHYD', 'TRYTKHYD'] # em
-this_set_tra_pas_rai_ele: 'TRNPASRAIELE' # Transport passenger rail electric # em
-this_set_waste: ['INORG_RCY_OS', 'COMPOST'] # em
-this_set_pp_wdn: 'PP_WND_US' # em
-this_set_afolu_1: 'Cafe' # em
-this_set_afolu_2: 'Cana' # em
-this_set_techs_buses: ['Techs_Buses_Pri', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains'] # em
-this_set_pp_hy: 'PP_HYDAMARORLAR' # em
-TRA_BUS_HYD: 'TRBUSHYD' # em
-TRA_BUS_ELE: 'TRBUSELE' # em
-TRM_BUS_HYD: 'TRMBUSHYD' # em
-TRM_BUS_ELE: 'TRMBUSELE' # em
-TRA_PUB_HYD: 'TRBPUHYD' # em
-TRA_PUB_ELE: 'TRBPUELE' # em
-TRY_TK_HYD: 'TRYTKHYD' # em
-TRY_TK_ELE: 'TRYTKELE' # em
-TRY_TK_HD: '' # em
-PPPVT: 'PPPVT' # em
-PPWNDON: 'PPWNDON' # em
-PPPVDS: 'PPPVDS' # em
+this_set_tr_hyd: ['TRBPUHYD','TRMBSHYD','TRBTURHYD','TRYTKHYD'] # em ## From Where
+this_set_tra_pas_rai_ele: 'TRNPASRAIELE' # Transport passenger rail electric # em ## From Where
+this_set_waste: ['INORG_RCY_OS', 'COMPOST'] # em ###
+this_set_pp_wdn: 'PP_WND_US' # em ## From Where
+this_set_afolu_1: 'Cafe' # em ######
+this_set_afolu_2: 'Cana' # em ######
+this_set_techs_buses: ['Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains'] # em ##@
+this_set_pp_hy: 'PP_HYDAMARORLAR' # em ##@
+TRA_BUS_HYD: 'TRBTURHYD' # em ##@
+TRA_BUS_ELE: 'TRBTURELE' # em ##@
+TRM_BUS_HYD: 'TRMBSHYD' # em ##@
+TRM_BUS_ELE: 'TRMBSELE' # em ##@
+TRA_PUB_HYD: 'TRBPUHYD' # em ##@
+TRA_PUB_ELE: 'TRBPUELE' # em ##@
+TRY_TK_HYD: 'TRYTKHYD' # em ##@
+TRY_TK_ELE: 'TRYTKELE' # em ##@
+TRY_LF_ELE: 'TRYLFELE' # REVISAR SI HAY QUE AGREGAR
+TRY_TK_HD: 'TRYTKHD' # em ### ADEMAS TAMBIEN HAY BUSES DE LOS 3 TIPOS DE FUEL, Y CARGA LIVIANA Y PESADA
+PPPVT: 'PPPVT' # em ##@
+PPWNDON: 'PPWNDON' # em ##@
+PPPVDS: 'PPPVDS' # em ##@
 hyd: 'HYD' # em
-group_tech: 'Telef' # em
-no_orga_recy_org_comp: 'inorgánicos reciclados y orgánicos compostados' # em
-water_resi_mana: 'aguas residuales tratadas' # em 
-a_fuel_set: 'CLK_PROD' # em
+a_fuel_set: 'CLK_PROD' # em ##@
 
 ##############################################################################
 
@@ -789,54 +810,51 @@ tech_set: 'Tech_Set' # B1, em
 logistic: 'Logistic' # B1, em
 linear: 'Linear' # B1, em
 context: 'Context' # B1, em
-tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public # B1, em
-tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private # B1, em
-tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight # B1, em
-tra_dem_med: 'DEMTRNFREMED' # B1, em
-tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight # B1, em
-tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize # B1, em
-tra_mot_gls: 'TRMOTGSL' # B1, em
-cost: 'Cost' # B1, em
-inter_escal: 'Interpolate_Escalate' # B1, em
-fix_last: 'Fix_Last' # B1, em
-intact: 'intact' # B1, em
-inter: 'Interpolate' # B1, em
-fix_ind: 'Fix_Indicated' # B1, em 
-write: 'Write' # B1, em
-overwrite: 'Overwrite' # B1, em
-exat_mult: 'Exact_Multiplier' # B1, em
-copy: 'Copy' # B1, em
-uni_capex: 'UnitCapitalCost (USD)' # em
-uni_fopex: 'UnitFixedCost (USD)' # em
+tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public # B1, em ###
+tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private # B1, em ###
+tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight # B1, em ###
+tra_dem_med: 'DEMTRNFREMED' # B1, em ###
+tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight # B1, em ###
+tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize # B1, em ###
+tra_mot_gls: 'TRMOTGSL' # B1
+cost: 'Cost' # B1
+inter_escal: 'Interpolate_Escalate' # B1
+fix_last: 'Fix_Last' # B1
+intact: 'intact' # B1
+inter: 'Interpolate' # B1
+fix_ind: 'Fix_Indicated' # B1
+write: 'Write' # B1
+overwrite: 'Overwrite' # B1
+exat_mult: 'Exact_Multiplier' # B1
+copy: 'Copy' # B1
+uni_capex: 'UnitCapitalCost (USD)'
+uni_fopex: 'UnitFixedCost (USD)'
 num_runs: 'Number_of_Runs' # em
-xlrm_id: 'XLRM_ID' # em
-x_math__type: 'X_Mathematical_Type' # em
-exp_param_x: 'Explored_Parameter_of_X' # em
-inv_scen: 'Involved_Scenarios' # em
-inv_sets_ose: 'Involved_Sets_in_Osemosys' # em
-exac_param_inv_ose: 'Exact_Parameters_Involved_in_Osemosys' # em
-x_pla_eng_desc: 'X_Plain_English_Description' # em
-x_num: 'X_Num' # em
-x_cat_col_name: 'X_Category' # em
-x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales'] # em
-x_cat_na_waste_pro: 'National waste production' # em
+x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales'] # em ##@
+x_cat_na_waste_pro: 'National waste production' # em ##@
 x_cat_list: ['Electrical Demand', 'Fuel Demand', 'Freight Demand'] # em
 pass_dem: 'Passenger Demand' # em
 fre_dem: 'Freight Demand'  # em
 ele_dem: 'Electrical Demand' # em
-x_cat_ele: ['Electrical Demand'] # em
-x_cat_afolu_list: ['Agricultural Demand', 'Agricultural Yield', 'Agricultural Yield Livestock'] # em
-x_cat_afolu_1: 'Agricultural Demand' # em
-x_cat_afolu_2: 'Agricultural Yield Livestock' # em
-x_cat_afolu_3: 'Agricultural Yield' # em
-x_cat_afolu_4: 'ForestCover' # em
-x_cat_piup: 'Adjustment clinker factor' # em
-x_cat_electri: 'Electrification' # em
-x_cat_pen: 'Penetration' # em
-x_cat_electri_priv_tra: 'Electrification of Private Transport' # em
-x_cat_rail_dem: 'Rail Demand' # em
-x_cat_mode_shift: 'Mode Shift' # em
-x_cat_bev_cost: 'Unit BEV Cost' # em
+x_cat_dis: 'Distance' # em ##@
+x_cat_dem: 'Demand' # em ##@
+x_cat_non_rail: 'Non-Rail' # em ##@
+x_cat_adj_oar: 'Adjustment OAR' # em ##@
+x_cat_ele: ['Electrical Demand'] # em ##@
+x_cat_afolu_list: ['Agricultural Demand', 'Agricultural Yield', 'Agricultural Yield Livestock'] # em ##@ 
+x_cat_afolu_1: 'Agricultural Demand' # em ##@
+x_cat_afolu_2: 'Agricultural Yield Livestock' # em ##@
+x_cat_afolu_3: 'Agricultural Yield' # em ##@
+x_cat_afolu_4: 'ForestCover' # em ##@
+x_cat_piup: 'Adjustment clinker factor' # em ##@
+x_cat_electri: 'Electrification' # em ##@ 
+x_cat_pen: 'Penetration' # em ##@
+x_cat_electri_priv_tra: 'Electrification of Private Transport' # em ##@
+x_cat_rail_dem: 'Rail Demand' # em ##@
+x_cat_mode_shift: 'Mode Shift' # em ##@
+x_cat_bev_cost: 'Unit BEV Cost' # em ######
+x_cat_no_orga_recy_org_comp: 'inorganicos reciclados y organicos compostados' # em ##@
+x_cat_water_resi_mana: 'aguas residuales tratadas' # em ##@
 exp_param_num: 'Explored_Parameter_Number' # em
 min_val: 'Min_Value' # em
 max_val: 'Max_Value' # em
@@ -846,26 +864,29 @@ fut_var: 'Futures' # em
 exact_x: 'Exact_X' # em
 exact_x_2: 'EXPLICIT' # em
 Cat: 'Category' # em
-math_type: 'Math_Type' # em
-math_type_mult_rest: 'Mult_Restriction' # em
-math_type_start: 'Start' # em
-math_type_end: 'End' # em
-math_type_curves_list: ['Adoption_Curve', 'Mult_Adoption_Curve'] # em
-math_type_dis_inv: 'Discrete_Investments' # em
-math_type_cte: 'Constant' # em
-math_type_blend: 'Blend_Time_Series' # em
-math_type_dis_invs: 'Discrete_Investments' # em
-math_type_time_series: 'Time_Series' # em
-math_type_adop_curve: 'Adoption_Curve' # em
-math_type_multi_adop_curve: 'Mult_Adoption_Curve' # em
-math_type_list_types: ['Time_Series', 'Discrete_Investments', 'Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em
-math_type_list_mult: ['Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em
-ini_year: 'Initial_Year' # em
-rel_base: 'Relative_to_Baseline' # em
+math_type: 'Math_Type' # em ##@
+math_type_mult_rest: 'Mult_Restriction' # em ##@
+math_type_start: 'Start' # em ##@
+math_type_end: 'End' # em ##@
+math_type_curves_list: ['Adoption_Curve', 'Mult_Adoption_Curve'] # em ##@
+math_type_dis_inv: 'Discrete_Investments' # em ##@
+math_type_cte: 'Constant' # em ##@
+math_type_blend: 'Blend_Time_Series' # em ##@
+math_type_dis_invs: 'Discrete_Investments' # em ##@
+math_type_time_series: 'Time_Series' # em ##@
+math_type_adop_curve: 'Adoption_Curve' # em ##@
+math_type_multi_adop_curve: 'Mult_Adoption_Curve' # em ##@
+math_type_list_types: ['Time_Series', 'Discrete_Investments', 'Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em ##@
+math_type_list_mult: ['Mult_Adoption_Curve', 'Mult_Restriction', 'Mult_Restriction_Start', 'Mult_Restriction_End'] # em ##@
+ini_year: 'Initial_Year' # em ##@
+rel_base: 'Relative_to_Baseline' # em ##@
+#########################################
+# Name of the columns from _GDP_Ref.xlsx
 e_pass: 'e_Passenger' # em
 e_fre: 'e_Freight' # em
 i_nt_ele: 'i_NT_elec' # em
 i_nt_fossil: 'i_NT_fossil' # em
+#########################################
 columns: {Run.ID: 'Strategy'} # em
 valid_column_names: [ # em
   "Strategy",
@@ -908,18 +929,18 @@ valid_column_names: [ # em
   'Externalities_GDP'
   ]
 
-common_complement: [
-'LANDFILL', 'NO_CONTR_OD', 'OPEN_BURN', 'SIT_CLAN', 'NO_OSS_BLEND',
-'NO_OSS_NO_COLL', 'BLEND_NO_DCOLL', 'BLEND_NO_COLL', 'NO_SS']
+common_complement_x_cat_no_orga_recy_org_comp: [ ##@
+  'LANDFILL', 'NO_CONTR_OD', 'COPROC', 'INCIN', 'OPEN_BURN',
+  'SIT_CLAN', 'NO_OSS_BLEND', 'NO_OSS_NO_COLL', 'BLEND_NO_DCOLL', 
+  'BLEND_NO_COLL', 'NO_SS'
+  ]
 
-common_complement_2: [
-  #'WWWOT', 'WWWT', 'SEWERWWWOT', 'TWWWOT',
-  #'SEWERWW', 'STWW']
+common_complement_x_cat_water_resi_mana: [ ##@
   'LATR', 'EFLT_DISC',
-  'WWWOT', 'DIRECT_DISC']
-  # , 'AERO_PTAR', 'SEPT_SYST', 'WWWT', 'SEWERWW']
+  'WWWOT', 'DIRECT_DISC', 'SEWER_NO_T']
 
 # Variables this_parameter... are list with parameters of OSeMOSYS
+############################################
 this_parameter: ['SpecifiedAnnualDemand'] # em
 
 this_parameter_2: ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit'] # em
@@ -933,71 +954,31 @@ this_parameter_5: ['VariableCost','TotalTechnologyAnnualActivityLowerLimit','Tot
 this_parameter_6: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit'] # em
 
 this_parameter_7: ['OutputActivityRatio'] # em
+############################################
 
-adjust_sets: [
-  'INORG_RCY_COLL', 'INORG_RCY_OS', 'AD', 'COMPOST', 'OTH_ORG_TEC', 'LANDFILL_BG', 'LANDFILL', 'CONTR_OD',
-  'NO_CONTR_OD', 'WWWOT', 'WWWT', 'WFIRU', 'OSS_INORG', 'OSS_ORG', 'NO_OSS_INORG', 'NO_OSS_ORG', 'NO_OSS_BLEND',
-  'INORG_DCOLL', 'ORG_DCOLL', 'INORG_NO_DCOLL', 'ORG_NO_DCOLL', 'BLEND_NO_DCOLL', 'INORG_SS', 'ORG_SS', 'NO_SS',
-  'SEWERWWWOT', 'SEWERWWWT', 'WWWTFIRU', 'TWWWOT', 'SEWERWW', 'STWW'
-  ]
-
-adjust_sets_2: [
-  'LANDFILL', 'OPEN_BURN', 'SIT_CLAN', 'NO_OSS_NO_COLL', 'BLEND_NO_COLL', 'ORG_DCOLL', 'INORG_DCOLL', 'NO_OSS_BLEND', 'INORG_SS', 'OSS_ORG', 'NO_SS',
-  'ORG_SS', 'BLEND_NO_DCOLL', 'OSS_INORG', 'INORG_RCY_OS',
-  'NO_CONTR_OD', 'COMPOST', 'AERO_PTAR', 'SEPT_SYST', 'LATR', 'EFLT_DISC', 'WWWT', 'WWWOT', 'SEWERWW', 'DIRECT_DISC'
-  ]
-
-all_covers: [
-  "Banano", "Arroz", "Cacao", "Cafe", "Cana", "Maiz", "Palma",
-  "Soya", "Palmito", "Legumbres", "Cereales", "Tuberculos",
-  "Fruta", "Verduras", "Floricolas", "Otros_cultivos", "Pastizales",
-  "Humedal", "Zona_atropica", "Otras_tierras", "Bosque_nativo_protegido",
-  "Bosque_nativo_sinproteger", "Plantacion_forestal", "Pasturas"
-  ]
-
-all_covers_2: [
-  "Avicola",
-  "Azucar",
-  "Banano",
-  "Bovina",
-  "Cafe",
-  "Cardamomo",
-  "Conifero_adulto",
-  "Conifero_nuevo",
-  "Frijol",
-  "Huevos",
-  "Hule",
-  "Latifoleado_adulto",
-  "Latifoleado_nuevo",
-  "Leche",
-  "Maiz",
-  "Manglar_adulto",
-  "Manglar_nuevo",
-  "Matorrales",
-  "Mixto_adulto",
-  "Mixto_nuevo",
-  "Otras_coberturas",
-  "Otras_coberturas_pastos",
-  "Otros_adulto",
-  "Otros_cultivos",
-  "Otros_joven",
-  "Palma",
-  "Porcina",
-  "Suelos_productivos",
-  "Urbano",
-  "plantacion_forestal_conifero",
-  "plantacion_forestal_latifoleado"
+adjust_sets_waste: [ ##@
+  "INORG_RCY_OS", "COMPOST", "LANDFILL", "NO_CONTR_OD", "COPROC", "INCIN", "OPEN_BURN",
+  "SIT_CLAN", "AERO_PTAR", "SEPT_SYST", "LATR", "EFLT_DISC", "SEWER_NO_T", "OSS_INORG",
+  "OSS_ORG", "NO_OSS_BLEND", "NO_OSS_NO_COLL", "INORG_DCOLL", "ORG_DCOLL", "BLEND_NO_DCOLL",
+  "BLEND_NO_COLL", "INORG_SS", "ORG_SS", "NO_SS", "WWWT", "WWWOT", "SEWERWW", "DIRECT_DISC"
 ]
 
-group_tech_set: 'Techs_Auto'
+all_covers_AFOLU: [
+    "AG_RIC", "AG_BAN", "AG_SGC", "AG_COC", "AG_TRVEG", "AG_CAF", "AG_LEG", "AG_ROT", 
+    "AG_FRT", "AGR_CER", "AGR_OTP", "GA_LEC", "GA_CARAVI", "GA_CARBOV", "GA_OTRCARPRO", 
+    "GA_CARPOR", "GA_OTRCAR", "LU_FOR", "LU_AGR", "LU_GAN", "LU_MTS", "LU_SAB", "LU_URB", 
+    "LU_OLU", "LU_LATHUM", "LU_CLF", "LU_LATSHUM", "LU_DCON", "LU_SCON", "LU_WET", "LU_DRY"
+]
 
-exception_list_TRAN: ['TRBPUHYD', 'TRYTKHYD'] # em
-special_list_dict_TRAN: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']} # em
+group_tech_set: 'Techs_Auto' # em ##@
+
+exception_list_TRAN: ['TRBPUHYD', 'TRYTKHYD'] # em ##@
+special_list_dict_TRAN: {TRYTKHYD: ['TRYTKELE', 'TRYTKHYD']} # em ##@
 ##############################################################################
 
 # Parameters to script create_csv_concatenate.py
 # First: Select model
-model: 'MOMF' # two options: 'MOMF' or 'BULAC'
+model: 'MOMF'
 
 # If model is MOMF, select what tier use
 tier: '3a' # two options: '1' or '3a'
@@ -1007,6 +988,5 @@ tier1_dir: '\\t1_confection\\Executables' # Don't change
 tier3a_dir: '..\\t3a_experiments\\Experiment_1\\Futures' #'../t3a_experiments/Experiment_1/Futures'
 excel_data_file_dir:  '..\\t3a_experiments\\Experiment_1\\Futures\\'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
-# out_dir: '/Outputs' # Don't change
 dir_main_script_yaml: '..\\config_main_files'
-scens: ['BAU', 'NDP']
+scens: ['BAU', 'LTS']
