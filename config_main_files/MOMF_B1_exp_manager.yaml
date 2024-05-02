@@ -964,9 +964,11 @@ adjust_sets_waste: [ ##@
 ]
 
 all_covers_AFOLU: [
-    "AG_RIC", "AG_BAN", "AG_SGC", "AG_COC", "AG_TRVEG", "AG_CAF", "AG_LEG", "AG_ROT", 
-    "AG_FRT", "AGR_CER", "AGR_OTP", "GA_LEC", "GA_CARAVI", "GA_CARBOV", "GA_OTRCARPRO", 
-    "GA_CARPOR", "GA_OTRCAR", "LU_FOR", "LU_AGR", "LU_GAN", "LU_MTS", "LU_SAB", "LU_URB", 
+    #"AG_RIC", "AG_BAN", "AG_SGC", "AG_COC", "AG_TRVEG", "AG_CAF", "AG_LEG", "AG_ROT", 
+    #"AG_FRT", "AGR_CER", "AGR_OTP", "GA_LEC", "GA_CARAVI", "GA_CARBOV", "GA_OTRCARPRO", 
+    #"GA_CARPOR", "GA_OTRCAR", 
+    #"LU_FOR", 
+    "LU_AGR", "LU_GAN", "LU_MTS", "LU_SAB", "LU_URB", 
     "LU_OLU", "LU_LATHUM", "LU_CLF", "LU_LATSHUM", "LU_DCON", "LU_SCON", "LU_WET", "LU_DRY"
 ]
 

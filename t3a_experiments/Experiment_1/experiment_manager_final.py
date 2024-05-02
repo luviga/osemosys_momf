@@ -2381,8 +2381,8 @@ if __name__ == '__main__':
 
                                                     inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1] = deepcopy(new_adj_value_list)
                                                     if adj_set == "LATR":
-                                                        this_adj_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t'] ) if x == str(adj_set)]
-                                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['value'][this_adj_indices2[0]:this_adj_indices2[-1]+1] = deepcopy(new_adj_value_list)
+                                                        this_adj_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t'] ) if x == str(adj_set)]
+                                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_adj_indices2[0]:this_adj_indices2[-1]+1] = deepcopy(new_adj_value_list)
                                                 inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list)
 
                                     ## LISTO
@@ -3171,119 +3171,119 @@ if __name__ == '__main__':
                                     #-----------------------------------------------------------------------#
                                 #
                             #
-                        #
-                        # elif X_Cat == params['x_cat_afolu_4'] and params['Use_AFOLU'] and Sectors_Involved[0][2]=="A":
-                        #     print('AFOLU_3', X_Cat)
+                        
+                        elif X_Cat == params['x_cat_afolu_4'] and params['Use_AFOLU'] and Sectors_Involved[0][2]=="A":
+                            print('AFOLU_3', X_Cat)
                             
-                        #     all_covers = params['all_covers_AFOLU']
+                            all_covers = params['all_covers_AFOLU']
 
-                        #     non_varied_sets = list(set(all_covers) - set(Sets_Involved))
-                        #     non_varied_sets.sort()
+                            non_varied_sets = list(set(all_covers) - set(Sets_Involved))
+                            non_varied_sets.sort()
                             
-                        #     # First, sum the variation of all the non_varied sets:
-                        #     sum_value_list_orig_nvs = [0]*len(time_range_vector)
-                        #     sum_value_list_orig_chg = [0]*len(time_range_vector)
-                        #     sum_value_list_new_nvs = [0]*len(time_range_vector)
-                        #     sum_value_list_new_chg = [0]*len(time_range_vector)
+                            # First, sum the variation of all the non_varied sets:
+                            sum_value_list_orig_nvs = [0]*len(time_range_vector)
+                            sum_value_list_orig_chg = [0]*len(time_range_vector)
+                            sum_value_list_new_nvs = [0]*len(time_range_vector)
+                            sum_value_list_new_chg = [0]*len(time_range_vector)
 
-                        #     # value_list_list_proxy = []
-                        #     # non_varied_sets = non_varied_sets[:2]
+                            # value_list_list_proxy = []
+                            # non_varied_sets = non_varied_sets[:2]
 
-                        #     # Let us review the restrictions that can occur in this set
+                            # Let us review the restrictions that can occur in this set
                             
-                        #     list1 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']))
-                        #     list1_bau = list(set(inherited_scenarios[scenario_list[0]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']))
-                        #     list2 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t']))
-                        #     list3 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']))
+                            list1 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']))
+                            list1_bau = list(set(inherited_scenarios[scenario_list[0]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']))
+                            list2 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t']))
+                            list3 = list(set(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']))
 
-                        #     # Across non-varied sets:
-                        #     for nvs in non_varied_sets:
-                        #         this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(nvs)]
+                            # Across non-varied sets:
+                            for nvs in non_varied_sets:
+                                this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(nvs)]
 
-                        #         value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
+                                value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
 
-                        #         # value_list_list_proxy.append(value_list)
+                                # value_list_list_proxy.append(value_list)
 
-                        #         # Update sum_value_list by adding value_list element-wise
-                        #         sum_value_list_orig_nvs = [sum(x) for x in zip(sum_value_list_orig_nvs, value_list)]
+                                # Update sum_value_list by adding value_list element-wise
+                                sum_value_list_orig_nvs = [sum(x) for x in zip(sum_value_list_orig_nvs, value_list)]
 
-                        #     # Across varied sets:
-                        #     for a_set in Sets_Involved:
-                        #         this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
-                        #         value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
+                            # Across varied sets:
+                            for a_set in Sets_Involved:
+                                this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
+                                value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
 
-                        #         sum_value_list_orig_chg = [sum(x) for x in zip(sum_value_list_orig_chg, value_list)]
+                                sum_value_list_orig_chg = [sum(x) for x in zip(sum_value_list_orig_chg, value_list)]
 
-                        #     sum_value_list_orig = [sum(x) for x in zip(sum_value_list_orig_nvs, sum_value_list_orig_chg)]
+                            sum_value_list_orig = [sum(x) for x in zip(sum_value_list_orig_nvs, sum_value_list_orig_chg)]
 
-                        #     # We must find multipliers:
-                        #     sum_value_list_new_chg_target, list_apply_delta_ydata_new, fraction_list_counter = \
-                        #         interpolation_non_linear_final_lock(
-                        #             time_range_vector, sum_value_list_orig_chg,
-                        #             float(Values_per_Future[fut_id]), params['final_year'])
+                            # We must find multipliers:
+                            sum_value_list_new_chg_target, list_apply_delta_ydata_new, fraction_list_counter = \
+                                interpolation_non_linear_final_lock(
+                                    time_range_vector, sum_value_list_orig_chg,
+                                    float(Values_per_Future[fut_id]), params['final_year'])
                             
-                        #     # sum_value_list_new_chg_target_2 = \
-                        #     #    interpolation_non_linear_final_year(
-                        #     #        time_range_vector, sum_value_list_orig_chg,
-                        #     #        float(Values_per_Future[fut_id]), params['final_year'])
+                            # sum_value_list_new_chg_target_2 = \
+                            #    interpolation_non_linear_final_year(
+                            #        time_range_vector, sum_value_list_orig_chg,
+                            #        float(Values_per_Future[fut_id]), params['final_year'])
                             
-                        #     # print('check if this is working')
-                        #     # sys.exit()
+                            # print('check if this is working')
+                            # sys.exit()
 
-                        #     sum_value_list_mult_chg = [
-                        #         sum_value_list_new_chg_target[i]/v for i, v in
-                        #         enumerate(sum_value_list_orig_chg)]
+                            sum_value_list_mult_chg = [
+                                sum_value_list_new_chg_target[i]/v for i, v in
+                                enumerate(sum_value_list_orig_chg)]
 
-                        #     # Change:
-                        #     sum_value_list_diff_chg = [
-                        #         sum_value_list_new_chg_target[i] - v
-                        #         for i, v in enumerate(sum_value_list_orig_chg)]
+                            # Change:
+                            sum_value_list_diff_chg = [
+                                sum_value_list_new_chg_target[i] - v
+                                for i, v in enumerate(sum_value_list_orig_chg)]
 
-                        #     # Find the complement multiplier:
-                        #     sum_value_list_new_nvs_target = [
-                        #         v - sum_value_list_diff_chg[i]
-                        #         for i, v in enumerate(sum_value_list_orig_nvs)]
-                        #     sum_value_list_mult_nvs = [
-                        #         sum_value_list_new_nvs_target[i]/v for i, v in
-                        #         enumerate(sum_value_list_orig_nvs)]
+                            # Find the complement multiplier:
+                            sum_value_list_new_nvs_target = [
+                                v - sum_value_list_diff_chg[i]
+                                for i, v in enumerate(sum_value_list_orig_nvs)]
+                            sum_value_list_mult_nvs = [
+                                sum_value_list_new_nvs_target[i]/v for i, v in
+                                enumerate(sum_value_list_orig_nvs)]
 
-                        #     # Iterate again across the non-varied sets:
-                        #     for nvs in non_varied_sets:
-                        #         this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(nvs)]
-                        #         value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
-                        #         new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
-                        #         inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1] = deepcopy(new_value_list)
-                        #         sum_value_list_new_nvs = [sum(x) for x in zip(sum_value_list_new_nvs, new_value_list)]
+                            # Iterate again across the non-varied sets:
+                            for nvs in non_varied_sets:
+                                this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(nvs)]
+                                value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
+                                new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
+                                inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1] = deepcopy(new_value_list)
+                                sum_value_list_new_nvs = [sum(x) for x in zip(sum_value_list_new_nvs, new_value_list)]
 
-                        #     # Modify the "Ganaderia" activity based on the movement of the non-varied sets
-                        #     # this_gan_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'Ganaderia_criolla']
-                        #     # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1])
-                        #     # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
-                        #     # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1] = deepcopy(new_value_list)
-                        #     # this_gan_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'Ganaderia_mestiza']
-                        #     # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1])
-                        #     # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
-                        #     # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1] = deepcopy(new_value_list)
+                            # Modify the "Ganaderia" activity based on the movement of the non-varied sets
+                            # this_gan_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'Ganaderia_criolla']
+                            # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1])
+                            # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
+                            # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1] = deepcopy(new_value_list)
+                            # this_gan_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'Ganaderia_mestiza']
+                            # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1])
+                            # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
+                            # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_gan_indices[0]:this_gan_indices[-1]+1] = deepcopy(new_value_list)
 
-                        #     # Iterate again across the varied sets:
-                        #     for a_set in Sets_Involved:
-                        #         this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
-                        #         value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
-                        #         new_value_list = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
-                        #         inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list)
-                        #         sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
+                            # Iterate again across the varied sets:
+                            for a_set in Sets_Involved:
+                                this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
+                                value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
+                                new_value_list = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
+                                inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list)
+                                sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
 
-                        #     sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
+                            sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
 
-                        #     # Modify the "area_restaurada" activity based on the movement of the varied sets
-                        #     # this_ar_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'area_restaurada']
-                        #     # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_ar_indices[0]:this_ar_indices[-1]+1])
-                        #     # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
-                        #     # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_ar_indices[0]:this_ar_indices[-1]+1] = deepcopy(new_value_list)
+                            # Modify the "area_restaurada" activity based on the movement of the varied sets
+                            # this_ar_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == 'area_restaurada']
+                            # value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_ar_indices[0]:this_ar_indices[-1]+1])
+                            # new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
+                            # inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_ar_indices[0]:this_ar_indices[-1]+1] = deepcopy(new_value_list)
 
-                        #     if abs(sum(sum_value_list_new) - sum(sum_value_list_orig)) > 1e-6:
-                        #         print('The manipulation is wrong. Check in detail.')
-                        #         sys.exit()
+                            if abs(sum(sum_value_list_new) - sum(sum_value_list_orig)) > 1e-6:
+                                print('The manipulation is wrong. Check in detail.')
+                                sys.exit()
 
 
 
