@@ -3899,20 +3899,20 @@ if __name__ == '__main__':
                                             i_list = this_set_range_indices[i_list_idx]
                                             inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ i_list ] = deepcopy( new_value_list_rounded[i_list_idx] )
                                         #
-                                        '''
-                                        if X_Cat == params['x_cat_bev_cost']:
-                                            xx1 = value_list
-                                            xx2 = new_value_list
-                                            print('check this IAR issue internal')
-                                            sys.exit()
-                                        '''
-                                    #
-                                    '''
-                                    if X_Cat == params['x_cat_bev_cost']:
-                                        print('check this IAR issue')
-                                        sys.exit()
-                                    '''
-                                    #
+                                        
+                                    #     if X_Cat == params['x_cat_bev_cost']:
+                                    #         xx1 = value_list
+                                    #         xx2 = new_value_list
+                                    #         print('check this IAR issue internal')
+                                    #         sys.exit()
+                                        
+                                    # #
+                                    
+                                    # if X_Cat == params['x_cat_bev_cost']:
+                                    #     print('check this IAR issue')
+                                    #     sys.exit()
+                                    
+                                    
                                 #
                             # Here start one bullet point from energy
                             

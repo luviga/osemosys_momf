@@ -157,7 +157,7 @@ solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # Choose if want to delete or not the solver solutions files
-del_files: True # B1, em, FRM
+del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
 Number_of_Runs: 1 # em

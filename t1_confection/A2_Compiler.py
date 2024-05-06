@@ -752,8 +752,13 @@ for s in range( len( param_sheets ) ):
                     #
                     Fleet_Groups_Distance.update( { this_tech:this_km_list } )
                     #
+                    print('prueba1')
+                    print(this_unit_target, this_unit_introduced)
+                    sys.exit()
                     if params['Gvkm'] in this_unit_target and ( params['veh'] in this_unit_introduced or params['relative'] in this_unit_introduced ): # this acts on the cost parameters
-                        # print( 'got here' )
+                        # print( 'got here', params['Gvkm'] in this_unit_target, params['veh'] in this_unit_introduced, params['relative'] in this_unit_introduced )
+                        # if (params['Gvkm'] in this_unit_target) == False or (params['veh'] in this_unit_introduced) == False  or (params['relative'] in this_unit_introduced) == False:
+                        #     print(this_unit_target, this_unit_introduced)
                         for y in range( len( time_range_vector ) ): # we employ a conversion of units
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( 1000*this_df_new.loc[ n, time_range_vector[y] ]/this_km_list[y] , 4 )
                         this_df_new_2.loc[ n, 'Unit.Introduced' ] = this_df_new.loc[ n, 'Unit' ]
