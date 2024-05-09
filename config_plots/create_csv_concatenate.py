@@ -10,6 +10,7 @@ import pandas as pd
 import yaml
 from copy import deepcopy
 import sys
+import shutil
 
 def get_config_main_path(full_path, base_folder='config_plots'):
     # Split the path into parts
@@ -146,3 +147,8 @@ if __name__ == '__main__':
                 #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
                 #print(case)
                 df_all_3.to_csv(f'{file_df_dir}/{case}_Output.csv')
+
+                # Delete Outputs folder with otoole csvs files
+                outputs_otoole_csvs = file_df_dir + out_quick
+                if os.path.exists(outputs_otoole_csvs):
+                    shutil.rmtree(outputs_otoole_csvs)

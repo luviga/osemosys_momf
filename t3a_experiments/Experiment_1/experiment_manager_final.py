@@ -5764,6 +5764,7 @@ if __name__ == '__main__':
             shutil.os.remove('cplex.log')
             shutil.os.remove('clone1.log')
             shutil.os.remove('clone2.log')
+        #
     #
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
     '''
