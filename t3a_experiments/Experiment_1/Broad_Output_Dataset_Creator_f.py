@@ -4,6 +4,8 @@ import pandas as pd
 import os
 import re
 import yaml
+import numpy as np
+
 
 def get_config_main_path(full_path):
     # Split the path into parts
@@ -119,6 +121,33 @@ li_intput = [df_0_input, df_f_input]
 #
 df_input = pd.concat(li_intput, axis=0, ignore_index=True)
 df_input.sort_values(by=params['by_2'], inplace=True)
+
+#############################
+#############################
+libro = pd.ExcelFile('./0_From_Confection/B1_Model_Structure.xlsx')
+hoja=libro.parse( 'sector' , skiprows = 0 )
+encabezados=list(hoja)
+
+col_t=list(hoja[encabezados[0]])
+col_s=list(hoja[encabezados[1]])
+col_d=list(hoja[encabezados[2]])
+dicSector=dict(zip(col_t,col_s))
+dicDescription=dict(zip(col_t,col_d))
+
+
+df_output=df_output.assign(Sector=np.NaN)
+df_output=df_output.assign(Description=np.NaN)
+
+
+llaves=list(dicSector.keys())
+col_sector=np.array(list(df_output['Sector']))
+
+for i in range(len(llaves)):
+    df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+
+#############################
+#############################
 
 dfa_list = [ df_output, df_input ]
 
