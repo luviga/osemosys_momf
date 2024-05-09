@@ -157,7 +157,7 @@ solver: 'cplex' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # Choose if want to delete or not the solver solutions files
-del_files: False # B1, em, FRM
+del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
 Number_of_Runs: 1 # em
@@ -963,13 +963,15 @@ adjust_sets_waste: [ ##@
   "BLEND_NO_COLL", "INORG_SS", "ORG_SS", "NO_SS", "WWWT", "WWWOT", "SEWERWW", "DIRECT_DISC"
 ]
 
+#all_covers_AFOLU: [
+#    "AG_RIC", "AG_BAN", "AG_SGC", "AG_COC", "AG_TRVEG", "AG_CAF", "AG_LEG", "AG_ROT", 
+#    "AG_FRT", "AGR_CER", "AGR_OTP", "GA_LEC", "GA_CARAVI", "GA_CARBOV", "GA_OTRCARPRO", 
+#    "GA_CARPOR", "GA_OTRCAR", "LU_FOR", "LU_AGR", "LU_GAN", "LU_MTS", "LU_SAB", "LU_URB", 
+#    "LU_OLU", "LU_LATHUM", "LU_CLF", "LU_LATSHUM", "LU_DCON", "LU_SCON", "LU_WET", "LU_DRY"
+#]
+
 all_covers_AFOLU: [
-    #"AG_RIC", "AG_BAN", "AG_SGC", "AG_COC", "AG_TRVEG", "AG_CAF", "AG_LEG", "AG_ROT", 
-    #"AG_FRT", "AGR_CER", "AGR_OTP", "GA_LEC", "GA_CARAVI", "GA_CARBOV", "GA_OTRCARPRO", 
-    #"GA_CARPOR", "GA_OTRCAR", 
-    #"LU_FOR", 
-    "LU_AGR", "LU_GAN", "LU_MTS", "LU_SAB", "LU_URB", 
-    "LU_OLU", "LU_LATHUM", "LU_CLF", "LU_LATSHUM", "LU_DCON", "LU_SCON", "LU_WET", "LU_DRY"
+    "LU_FOR", "LU_AGR", "LU_GAN"
 ]
 
 group_tech_set: 'Techs_Auto' # em ##@
