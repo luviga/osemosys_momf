@@ -143,4 +143,6 @@ if __name__ == '__main__':
                     df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                 
                 # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+                #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+                #print(case)
+                df_all_3.to_csv(f'{file_df_dir}/{case}_Output.csv')
