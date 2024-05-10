@@ -138,6 +138,9 @@ dicDescription=dict(zip(col_t,col_d))
 df_output=df_output.assign(Sector=np.NaN)
 df_output=df_output.assign(Description=np.NaN)
 
+df_input=df_input.assign(Sector=np.NaN)
+df_input=df_input.assign(Description=np.NaN)
+
 
 llaves=list(dicSector.keys())
 col_sector=np.array(list(df_output['Sector']))
@@ -145,6 +148,8 @@ col_sector=np.array(list(df_output['Sector']))
 for i in range(len(llaves)):
     df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
     df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
 
 #############################
 #############################
