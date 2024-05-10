@@ -3565,13 +3565,13 @@ if __name__ == '__main__':
                                 #
                                 value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
                                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-
+                                
                                 if params['exact_x_2'] in Exact_X and params['Use_Energy']:
                                     new_value_list = \
                                         interpolation_multiplier(
                                             time_range_vector, value_list,
                                             Values_per_Future[fut_id] )
-
+                                    
                                     if X_Cat in params['x_cat_ele']:
                                         total_elec_demand = list(map(
                                             operator.add, total_elec_demand,                                                                                                           
@@ -3579,6 +3579,8 @@ if __name__ == '__main__':
                                         total_elec_demand_bc = list(map(
                                             operator.add, total_elec_demand_bc,
                                             value_list))
+                                        # if this_set == 'E5COMELE':
+                                        #     sys.exit()
 
                                 else:
                                     if X_Cat in params['fre_dem']:
@@ -3634,189 +3636,169 @@ if __name__ == '__main__':
                             #
                         #
                                     
-                        # elif params['math_type_mult_rest'] in Math_Type and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
-                        #     ###
-                        #     ### ACA NO SE ENTRA
-                        #     ###
-                        #     print('Energy_3')
-                        #     #
-                        #     enter_if_cycle = True
-                        #     #
-                        #     '''
-                        #     The script below should work if the sets sum 100% of the generation in the base cases,
-                        #     i.e., the sum of "value_list_sh" across all sets should be 100% every year.
-                        #     '''
+                        elif params['math_type_mult_rest'] in Math_Type and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
+                            ###
+                            ### ACA NO SE ENTRA
+                            ###
+                            print('Energy_3')
+                            #
+                            enter_if_cycle = True
+                            #
+                            '''
+                            The script below should work if the sets sum 100% of the generation in the base cases,
+                            i.e., the sum of "value_list_sh" across all sets should be 100% every year.
+                            '''
 
-                        #     if params['math_type_start'] in Math_Type:
-                        #         # Define a total denominator for normalization:
-                        #         new_value_list_sh_sum = [0]*len(time_range_vector)
-                        #         value_list_sh_sum = [0]*len(time_range_vector)
+                            if params['math_type_start'] in Math_Type:
+                                # Define a total denominator for normalization:
+                                new_value_list_sh_sum = [0]*len(time_range_vector)
+                                value_list_sh_sum = [0]*len(time_range_vector)
 
-                        #         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
-                        #         store_new_sh = {}
-                        #         store_refval_sh = {}
+                                this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
+                                store_new_sh = {}
+                                store_refval_sh = {}
 
-                        #         all_set_involved = []
+                                all_set_involved = []
 
-                        #     # Iterate across every single set
-                        #     for a_set in range( len( Sets_Involved ) ):
-                        #         # Get each share of Upper and Lower limit in the base case
-                        #         this_set = Sets_Involved[a_set]
-                        #         all_set_involved.append(this_set)
-                        #         this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
-                        #         print(this_set)
-                        #         value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
+                            # Iterate across every single set
+                            for a_set in range( len( Sets_Involved ) ):
+                                # Get each share of Upper and Lower limit in the base case
+                                this_set = Sets_Involved[a_set]
+                                all_set_involved.append(this_set)
+                                this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
+                                print(this_set)
+                                value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
 
-                        #         # Get the share:
-                        #         value_list_sh = [value_list[i]/total_val for i, total_val in enumerate(total_elec_demand_bc)]
+                                # Get the share:
+                                value_list_sh = [value_list[i]/total_val for i, total_val in enumerate(total_elec_demand_bc)]
 
-                        #         store_refval_sh.update({
-                        #             this_set:deepcopy(value_list_sh)})
+                                store_refval_sh.update({
+                                    this_set:deepcopy(value_list_sh)})
 
-                        #         if scenario_list[s] != params['BAU']:
-                        #             new_value_list_sh = \
-                        #                 interpolation_multiplier(
-                        #                     time_list, value_list_sh,
-                        #                     Values_per_Future[fut_id])
-                        #         else:
-                        #             new_value_list_sh = deepcopy(
-                        #                 value_list_sh)
+                                if scenario_list[s] != params['BAU']:
+                                    new_value_list_sh = \
+                                        interpolation_multiplier(
+                                            time_list, value_list_sh,
+                                            Values_per_Future[fut_id])
+                                else:
+                                    new_value_list_sh = deepcopy(
+                                        value_list_sh)
 
-                        #         store_new_sh.update({
-                        #             this_set:deepcopy(new_value_list_sh)})
+                                store_new_sh.update({
+                                    this_set:deepcopy(new_value_list_sh)})
 
-                        #         new_value_list_sh_sum = list(map(
-                        #             operator.add, new_value_list_sh_sum,
-                        #             new_value_list_sh))
+                                new_value_list_sh_sum = list(map(
+                                    operator.add, new_value_list_sh_sum,
+                                    new_value_list_sh))
 
-                        #         value_list_sh_sum = list(map(
-                        #             operator.add, value_list_sh_sum,
-                        #             value_list_sh))
+                                value_list_sh_sum = list(map(
+                                    operator.add, value_list_sh_sum,
+                                    value_list_sh))
 
-                        #         #if this_set == params['this_set_pp_hy']:
-                        #         #    print('check')
-                        #         #    sys.exit()                           
+                                #if this_set == params['this_set_pp_hy']:
+                                #    print('check')
+                                #    sys.exit()                           
 
-                        #     if params['math_type_end'] in Math_Type:
+                            if params['math_type_end'] in Math_Type:
 
-                        #         #for i in range(len(time_range_vector)):
-                        #         #    if time_range_vector[i] <= params['change_year']:
-                        #         #        new_value_list_sh_sum[i] = 1
+                                #for i in range(len(time_range_vector)):
+                                #    if time_range_vector[i] <= params['change_year']:
+                                #        new_value_list_sh_sum[i] = 1
                                 
-                        #         # Iterate again to apply normalization:
-                        #         for a_set in range( len( all_set_involved ) ):
-                        #             this_set = all_set_involved[a_set]
-                        #             this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
+                                # Iterate again to apply normalization:
+                                for a_set in range( len( all_set_involved ) ):
+                                    this_set = all_set_involved[a_set]
+                                    this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
 
-                        #             value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
+                                    value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
 
-                        #             # Get the share:
-                        #             value_list_sh = [value_list[i]/total_val for i, total_val in enumerate(total_elec_demand_bc)]
+                                    # Get the share:
+                                    value_list_sh = [value_list[i]/total_val for i, total_val in enumerate(total_elec_demand_bc)]
 
-                        #             # Normalize the share:
-                        #             new_value_list_sh_norm = [store_new_sh[this_set][i]*value_list_sh_sum[i]/sh_sum for i, sh_sum in enumerate(new_value_list_sh_sum)]
+                                    # Normalize the share:
+                                    new_value_list_sh_norm = [store_new_sh[this_set][i]*value_list_sh_sum[i]/sh_sum for i, sh_sum in enumerate(new_value_list_sh_sum)]
 
-                        #             # Calculate the magnitude according to adjusted demand:
-                        #             new_value_list = [new_value_list_sh_norm[i]*total_val for i, total_val in enumerate(total_elec_demand)]
+                                    # Calculate the magnitude according to adjusted demand:
+                                    new_value_list = [new_value_list_sh_norm[i]*total_val for i, total_val in enumerate(total_elec_demand)]
 
-                        #             # Add a filter for wind generation:
-                        #             if this_set == params['this_set_pp_wdn']:
-                        #                 max_prod_in_gwh = 0.88 * 0.5214 * 0.95 * 8760
-                        #                 sec_val = 0.98
-                        #                 max_prod_in_pj = max_prod_in_gwh * 0.0036 * sec_val
-                        #                 for i in range(len(new_value_list)):
-                        #                     if new_value_list[i] > max_prod_in_pj:
-                        #                         new_value_list[i] = max_prod_in_pj
+                                    # Add a filter for wind generation:
+                                    if this_set == params['this_set_pp_wdn']:
+                                        max_prod_in_gwh = 0.88 * 0.5214 * 0.95 * 8760
+                                        sec_val = 0.98
+                                        max_prod_in_pj = max_prod_in_gwh * 0.0036 * sec_val
+                                        for i in range(len(new_value_list)):
+                                            if new_value_list[i] > max_prod_in_pj:
+                                                new_value_list[i] = max_prod_in_pj
 
-                        #             # Assign parameters back: for these subset of uncertainties
-                        #             new_value_list_rounded = [
-                        #                 round(elem, params['round_#']) for elem in new_value_list]
-                        #             inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list_rounded)
+                                    # Assign parameters back: for these subset of uncertainties
+                                    new_value_list_rounded = [
+                                        round(elem, params['round_#']) for elem in new_value_list]
+                                    inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list_rounded)
 
-                        #             # If the UpperLimit needs update, do it:
-                        #             multiplier_list_2 = [1]*len(time_range_vector)
-                        #             for i, val in enumerate(new_value_list):
-                        #                 if value_list[i] > 0:
-                        #                     multiplier_list_2[i] = val/value_list[i]
+                                    # If the UpperLimit needs update, do it:
+                                    multiplier_list_2 = [1]*len(time_range_vector)
+                                    for i, val in enumerate(new_value_list):
+                                        if value_list[i] > 0:
+                                            multiplier_list_2[i] = val/value_list[i]
                                     
-                        #             this_param_2 = 'TotalTechnologyAnnualActivityUpperLimit'
-                        #             this_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_2][this_set_type_initial]) if x == str(this_set)]
-                        #             if len(this_set_range_indices_2) != 0:
-                        #                 value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
-                        #                 new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
-                        #                 new_value_list_rounded_2 = [
-                        #                     round(elem, params['round_#']) for elem in new_value_list_2]
-                        #                 inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1] = deepcopy(new_value_list_rounded_2)
+                                    this_param_2 = 'TotalTechnologyAnnualActivityUpperLimit'
+                                    this_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_2][this_set_type_initial]) if x == str(this_set)]
+                                    if len(this_set_range_indices_2) != 0:
+                                        value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
+                                        new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
+                                        new_value_list_rounded_2 = [
+                                            round(elem, params['round_#']) for elem in new_value_list_2]
+                                        inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1] = deepcopy(new_value_list_rounded_2)
                                     
-                        #         # Get the sets that have not been adjusted and adjust relative to the new demand:
-                        #         all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
-                        #         pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP_' in i or 'PPI' in i) and ('HYD' not in i) and ('GEO' not in i)]
-                        #         for a_set in range( len( pending_sets ) ):
-                        #             # Get the set:
-                        #             this_set = pending_sets[a_set]
-                        #             this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
+                                # Get the sets that have not been adjusted and adjust relative to the new demand:
+                                all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
+                                pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP_' in i or 'PPI' in i) and ('HYD' not in i) and ('GEO' not in i)]
+                                for a_set in range( len( pending_sets ) ):
+                                    # Get the set:
+                                    this_set = pending_sets[a_set]
+                                    this_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(this_set)]
 
-                        #             # Perform the adjustment:|
-                        #             value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
-                        #             new_value_list = [value_list[i]*total_val/total_elec_demand_bc[i] for i, total_val in enumerate(total_elec_demand)]
+                                    # Perform the adjustment:|
+                                    value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
+                                    new_value_list = [value_list[i]*total_val/total_elec_demand_bc[i] for i, total_val in enumerate(total_elec_demand)]
 
-                        #             # Assign parameters back: for these subset of uncertainties
-                        #             new_value_list_rounded = [
-                        #                 round(elem, params['round_#']) for elem in new_value_list]
-                        #             inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list_rounded)
+                                    # Assign parameters back: for these subset of uncertainties
+                                    new_value_list_rounded = [
+                                        round(elem, params['round_#']) for elem in new_value_list]
+                                    inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list_rounded)
 
-                        #             # if this_set == 'PP_SPV_DG' and scenario_list[s] == 'NDP' and f == 2:
-                        #             #     print('check again 2')
-                        #             #     sys.exit()
+                                    # if this_set == 'PP_SPV_DG' and scenario_list[s] == 'NDP' and f == 2:
+                                    #     print('check again 2')
+                                    #     sys.exit()
 
-                        #             # If the UpperLimit needs update, do it:
-                        #             multiplier_list_2 = [1]*len(time_range_vector)
-                        #             for i, val in enumerate(new_value_list):
-                        #                 if value_list[i] > 0:
-                        #                     multiplier_list_2[i] = val/value_list[i]
+                                    # If the UpperLimit needs update, do it:
+                                    multiplier_list_2 = [1]*len(time_range_vector)
+                                    for i, val in enumerate(new_value_list):
+                                        if value_list[i] > 0:
+                                            multiplier_list_2[i] = val/value_list[i]
                                     
-                        #             this_param_2 = 'TotalTechnologyAnnualActivityUpperLimit'
-                        #             this_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_2][this_set_type_initial]) if x == str(this_set)]
-                        #             if len(this_set_range_indices_2) != 0:
-                        #                 value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
-                        #                 new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
-                        #                 new_value_list_rounded_2 = [
-                        #                     round(elem, params['round_#']) for elem in new_value_list_2]
-                        #                 inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1] = deepcopy(new_value_list_rounded_2)
+                                    this_param_2 = 'TotalTechnologyAnnualActivityUpperLimit'
+                                    this_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_2][this_set_type_initial]) if x == str(this_set)]
+                                    if len(this_set_range_indices_2) != 0:
+                                        value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
+                                        new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
+                                        new_value_list_rounded_2 = [
+                                            round(elem, params['round_#']) for elem in new_value_list_2]
+                                        inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1] = deepcopy(new_value_list_rounded_2)
 
-                        #             # Increase MaxCapacity if necessary:
-                        #             this_param_3 = 'TotalAnnualMaxCapacity'
-                        #             this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3][this_set_type_initial]) if x == str(this_set)]
-                        #             if len(this_set_range_indices_3) != 0 and multiplier_list_2[-1] > 1:
-                        #                 value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
-                        #                 new_value_list_3 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_3)]
-                        #                 new_value_list_rounded_3 = [
-                        #                     round(elem, params['round_#']) for elem in new_value_list_3]
-                        #                 inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                    # Increase MaxCapacity if necessary:
+                                    this_param_3 = 'TotalAnnualMaxCapacity'
+                                    this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3][this_set_type_initial]) if x == str(this_set)]
+                                    if len(this_set_range_indices_3) != 0 and multiplier_list_2[-1] > 1:
+                                        value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
+                                        new_value_list_3 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_3)]
+                                        new_value_list_rounded_3 = [
+                                            round(elem, params['round_#']) for elem in new_value_list_3]
+                                        inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
 
-                        #                 # if this_set == 'PP_SPV_DG' and scenario_list[s] == 'NDP' and f == 2:
-                        #                 #     print('check again 2-2')
-                        #                 #     # sys.exit()
-
-                        #         #### SE COMENTA ESTA SECCIONCITA
-                        #         # Override the restriction of "T5CRUTRN":
-                        #         this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit'][this_set_type_initial]) if x == str("T5CRUCRUTRN")]
-                        #         value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
-                        #         new_value_list_3 = []
-                        #         if len(value_list_3) > 0:
-                        #             for i in range(len(time_range_vector)):
-                        #                 # if time_range_vector[i] <= params['year_resticcion_tech']:
-                        #                 #     new_value_list_3.append(value_list_3[i])
-                        #                 # else:
-                        #                 #     new_value_list_3.append(99999)
-                        #                 new_value_list_3.append(99999)
-                        #             new_value_list_rounded_3 = [
-                        #                 round(elem, params['round_#']) for elem in new_value_list_3]
-                        #             inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
-
-                        #         this_set_range_indices_4 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit'][this_set_type_initial]) if x == str("T4_DSLPUB")]
-                        #         value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
-                                
+                                        # if this_set == 'PP_SPV_DG' and scenario_list[s] == params['NDP'] and f == 2:
+                                        #     print('check again 2-2')
+                                        #     # sys.exit()
                             #
                         #
 
@@ -5434,10 +5416,10 @@ if __name__ == '__main__':
                     #--------------------------------------------------------------------#
                 # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
                 # print('Energy_check_3')
-                if params['NDP'] == scenario_list[s] and u > 13 and params['TRY_TK_HD'] != '':
-                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
-                    value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                    value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
+                # if params['NDP'] == scenario_list[s] and u > 13 and params['TRY_TK_HD'] != '':
+                #     this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( params['TRY_TK_HD']) ]
+                #     value_list_max = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                #     value_list_max = [ float(value_list_max[j]) for j in range( len( value_list_max ) ) ]
 
 
 
