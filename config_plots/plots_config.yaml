@@ -18,7 +18,7 @@ out_dir: '/Outputs' # Don't change
 dir_main_script_yaml: '../tests/Energy/config_main_files'
 
 # Third: Fill with scenarios
-scens: ['BAU', 'NDP']
+scens: ['BAU', 'LTS']
 
 # Fourth: Select if you want see information
 # Recomendation: Ever put like true in the first run and run now
