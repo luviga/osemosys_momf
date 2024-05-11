@@ -945,7 +945,7 @@ this_parameter: ['SpecifiedAnnualDemand'] # em
 
 this_parameter_2: ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit'] # em
 
-this_parameter_3: ['CapitalCost'] # em
+this_parameter_3: ['CapitalCost', 'EmissionActivityRatio'] # em
 
 this_parameter_4: ['VariableCost'] # em
 

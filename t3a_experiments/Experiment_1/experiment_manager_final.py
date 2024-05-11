@@ -2235,7 +2235,7 @@ if __name__ == '__main__':
                         ####################
 
                         if params['Use_Waste']==True and Sectors_Involved[0][2]=="W":
-                            print(params['Use_Waste'])
+                            #print(params['Use_Waste'])
                             print('Waste_3')
                             ## FALTA CHEQUEAR
                             if X_Cat in list_variation_waste:
@@ -2323,7 +2323,7 @@ if __name__ == '__main__':
                             # The X type below is manipulated with immidiate restitution after adjustment for Waste sector.
                             elif ( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
                                                                 Explored_Parameter_of_X==params['fin_val'] ) ) and params['Use_Waste'] and Sectors_Involved[0][2]=="W":
-                                print(params['Use_Waste'])
+                                #print(params['Use_Waste'])
                                 print('Waste_4')
 
                                 #
@@ -5517,8 +5517,8 @@ if __name__ == '__main__':
 
             #
             fut_id += 1
-    # print('HOLA')
-    # sys.exit()
+    print('HOLA')
+    sys.exit()
     #
     print( '    We have finished the experiment and inheritance' )
     #
