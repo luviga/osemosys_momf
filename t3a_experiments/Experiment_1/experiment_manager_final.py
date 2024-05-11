@@ -5668,65 +5668,65 @@ if __name__ == '__main__':
     #
     #########################################################################################
     #
-    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-    #     #
-    #     print('5: We will produce the outputs and store the data.')
-    #     #
-    #     for a_scen in range( len( scenario_list_print ) ):
-    #         #
-    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-    #         #
-    #         Executed_Scenario = scenario_list_print[ a_scen ]
-    #         set_first_list(Executed_Scenario, params)
-    #         #
-    #         if params['parallel']:
-    #             print('Entered Parallelization')
-    #             x = len(first_list)
-    #             #
-    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-    #             #
-    #             y = x / max_x_per_iter
-    #             y_ceil = math.ceil( y )
-    #             #
-    #             # sys.exit()
-    #             #'''
-    #             for n in range(0,y_ceil):
-    #                 print('###')
-    #                 n_ini = n*max_x_per_iter
-    #                 processes = []
-    #                 #
-    #                 start1 = time.time()
-    #                 #
-    #                 if n_ini + max_x_per_iter <= x:
-    #                     max_iter = n_ini + max_x_per_iter
-    #                 else:
-    #                     max_iter = x
-    #                 #
-    #                 for n2 in range( n_ini , max_iter ):
-    #                     print(n2)
-    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-    #                     processes.append(p)
-    #                     p.start()
-    #                 #
-    #                 for process in processes:
-    #                     process.join()
+    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+        #
+        print('5: We will produce the outputs and store the data.')
+        #
+        for a_scen in range( len( scenario_list_print ) ):
+            #
+            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+            #
+            Executed_Scenario = scenario_list_print[ a_scen ]
+            set_first_list(Executed_Scenario, params)
+            #
+            if params['parallel']:
+                print('Entered Parallelization')
+                x = len(first_list)
+                #
+                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+                #
+                y = x / max_x_per_iter
+                y_ceil = math.ceil( y )
+                #
+                # sys.exit()
+                #'''
+                for n in range(0,y_ceil):
+                    print('###')
+                    n_ini = n*max_x_per_iter
+                    processes = []
+                    #
+                    start1 = time.time()
+                    #
+                    if n_ini + max_x_per_iter <= x:
+                        max_iter = n_ini + max_x_per_iter
+                    else:
+                        max_iter = x
+                    #
+                    for n2 in range( n_ini , max_iter ):
+                        print(n2)
+                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+                        processes.append(p)
+                        p.start()
+                    #
+                    for process in processes:
+                        process.join()
 
-    #                 end_1 = time.time()   
-    #                 time_elapsed_1 = -start1 + end_1
-    #                 print( str( time_elapsed_1 ) + ' seconds' )
-    #                 time_list.append( time_elapsed_1 )
+                    end_1 = time.time()   
+                    time_elapsed_1 = -start1 + end_1
+                    print( str( time_elapsed_1 ) + ' seconds' )
+                    time_list.append( time_elapsed_1 )
 
-    #         else:
-    #             print('Started Linear Runs')
-    #             #
-    #             for n in range( len( first_list ) ):
-    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-    #             #
-    #             end_1 = time.time()   
-    #             time_elapsed_1 = -start1 + end_1
-    #             print( str( time_elapsed_1 ) + ' seconds' )
-    #             time_list.append( time_elapsed_1 )
+            else:
+                print('Started Linear Runs')
+                #
+                for n in range( len( first_list ) ):
+                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+                #
+                end_1 = time.time()   
+                time_elapsed_1 = -start1 + end_1
+                print( str( time_elapsed_1 ) + ' seconds' )
+                time_list.append( time_elapsed_1 )
                 #'''
                 #
             #
