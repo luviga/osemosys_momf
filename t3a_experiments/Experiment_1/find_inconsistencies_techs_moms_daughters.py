@@ -11,6 +11,7 @@ import pandas as pd
 import pickle
 import os
 import re
+import sys
 
 
 ###############################################  Functions  ################################################################
@@ -128,6 +129,28 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
 
     return comparison_results
 
+def check_decreasing_values(data_frame, parameter_name):
+    """ Check if the values for each technology are decreasing over the years. """
+    decreasing_issues = {}
+    # Iterate through each technology
+    for tech, values in data_frame.iterrows():
+        # Use pd.to_numeric to convert values to float and handle non-numeric data gracefully
+        numeric_values = pd.to_numeric(values, errors='coerce')
+        # Drop NaN values which might occur due to conversion or invalid data
+        numeric_values = numeric_values.dropna()
+        # Check if the series is strictly decreasing
+        if all(numeric_values.iloc[i] > numeric_values.iloc[i + 1] for i in range(len(numeric_values) - 1)):
+            decreasing_issues[tech] = numeric_values.tolist()
+    
+    # Print warning messages if any decreasing issues are found
+    if decreasing_issues:
+        print(f"Warning: The following technologies have strictly decreasing values for {parameter_name}:")
+        for tech, vals in decreasing_issues.items():
+            print(f"  {tech}: {vals}")
+    else:
+        print(f"All values are not strictly decreasing for {parameter_name}.")
+
+
 ############################################################################################################################
 
 if __name__ == '__main__':
@@ -173,12 +196,17 @@ if __name__ == '__main__':
     
     
     for i in range(len(file_names)):
-        # # Take techs defined for the parameter
+        # Take techs defined for the parameter
         result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
         if result is not None:
+            if file_names[i] == "TotalAnnualMaxCapacity":
+                # Check for decreasing values specifically for this parameter
+                check_decreasing_values(result, file_names[i])
+                sys.exit()
             comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
         else:
             print("No results available to compare.")
+
     
     
 
