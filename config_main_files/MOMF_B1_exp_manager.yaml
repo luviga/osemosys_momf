@@ -166,7 +166,7 @@ Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 10 # B1, em
+max_x_per_iter: 2 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True
@@ -200,10 +200,10 @@ round_#: 4 # B1, em
 
 # Sectors variables
 Use_Energy: True # em 
-Use_Waste: True # B1, em
+Use_Waste: False # B1, em
 Use_Transport: False # B1
-Use_AFOLU: True # em
-Use_PIUP: True # em
+Use_AFOLU: False # em
+Use_PIUP: False # em
 
 
 Use_Blend_Shares: False # You musn't change # B1, em
@@ -573,7 +573,7 @@ set_list_group_dict: { # B1
 Sets_Involved: [ # B1, em  ##@
   'Techs_He_Freight', 'Techs_Li_Freight', 'Techs_Trains_Freight',
   'Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi',
-  'Techs_Buses_Pub', 'Techs_Buses_Micro'
+  'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro'
   ]
 
 # Sets_Involved: [ # em
@@ -661,8 +661,8 @@ Techs_Emissions: { # em
   }
 
 except_techs: [ # em ##From Where ###
-  'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pri',
-  'Techs_Buses_Pub', 'Techs_He_Freight', 'Techs_Li_Freigth',
+  'Techs_Auto', 'Techs_Motos', 'Techs_Buses_Pub', 'Techs_Buses_Tur',
+  'Techs_He_Freight', 'Techs_Li_Freigth',
   'Techs_Buses_Micro'
   ]
 
@@ -686,11 +686,11 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 
 ################################# Conditions #################################
 trains: 'Trains' # B1, em
-tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em ###
-tra_techs_for_passengers: ['Techs_Auto', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # em ###
+tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em ###
+tra_techs_for_passengers: ['Techs_Auto', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro'] # em ###
 trn_list_tech_groups: [ # em ### # Susana
   'Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi',
-  'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Telef',
+  'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_Telef',
   'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight',
   'Techs_Li_Freight'
   ] 
@@ -703,6 +703,7 @@ PRI: 'PRI' # B1, em
 PUB: 'PUB' # B1, em
 FEAHEA: 'FREHEA' # B1, em
 FRELIG: 'FRELIG' # B1, em
+TUR: 'TUR' # B1, em
 ini_year_uncer: 'Initial_Year_of_Uncertainty' # B1, em
 scen: 'Scenario' # B1, em
 group_set: 'Group_Set' # B1, em
@@ -768,7 +769,7 @@ this_set_waste: ['INORG_RCY_OS', 'COMPOST'] # em ###
 this_set_pp_wdn: 'PP_WND_US' # em ## From Where
 this_set_afolu_1: 'Cafe' # em ######
 this_set_afolu_2: 'Cana' # em ######
-this_set_techs_buses: ['Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro', 'Techs_Trains'] # em ##@
+this_set_techs_buses: ['Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_Trains'] # em ##@
 this_set_pp_hy: 'PP_HYDAMARORLAR' # em ##@
 TRA_BUS_HYD: 'TRBTURHYD' # em ##@
 TRA_BUS_ELE: 'TRBTURELE' # em ##@
@@ -811,6 +812,7 @@ logistic: 'Logistic' # B1, em
 linear: 'Linear' # B1, em
 context: 'Context' # B1, em
 tra_dem_pub: 'E6TDPASPUB' # Transport Demand - Passenger Public # B1, em ###
+tra_dem_tur: 'E6TDPASTUR' # Transport Demand - Passenger Tourism # em ###
 tra_dem_pri: 'E6TDPASPRI' # Transport Demand - Passsenger Private # B1, em ###
 tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight # B1, em ###
 tra_dem_med: 'DEMTRNFREMED' # B1, em ###

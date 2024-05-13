@@ -1651,10 +1651,12 @@ if __name__ == '__main__':
         group_tech_PRIVATE = []
         group_tech_FREIGHT_HEA = []
         group_tech_FREIGHT_LIG = []
+        group_tech_TOURISM = []
         #
         for t in range( len( list( Fleet_Groups_techs_2_dem.keys() ) ) ):
             tech_key = list( Fleet_Groups_techs_2_dem.keys() )[t]
             this_fuel = Fleet_Groups_techs_2_dem[ tech_key ]
+            print(this_fuel)
             if params['PRI'] in this_fuel:
                 group_tech_PRIVATE.append( tech_key )
             if params['PUB'] in this_fuel:
@@ -1663,9 +1665,16 @@ if __name__ == '__main__':
                 group_tech_FREIGHT_HEA.append( tech_key )
             if params['FRELIG'] in this_fuel:
                 group_tech_FREIGHT_LIG.append( tech_key )
+            if params['TUR'] in this_fuel:
+                group_tech_TOURISM.append( tech_key )
         #
         group_tech_PASSENGER = group_tech_PUBLIC + group_tech_PRIVATE
         group_tech_FREIGHT = group_tech_FREIGHT_HEA + group_tech_FREIGHT_LIG
+        
+        # print("###############")
+        # print("##### ACA #####")
+        # print(group_tech_PASSENGER,group_tech_FREIGHT)
+        # print("###############")
     #
     
     global time_range_vector # This is the variable that manages time throughout the experiment
@@ -4941,6 +4950,7 @@ if __name__ == '__main__':
                                 dem_adj_heafre = True
                                 dem_adj_midfre = True
                                 dem_adj_ligfre = True
+                                dem_adj_tur = True
 
                             for a_set in range( len( Sets_Involved ) ):
                                 # Distance is a parameter that is not in Osemosys directly, but is implicit in multiple parameters.
@@ -4958,6 +4968,7 @@ if __name__ == '__main__':
                                 this_demand_set = Fleet_Groups_techs_2_dem[ Sets_Involved[ a_set ] ]
                                 if ((this_demand_set == params['tra_dem_pri'] and dem_adj_private is True) or
                                     (this_demand_set == params['tra_dem_pub'] and dem_adj_public is True) or
+                                    (this_demand_set == params['tra_dem_tur'] and dem_adj_public is True) or
                                     (this_demand_set == params['tra_dem_hea'] and dem_adj_heafre is True) or
                                     (this_demand_set == params['tra_dem_med'] and dem_adj_midfre is True) or
                                     (this_demand_set == params['tra_dem_lig'] and dem_adj_ligfre is True)):
@@ -5002,6 +5013,9 @@ if __name__ == '__main__':
                                         #
                                     if this_demand_set == params['tra_dem_pub']:
                                         dem_adj_public = False
+                                        #
+                                    if this_demand_set == params['tra_dem_tur']:
+                                        dem_adj_tur = False
                                         #
                                     if this_demand_set == params['tra_dem_hea']:
                                         dem_adj_heafre = False
@@ -5170,6 +5184,20 @@ if __name__ == '__main__':
                             #
                             for n2 in range( len( time_range_vector ) ):
                                 new_private_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00001)*or_group_tech_values[n2] # *applicable_distance_dictionaries[group_tech_PRIVATE[n]][n2]
+                                
+                        # LET'S ADJUST FOR TOURISM TRANSPORT:
+                        new_tourism_passenger_demand = [ 0 for n in range( len( time_range_vector ) ) ]
+                        for n in range( len( group_tech_TOURISM) ):
+                            or_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ][ 't' ] ) if x == str( group_tech_TOURISM[n] ) ]
+                            or_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'OutputActivityRatio' ]['value'][ or_group_tech_indices[0]:or_group_tech_indices[-1]+1 ] )
+                            or_group_tech_values = [ float( or_group_tech_values[j] ) for j in range( len( or_group_tech_values ) ) ]
+                            #
+                            cap_group_tech_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_TOURISM[n] ) ]
+                            cap_group_tech_values = deepcopy( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ cap_group_tech_indices[0]:cap_group_tech_indices[-1]+1 ] )
+                            cap_group_tech_values = [ float( cap_group_tech_values[j] ) for j in range( len( cap_group_tech_values ) ) ]
+                            #
+                            for n2 in range( len( time_range_vector ) ):
+                                new_tourism_passenger_demand[n2] += (cap_group_tech_values[n2]*1.00001)*or_group_tech_values[n2]
                             #
                         #
                     
@@ -5180,6 +5208,10 @@ if __name__ == '__main__':
                         new_private_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_private_passenger_demand ]
                         private_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_pri'] ) ]
                         inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ private_demand_indices[0]:private_demand_indices[-1]+1 ] = deepcopy( new_private_passenger_demand_rounded )
+                        
+                        new_tourism_passenger_demand_rounded = [ round(elem, params['round_#']) for elem in new_tourism_passenger_demand ]
+                        tourism_demand_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_tur'] ) ]
+                        inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ tourism_demand_indices[0]:tourism_demand_indices[-1]+1 ] = deepcopy( new_tourism_passenger_demand_rounded )
                     
                         if scenario_list[s] != params['BAU']:
                             # WE ADJUST FOR NON MOTORIZED WHEN IT IS NEEDED (IF WE ARE NOT IN BAU).
