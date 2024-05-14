@@ -3755,11 +3755,27 @@ if __name__ == '__main__':
                                     if len(this_set_range_indices_2) != 0:
                                         value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
                                         new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
+                                        
+                                        
+                                        # Values of 'TotalTechnologyAnnualActivityLowerLimit' to check LowerLimit isn't bigger tan UpperLimit
+                                        if this_parameter == 'TotalTechnologyAnnualActivityLowerLimit' or this_parameter == 'TotalTechnologyAnnualActivityUpperLimit':
+                                            this_param_3 = 'TotalTechnologyAnnualActivityLowerLimit'
+                                            this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3][this_set_type_initial]) if x == str(this_set)]
+                                            value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
+                                            new_value_list_2 = [max(v2, v3) if v3 > v2 else v2 for v2, v3 in zip(new_value_list_2, value_list_3)]
+                                            
+                                            
+                                            
                                         new_value_list_rounded_2 = [
-                                            round(elem, params['round_#']) for elem in new_value_list_2]
+                                                round(elem, params['round_#']) for elem in new_value_list_2]
+                                        
                                         inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1] = deepcopy(new_value_list_rounded_2)
-                                    
-                                # Get the sets that have not been adjusted and adjust relative to the new demand:
+                                        # if this_parameter == 'TotalTechnologyAnnualActivityLowerLimit':
+                                        #     sys.exit()
+                                        
+                                    # if 
+                                    # this_parameter == 'TotalTechnologyAnnualActivityLowerLimit' or this_parameter == 'TotalTechnologyAnnualActivityUpperLimit'
+                                 # Get the sets that have not been adjusted and adjust relative to the new demand:
                                 all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
                                 pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP' in i or 'PPI' in i) and ('PPH' not in i) and ('GEO' not in i)]
                                 print('##########')

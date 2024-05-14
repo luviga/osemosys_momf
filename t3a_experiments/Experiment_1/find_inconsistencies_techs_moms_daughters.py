@@ -121,9 +121,9 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
 
                 # Write the results for the mother technology to the file
                 file.write(f"   Results for {tech_mother}:\n")
+                file.write(f"     Children are _______ than mother tech\n")
                 if children_without_values:
                     file.write(f"     Children without values: {children_without_values}\n")
-                    file.write(f"     Children are _______ than mother tech\n")
                 for year, result in comparison_results[tech_mother].items():
                     file.write(f"     {year}: {result}\n")
                 file.write("-------------------------------------------------\n")
