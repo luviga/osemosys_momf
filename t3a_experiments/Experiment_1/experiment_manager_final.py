@@ -3761,7 +3761,11 @@ if __name__ == '__main__':
                                     
                                 # Get the sets that have not been adjusted and adjust relative to the new demand:
                                 all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
-                                pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP_' in i or 'PPI' in i) and ('HYD' not in i) and ('GEO' not in i)]
+                                pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP' in i or 'PPI' in i) and ('PPH' not in i) and ('GEO' not in i)]
+                                print('##########')
+                                print('CHEQUEAR')
+                                print(all_possible_sets,pending_sets)
+                                print('##########')
                                 for a_set in range( len( pending_sets ) ):
                                     # Get the set:
                                     this_set = pending_sets[a_set]
@@ -5700,85 +5704,85 @@ if __name__ == '__main__':
     #
     #########################################################################################
     #
-    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-        #
-        print('5: We will produce the outputs and store the data.')
-        #
-        for a_scen in range( len( scenario_list_print ) ):
-            #
-            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-            #
-            Executed_Scenario = scenario_list_print[ a_scen ]
-            set_first_list(Executed_Scenario, params)
-            #
-            if params['parallel']:
-                print('Entered Parallelization')
-                x = len(first_list)
-                #
-                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-                #
-                y = x / max_x_per_iter
-                y_ceil = math.ceil( y )
-                #
-                # sys.exit()
-                #'''
-                for n in range(0,y_ceil):
-                    print('###')
-                    n_ini = n*max_x_per_iter
-                    processes = []
-                    #
-                    start1 = time.time()
-                    #
-                    if n_ini + max_x_per_iter <= x:
-                        max_iter = n_ini + max_x_per_iter
-                    else:
-                        max_iter = x
-                    #
-                    for n2 in range( n_ini , max_iter ):
-                        print(n2)
-                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-                        processes.append(p)
-                        p.start()
-                    #
-                    for process in processes:
-                        process.join()
+    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+    #     #
+    #     print('5: We will produce the outputs and store the data.')
+    #     #
+    #     for a_scen in range( len( scenario_list_print ) ):
+    #         #
+    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+    #         #
+    #         Executed_Scenario = scenario_list_print[ a_scen ]
+    #         set_first_list(Executed_Scenario, params)
+    #         #
+    #         if params['parallel']:
+    #             print('Entered Parallelization')
+    #             x = len(first_list)
+    #             #
+    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+    #             #
+    #             y = x / max_x_per_iter
+    #             y_ceil = math.ceil( y )
+    #             #
+    #             # sys.exit()
+    #             #'''
+    #             for n in range(0,y_ceil):
+    #                 print('###')
+    #                 n_ini = n*max_x_per_iter
+    #                 processes = []
+    #                 #
+    #                 start1 = time.time()
+    #                 #
+    #                 if n_ini + max_x_per_iter <= x:
+    #                     max_iter = n_ini + max_x_per_iter
+    #                 else:
+    #                     max_iter = x
+    #                 #
+    #                 for n2 in range( n_ini , max_iter ):
+    #                     print(n2)
+    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+    #                     processes.append(p)
+    #                     p.start()
+    #                 #
+    #                 for process in processes:
+    #                     process.join()
 
-                    end_1 = time.time()   
-                    time_elapsed_1 = -start1 + end_1
-                    print( str( time_elapsed_1 ) + ' seconds' )
-                    time_list.append( time_elapsed_1 )
+    #                 end_1 = time.time()   
+    #                 time_elapsed_1 = -start1 + end_1
+    #                 print( str( time_elapsed_1 ) + ' seconds' )
+    #                 time_list.append( time_elapsed_1 )
 
-            else:
-                print('Started Linear Runs')
-                #
-                for n in range( len( first_list ) ):
-                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-                #
-                end_1 = time.time()   
-                time_elapsed_1 = -start1 + end_1
-                print( str( time_elapsed_1 ) + ' seconds' )
-                time_list.append( time_elapsed_1 )
-                #'''
-                #
-            #
+    #         else:
+    #             print('Started Linear Runs')
+    #             #
+    #             for n in range( len( first_list ) ):
+    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+    #             #
+    #             end_1 = time.time()   
+    #             time_elapsed_1 = -start1 + end_1
+    #             print( str( time_elapsed_1 ) + ' seconds' )
+    #             time_list.append( time_elapsed_1 )
+    #             #'''
+    #             #
+    #         #
             
-        # Module to concatenate csvs otoole outputs
-        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-            file_aboslute_address = os.path.abspath(params['Manager'])
-            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-            #
+    #     # Module to concatenate csvs otoole outputs
+    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+    #         file_aboslute_address = os.path.abspath(params['Manager'])
+    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    #         #
     
-            str_start = params['start'] + file_adress
-            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-            os.system( str_start and str_otoole_concate_csv )
-        #
-        # Delete log files when solver='cplex'
-        if params['solver'] == 'cplex' and params['del_files']:
-            shutil.os.remove('cplex.log')
-            shutil.os.remove('clone1.log')
-            shutil.os.remove('clone2.log')
+    #         str_start = params['start'] + file_adress
+    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+    #         os.system( str_start and str_otoole_concate_csv )
+    #     #
+    #     # Delete log files when solver='cplex'
+    #     if params['solver'] == 'cplex' and params['del_files']:
+    #         shutil.os.remove('cplex.log')
+    #         shutil.os.remove('clone1.log')
+    #         shutil.os.remove('clone2.log')
         #
     #
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')

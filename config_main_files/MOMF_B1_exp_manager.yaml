@@ -766,7 +766,7 @@ acci: 'Accidents' # em
 this_set_tr_hyd: ['TRBPUHYD','TRMBSHYD','TRBTURHYD','TRYTKHYD'] # em ## From Where
 this_set_tra_pas_rai_ele: 'TRNPASRAIELE' # Transport passenger rail electric # em ## From Where
 this_set_waste: ['INORG_RCY_OS', 'COMPOST'] # em ###
-this_set_pp_wdn: 'PP_WND_US' # em ## From Where
+this_set_pp_wdn: 'PPWNDON' ##'PP_WND_US' # em ## From Where
 this_set_afolu_1: 'Cafe' # em ######
 this_set_afolu_2: 'Cana' # em ######
 this_set_techs_buses: ['Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_Trains'] # em ##@
