@@ -165,7 +165,8 @@ if __name__ == '__main__':
     
     # Definition of scenarios and files to check
     scenarios = ['BAU', 'LTS']
-    file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']
+    file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity']
+    # file_names = ['TotalAnnualMaxCapacity']
     base_path = '1_Baseline_Modelling/'
       
     # Iteration over each scenario and file to find missing technologies
@@ -186,7 +187,7 @@ if __name__ == '__main__':
 
 
     # Define the path to the text file
-    file_path = 'Futures\BAU\BAU_1\BAU_1.txt'
+    file_path = 'Futures\LTS\LTS_1\LTS_1.txt'
     
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -198,6 +199,7 @@ if __name__ == '__main__':
     for i in range(len(file_names)):
         # Take techs defined for the parameter
         result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
+
         if result is not None:
             if file_names[i] == "TotalAnnualMaxCapacity":
                 # Check for decreasing values specifically for this parameter
@@ -206,6 +208,9 @@ if __name__ == '__main__':
             comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
         else:
             print("No results available to compare.")
+            
+        if file_names[i] == 'TotalAnnualMaxCapacity':
+            sys.exit()
 
     
     
