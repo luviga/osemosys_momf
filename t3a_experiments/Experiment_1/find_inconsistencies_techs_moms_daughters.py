@@ -123,15 +123,19 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
                 file.write(f"   Results for {tech_mother}:\n")
                 if children_without_values:
                     file.write(f"     Children without values: {children_without_values}\n")
+                    file.write(f"     Children are _______ than mother tech\n")
                 for year, result in comparison_results[tech_mother].items():
                     file.write(f"     {year}: {result}\n")
                 file.write("-------------------------------------------------\n")
 
     return comparison_results
 
-def check_decreasing_values(data_frame, parameter_name):
-    """ Check if the values for each technology are decreasing over the years. """
-    decreasing_issues = {}
+
+def check_decreasing_values(data_frame, parameter_name, output_filename):
+    """ Check if the values for each technology are strictly decreasing over the years. """
+    # Dictionary to store technologies with non-decreasing issues
+    non_decreasing_issues = {}
+
     # Iterate through each technology
     for tech, values in data_frame.iterrows():
         # Use pd.to_numeric to convert values to float and handle non-numeric data gracefully
@@ -139,17 +143,85 @@ def check_decreasing_values(data_frame, parameter_name):
         # Drop NaN values which might occur due to conversion or invalid data
         numeric_values = numeric_values.dropna()
         # Check if the series is strictly decreasing
-        if all(numeric_values.iloc[i] > numeric_values.iloc[i + 1] for i in range(len(numeric_values) - 1)):
-            decreasing_issues[tech] = numeric_values.tolist()
-    
-    # Print warning messages if any decreasing issues are found
-    if decreasing_issues:
-        print(f"Warning: The following technologies have strictly decreasing values for {parameter_name}:")
-        for tech, vals in decreasing_issues.items():
-            print(f"  {tech}: {vals}")
-    else:
-        print(f"All values are not strictly decreasing for {parameter_name}.")
+        if not all(numeric_values.iloc[i] > numeric_values.iloc[i + 1] for i in range(len(numeric_values) - 1)):
+            non_decreasing_issues[tech] = numeric_values.tolist()
 
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write(f"\n\n\n\n\n\n############################################################################################################################\n")
+        file.write(f"Check if technologies have strictly decreasing values for {parameter_name}\n")
+        # Print warning messages if any non-decreasing issues are found
+        if non_decreasing_issues:
+            file.write("Warning: The following technologies do not have strictly decreasing values:\n")
+            for tech, vals in non_decreasing_issues.items():
+                file.write(f"{tech}: {vals}\n")
+        else:
+            file.write("All values are strictly decreasing for all technologies.\n")
+
+def check_any_decreasing_values(data_frame, parameter_name, output_filename):
+    """ Check if there are any decreasing values from one year to the next across each technology. """
+    # Dictionary to store technologies with any decreasing values found
+    decreases_found = {}
+
+    # Iterate through each technology
+    for tech, values in data_frame.iterrows():
+        # Convert values to numeric, handling non-numeric data gracefully
+        numeric_values = pd.to_numeric(values, errors='coerce')
+        # Drop NaN values which might occur due to conversion or invalid data
+        numeric_values = numeric_values.dropna()
+        # Initialize list to store decreases
+        decreases = []
+        # Iterate through each pair of consecutive years
+        years = numeric_values.index
+        for i in range(len(years) - 1):
+            if numeric_values[years[i]] > numeric_values[years[i+1]]:
+                decreases.append((years[i], numeric_values[years[i]], years[i+1], numeric_values[years[i+1]]))
+
+        if decreases:
+            decreases_found[tech] = decreases
+
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write(f"\n\n\n\n\n\n############################################################################################################################\n")
+        file.write("Check for any decreasing values across technologies for {parameter_name}:\n")
+        # Print results if any decreases are found
+        if decreases_found:
+            for tech, dec in decreases_found.items():
+                file.write(f"{tech} has decreases at the following points:\n")
+                for decrease in dec:
+                    file.write(f"  From Year {decrease[0]}: {decrease[1]} to Year {decrease[2]}: {decrease[3]}\n")
+                file.write("\n-------------------------------------------------\n")
+        else:
+            file.write("No decreases found across any technology.\n")
+            file.write("\n-------------------------------------------------\n")
+
+
+def compare_techs(upper_techs, lower_techs, output_filename):
+    # Intersection of indices to ensure operations only on common rows
+    common_indices = upper_techs.index.intersection(lower_techs.index)
+
+    # Filter DataFrames to only include common rows
+    filtered_upper = upper_techs.loc[common_indices]
+    filtered_lower = lower_techs.loc[common_indices]
+
+    # Perform the subtraction
+    diff_df = filtered_upper - filtered_lower
+    
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write("\nCheck if values of TotalTechnologyAnnualActivityLowerLimit is greater than TotalTechnologyAnnualActivityUpperLimit\n")
+        # Iterate over each row to print the results
+        for index, row in diff_df.iterrows():
+            file.write(f"\nCheck technology: {index}")  # Initial index print
+            negative_diff_exists = False  # Flag to check for negative differences
+            for year, value in row.items():
+                if value < 0:  # Only print if the difference is negative
+                    file.write(f"\n  Negative difference in the year {year}: {value}")
+                    negative_diff_exists = True
+            if not negative_diff_exists:
+                file.write("\n  All in order")  # Print if there are no negative differences
+            file.write("\n-------------------------------------------------\n")
 
 ############################################################################################################################
 
@@ -198,20 +270,26 @@ if __name__ == '__main__':
     
     for i in range(len(file_names)):
         # Take techs defined for the parameter
+        result = 0
         result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
 
         if result is not None:
+            comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
             if file_names[i] == "TotalAnnualMaxCapacity":
                 # Check for decreasing values specifically for this parameter
-                check_decreasing_values(result, file_names[i])
-                sys.exit()
-            comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
+                check_any_decreasing_values(result, file_names[i], output_filename)
         else:
             print("No results available to compare.")
+           
+        # Only to check the technologies have this parameter
+        if file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
+            tech_param_check = result
             
-        if file_names[i] == 'TotalAnnualMaxCapacity':
-            sys.exit()
-
+        if file_names[i] == 'TotalTechnologyAnnualActivityUpperLimit':
+            upper_techs = result
+        elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
+            lower_techs = result
     
-    
-
+    # Check if values of TotalTechnologyAnnualActivityLowerLimit 
+    # is greater than TotalTechnologyAnnualActivityUpperLimit
+    compare_techs(upper_techs, lower_techs, output_filename)
