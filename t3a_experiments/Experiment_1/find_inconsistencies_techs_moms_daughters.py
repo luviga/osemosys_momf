@@ -259,13 +259,13 @@ if __name__ == '__main__':
 
 
     # Define the path to the text file
-    file_path = 'Futures\LTS\LTS_1\LTS_1.txt'
+    file_path = 'Futures\BAU\BAU_1\BAU_1.txt'
     
     with open(file_path, 'r') as file:
         lines = file.readlines()
  
     # Define the path to the output file
-    output_filename = 'comparison_results.txt'
+    output_filename = 'comparison_results_BAU_1.txt'
     
     
     for i in range(len(file_names)):

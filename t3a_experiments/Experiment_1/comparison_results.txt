@@ -1,0 +1,1022 @@
+Results for TotalTechnologyAnnualActivityUpperLimit:
+Results for TotalTechnologyAnnualActivityLowerLimit:
+   Results for Techs_Auto:
+     Children are _______ than mother tech
+     Children without values: ['TRAUTHG']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Taxi:
+     Children are _______ than mother tech
+     Children without values: ['TRTAXELE']
+     2018: greater
+     2019: greater
+     2020: greater
+     2021: greater
+     2022: greater
+     2023: greater
+     2024: greater
+     2025: greater
+     2026: greater
+     2027: greater
+     2028: greater
+     2029: greater
+     2030: greater
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Motos:
+     Children are _______ than mother tech
+     Children without values: ['TRMOTELE']
+     2018: greater
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_SUV:
+     Children are _______ than mother tech
+     Children without values: ['TRSUVELE']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Pub:
+     Children are _______ than mother tech
+     Children without values: ['TRBPUELE', 'TRBPUHYD']
+     2018: greater
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Tur:
+     Children are _______ than mother tech
+     Children without values: ['TRBTURELE', 'TRBTURHYD']
+     2018: greater
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Micro:
+     Children are _______ than mother tech
+     Children without values: ['TRMBSELE']
+     2018: greater
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Telef:
+     Children are _______ than mother tech
+     Children without values: ['TRXTTELELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_Trains:
+     Children are _______ than mother tech
+     Children without values: ['TRXTRAIELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_Trains_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRXTRAIFREELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_He_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRYTKELE', 'TRYTKHYD', 'TRYTKHD']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Li_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRYLFELE', 'TRYLFNGS', 'TRYLFHD']
+     2018: equal
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+Results for TotalAnnualMaxCapacity:
+   Results for Techs_Auto:
+     Children are _______ than mother tech
+     Children without values: ['TRAUTDSL', 'TRAUTGSL', 'TRAUTLPG', 'TRAUTELE', 'TRAUTHG']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Taxi:
+     Children are _______ than mother tech
+     Children without values: ['TRTAXGSL', 'TRTAXLPG', 'TRTAXELE']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Motos:
+     Children are _______ than mother tech
+     Children without values: ['TRMOTGSL', 'TRMOTELE']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_SUV:
+     Children are _______ than mother tech
+     Children without values: ['TRSUVDSL', 'TRSUVGSL', 'TRSUVLPG', 'TRSUVELE', 'TRSUVNGS']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Pub:
+     Children are _______ than mother tech
+     Children without values: ['TRBPUDSL', 'TRBPUGSL', 'TRBPULPG', 'TRBPUELE', 'TRBPUHYD']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Tur:
+     Children are _______ than mother tech
+     Children without values: ['TRBTURDSL', 'TRBTURGSL', 'TRBTURLPG', 'TRBTURELE', 'TRBTURHYD']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Buses_Micro:
+     Children are _______ than mother tech
+     Children without values: ['TRMBSDSL', 'TRMBSGSL', 'TRMBSLPG', 'TRMBSELE']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Telef:
+     Children are _______ than mother tech
+     Children without values: ['TRXTTELELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_Trains:
+     Children are _______ than mother tech
+     Children without values: ['TRXTRAIELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_Trains_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRXTRAIFREELE']
+     2018: equal
+     2019: equal
+     2020: equal
+     2021: equal
+     2022: equal
+     2023: equal
+     2024: equal
+     2025: equal
+     2026: equal
+     2027: equal
+     2028: equal
+     2029: equal
+     2030: equal
+     2031: equal
+     2032: equal
+     2033: equal
+     2034: equal
+     2035: equal
+     2036: equal
+     2037: equal
+     2038: equal
+     2039: equal
+     2040: equal
+     2041: equal
+     2042: equal
+     2043: equal
+     2044: equal
+     2045: equal
+     2046: equal
+     2047: equal
+     2048: equal
+     2049: equal
+     2050: equal
+-------------------------------------------------
+   Results for Techs_He_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRYTKDSL', 'TRYTKGSL', 'TRYTKLPG', 'TRYTKELE', 'TRYTKHYD', 'TRYTKHD']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+   Results for Techs_Li_Freight:
+     Children are _______ than mother tech
+     Children without values: ['TRYLFDSL', 'TRYLFGSL', 'TRYLFLPG', 'TRYLFELE', 'TRYLFNGS', 'TRYLFHD']
+     2018: less
+     2019: less
+     2020: less
+     2021: less
+     2022: less
+     2023: less
+     2024: less
+     2025: less
+     2026: less
+     2027: less
+     2028: less
+     2029: less
+     2030: less
+     2031: less
+     2032: less
+     2033: less
+     2034: less
+     2035: less
+     2036: less
+     2037: less
+     2038: less
+     2039: less
+     2040: less
+     2041: less
+     2042: less
+     2043: less
+     2044: less
+     2045: less
+     2046: less
+     2047: less
+     2048: less
+     2049: less
+     2050: less
+-------------------------------------------------
+
+
+
+
+
+
+############################################################################################################################
+Check for any decreasing values across technologies for {parameter_name}:
+PPCCTDSL has decreases at the following points:
+  From Year 2018: 0.4019 to Year 2019: 0.4
+  From Year 2019: 0.4 to Year 2020: 0.133
+
+-------------------------------------------------
+PPCCFOIDSL has decreases at the following points:
+  From Year 2020: 0.185 to Year 2021: 0.0
+
+-------------------------------------------------
+PPCCTNGS has decreases at the following points:
+  From Year 2018: 0.8183 to Year 2019: 0.6782
+
+-------------------------------------------------
+PPICEFOI has decreases at the following points:
+  From Year 2019: 1.0927 to Year 2020: 0.6126
+  From Year 2021: 0.6126 to Year 2022: 0.4956
+
+-------------------------------------------------
+
+
+
+
+
+
+
+###########################################################################################################################
+Check if values of TotalTechnologyAnnualActivityLowerLimit is greater than TotalTechnologyAnnualActivityUpperLimit
+
+Check technology: AD
+  All in order
+-------------------------------------------------
+
+Check technology: COPROC
+  All in order
+-------------------------------------------------
+
+Check technology: INCIN
+  All in order
+-------------------------------------------------
+
+Check technology: AERO_PTAR_RU
+  All in order
+-------------------------------------------------
+
+Check technology: ANAE_LAGN
+  All in order
+-------------------------------------------------
+
+Check technology: ANAE_LAGN_RU
+  All in order
+-------------------------------------------------
+
+Check technology: LATR
+  All in order
+-------------------------------------------------
+
+Check technology: PROD_CAL
+  All in order
+-------------------------------------------------
+
+Check technology: PROD_FERRO
+  All in order
+-------------------------------------------------
+
+Check technology: REFR_AC
+  All in order
+-------------------------------------------------
+
+Check technology: OTHER
+  All in order
+-------------------------------------------------
+
+Check technology: IWW
+  All in order
+-------------------------------------------------
+
+Check technology: LANDFILL_ELEC
+  All in order
+-------------------------------------------------
+
+Check technology: R134a
+  All in order
+-------------------------------------------------
+
+Check technology: R404A
+  All in order
+-------------------------------------------------
+
+Check technology: R410A
+  All in order
+-------------------------------------------------
+
+Check technology: SUB134a
+  All in order
+-------------------------------------------------
+
+Check technology: SUB404A
+  All in order
+-------------------------------------------------
+
+Check technology: SUB410A
+  All in order
+-------------------------------------------------
+
+Check technology: PPICEFOI
+  All in order
+-------------------------------------------------
+
+Check technology: LU_FOR
+  All in order
+-------------------------------------------------
+
+Check technology: LU_AGR
+  All in order
+-------------------------------------------------
+
+Check technology: LU_GAN
+  All in order
+-------------------------------------------------
+
+Check technology: PROD_CLK_TRAD
+  All in order
+-------------------------------------------------
