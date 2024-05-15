@@ -1174,6 +1174,32 @@ def interpolation_multiplier( time_list, value_list, new_relative_final_value):
     # We return the list:
     return new_value_list
 
+def interpolation_multiplier2( time_list, value_list, new_relative_final_value):
+    # Rememeber that the 'old_relative_final_value' is 1
+    old_relative_final_value = 1
+    new_value_list = []
+    # We select a list that goes from the "Initial_Year_of_Uncertainty" to the Final Year of the Time Series
+    initial_year_index = time_list.index( 2033 )
+    #
+    target_final_year_increment = params['final_year'] - 2033
+    total_final_year_increment = new_relative_final_value-1
+    delta_increment = total_final_year_increment/target_final_year_increment
+    #
+    multiplier_list = [1]*len(time_list)
+    for n in range(len(time_list)):
+        if n > initial_year_index and time_list[n] < params['final_year']:
+            multiplier_list[n] = delta_increment + multiplier_list[n-1]
+        elif time_list[n] >= params['final_year']:
+            multiplier_list[n] = new_relative_final_value
+    #
+    # We now recreate the new_value_list considering the fraction before and after the Initial_Year_of_Uncertainty
+    fraction_list_counter = 0
+    for n in range( len( time_list ) ):
+        new_value_list.append(float(value_list[n])*multiplier_list[n])
+    #
+    # We return the list:
+    return new_value_list
+
 def interpolation_non_linear_final_lock(time_list, value_list, new_relative_final_value, finyear):
     # Rememeber that the 'old_relative_final_value' is 1
     old_relative_final_value = 1
@@ -3686,7 +3712,7 @@ if __name__ == '__main__':
 
                                 if scenario_list[s] != params['BAU']:
                                     new_value_list_sh = \
-                                        interpolation_multiplier(
+                                        interpolation_multiplier2(
                                             time_list, value_list_sh,
                                             Values_per_Future[fut_id])
                                 else:
@@ -3790,6 +3816,10 @@ if __name__ == '__main__':
                                     # Perform the adjustment:|
                                     value_list = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1]]
                                     new_value_list = [value_list[i]*total_val/total_elec_demand_bc[i] for i, total_val in enumerate(total_elec_demand)]
+                                    # print('##########')
+                                    # print('CHEQUEAR 2')
+                                    # print(value_list,new_value_list)
+                                    # print('##########')
 
                                     # Assign parameters back: for these subset of uncertainties
                                     new_value_list_rounded = [
@@ -3809,6 +3839,9 @@ if __name__ == '__main__':
                                     this_param_2 = 'TotalTechnologyAnnualActivityUpperLimit'
                                     this_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_2][this_set_type_initial]) if x == str(this_set)]
                                     if len(this_set_range_indices_2) != 0:
+                                        # print('###################')
+                                        # print('CHEQUEAR SI ENTRA')
+                                        # print('###################')
                                         value_list_2 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_2]['value'][this_set_range_indices_2[0]:this_set_range_indices_2[-1]+1]]
                                         new_value_list_2 = [multiplier_list_2[i]*val for i, val in enumerate(value_list_2)]
                                         new_value_list_rounded_2 = [
@@ -3891,156 +3924,156 @@ if __name__ == '__main__':
 #                                 inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
 
                         #------------------------------------------------------------------------------------------------------------------------------------------#
-                        # # The X type below is manipulated with immediate restitution after adjustment.
-                        # elif Math_Type in params['math_type_curves_list'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
-                        #     print("Cambio modal")
-                        #     print('Energy_6')
-                        #     #
-                        #     enter_if_cycle = True
-                        #     #
-                        #     for a_set in range( len( Sets_Involved ) ):
-                        #         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('FUEL') ]
-                        #         #
-                        #         this_set = Sets_Involved[a_set]
-                        #         this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                        # The X type below is manipulated with immediate restitution after adjustment.
+                        elif Math_Type in params['math_type_curves_list'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
+                            print("Cambio modal")
+                            print('Energy_6')
+                            #
+                            enter_if_cycle = True
+                            #
+                            for a_set in range( len( Sets_Involved ) ):
+                                this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('FUEL') ]
+                                #
+                                this_set = Sets_Involved[a_set]
+                                this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
                                 
-                        #         # for each index we extract the time and value in a list:
-                        #         # extracting time:
-                        #         time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                        #         time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
-                        #         if Math_Type == params['math_type_adop_curve']:
-                        #             #--------------------------------------------------------------------------#
-                        #             # before manipulating the variables for Mode Shift, we must use use the reference ratio of the future 0 - BAU. It is crucial to conceive the change as a relative of this baseline for more critcal comparison. BAU does not change this share. Finally, we leave Non-Motorized out of this procedure because it does not affect the BAU.
-                        #             #
-                        #             passpub_range_indices_BAU = [ i for i, x in enumerate( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
-                        #             passpub_value_list_BAU_0 = deepcopy( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices_BAU[0]:passpub_range_indices_BAU[-1]+1 ] )
-                        #             passpub_value_list_BAU_0 = [ float( passpub_value_list_BAU_0[j] ) for j in range( len( passpub_value_list_BAU_0 ) ) ]
-                        #             #
-                        #             passpriv_range_indices_BAU = [ i for i, x in enumerate( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
-                        #             passpriv_value_list_BAU_0 = deepcopy( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ]['value'][ passpriv_range_indices_BAU[0]:passpriv_range_indices_BAU[-1]+1 ] )
-                        #             passpriv_value_list_BAU_0 = [ float( passpriv_value_list_BAU_0[j] ) for j in range( len( passpriv_value_list_BAU_0 ) ) ]
-                        #             #
-                        #             passpub_share_list_BAU_0 = [ passpub_value_list_BAU_0[j]/(passpub_value_list_BAU_0[j]+passpriv_value_list_BAU_0[j]) for j in range( len(passpub_value_list_BAU_0) ) ]
-                        #             #
-                        #             passpriv_share_list_BAU_0 = [ passpriv_value_list_BAU_0[j]/(passpub_value_list_BAU_0[j]+passpriv_value_list_BAU_0[j]) for j in range( len(passpriv_value_list_BAU_0) ) ]
-                        #             #
-                        #             # we are done here, no we proceed as usual...
-                        #             #--------------------------------------------------------------------------#
-                        #             #  WE DO NOT NEED TO EXTRACT THE EXACT VALUE:
-                        #             # now that the value is extracted, we must manipulate the result and assign back
-                        #             L_index = 0
-                        #             Q_index = 1
-                        #             k_index = 2
-                        #             M_index = 3
-                        #             #
-                        #             L = Values_per_Future[fut_id][L_index]
-                        #             Q = Values_per_Future[fut_id][Q_index]
-                        #             k = Values_per_Future[fut_id][k_index]
-                        #             M = Values_per_Future[fut_id][M_index]
-                        #             #
-                        #             shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,final_year+1 ) ]
-                        #             shift_year_counter = 0
-                        #             adoption_shift = []
-                        #             #
-                        #             for t in range( len( time_list ) ):
-                        #                 if time_list[t] > Initial_Year_of_Uncertainty:
-                        #                     x = int( shift_years[shift_year_counter] )
-                        #                     adoption_shift.append( generalized_logistic_curve(x, L, Q, k, M))
-                        #                     shift_year_counter += 1
-                        #                 else:
-                        #                     adoption_shift.append( 0.0 )
-                        #             ######################################################################################################################################################
-                        #             new_value_list = []
-                        #             for n in range( len( time_list ) ):
-                        #                 if params['tra_dem_pub'] in this_set:
-                        #                     new_value_list.append( ( passpub_share_list_BAU_0[n] + adoption_shift[n] )*( TotalDemand[n] ) )
-                        #                     #
-                        #                 #
-                        #                 elif params['tra_non_mot'] in this_set:
-                        #                     new_value_list.append( ( adoption_shift[n] )*( TotalDemand[n] ) )
-                        #             # 
-                        #             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
-                        #             #
-                        #             # Assign parameters back: for these subset of uncertainties
-                        #             inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
-                        #             #
+                                # for each index we extract the time and value in a list:
+                                # extracting time:
+                                time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                if Math_Type == params['math_type_adop_curve']:
+                                    #--------------------------------------------------------------------------#
+                                    # before manipulating the variables for Mode Shift, we must use use the reference ratio of the future 0 - BAU. It is crucial to conceive the change as a relative of this baseline for more critcal comparison. BAU does not change this share. Finally, we leave Non-Motorized out of this procedure because it does not affect the BAU.
+                                    #
+                                    passpub_range_indices_BAU = [ i for i, x in enumerate( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
+                                    passpub_value_list_BAU_0 = deepcopy( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices_BAU[0]:passpub_range_indices_BAU[-1]+1 ] )
+                                    passpub_value_list_BAU_0 = [ float( passpub_value_list_BAU_0[j] ) for j in range( len( passpub_value_list_BAU_0 ) ) ]
+                                    #
+                                    passpriv_range_indices_BAU = [ i for i, x in enumerate( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
+                                    passpriv_value_list_BAU_0 = deepcopy( stable_scenarios['BAU'][ 'SpecifiedAnnualDemand' ]['value'][ passpriv_range_indices_BAU[0]:passpriv_range_indices_BAU[-1]+1 ] )
+                                    passpriv_value_list_BAU_0 = [ float( passpriv_value_list_BAU_0[j] ) for j in range( len( passpriv_value_list_BAU_0 ) ) ]
+                                    #
+                                    passpub_share_list_BAU_0 = [ passpub_value_list_BAU_0[j]/(passpub_value_list_BAU_0[j]+passpriv_value_list_BAU_0[j]) for j in range( len(passpub_value_list_BAU_0) ) ]
+                                    #
+                                    passpriv_share_list_BAU_0 = [ passpriv_value_list_BAU_0[j]/(passpub_value_list_BAU_0[j]+passpriv_value_list_BAU_0[j]) for j in range( len(passpriv_value_list_BAU_0) ) ]
+                                    #
+                                    # we are done here, no we proceed as usual...
+                                    #--------------------------------------------------------------------------#
+                                    #  WE DO NOT NEED TO EXTRACT THE EXACT VALUE:
+                                    # now that the value is extracted, we must manipulate the result and assign back
+                                    L_index = 0
+                                    Q_index = 1
+                                    k_index = 2
+                                    M_index = 3
+                                    #
+                                    L = Values_per_Future[fut_id][L_index]
+                                    Q = Values_per_Future[fut_id][Q_index]
+                                    k = Values_per_Future[fut_id][k_index]
+                                    M = Values_per_Future[fut_id][M_index]
+                                    #
+                                    shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,final_year+1 ) ]
+                                    shift_year_counter = 0
+                                    adoption_shift = []
+                                    #
+                                    for t in range( len( time_list ) ):
+                                        if time_list[t] > Initial_Year_of_Uncertainty:
+                                            x = int( shift_years[shift_year_counter] )
+                                            adoption_shift.append( generalized_logistic_curve(x, L, Q, k, M))
+                                            shift_year_counter += 1
+                                        else:
+                                            adoption_shift.append( 0.0 )
+                                    ######################################################################################################################################################
+                                    new_value_list = []
+                                    for n in range( len( time_list ) ):
+                                        if params['tra_dem_pub'] in this_set:
+                                            new_value_list.append( ( passpub_share_list_BAU_0[n] + adoption_shift[n] )*( TotalDemand[n] ) )
+                                            #
+                                        #
+                                        elif params['tra_non_mot'] in this_set:
+                                            new_value_list.append( ( adoption_shift[n] )*( TotalDemand[n] ) )
+                                    # 
+                                    new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                    #
+                                    # Assign parameters back: for these subset of uncertainties
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
+                                    #
 
-                        #         elif Math_Type == params['math_type_multi_adop_curve']:
-                        #             passpub_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
-                        #             passpub_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices[0]:passpub_range_indices[-1]+1 ] )
-                        #             passpub_value_list_0 = [ float( passpub_value_list_0[j] ) for j in range( len( passpub_value_list_0 ) ) ]
-                        #             #
-                        #             passpriv_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
-                        #             passpriv_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passpriv_range_indices[0]:passpriv_range_indices[-1]+1 ] )
-                        #             passpriv_value_list_0 = [ float( passpriv_value_list_0[j] ) for j in range( len( passpriv_value_list_0 ) ) ]
-                        #             #
-                        #             passnomot_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_non_mot'] ) ]
-                        #             passnomot_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passnomot_range_indices[0]:passnomot_range_indices[-1]+1 ] )
-                        #             passnomot_value_list_0 = [ float( passnomot_value_list_0[j] ) for j in range( len( passnomot_value_list_0 ) ) ]
-                        #             #
-                        #             pass_sum_list_0 = [sum(x) for x in zip(
-                        #                 passpub_value_list_0,
-                        #                 passpriv_value_list_0,
-                        #                 passnomot_value_list_0)]
-                        #             #
-                        #             passpub_share_list_0 = [passpub_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
-                        #             passpriv_share_list_0 = [passpriv_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
-                        #             passnomot_share_list_0 = [passnomot_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
-                        #             #
-                        #             passpub_share_adj = \
-                        #                 interpolation_multiplier(
-                        #                     time_list, passpub_share_list_0,
-                        #                     Values_per_Future[fut_id] )
-                        #             passpriv_share_adj = \
-                        #                 interpolation_multiplier(
-                        #                     time_list, passpriv_share_list_0,
-                        #                     Values_per_Future[fut_id] )
-                        #             passnomot_share_adj = \
-                        #                 interpolation_multiplier(
-                        #                     time_list, passnomot_share_list_0,
-                        #                     Values_per_Future[fut_id] )
+                                elif Math_Type == params['math_type_multi_adop_curve']:
+                                    passpub_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
+                                    passpub_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices[0]:passpub_range_indices[-1]+1 ] )
+                                    passpub_value_list_0 = [ float( passpub_value_list_0[j] ) for j in range( len( passpub_value_list_0 ) ) ]
+                                    #
+                                    passpriv_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
+                                    passpriv_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passpriv_range_indices[0]:passpriv_range_indices[-1]+1 ] )
+                                    passpriv_value_list_0 = [ float( passpriv_value_list_0[j] ) for j in range( len( passpriv_value_list_0 ) ) ]
+                                    #
+                                    passnomot_range_indices = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_non_mot'] ) ]
+                                    passnomot_value_list_0 = deepcopy( stable_scenarios[scenario_list[s]][ 'SpecifiedAnnualDemand' ]['value'][ passnomot_range_indices[0]:passnomot_range_indices[-1]+1 ] )
+                                    passnomot_value_list_0 = [ float( passnomot_value_list_0[j] ) for j in range( len( passnomot_value_list_0 ) ) ]
+                                    #
+                                    pass_sum_list_0 = [sum(x) for x in zip(
+                                        passpub_value_list_0,
+                                        passpriv_value_list_0,
+                                        passnomot_value_list_0)]
+                                    #
+                                    passpub_share_list_0 = [passpub_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
+                                    passpriv_share_list_0 = [passpriv_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
+                                    passnomot_share_list_0 = [passnomot_value_list_0[j]/pass_sum_list_0[j] for j in range(len(pass_sum_list_0))]
+                                    #
+                                    passpub_share_adj = \
+                                        interpolation_multiplier(
+                                            time_list, passpub_share_list_0,
+                                            Values_per_Future[fut_id] )
+                                    passpriv_share_adj = \
+                                        interpolation_multiplier(
+                                            time_list, passpriv_share_list_0,
+                                            Values_per_Future[fut_id] )
+                                    passnomot_share_adj = \
+                                        interpolation_multiplier(
+                                            time_list, passnomot_share_list_0,
+                                            Values_per_Future[fut_id] )
 
-                        #             ######################################################################################################################################################
-                        #             new_value_list = []
+                                    ######################################################################################################################################################
+                                    new_value_list = []
 
-                        #             for n in range(len(time_list)):
-                        #                 if params['tra_dem_pub'] in this_set:
-                        #                     new_value_list.append(passpub_share_adj[n]*(TotalDemand[n]))
-                        #                 elif params['tra_non_mot'] in this_set:
-                        #                     new_value_list.append(passnomot_share_adj[n]*(TotalDemand[n]))
+                                    for n in range(len(time_list)):
+                                        if params['tra_dem_pub'] in this_set:
+                                            new_value_list.append(passpub_share_adj[n]*(TotalDemand[n]))
+                                        elif params['tra_non_mot'] in this_set:
+                                            new_value_list.append(passnomot_share_adj[n]*(TotalDemand[n]))
                                 
                                 
-                        #             # 
-                        #             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
-                        #             #
-                        #             # Assign parameters back: for these subset of uncertainties
-                        #             inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
-                        #             #
-                        #         else:
-                        #             print('Missing a Mode Shift method!')
-                        #             sys.exit()
+                                    # 
+                                    new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                    #
+                                    # Assign parameters back: for these subset of uncertainties
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
+                                    #
+                                else:
+                                    print('Missing a Mode Shift method!')
+                                    sys.exit()
 
-                        #         #-----------------------------------------------------------------------#
-                        #         # Note that because of the Experimental Table setup, after the non-motorized assignation we can adjust the values for PRIVATE TRANSPORT.
-                        #         if params['tra_non_mot'] in this_set:
-                        #             nonmot_values = deepcopy( new_value_list_rounded )# this retrieves non-motorized
-                        #             # we must retrieve the value of public transport
-                        #             passpub_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
-                        #             passpub_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices[0]:passpub_range_indices[-1]+1 ] )
-                        #             # we estimate the new private transport demand here:
-                        #             passpriv_new_value_list = []
-                        #             for n in range( len(TotalDemand) ):
-                        #                 passpriv_new_value_list.append( TotalDemand[n] - nonmot_values[n] - passpub_values[n] )
+                                #-----------------------------------------------------------------------#
+                                # Note that because of the Experimental Table setup, after the non-motorized assignation we can adjust the values for PRIVATE TRANSPORT.
+                                if params['tra_non_mot'] in this_set:
+                                    nonmot_values = deepcopy( new_value_list_rounded )# this retrieves non-motorized
+                                    # we must retrieve the value of public transport
+                                    passpub_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
+                                    passpub_values = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ passpub_range_indices[0]:passpub_range_indices[-1]+1 ] )
+                                    # we estimate the new private transport demand here:
+                                    passpriv_new_value_list = []
+                                    for n in range( len(TotalDemand) ):
+                                        passpriv_new_value_list.append( TotalDemand[n] - nonmot_values[n] - passpub_values[n] )
 
-                        #             passpriv_new_value_list_rounded = [ round(elem, params['round_#']) for elem in passpriv_new_value_list ]
+                                    passpriv_new_value_list_rounded = [ round(elem, params['round_#']) for elem in passpriv_new_value_list ]
 
-                        #             if passpriv_new_value_list_rounded[-1] < 0:
-                        #                 print('waaaaaait')
-                        #                 sys.exit()
+                                    if passpriv_new_value_list_rounded[-1] < 0:
+                                        print('waaaaaait')
+                                        sys.exit()
 
-                        #             # Assign parameters back:
-                        #             this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
-                        #             inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( passpriv_new_value_list_rounded )
+                                    # Assign parameters back:
+                                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ 'SpecifiedAnnualDemand' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( passpriv_new_value_list_rounded )
 
 #                         #------------------------------------------------------------------------------------------------------------------------------------------#
 #                         elif Math_Type == params['math_type_time_series'] and X_Cat == params['x_cat_mode_shift'] and params['Use_Energy'] and Sectors_Involved[0][2]=="E":  # this generally applies to freight rail
@@ -5717,90 +5750,90 @@ if __name__ == '__main__':
         ##########################################################################
         '''
         #
-    #
-    #########################################################################################
-    #
-    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-    #     #
-    #     print('5: We will produce the outputs and store the data.')
-    #     #
-    #     for a_scen in range( len( scenario_list_print ) ):
-    #         #
-    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-    #         #
-    #         Executed_Scenario = scenario_list_print[ a_scen ]
-    #         set_first_list(Executed_Scenario, params)
-    #         #
-    #         if params['parallel']:
-    #             print('Entered Parallelization')
-    #             x = len(first_list)
-    #             #
-    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-    #             #
-    #             y = x / max_x_per_iter
-    #             y_ceil = math.ceil( y )
-    #             #
-    #             # sys.exit()
-    #             #'''
-    #             for n in range(0,y_ceil):
-    #                 print('###')
-    #                 n_ini = n*max_x_per_iter
-    #                 processes = []
-    #                 #
-    #                 start1 = time.time()
-    #                 #
-    #                 if n_ini + max_x_per_iter <= x:
-    #                     max_iter = n_ini + max_x_per_iter
-    #                 else:
-    #                     max_iter = x
-    #                 #
-    #                 for n2 in range( n_ini , max_iter ):
-    #                     print(n2)
-    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-    #                     processes.append(p)
-    #                     p.start()
-    #                 #
-    #                 for process in processes:
-    #                     process.join()
-
-    #                 end_1 = time.time()   
-    #                 time_elapsed_1 = -start1 + end_1
-    #                 print( str( time_elapsed_1 ) + ' seconds' )
-    #                 time_list.append( time_elapsed_1 )
-
-    #         else:
-    #             print('Started Linear Runs')
-    #             #
-    #             for n in range( len( first_list ) ):
-    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-    #             #
-    #             end_1 = time.time()   
-    #             time_elapsed_1 = -start1 + end_1
-    #             print( str( time_elapsed_1 ) + ' seconds' )
-    #             time_list.append( time_elapsed_1 )
-    #             #'''
-    #             #
-    #         #
-            
-    #     # Module to concatenate csvs otoole outputs
-    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-    #         file_aboslute_address = os.path.abspath(params['Manager'])
-    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-    #         #
     
-    #         str_start = params['start'] + file_adress
-    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-    #         os.system( str_start and str_otoole_concate_csv )
-    #     #
-    #     # Delete log files when solver='cplex'
-    #     if params['solver'] == 'cplex' and params['del_files']:
-    #         shutil.os.remove('cplex.log')
-    #         shutil.os.remove('clone1.log')
-    #         shutil.os.remove('clone2.log')
+    ########################################################################################
+    
+    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
         #
-    #
+        print('5: We will produce the outputs and store the data.')
+        #
+        for a_scen in range( len( scenario_list_print ) ):
+            #
+            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+            #
+            Executed_Scenario = scenario_list_print[ a_scen ]
+            set_first_list(Executed_Scenario, params)
+            #
+            if params['parallel']:
+                print('Entered Parallelization')
+                x = len(first_list)
+                #
+                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+                #
+                y = x / max_x_per_iter
+                y_ceil = math.ceil( y )
+                #
+                # sys.exit()
+                #'''
+                for n in range(0,y_ceil):
+                    print('###')
+                    n_ini = n*max_x_per_iter
+                    processes = []
+                    #
+                    start1 = time.time()
+                    #
+                    if n_ini + max_x_per_iter <= x:
+                        max_iter = n_ini + max_x_per_iter
+                    else:
+                        max_iter = x
+                    #
+                    for n2 in range( n_ini , max_iter ):
+                        print(n2)
+                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+                        processes.append(p)
+                        p.start()
+                    #
+                    for process in processes:
+                        process.join()
+
+                    end_1 = time.time()   
+                    time_elapsed_1 = -start1 + end_1
+                    print( str( time_elapsed_1 ) + ' seconds' )
+                    time_list.append( time_elapsed_1 )
+
+            else:
+                print('Started Linear Runs')
+                #
+                for n in range( len( first_list ) ):
+                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+                #
+                end_1 = time.time()   
+                time_elapsed_1 = -start1 + end_1
+                print( str( time_elapsed_1 ) + ' seconds' )
+                time_list.append( time_elapsed_1 )
+                #'''
+                #
+            #
+            
+        # Module to concatenate csvs otoole outputs
+        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+            file_aboslute_address = os.path.abspath(params['Manager'])
+            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+            #
+    
+            str_start = params['start'] + file_adress
+            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+            os.system( str_start and str_otoole_concate_csv )
+        #
+        # Delete log files when solver='cplex'
+        if params['solver'] == 'cplex' and params['del_files']:
+            shutil.os.remove('cplex.log')
+            shutil.os.remove('clone1.log')
+            shutil.os.remove('clone2.log')
+        
+    
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
     '''
     ##########################################################################
