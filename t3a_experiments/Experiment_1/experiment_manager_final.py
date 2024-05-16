@@ -4734,11 +4734,11 @@ if __name__ == '__main__':
                                         k = Values_per_Future[fut_id][k_index]
                                         M = Values_per_Future[fut_id][M_index]
                                         #
-                                        shift_years = [ n for n in range( Initial_Year_of_Uncertainty,final_year+1 ) ]
+                                        shift_years = [ n for n in range( 2018,final_year+1 ) ]
                                         shift_year_counter = 0
                                         adoption_share = []
                                         for t in range( len( time_list ) ):
-                                            if time_list[t] > Initial_Year_of_Uncertainty:
+                                            if time_list[t] >= 2018:#Initial_Year_of_Uncertainty:
                                                 x = int( shift_years[shift_year_counter] )
                                                 adoption_share.append( generalized_logistic_curve(x, L, Q, k, M))
                                                 shift_year_counter += 1
@@ -4816,6 +4816,9 @@ if __name__ == '__main__':
                                     # print("#################")
                                     # print(new_value_list_rounded)
                                     # print("#################")
+                                    if this_parameter == 'TotalAnnualMaxCapacity' and this_set == 'TRAUTELE':
+                                        print('Revisar TRAUTELE')
+                                        sys.exit()
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                     #-----------------------------------------------------------------------#
                                     # 
@@ -4859,12 +4862,12 @@ if __name__ == '__main__':
                                         # for i in range(len(rem_sets_sum)):
                                         #     if rem_sets_sum[i] == 0:
                                         #         rem_sets_sum[i] = 0.1
-                                        #         print('print problem')
-                                                # sys.exit()
+                                        #         print('print problem with ', r_set)
+                                        #         sys.exit()
 
-                                        if any(x == 0 for x in rem_sets_sum):
-                                            rem_sets_sum[-1] = 0.1
-                                            # print('print problem')
+                                        # if any(x == 0 for x in rem_sets_sum):
+                                        #     rem_sets_sum[-1] = 0.1
+                                            # print('print problem with ', r_set)
                                             # sys.exit()
                                         
                                         # Now get the complement:
@@ -4876,11 +4879,27 @@ if __name__ == '__main__':
                                             # print(rem_sets)
                                             rem_sets_sum_adj_mult = [1]*len(time_range_vector)
                                         else:
+                                            # rem_sets_sum_adj_mult = [
+                                            #     rem_sum_adj/rem_sum for rem_sum, rem_sum_adj in zip(rem_sets_sum, rem_sets_sum_adj)]
                                             rem_sets_sum_adj_mult = [
-                                                rem_sum_adj/rem_sum for rem_sum, rem_sum_adj in zip(rem_sets_sum, rem_sets_sum_adj)]
+                                                (rem_sum_adj / rem_sum if rem_sum != 0 else float(0))
+                                                for rem_sum, rem_sum_adj in zip(rem_sets_sum, rem_sets_sum_adj)
+                                            ]
+                                            # rem_sets_sum_adj_mult = []
+                                            # previous_value = None
                                             
-                                        # if -math.inf in rem_sets_sum_adj_mult:
-                                        #     sys.exit()
+                                            # for rem_sum, rem_sum_adj in zip(rem_sets_sum, rem_sets_sum_adj):
+                                            #     if rem_sum != 0:
+                                            #         current_value = rem_sum_adj / rem_sum
+                                            #     else:
+                                            #         current_value = previous_value
+                                                
+                                            #     rem_sets_sum_adj_mult.append(current_value)
+                                            #     previous_value = current_value
+                                            
+                                        if -math.inf in rem_sets_sum_adj_mult or math.inf in rem_sets_sum_adj_mult or float('nan') in rem_sets_sum_adj_mult:
+                                            print('print problem with ', r_set, 'for this scenario: ', scenario_list[s],f)
+                                            # sys.exit()
 
                                         # Adjust: check check
                                         for r_set in rem_sets:
@@ -4914,7 +4933,12 @@ if __name__ == '__main__':
                                                         # print("###############")
                                                         if r_set_range_indices_2:
                                                             inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1] = deepcopy(r_value_list_new_2)
-
+                                            print(r_set)
+                                            print(r_value_list)
+                                            print(r_value_list_new)
+                                            print(r_value_list_2)
+                                            # print(r_value_list_new_2)
+                                            
                                         # print('*', rem_sets_sum_adj_mult)
                                         # if params['tra_mot_gls'] not in rem_sets:
                                         #    print('**', rem_sets_sum_adj)
@@ -5755,85 +5779,85 @@ if __name__ == '__main__':
     
     ########################################################################################
     
-    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-        #
-        print('5: We will produce the outputs and store the data.')
-        #
-        for a_scen in range( len( scenario_list_print ) ):
-            #
-            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-            #
-            Executed_Scenario = scenario_list_print[ a_scen ]
-            set_first_list(Executed_Scenario, params)
-            #
-            if params['parallel']:
-                print('Entered Parallelization')
-                x = len(first_list)
-                #
-                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-                #
-                y = x / max_x_per_iter
-                y_ceil = math.ceil( y )
-                #
-                # sys.exit()
-                #'''
-                for n in range(0,y_ceil):
-                    print('###')
-                    n_ini = n*max_x_per_iter
-                    processes = []
-                    #
-                    start1 = time.time()
-                    #
-                    if n_ini + max_x_per_iter <= x:
-                        max_iter = n_ini + max_x_per_iter
-                    else:
-                        max_iter = x
-                    #
-                    for n2 in range( n_ini , max_iter ):
-                        print(n2)
-                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-                        processes.append(p)
-                        p.start()
-                    #
-                    for process in processes:
-                        process.join()
+    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+    #     #
+    #     print('5: We will produce the outputs and store the data.')
+    #     #
+    #     for a_scen in range( len( scenario_list_print ) ):
+    #         #
+    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+    #         #
+    #         Executed_Scenario = scenario_list_print[ a_scen ]
+    #         set_first_list(Executed_Scenario, params)
+    #         #
+    #         if params['parallel']:
+    #             print('Entered Parallelization')
+    #             x = len(first_list)
+    #             #
+    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+    #             #
+    #             y = x / max_x_per_iter
+    #             y_ceil = math.ceil( y )
+    #             #
+    #             # sys.exit()
+    #             #'''
+    #             for n in range(0,y_ceil):
+    #                 print('###')
+    #                 n_ini = n*max_x_per_iter
+    #                 processes = []
+    #                 #
+    #                 start1 = time.time()
+    #                 #
+    #                 if n_ini + max_x_per_iter <= x:
+    #                     max_iter = n_ini + max_x_per_iter
+    #                 else:
+    #                     max_iter = x
+    #                 #
+    #                 for n2 in range( n_ini , max_iter ):
+    #                     print(n2)
+    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+    #                     processes.append(p)
+    #                     p.start()
+    #                 #
+    #                 for process in processes:
+    #                     process.join()
 
-                    end_1 = time.time()   
-                    time_elapsed_1 = -start1 + end_1
-                    print( str( time_elapsed_1 ) + ' seconds' )
-                    time_list.append( time_elapsed_1 )
+    #                 end_1 = time.time()   
+    #                 time_elapsed_1 = -start1 + end_1
+    #                 print( str( time_elapsed_1 ) + ' seconds' )
+    #                 time_list.append( time_elapsed_1 )
 
-            else:
-                print('Started Linear Runs')
-                #
-                for n in range( len( first_list ) ):
-                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-                #
-                end_1 = time.time()   
-                time_elapsed_1 = -start1 + end_1
-                print( str( time_elapsed_1 ) + ' seconds' )
-                time_list.append( time_elapsed_1 )
-                #'''
-                #
-            #
+    #         else:
+    #             print('Started Linear Runs')
+    #             #
+    #             for n in range( len( first_list ) ):
+    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+    #             #
+    #             end_1 = time.time()   
+    #             time_elapsed_1 = -start1 + end_1
+    #             print( str( time_elapsed_1 ) + ' seconds' )
+    #             time_list.append( time_elapsed_1 )
+    #             #'''
+    #             #
+    #         #
             
-        # Module to concatenate csvs otoole outputs
-        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-            file_aboslute_address = os.path.abspath(params['Manager'])
-            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-            #
+    #     # Module to concatenate csvs otoole outputs
+    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+    #         file_aboslute_address = os.path.abspath(params['Manager'])
+    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    #         #
     
-            str_start = params['start'] + file_adress
-            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-            os.system( str_start and str_otoole_concate_csv )
-        #
-        # Delete log files when solver='cplex'
-        if params['solver'] == 'cplex' and params['del_files']:
-            shutil.os.remove('cplex.log')
-            shutil.os.remove('clone1.log')
-            shutil.os.remove('clone2.log')
+    #         str_start = params['start'] + file_adress
+    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+    #         os.system( str_start and str_otoole_concate_csv )
+    #     #
+    #     # Delete log files when solver='cplex'
+    #     if params['solver'] == 'cplex' and params['del_files']:
+    #         shutil.os.remove('cplex.log')
+    #         shutil.os.remove('clone1.log')
+    #         shutil.os.remove('clone2.log')
         
     
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')

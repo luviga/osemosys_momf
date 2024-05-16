@@ -117,7 +117,7 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
                     else:
                         comparison = "equal"
 
-                    comparison_results[tech_mother][year] = comparison
+                    comparison_results[tech_mother][year] = comparison + '      mother value: ' + str(mother_values[year]) + ',   children value: ' + str(children_sum[year])
 
                 # Write the results for the mother technology to the file
                 file.write(f"   Results for {tech_mother}:\n")
@@ -148,7 +148,7 @@ def check_decreasing_values(data_frame, parameter_name, output_filename):
 
     # Open output file for appending results
     with open(output_filename, 'a') as file:
-        file.write(f"\n\n\n\n\n\n############################################################################################################################\n")
+        file.write("\n\n\n\n\n\n############################################################################################################################\n")
         file.write(f"Check if technologies have strictly decreasing values for {parameter_name}\n")
         # Print warning messages if any non-decreasing issues are found
         if non_decreasing_issues:
@@ -182,8 +182,8 @@ def check_any_decreasing_values(data_frame, parameter_name, output_filename):
 
     # Open output file for appending results
     with open(output_filename, 'a') as file:
-        file.write(f"\n\n\n\n\n\n############################################################################################################################\n")
-        file.write("Check for any decreasing values across technologies for {parameter_name}:\n")
+        file.write("\n\n\n\n\n\n############################################################################################################################\n")
+        file.write(f"Check for any decreasing values across technologies for {parameter_name}:\n")
         # Print results if any decreases are found
         if decreases_found:
             for tech, dec in decreases_found.items():
@@ -250,7 +250,8 @@ if __name__ == '__main__':
             missing_info[scenario][file_name] = missing
     
     missing_info
-  
+    
+    # ###### TEST 1 ######
     # If i want to know about what mothers o children techs are not there      
     # # Calling the function with the provided data
     # check_tech_presence(missing_info, fleet_groups)
@@ -258,14 +259,23 @@ if __name__ == '__main__':
     # check_mother_absence(missing_info, fleet_groups)
 
 
+    ###########################################################################################################################
+    
     # Define the path to the text file
-    file_path = 'Futures\BAU\BAU_1\BAU_1.txt'
+    scen = 'LTS'
+    future = 0
+    if future == 0:
+        file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
+    else:
+        file_path = f'Futures\{scen}\{scen}_{future}\{scen}_{future}.txt'
     
     with open(file_path, 'r') as file:
         lines = file.readlines()
  
     # Define the path to the output file
-    output_filename = 'comparison_results_BAU_1.txt'
+    if not os.path.exists('tests_results'):
+        os.makedirs('tests_results')
+    output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
     
     
     for i in range(len(file_names)):
@@ -274,22 +284,166 @@ if __name__ == '__main__':
         result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
 
         if result is not None:
+            # ###### TEST 2 ######
+            # Check mother - children diferrences
             comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
             if file_names[i] == "TotalAnnualMaxCapacity":
+                # ###### TEST 3 ######
                 # Check for decreasing values specifically for this parameter
                 check_any_decreasing_values(result, file_names[i], output_filename)
         else:
             print("No results available to compare.")
            
         # Only to check the technologies have this parameter
-        if file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
+        if file_names[i] == 'TotalAnnualMaxCapacity':
             tech_param_check = result
             
         if file_names[i] == 'TotalTechnologyAnnualActivityUpperLimit':
             upper_techs = result
         elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
             lower_techs = result
-    
+    # ###### TEST 4 ######
     # Check if values of TotalTechnologyAnnualActivityLowerLimit 
     # is greater than TotalTechnologyAnnualActivityUpperLimit
     compare_techs(upper_techs, lower_techs, output_filename)
+    
+    ###########################################################################################################################
+    
+    # Load the Excel file
+    file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+    
+    # Load the 'Mode_Broad' sheet
+    df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
+    
+    paramters = ['TotalAnnualMaxCapacity', 'OutputActivityRatio', 'SpecifiedAnnualDemand']
+    
+
+    # Take techs defined for the parameter
+    ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
+    # oar_techs = read_parameters(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
+    spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
+    
+    
+    
+    parameter_name = 'OutputActivityRatio'
+    
+    
+    
+    # # def read_parameters_variant(file_path, parameter_name):
+    # data = {}  # Dictionary to store extracted data
+    # years = []  # List to store the years
+
+    # with open(file_path, 'r') as file:
+    #     lines = file.readlines()
+
+    # # Search for the parameter definition
+    # start_index = -1
+    # for i, line in enumerate(lines):
+    #     if f"param {parameter_name} default" in line:
+    #         start_index = i + 1
+    #         break
+    
+    # if start_index == -1:
+    #     print("The parameter definition was not found.")
+    #     # return pd.DataFrame()
+
+    # # Read blocks of data
+    # i = start_index
+    # while i < len(lines):
+    #     line = lines[i].strip()
+    #     if line.startswith('['):
+    #         # Extract technologies and other identifiers
+    #         identifiers = line.strip('[]').split(',')
+    #         # print(identifiers[-5])
+    #         tech_identifier = f"{identifiers[-4]} / {identifiers[-3]}"
+            
+    #         # Extract years from the next line
+    #         years_line = lines[i + 1].strip().split()
+    #         # Remove ':=', if present
+    #         if ':=' in years_line:
+    #             years_line.remove(':=')
+    #         years = [int(year) for year in years_line if year.isdigit()]
+            
+    #         # Extract values from the line after the years
+    #         values_line = lines[i + 2].strip().split()
+    #         # Remove ':=', if present
+    #         if ':=' in values_line:
+    #             values_line.remove(':=')
+    #         values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
+            
+    #         # Ensure the lengths match before storing
+    #         if len(values) == len(years):
+    #             data[tech_identifier] = values
+    #         else:
+    #             print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
+            
+    #         # Move to the next block
+    #         i += 3
+    #     else:
+    #         i += 1
+    
+        # Convert the dictionary to a pandas DataFrame
+        # return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
+    
+# def read_parameters_variant(file_path, parameter_name):
+    # data = {}  # Dictionary to store extracted data
+    # years = []  # List to store the years
+
+    # with open(file_path, 'r') as file:
+    #     lines = file.readlines()
+
+    # # Search for the parameter definition
+    # start_index = -1
+    # for i, line in enumerate(lines):
+    #     if f"param {parameter_name} default" in line:
+    #         start_index = i + 1
+    #         break
+    
+    # if start_index == -1:
+    #     print("The parameter definition was not found.")
+    #     # return pd.DataFrame()
+
+    # # Read blocks of data
+    # i = start_index
+    # while i < len(lines):
+    #     line = lines[i].strip()
+    #     if line.startswith('['):
+    #         # Extract technologies and other identifiers
+    #         identifiers = line.strip('[]').split(',')
+    #         tech_identifier = f"{identifiers[-4]} / {identifiers[-3]}"
+            
+    #         # Extract years from the next line
+    #         years_line = lines[i + 1].strip().split()
+    #         # Remove ':=', if present
+    #         if ':=' in years_line:
+    #             years_line.remove(':=')
+    #         years = [int(year) for year in years_line if year.isdigit()]
+            
+    #         # Extract values from the line after the years
+    #         values_line = lines[i + 2].strip().split()
+    #         # Stop processing if ';' is found
+    #         if ';' in values_line:
+    #             values_line.remove(';')
+    #             values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
+    #             data[tech_identifier] = values
+    #             break
+    #         else:
+    #             values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
+            
+    #         # Ensure the lengths match before storing
+    #         if len(values) == len(years):
+    #             data[tech_identifier] = values
+    #         else:
+    #             print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
+            
+    #         # Move to the next block
+    #         i += 3
+    #     else:
+    #         i += 1
+
+    # # Convert the dictionary to a pandas DataFrame
+    # # return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
+       
+    
+    # df = read_parameters_variant(file_path, parameter_name)
+
