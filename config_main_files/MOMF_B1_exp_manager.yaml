@@ -200,10 +200,10 @@ round_#: 4 # B1, em
 
 # Sectors variables
 Use_Energy: True # em 
-Use_Waste: False # B1, em
+Use_Waste: True # B1, em
 Use_Transport: False # B1
-Use_AFOLU: False # em
-Use_PIUP: False # em
+Use_AFOLU: True # em
+Use_PIUP: True # em
 
 
 Use_Blend_Shares: False # You musn't change # B1, em
