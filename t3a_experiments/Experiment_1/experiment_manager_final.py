@@ -877,7 +877,8 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                         #
                         for s in range( len( second_last_set_element_unique ) ):
                             g.write( second_last_set_element_unique[s] + ' ' )
-                            #
+                            #                            
+                            
                             value_indices_s = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[-2] ] ) if x == str( second_last_set_element_unique[s] ) ]
                             value_indices_n1 = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[0] ] ) if x == str( this_set_element_unique_1[n1] ) ]
                             value_indices_n2 = [ i for i, x in enumerate( this_scenario_data[ this_param ][ this_param_keys[1] ] ) if x == str( this_set_element_unique_2[n2] ) ]
@@ -945,7 +946,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                                 for y in range(len(last_set_element_unique)):
                                     g.write(str(last_set_element_unique[y]) + ' ')
                                 g.write(':=\n')
-
+                                
                                 g.write(second_last_set_element_unique[s] + ' ')
 
                                 these_values = []
@@ -2251,7 +2252,16 @@ if __name__ == '__main__':
                 # NOTE 2: the distance reduction of DP is relative to BAU. All other uncertainties are independent of the scenario.
                 # NOTE 3: we go ahead with the manipulation of the uncertainty if it is applicable to the scenario we are interested in reproducing.
                 # NOTE 4: we store the TotalDemand vector to be used in the uncertainties that require it.
+                
+                if scenario_list[s] == 'LTS':
+                    
+                    this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRYLFLPG')]
 
+                    value_list = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
+                    print('Esta',u,X_Cat,value_list[0:6])
+                    # if f == 1 and u == 19:
+                        # sys.exit()
+                
                 if str( scenario_list[s] ) in Scenarios_Involved:
                     # We iterate over the involved parameters of the model here:
                     #
@@ -4734,11 +4744,11 @@ if __name__ == '__main__':
                                         k = Values_per_Future[fut_id][k_index]
                                         M = Values_per_Future[fut_id][M_index]
                                         #
-                                        shift_years = [ n for n in range( 2018,final_year+1 ) ]
+                                        shift_years = [ n for n in range( Initial_Year_of_Uncertainty,final_year+1 ) ]
                                         shift_year_counter = 0
                                         adoption_share = []
                                         for t in range( len( time_list ) ):
-                                            if time_list[t] >= 2018:#Initial_Year_of_Uncertainty:
+                                            if time_list[t] >= Initial_Year_of_Uncertainty:
                                                 x = int( shift_years[shift_year_counter] )
                                                 adoption_share.append( generalized_logistic_curve(x, L, Q, k, M))
                                                 shift_year_counter += 1
@@ -4816,9 +4826,9 @@ if __name__ == '__main__':
                                     # print("#################")
                                     # print(new_value_list_rounded)
                                     # print("#################")
-                                    if this_parameter == 'TotalAnnualMaxCapacity' and this_set == 'TRAUTELE':
-                                        print('Revisar TRAUTELE')
-                                        sys.exit()
+                                    # if this_parameter == 'TotalAnnualMaxCapacity' and this_set == 'TRAUTELE':
+                                    #     print('Revisar TRAUTELE')
+                                        # sys.exit()
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                     #-----------------------------------------------------------------------#
                                     # 
@@ -4925,7 +4935,7 @@ if __name__ == '__main__':
                                                     else:
                                                         multer_max = [1]*7 + [1.02]*(len(time_range_vector)-7)
                                                         r_value_list_new_2 = [
-                                                            a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_max, rem_sets_sum_adj_mult, r_value_list)]
+                                                            a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_max, rem_sets_sum_adj_mult, r_value_list_2)]
                                                         # print("###############")
                                                         # print("##### ACA2 ####")
                                                         # print("###############")
@@ -4933,10 +4943,10 @@ if __name__ == '__main__':
                                                         # print("###############")
                                                         if r_set_range_indices_2:
                                                             inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][r_set_range_indices_2[0]:r_set_range_indices_2[-1]+1] = deepcopy(r_value_list_new_2)
-                                            print(r_set)
-                                            print(r_value_list)
-                                            print(r_value_list_new)
-                                            print(r_value_list_2)
+                                            # print(r_set)
+                                            # print(r_value_list)
+                                            # print(r_value_list_new)
+                                            # print(r_value_list_2)
                                             # print(r_value_list_new_2)
                                             
                                         # print('*', rem_sets_sum_adj_mult)
@@ -5779,85 +5789,85 @@ if __name__ == '__main__':
     
     ########################################################################################
     
-    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-    #     #
-    #     print('5: We will produce the outputs and store the data.')
-    #     #
-    #     for a_scen in range( len( scenario_list_print ) ):
-    #         #
-    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-    #         #
-    #         Executed_Scenario = scenario_list_print[ a_scen ]
-    #         set_first_list(Executed_Scenario, params)
-    #         #
-    #         if params['parallel']:
-    #             print('Entered Parallelization')
-    #             x = len(first_list)
-    #             #
-    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-    #             #
-    #             y = x / max_x_per_iter
-    #             y_ceil = math.ceil( y )
-    #             #
-    #             # sys.exit()
-    #             #'''
-    #             for n in range(0,y_ceil):
-    #                 print('###')
-    #                 n_ini = n*max_x_per_iter
-    #                 processes = []
-    #                 #
-    #                 start1 = time.time()
-    #                 #
-    #                 if n_ini + max_x_per_iter <= x:
-    #                     max_iter = n_ini + max_x_per_iter
-    #                 else:
-    #                     max_iter = x
-    #                 #
-    #                 for n2 in range( n_ini , max_iter ):
-    #                     print(n2)
-    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-    #                     processes.append(p)
-    #                     p.start()
-    #                 #
-    #                 for process in processes:
-    #                     process.join()
+    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+        #
+        print('5: We will produce the outputs and store the data.')
+        #
+        for a_scen in range( len( scenario_list_print ) ):
+            #
+            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+            #
+            Executed_Scenario = scenario_list_print[ a_scen ]
+            set_first_list(Executed_Scenario, params)
+            #
+            if params['parallel']:
+                print('Entered Parallelization')
+                x = len(first_list)
+                #
+                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+                #
+                y = x / max_x_per_iter
+                y_ceil = math.ceil( y )
+                #
+                # sys.exit()
+                #'''
+                for n in range(0,y_ceil):
+                    print('###')
+                    n_ini = n*max_x_per_iter
+                    processes = []
+                    #
+                    start1 = time.time()
+                    #
+                    if n_ini + max_x_per_iter <= x:
+                        max_iter = n_ini + max_x_per_iter
+                    else:
+                        max_iter = x
+                    #
+                    for n2 in range( n_ini , max_iter ):
+                        print(n2)
+                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+                        processes.append(p)
+                        p.start()
+                    #
+                    for process in processes:
+                        process.join()
 
-    #                 end_1 = time.time()   
-    #                 time_elapsed_1 = -start1 + end_1
-    #                 print( str( time_elapsed_1 ) + ' seconds' )
-    #                 time_list.append( time_elapsed_1 )
+                    end_1 = time.time()   
+                    time_elapsed_1 = -start1 + end_1
+                    print( str( time_elapsed_1 ) + ' seconds' )
+                    time_list.append( time_elapsed_1 )
 
-    #         else:
-    #             print('Started Linear Runs')
-    #             #
-    #             for n in range( len( first_list ) ):
-    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-    #             #
-    #             end_1 = time.time()   
-    #             time_elapsed_1 = -start1 + end_1
-    #             print( str( time_elapsed_1 ) + ' seconds' )
-    #             time_list.append( time_elapsed_1 )
-    #             #'''
-    #             #
-    #         #
+            else:
+                print('Started Linear Runs')
+                #
+                for n in range( len( first_list ) ):
+                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+                #
+                end_1 = time.time()   
+                time_elapsed_1 = -start1 + end_1
+                print( str( time_elapsed_1 ) + ' seconds' )
+                time_list.append( time_elapsed_1 )
+                #'''
+                #
+            #
             
-    #     # Module to concatenate csvs otoole outputs
-    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-    #         file_aboslute_address = os.path.abspath(params['Manager'])
-    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-    #         #
+        # Module to concatenate csvs otoole outputs
+        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+            file_aboslute_address = os.path.abspath(params['Manager'])
+            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+            #
     
-    #         str_start = params['start'] + file_adress
-    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-    #         os.system( str_start and str_otoole_concate_csv )
-    #     #
-    #     # Delete log files when solver='cplex'
-    #     if params['solver'] == 'cplex' and params['del_files']:
-    #         shutil.os.remove('cplex.log')
-    #         shutil.os.remove('clone1.log')
-    #         shutil.os.remove('clone2.log')
+            str_start = params['start'] + file_adress
+            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+            os.system( str_start and str_otoole_concate_csv )
+        #
+        # Delete log files when solver='cplex'
+        if params['solver'] == 'cplex' and params['del_files']:
+            shutil.os.remove('cplex.log')
+            shutil.os.remove('clone1.log')
+            shutil.os.remove('clone2.log')
         
     
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
