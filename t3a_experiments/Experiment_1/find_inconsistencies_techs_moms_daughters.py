@@ -66,7 +66,7 @@ def read_parameters(file_path, parameter_name):
             break
     
     if start_index == -1:
-        print("The restriction was not found.")
+        print(f"The restriction {parameter_name} was not found.")
         return pd.DataFrame()
 
     # Search and capture values for technologies until a ';' is found
@@ -79,6 +79,67 @@ def read_parameters(file_path, parameter_name):
         data[technology] = values
 
     # Convert the dictionary to a pandas DataFrame for easier manipulation
+    return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
+
+def read_parameters_variant(file_path, parameter_name):
+    data = {}  # Dictionary to store extracted data
+    years = []  # List to store the years
+
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Search for the parameter definition
+    start_index = -1
+    for i, line in enumerate(lines):
+        if f"param {parameter_name} default" in line:
+            start_index = i + 1
+            break
+    
+    if start_index == -1:
+        print(f"The parameter {parameter_name} definition was not found.")
+        return pd.DataFrame()
+
+    # Read blocks of data
+    i = start_index
+    while i < len(lines):
+        line = lines[i].strip()
+        if line.startswith('['):
+            # Extract technologies and other identifiers
+            identifiers = line.strip('[]').split(',')
+            tech_identifier = f"{identifiers[-4]}" # / {identifiers[-3]}"
+            
+            # Extract years from the next line
+            years_line = lines[i + 1].strip().split()
+            # Remove ':=', if present
+            if ':=' in years_line:
+                years_line.remove(':=')
+            years = [int(year) for year in years_line if year.isdigit()]
+            
+            # Extract values from the line after the years
+            values_line = lines[i + 2].strip().split()
+            # Stop processing if ';' is found
+            # if ';' in values_line:
+            #     values_line.remove(';')
+            
+            # Ignore the first value (always 1) and convert the rest to float
+            values = [float(value) for value in values_line[1:] if re.match(r'^-?\d+(?:\.\d+)?$', value)]
+            
+            # Ensure the lengths match before storing
+            if len(values) == len(years):
+                data[tech_identifier] = values
+            else:
+                print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
+            
+        # Stop processing if ';' is found
+        if ';' in line:
+            break
+
+            # Move to the next block
+            i += 3
+        else:
+            i += 1
+
+    # Convert the dictionary to a pandas DataFrame
     return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
 
 def compare_mother_children(parameter, results, fleet_groups, output_filename, i):
@@ -116,14 +177,15 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
                         comparison = "less"
                     else:
                         comparison = "equal"
-
-                    comparison_results[tech_mother][year] = comparison + '      mother value: ' + str(mother_values[year]) + ',   children value: ' + str(children_sum[year])
+                    
+                    if comparison == "greater":
+                        comparison_results[tech_mother][year] = comparison + '      mother value: ' + str(mother_values[year]) + ',   children value: ' + str(children_sum[year])
 
                 # Write the results for the mother technology to the file
                 file.write(f"   Results for {tech_mother}:\n")
-                file.write(f"     Children are _______ than mother tech\n")
+                file.write("     Children are _______ than mother tech\n")
                 if children_without_values:
-                    file.write(f"     Children without values: {children_without_values}\n")
+                    file.write(f"     Children without values: {children_without_values}\n") 
                 for year, result in comparison_results[tech_mother].items():
                     file.write(f"     {year}: {result}\n")
                 file.write("-------------------------------------------------\n")
@@ -320,130 +382,30 @@ if __name__ == '__main__':
 
     # Take techs defined for the parameter
     ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
-    # oar_techs = read_parameters(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
     spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
+    oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
     
     
-    
-    parameter_name = 'OutputActivityRatio'
-    
-    
-    
-    # # def read_parameters_variant(file_path, parameter_name):
-    # data = {}  # Dictionary to store extracted data
-    # years = []  # List to store the years
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write("\nCheck if values of SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio\n")
+        # Calcular la ecuación para cada tecnología abuela
+        for abuela in df_mode_broad.columns[1:]:
+            madre_techs = df_mode_broad[df_mode_broad[abuela] == 'x']['Techs/Demand']
+            sum_products = 0
+        
+            for year in ta_maxcap_techs.columns:
+                for madre in madre_techs:
+                    if madre in ta_maxcap_techs.index and madre in oar_techs.index:
+                        max_cap = ta_maxcap_techs.loc[madre, year]
+                        output_ratio = oar_techs.loc[madre, year]
+                        sum_products += max_cap * output_ratio
+        
+                specified_demand = spec_an_dem_techs.loc[abuela, year]
+                # print(f"Year {year} - Abuela {abuela}: Sum = {sum_products}, Specified Demand = {specified_demand}")
+                if not sum_products >= specified_demand:
+                    
+                    file.write(f"For {abuela} in year {year}, the condition is NOT satisfied.")
 
-    # with open(file_path, 'r') as file:
-    #     lines = file.readlines()
-
-    # # Search for the parameter definition
-    # start_index = -1
-    # for i, line in enumerate(lines):
-    #     if f"param {parameter_name} default" in line:
-    #         start_index = i + 1
-    #         break
-    
-    # if start_index == -1:
-    #     print("The parameter definition was not found.")
-    #     # return pd.DataFrame()
-
-    # # Read blocks of data
-    # i = start_index
-    # while i < len(lines):
-    #     line = lines[i].strip()
-    #     if line.startswith('['):
-    #         # Extract technologies and other identifiers
-    #         identifiers = line.strip('[]').split(',')
-    #         # print(identifiers[-5])
-    #         tech_identifier = f"{identifiers[-4]} / {identifiers[-3]}"
-            
-    #         # Extract years from the next line
-    #         years_line = lines[i + 1].strip().split()
-    #         # Remove ':=', if present
-    #         if ':=' in years_line:
-    #             years_line.remove(':=')
-    #         years = [int(year) for year in years_line if year.isdigit()]
-            
-    #         # Extract values from the line after the years
-    #         values_line = lines[i + 2].strip().split()
-    #         # Remove ':=', if present
-    #         if ':=' in values_line:
-    #             values_line.remove(':=')
-    #         values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
-            
-    #         # Ensure the lengths match before storing
-    #         if len(values) == len(years):
-    #             data[tech_identifier] = values
-    #         else:
-    #             print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
-            
-    #         # Move to the next block
-    #         i += 3
-    #     else:
-    #         i += 1
-    
-        # Convert the dictionary to a pandas DataFrame
-        # return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
-    
-# def read_parameters_variant(file_path, parameter_name):
-    # data = {}  # Dictionary to store extracted data
-    # years = []  # List to store the years
-
-    # with open(file_path, 'r') as file:
-    #     lines = file.readlines()
-
-    # # Search for the parameter definition
-    # start_index = -1
-    # for i, line in enumerate(lines):
-    #     if f"param {parameter_name} default" in line:
-    #         start_index = i + 1
-    #         break
-    
-    # if start_index == -1:
-    #     print("The parameter definition was not found.")
-    #     # return pd.DataFrame()
-
-    # # Read blocks of data
-    # i = start_index
-    # while i < len(lines):
-    #     line = lines[i].strip()
-    #     if line.startswith('['):
-    #         # Extract technologies and other identifiers
-    #         identifiers = line.strip('[]').split(',')
-    #         tech_identifier = f"{identifiers[-4]} / {identifiers[-3]}"
-            
-    #         # Extract years from the next line
-    #         years_line = lines[i + 1].strip().split()
-    #         # Remove ':=', if present
-    #         if ':=' in years_line:
-    #             years_line.remove(':=')
-    #         years = [int(year) for year in years_line if year.isdigit()]
-            
-    #         # Extract values from the line after the years
-    #         values_line = lines[i + 2].strip().split()
-    #         # Stop processing if ';' is found
-    #         if ';' in values_line:
-    #             values_line.remove(';')
-    #             values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
-    #             data[tech_identifier] = values
-    #             break
-    #         else:
-    #             values = [float(value) for value in values_line if re.match(r'^-?\d+(?:\.\d+)?$', value)]
-            
-    #         # Ensure the lengths match before storing
-    #         if len(values) == len(years):
-    #             data[tech_identifier] = values
-    #         else:
-    #             print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
-            
-    #         # Move to the next block
-    #         i += 3
-    #     else:
-    #         i += 1
-
-    # # Convert the dictionary to a pandas DataFrame
-    # # return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
-       
-    
-    # df = read_parameters_variant(file_path, parameter_name)
 
