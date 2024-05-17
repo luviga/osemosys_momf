@@ -285,6 +285,33 @@ def compare_techs(upper_techs, lower_techs, output_filename):
                 file.write("\n  All in order")  # Print if there are no negative differences
             file.write("\n-------------------------------------------------\n")
 
+def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_techs, output_filename, param_name):
+    """
+    Function to check if SpecifiedAnnualDemand is less than parameter x OutputActivityRatio
+    for each grandmother technology.
+    """
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write(f"\nCheck if values of SpecifiedAnnualDemand are less than {param_name} x OutputActivityRatio\n")
+        
+        # Calculate the equation for each grandmother technology
+        for grandmother in df_mode_broad.columns[1:]:
+            mother_techs = df_mode_broad[df_mode_broad[grandmother] == 'x']['Techs/Demand']
+            sum_products = 0
+        
+            for year in parameter.columns:
+                for mother in mother_techs:
+                    if mother in parameter.index and mother in oar_techs.index:
+                        max_cap = parameter.loc[mother, year]
+                        output_ratio = oar_techs.loc[mother, year]
+                        sum_products += max_cap * output_ratio
+        
+                specified_demand = spec_an_dem_techs.loc[grandmother, year]
+                # Check if the sum of products is greater than or equal to the specified demand
+                if not sum_products >= specified_demand:
+                    file.write(f"For {grandmother} in year {year}, the condition is NOT satisfied.\n")
+
 ############################################################################################################################
 
 if __name__ == '__main__':
@@ -300,18 +327,17 @@ if __name__ == '__main__':
     # Definition of scenarios and files to check
     scenarios = ['BAU', 'LTS']
     file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity']
-    # file_names = ['TotalAnnualMaxCapacity']
     base_path = '1_Baseline_Modelling/'
       
-    # Iteration over each scenario and file to find missing technologies
-    missing_info = {}
-    for scenario in scenarios:
-        missing_info[scenario] = {}
-        for file_name in file_names:
-            missing = find_missing_technologies(scenario, file_name+'.csv')
-            missing_info[scenario][file_name] = missing
+    # # Iteration over each scenario and file to find missing technologies
+    # missing_info = {}
+    # for scenario in scenarios:
+    #     missing_info[scenario] = {}
+    #     for file_name in file_names:
+    #         missing = find_missing_technologies(scenario, file_name+'.csv')
+    #         missing_info[scenario][file_name] = missing
     
-    missing_info
+    # missing_info
     
     # ###### TEST 1 ######
     # If i want to know about what mothers o children techs are not there      
@@ -325,7 +351,7 @@ if __name__ == '__main__':
     
     # Define the path to the text file
     scen = 'LTS'
-    future = 0
+    future = 1
     if future == 0:
         file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
     else:
@@ -379,33 +405,16 @@ if __name__ == '__main__':
     
     paramters = ['TotalAnnualMaxCapacity', 'OutputActivityRatio', 'SpecifiedAnnualDemand']
     
-
     # Take techs defined for the parameter
     ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
     spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
     oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
+    lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
     
+    # TEST 5
+    # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
+    check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, 'TotalAnnualMaxCapacity')
     
-    # Open output file for appending results
-    with open(output_filename, 'a') as file:
-        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
-        file.write("\nCheck if values of SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio\n")
-        # Calcular la ecuación para cada tecnología abuela
-        for abuela in df_mode_broad.columns[1:]:
-            madre_techs = df_mode_broad[df_mode_broad[abuela] == 'x']['Techs/Demand']
-            sum_products = 0
-        
-            for year in ta_maxcap_techs.columns:
-                for madre in madre_techs:
-                    if madre in ta_maxcap_techs.index and madre in oar_techs.index:
-                        max_cap = ta_maxcap_techs.loc[madre, year]
-                        output_ratio = oar_techs.loc[madre, year]
-                        sum_products += max_cap * output_ratio
-        
-                specified_demand = spec_an_dem_techs.loc[abuela, year]
-                # print(f"Year {year} - Abuela {abuela}: Sum = {sum_products}, Specified Demand = {specified_demand}")
-                if not sum_products >= specified_demand:
-                    
-                    file.write(f"For {abuela} in year {year}, the condition is NOT satisfied.")
-
-
+    # TEST 6
+    # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
+    check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, 'TotalTechnologyAnnualActivityLowerLimit')
