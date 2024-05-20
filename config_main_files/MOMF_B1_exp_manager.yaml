@@ -160,7 +160,7 @@ glpk_option: 'new' # Could you use 'old' for the first method and 'new' for meth
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 1 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
@@ -947,7 +947,7 @@ this_parameter: ['SpecifiedAnnualDemand'] # em
 
 this_parameter_2: ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit'] # em
 
-this_parameter_3: ['CapitalCost', 'EmissionActivityRatio'] # em
+this_parameter_3: ['CapitalCost'] # em
 
 this_parameter_4: ['VariableCost'] # em
 
