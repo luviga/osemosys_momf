@@ -106,7 +106,7 @@ def read_parameters_variant(file_path, parameter_name):
         if line.startswith('['):
             # Extract technologies and other identifiers
             identifiers = line.strip('[]').split(',')
-            tech_identifier = f"{identifiers[-4]}" # / {identifiers[-3]}"
+            tech_identifier = f"{identifiers[1]}" # / {identifiers[-3]}"
             
             # Extract years from the next line
             years_line = lines[i + 1].strip().split()
@@ -151,8 +151,11 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
         option = 'a'
     # Open the file to write the results
     with open(output_filename, option) as file:
+        if option == 'w':
+            file.write("Check if children technologies are greater than mother technologies\n")
         # Iterate over each mother technology in the group dictionary
-        file.write(f"Results for {parameter}:\n")
+        if parameter != 'ResidualCapacity':
+            file.write(f"\n\n\nResults for {parameter}:\n")
         for tech_mother, children in fleet_groups.items():
             if tech_mother in results.index:
                 comparison_results[tech_mother] = {}
@@ -258,7 +261,7 @@ def check_any_decreasing_values(data_frame, parameter_name, output_filename):
             file.write("\n-------------------------------------------------\n")
 
 
-def compare_techs(upper_techs, lower_techs, output_filename):
+def compare_techs(upper_techs, lower_techs, output_filename, param_names):
     # Intersection of indices to ensure operations only on common rows
     common_indices = upper_techs.index.intersection(lower_techs.index)
 
@@ -272,7 +275,7 @@ def compare_techs(upper_techs, lower_techs, output_filename):
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write("\n\n\n\n\n\n\n###########################################################################################################################")
-        file.write("\nCheck if values of TotalTechnologyAnnualActivityLowerLimit is greater than TotalTechnologyAnnualActivityUpperLimit\n")
+        file.write(f"\nCheck if values of {param_names[0]} is greater than {param_names[1]}\n")
         # Iterate over each row to print the results
         for index, row in diff_df.iterrows():
             file.write(f"\nCheck technology: {index}")  # Initial index print
@@ -285,15 +288,15 @@ def compare_techs(upper_techs, lower_techs, output_filename):
                 file.write("\n  All in order")  # Print if there are no negative differences
             file.write("\n-------------------------------------------------\n")
 
-def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_techs, output_filename, param_name):
+def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_techs, output_filename, param_names):
     """
-    Function to check if SpecifiedAnnualDemand is less than parameter x OutputActivityRatio
+    Function to check if param_names[0] is less than param_names[1] x param_names[2]
     for each grandmother technology.
     """
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write("\n\n\n\n\n\n\n###########################################################################################################################")
-        file.write(f"\nCheck if values of SpecifiedAnnualDemand are less than {param_name} x OutputActivityRatio\n")
+        file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]}\n")
         
         # Calculate the equation for each grandmother technology
         for grandmother in df_mode_broad.columns[1:]:
@@ -312,6 +315,32 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
                 if not sum_products >= specified_demand:
                     file.write(f"For {grandmother} in year {year}, the condition is NOT satisfied.\n")
 
+def check_demand_vs_capacity_variant(parameter, spec_an_dem_techs, oar_techs, output_filename, param_names):
+    """
+    Function to check if param_names[0] is less than param_names[1] x param_names[2]
+    for each common technology present in the indices of parameter, spec_an_dem_techs, and oar_techs.
+    """
+    # Find common indices (technologies)
+    common_techs = parameter.index.intersection(spec_an_dem_techs.index).intersection(oar_techs.index)
+
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]}\n")
+
+        # Calculate the equation for each common technology
+        for tech in common_techs:
+            for year in parameter.columns:
+                max_cap = parameter.loc[tech, year]
+                output_ratio = oar_techs.loc[tech, year]
+                specified_demand = spec_an_dem_techs.loc[tech, year]
+                product = max_cap * output_ratio * 31.56
+                
+                # Check if the product is greater than or equal to the specified demand
+                if not product >= specified_demand:
+                    file.write(f"For {tech} in year {year}, the condition is NOT satisfied.\n")
+
+
 ############################################################################################################################
 
 if __name__ == '__main__':
@@ -326,7 +355,7 @@ if __name__ == '__main__':
     
     # Definition of scenarios and files to check
     scenarios = ['BAU', 'LTS']
-    file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity']
+    file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity','ResidualCapacity']
     base_path = '1_Baseline_Modelling/'
       
     # # Iteration over each scenario and file to find missing technologies
@@ -350,10 +379,13 @@ if __name__ == '__main__':
     ###########################################################################################################################
     
     # Define the path to the text file
-    scen = 'LTS'
-    future = 1
-    if future == 0:
+    scen = 'BAU'
+    future = 0
+    specified_case = False # if you want other file outside of the Executables or futures folders
+    if future == 0 and not specified_case:
         file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
+    elif specified_case:
+        file_path = f'{scen}_{future}.txt'
     else:
         file_path = f'Futures\{scen}\{scen}_{future}\{scen}_{future}.txt'
     
@@ -390,10 +422,22 @@ if __name__ == '__main__':
             upper_techs = result
         elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
             lower_techs = result
+        
+        if file_names[i] == 'TotalAnnualMaxCapacity':
+            maxcapa_techs = result
+        elif file_names[i] == 'ResidualCapacity':
+            resicapa_techs = result
+        
     # ###### TEST 4 ######
     # Check if values of TotalTechnologyAnnualActivityLowerLimit 
     # is greater than TotalTechnologyAnnualActivityUpperLimit
-    compare_techs(upper_techs, lower_techs, output_filename)
+    compare_techs(upper_techs, lower_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalTechnologyAnnualActivityUpperLimit'])
+    
+    
+    # ###### TEST 5 ######
+    # Check if values of ResidualCapacity 
+    # is greater than TotalAnnualMaxCapacity
+    compare_techs(maxcapa_techs, resicapa_techs, output_filename, ['ResidualCapacity', 'TotalAnnualMaxCapacity'])
     
     ###########################################################################################################################
     
@@ -403,18 +447,22 @@ if __name__ == '__main__':
     # Load the 'Mode_Broad' sheet
     df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
     
-    paramters = ['TotalAnnualMaxCapacity', 'OutputActivityRatio', 'SpecifiedAnnualDemand']
     
     # Take techs defined for the parameter
     ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
     spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
     oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
     lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
-    
-    # TEST 5
-    # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
-    check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, 'TotalAnnualMaxCapacity')
+    capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
     
     # TEST 6
+    # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
+    check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'])
+    
+    # TEST 7
     # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
-    check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, 'TotalTechnologyAnnualActivityLowerLimit')
+    check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'])
+    
+    # TEST 8
+    # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
+    check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
