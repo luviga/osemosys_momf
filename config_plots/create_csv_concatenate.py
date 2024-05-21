@@ -86,69 +86,72 @@ if __name__ == '__main__':
                 tier_dir = tier_dir.replace('\\\\', '\\')
                 # sys.exit()
                 tier_dir = get_config_main_path(os.path.abspath(''), tier_dir)
-                csv_file_list = os.listdir(tier_dir)
-                
-                df_list = []
-                
-                parameter_list = []
-                parameter_dict = {}
-                
-                if params['vis_dir'] in csv_file_list:
-                    csv_file_list.remove(f'{params["vis_dir"]}')
-                
-                for f in csv_file_list:
+                if os.path.exists(tier_dir):
+                    csv_file_list = os.listdir(tier_dir)
                     
-                    local_df = pd.read_csv(tier_dir + '/' + f)
+                    df_list = []
+                    
+                    parameter_list = []
+                    parameter_dict = {}
+                    
+                    if params['vis_dir'] in csv_file_list:
+                        csv_file_list.remove(f'{params["vis_dir"]}')
+                    
+                    for f in csv_file_list:
+                        
+                        local_df = pd.read_csv(tier_dir + '/' + f)
+                        
+                        
+                        # Delete columns of sets do not use in otoole config yaml
+                        columns_check = [column for column in local_df.columns if column in sets_corrects]
+                        local_df = local_df[columns_check]
+    
+                        
+                        local_df['Parameter'] = f.split('.')[0]
+                        parameter_list.append(f.split('.')[0])
+                        parameter_dict.update({parameter_list[-1]: local_df})
+                        
+                        df_list.append(local_df)
+                    columns_check.insert(0,'Parameter')
+                    df_all = pd.concat(df_list, ignore_index=True, sort=False)
+                    df_all = df_all[ sets_csv_temp ]
+                    file_df_dir = params["excel_data_file_dir"].replace('../','')
+                    out_quick = params['outputs'].replace('/','')
+                    file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
+                    df_all.to_csv(f'{file_df_dir}\\Data_plots_{case[-1]}.csv')
+                    
+                    # 3rd try
+                    # Assuming parameter_list and parameter_dict are defined
+                    # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
+                    first_param = parameter_list[0]
+                    df_all_3 = pd.DataFrame()
+                    df_all_3 = df_all[df_all['Parameter'] == first_param]
+                    df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
+                    df_all_3 = df_all_3.drop('Parameter', axis=1)
+                    df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
+                    df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
+    
                     
                     
-                    # Delete columns of sets do not use in otoole config yaml
-                    columns_check = [column for column in local_df.columns if column in sets_corrects]
-                    local_df = local_df[columns_check]
-
+                    # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
+                    for p in parameter_list[1:]:  # Skip the first parameter since it's already added
+                        local_df_3 = df_all[df_all['Parameter'] == p]
+                        local_df_3 = local_df_3.rename(columns={'VALUE': p})
+                        local_df_3 = local_df_3.drop('Parameter', axis=1)
+                        local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
+                        local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
+                        count+=1
+    
+                        df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                     
-                    local_df['Parameter'] = f.split('.')[0]
-                    parameter_list.append(f.split('.')[0])
-                    parameter_dict.update({parameter_list[-1]: local_df})
-                    
-                    df_list.append(local_df)
-                columns_check.insert(0,'Parameter')
-                df_all = pd.concat(df_list, ignore_index=True, sort=False)
-                df_all = df_all[ sets_csv_temp ]
-                file_df_dir = params["excel_data_file_dir"].replace('../','')
-                out_quick = params['outputs'].replace('/','')
-                file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
-                df_all.to_csv(f'{file_df_dir}\\Data_plots_{case[-1]}.csv')
-                
-                # 3rd try
-                # Assuming parameter_list and parameter_dict are defined
-                # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
-                first_param = parameter_list[0]
-                df_all_3 = pd.DataFrame()
-                df_all_3 = df_all[df_all['Parameter'] == first_param]
-                df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
-                df_all_3 = df_all_3.drop('Parameter', axis=1)
-                df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
-                df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
-
-                
-                
-                # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
-                for p in parameter_list[1:]:  # Skip the first parameter since it's already added
-                    local_df_3 = df_all[df_all['Parameter'] == p]
-                    local_df_3 = local_df_3.rename(columns={'VALUE': p})
-                    local_df_3 = local_df_3.drop('Parameter', axis=1)
-                    local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
-                    local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
-                    count+=1
-
-                    df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
-                
-                # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
-                #print(case)
-                df_all_3.to_csv(f'{file_df_dir}/{case}_Output.csv')
-
-                # Delete Outputs folder with otoole csvs files
-                outputs_otoole_csvs = file_df_dir + out_quick
-                if os.path.exists(outputs_otoole_csvs):
-                    shutil.rmtree(outputs_otoole_csvs)
+                    # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
+                    #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+                    #print(case)
+                    df_all_3.to_csv(f'{file_df_dir}/{case}_Output.csv')
+    
+                    # Delete Outputs folder with otoole csvs files
+                    outputs_otoole_csvs = file_df_dir + out_quick
+                    if os.path.exists(outputs_otoole_csvs):
+                        shutil.rmtree(outputs_otoole_csvs)
+                else:
+                    continue
