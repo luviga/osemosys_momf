@@ -377,92 +377,104 @@ if __name__ == '__main__':
 
 
     ###########################################################################################################################
-    
     # Define the path to the text file
-    scen = 'BAU'
-    future = 0
-    specified_case = False # if you want other file outside of the Executables or futures folders
-    if future == 0 and not specified_case:
-        file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
-    elif specified_case:
-        file_path = f'{scen}_{future}.txt'
-    else:
-        file_path = f'Futures\{scen}\{scen}_{future}\{scen}_{future}.txt'
+    for scen in scenarios:
+        specified_case = False # if you want other file outside of the Executables or futures folders
+        
+        # Specify the directory path here
+        dir_bau_files = './Futures/' + scen
     
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
- 
-    # Define the path to the output file
-    if not os.path.exists('tests_results'):
-        os.makedirs('tests_results')
-    output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
+        # List all entries in the directory
+        all_entries = os.listdir(dir_bau_files)
     
-    
-    for i in range(len(file_names)):
-        # Take techs defined for the parameter
-        result = 0
-        result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
-
-        if result is not None:
-            # ###### TEST 2 ######
-            # Check mother - children diferrences
-            comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
-            if file_names[i] == "TotalAnnualMaxCapacity":
-                # ###### TEST 3 ######
-                # Check for decreasing values specifically for this parameter
-                check_any_decreasing_values(result, file_names[i], output_filename)
-        else:
-            print("No results available to compare.")
-           
-        # Only to check the technologies have this parameter
-        if file_names[i] == 'TotalAnnualMaxCapacity':
-            tech_param_check = result
+        # Filter only the directories
+        folders = [entry for entry in all_entries if os.path.isdir(os.path.join(dir_bau_files, entry))]
+      
+        
+        for f in folders:
+            future = f
             
-        if file_names[i] == 'TotalTechnologyAnnualActivityUpperLimit':
-            upper_techs = result
-        elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
-            lower_techs = result
+            if future == 0 and not specified_case:
+                file_path = f'Executables\{future}\{future}.txt'
+            elif specified_case:
+                file_path = f'{scen}_{future}.txt'
+            else:
+                file_path = f'Futures\{scen}\{future}\{future}.txt'
+            
+            with open(file_path, 'r') as file:
+                lines = file.readlines()
+         
+            # Define the path to the output file
+            if not os.path.exists('tests_results'):
+                os.makedirs('tests_results')
+            output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
+            
+            
+            for i in range(len(file_names)):
+                # Take techs defined for the parameter
+                result = 0
+                result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
         
-        if file_names[i] == 'TotalAnnualMaxCapacity':
-            maxcapa_techs = result
-        elif file_names[i] == 'ResidualCapacity':
-            resicapa_techs = result
-        
-    # ###### TEST 4 ######
-    # Check if values of TotalTechnologyAnnualActivityLowerLimit 
-    # is greater than TotalTechnologyAnnualActivityUpperLimit
-    compare_techs(upper_techs, lower_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalTechnologyAnnualActivityUpperLimit'])
-    
-    
-    # ###### TEST 5 ######
-    # Check if values of ResidualCapacity 
-    # is greater than TotalAnnualMaxCapacity
-    compare_techs(maxcapa_techs, resicapa_techs, output_filename, ['ResidualCapacity', 'TotalAnnualMaxCapacity'])
-    
-    ###########################################################################################################################
-    
-    # Load the Excel file
-    file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
-    
-    # Load the 'Mode_Broad' sheet
-    df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
-    
-    
-    # Take techs defined for the parameter
-    ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
-    spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
-    oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
-    lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
-    capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
-    
-    # TEST 6
-    # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
-    check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'])
-    
-    # TEST 7
-    # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
-    check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'])
-    
-    # TEST 8
-    # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
-    check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
+                if result is not None:
+                    # ###### TEST 2 ######
+                    # Check mother - children diferrences
+                    comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
+                    if file_names[i] == "TotalAnnualMaxCapacity":
+                        # ###### TEST 3 ######
+                        # Check for decreasing values specifically for this parameter
+                        check_any_decreasing_values(result, file_names[i], output_filename)
+                else:
+                    print("No results available to compare.")
+                   
+                # Only to check the technologies have this parameter
+                if file_names[i] == 'TotalAnnualMaxCapacity':
+                    tech_param_check = result
+                    
+                if file_names[i] == 'TotalTechnologyAnnualActivityUpperLimit':
+                    upper_techs = result
+                elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
+                    lower_techs = result
+                
+                if file_names[i] == 'TotalAnnualMaxCapacity':
+                    maxcapa_techs = result
+                elif file_names[i] == 'ResidualCapacity':
+                    resicapa_techs = result
+                
+            # ###### TEST 4 ######
+            # Check if values of TotalTechnologyAnnualActivityLowerLimit 
+            # is greater than TotalTechnologyAnnualActivityUpperLimit
+            compare_techs(upper_techs, lower_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalTechnologyAnnualActivityUpperLimit'])
+            
+            
+            # ###### TEST 5 ######
+            # Check if values of ResidualCapacity 
+            # is greater than TotalAnnualMaxCapacity
+            compare_techs(maxcapa_techs, resicapa_techs, output_filename, ['ResidualCapacity', 'TotalAnnualMaxCapacity'])
+            
+            ###########################################################################################################################
+            
+            # Load the Excel file
+            file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+            
+            # Load the 'Mode_Broad' sheet
+            df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
+            
+            
+            # Take techs defined for the parameter
+            ta_maxcap_techs = read_parameters(file_path, 'TotalAnnualMaxCapacity')  # Make sure parameter is defined
+            spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
+            oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
+            lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
+            capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
+            
+            # TEST 6
+            # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
+            check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'])
+            
+            # TEST 7
+            # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
+            check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'])
+            
+            # TEST 8
+            # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
+            check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
