@@ -478,3 +478,6 @@ if __name__ == '__main__':
             # TEST 8
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
             check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
+            
+            if specified_case:
+                break
