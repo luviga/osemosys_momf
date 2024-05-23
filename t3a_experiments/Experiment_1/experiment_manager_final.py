@@ -673,7 +673,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
         Blend_Shares =                      unpackaged_useful_elements[10]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
+    if not (params['Use_PIUP'] or params['Use_Waste']) or (params['Use_Energy'] or params['Use_AFOLU']):
         df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
         df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
         df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
@@ -842,6 +842,9 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                             these_values.append( this_scenario_data[ this_param ]['value'][ value_indices[val] ] )
                         for val in range( len( these_values ) ):
                             g.write( str( these_values[val] ) + ' ' )
+                        # if this_param == 'TotalAnnualMaxCapacity' and scenario_list[scen] == 'LTS' and fut == 10 and second_last_set_element_unique[s] == 'PPCCTDSL':
+                        #     print(n1,this_param,second_last_set_element_unique[s],'\n', these_values )
+                        #     sys.exit()
                         g.write('\n') #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             #%%%
             if len(this_param_keys) == 4:
@@ -962,7 +965,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
                                 print('Never happens right?')
                                 sys.exit()
             #-----------------------------------------#
-            g.write( ';\n\n' )
+            g.write( ';\n\n' )   
     #
     # Print parameters with it default value
     for parm in params['params_inputs_data']:
@@ -976,6 +979,9 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     g.write('#\n' + 'end;\n')
     #
     g.close()
+    # if scenario_list[scen] == 'LTS' and fut == 10:
+    #     print(this_param,second_last_set_element_unique[s],'\n', these_values )
+    #     sys.exit()
     #
     ###########################################################################################################################
     # Furthermore, we must print the inputs separately for fast deployment of the input matrix:
@@ -2253,14 +2259,14 @@ if __name__ == '__main__':
                 # NOTE 3: we go ahead with the manipulation of the uncertainty if it is applicable to the scenario we are interested in reproducing.
                 # NOTE 4: we store the TotalDemand vector to be used in the uncertainties that require it.
                 
-                if scenario_list[s] == 'LTS':
+                if scenario_list[s] == 'LTS' and f == 2:
                     
-                    this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRYLFLPG')]
+                    this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRYTKLPG')]
 
                     value_list = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
-                    print('Esta',u,X_Cat,value_list[0:6])
-                    # if f == 1 and u == 19:
-                        # sys.exit()
+                    print('Esta',u,X_Cat,value_list[-14:-1])
+                    # if f == 10 and u == 49:
+                    #     sys.exit()
                 
                 if str( scenario_list[s] ) in Scenarios_Involved:
                     # We iterate over the involved parameters of the model here:
@@ -3501,10 +3507,11 @@ if __name__ == '__main__':
                                  # Get the sets that have not been adjusted and adjust relative to the new demand:
                                 all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
                                 pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP' in i or 'PPI' in i) and ('PPH' not in i) and ('GEO' not in i)]
-                                # print('##########')
-                                # print('CHEQUEAR')
-                                # print(all_possible_sets,pending_sets)
-                                # print('##########')
+                                if scenario_list[s] == 'LTS' and f == 3:
+                                    print('##########')
+                                    print('CHEQUEAR')
+                                    print(all_possible_sets,pending_sets)
+                                    print('##########')
                                 for a_set in range( len( pending_sets ) ):
                                     # Get the set:
                                     this_set = pending_sets[a_set]
@@ -3555,6 +3562,7 @@ if __name__ == '__main__':
                                             round(elem, params['round_#']) for elem in new_value_list_3]
                                         inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
 
+                            
                                         # if this_set == 'PP_SPV_DG' and scenario_list[s] == params['NDP'] and f == 2:
                                         #     print('check again 2-2')
                                         #     # sys.exit()
@@ -4592,7 +4600,7 @@ if __name__ == '__main__':
                                                 
                                             #     rem_sets_sum_adj_mult.append(current_value)
                                             #     previous_value = current_value
-                                            
+                                                
                                         if -math.inf in rem_sets_sum_adj_mult or math.inf in rem_sets_sum_adj_mult or float('nan') in rem_sets_sum_adj_mult:
                                             print('print problem with ', r_set, 'for this scenario: ', scenario_list[s],f)
                                             # sys.exit()
@@ -4605,8 +4613,20 @@ if __name__ == '__main__':
                                                 r_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1])
                                                 r_value_list = [float(r_value_list[j]) for j in range(len(r_value_list))]
                                                 multer_low = [1]*7 + [0.98]*(len(time_range_vector)-7)
-                                                r_value_list_new = [
-                                                    a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list)]
+                                                # r_value_list_new = [
+                                                #     a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list)]
+                                                
+                                                r_value_list_new = []
+                                                previous_value = None
+                                                
+                                                for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list):
+                                                    new_value = a_multer * adj_mult * val
+                                                    if new_value <= 0 and previous_value is not None:
+                                                        new_value = previous_value
+                                                    else:
+                                                        previous_value = new_value
+                                                    r_value_list_new.append(new_value)
+                                                
                                                 inherited_scenarios[scenario_list[s]][f][this_parameter ]['value'][r_set_range_indices[0]:r_set_range_indices[-1]+1] = deepcopy(r_value_list_new)
                                                 # print("###############")
                                                 # print("##### ACA1 ####")
@@ -4622,6 +4642,20 @@ if __name__ == '__main__':
                                                         multer_max = [1]*7 + [1.02]*(len(time_range_vector)-7)
                                                         r_value_list_new_2 = [
                                                             a_multer * adj_mult * val for a_multer, adj_mult, val in zip(multer_max, rem_sets_sum_adj_mult, r_value_list_2)]
+                                                        
+                                                        
+                                                        r_value_list_new_2 = []
+                                                        previous_value = None
+                                                        
+                                                        for a_multer, adj_mult, val in zip(multer_low, rem_sets_sum_adj_mult, r_value_list_2):
+                                                            new_value = a_multer * adj_mult * val
+                                                            if new_value <= 0 and previous_value is not None:
+                                                                new_value = previous_value
+                                                            else:
+                                                                previous_value = new_value
+                                                            r_value_list_new_2.append(new_value)
+                                                        
+                                                        
                                                         # print("###############")
                                                         # print("##### ACA2 ####")
                                                         # print("###############")
@@ -5219,7 +5253,7 @@ if __name__ == '__main__':
                                 # print('######################')
                                 inherited_scenarios[ scenario_list[s] ][ f ][ params_to_adjust[par] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                     
-
+                    
                     #--------------------------------------------------------------------#
                 # This section is functional, but depend of the this technology params['TRY_TK_HD'], check check
                 # print('Energy_check_3')
@@ -5446,6 +5480,7 @@ if __name__ == '__main__':
                     #
                     fut = all_futures[fut_index - scen*len( all_futures ) ]
                     #
+                    
                     if scenario_list_print[scen] == params['NDP'] or scenario_list_print[scen] == params['BAU']:
                         p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,params) )
                         processes.append(p)
@@ -5475,85 +5510,85 @@ if __name__ == '__main__':
     
     ########################################################################################
     
-    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-        #
-        print('5: We will produce the outputs and store the data.')
-        #
-        for a_scen in range( len( scenario_list_print ) ):
-            #
-            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-            #
-            Executed_Scenario = scenario_list_print[ a_scen ]
-            set_first_list(Executed_Scenario, params)
-            #
-            if params['parallel']:
-                print('Entered Parallelization')
-                x = len(first_list)
-                #
-                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-                #
-                y = x / max_x_per_iter
-                y_ceil = math.ceil( y )
-                #
-                # sys.exit()
-                #'''
-                for n in range(0,y_ceil):
-                    print('###')
-                    n_ini = n*max_x_per_iter
-                    processes = []
-                    #
-                    start1 = time.time()
-                    #
-                    if n_ini + max_x_per_iter <= x:
-                        max_iter = n_ini + max_x_per_iter
-                    else:
-                        max_iter = x
-                    #
-                    for n2 in range( n_ini , max_iter ):
-                        print(n2)
-                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-                        processes.append(p)
-                        p.start()
-                    #
-                    for process in processes:
-                        process.join()
+    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+    #     #
+    #     print('5: We will produce the outputs and store the data.')
+    #     #
+    #     for a_scen in range( len( scenario_list_print ) ):
+    #         #
+    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+    #         #
+    #         Executed_Scenario = scenario_list_print[ a_scen ]
+    #         set_first_list(Executed_Scenario, params)
+    #         #
+    #         if params['parallel']:
+    #             print('Entered Parallelization')
+    #             x = len(first_list)
+    #             #
+    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+    #             #
+    #             y = x / max_x_per_iter
+    #             y_ceil = math.ceil( y )
+    #             #
+    #             # sys.exit()
+    #             #'''
+    #             for n in range(0,y_ceil):
+    #                 print('###')
+    #                 n_ini = n*max_x_per_iter
+    #                 processes = []
+    #                 #
+    #                 start1 = time.time()
+    #                 #
+    #                 if n_ini + max_x_per_iter <= x:
+    #                     max_iter = n_ini + max_x_per_iter
+    #                 else:
+    #                     max_iter = x
+    #                 #
+    #                 for n2 in range( n_ini , max_iter ):
+    #                     print(n2)
+    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+    #                     processes.append(p)
+    #                     p.start()
+    #                 #
+    #                 for process in processes:
+    #                     process.join()
 
-                    end_1 = time.time()   
-                    time_elapsed_1 = -start1 + end_1
-                    print( str( time_elapsed_1 ) + ' seconds' )
-                    time_list.append( time_elapsed_1 )
+    #                 end_1 = time.time()   
+    #                 time_elapsed_1 = -start1 + end_1
+    #                 print( str( time_elapsed_1 ) + ' seconds' )
+    #                 time_list.append( time_elapsed_1 )
 
-            else:
-                print('Started Linear Runs')
-                #
-                for n in range( len( first_list ) ):
-                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-                #
-                end_1 = time.time()   
-                time_elapsed_1 = -start1 + end_1
-                print( str( time_elapsed_1 ) + ' seconds' )
-                time_list.append( time_elapsed_1 )
-                #'''
-                #
-            #
+    #         else:
+    #             print('Started Linear Runs')
+    #             #
+    #             for n in range( len( first_list ) ):
+    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+    #             #
+    #             end_1 = time.time()   
+    #             time_elapsed_1 = -start1 + end_1
+    #             print( str( time_elapsed_1 ) + ' seconds' )
+    #             time_list.append( time_elapsed_1 )
+    #             #'''
+    #             #
+    #         #
             
-        # Module to concatenate csvs otoole outputs
-        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-            file_aboslute_address = os.path.abspath(params['Manager'])
-            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-            #
+    #     # Module to concatenate csvs otoole outputs
+    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+    #         file_aboslute_address = os.path.abspath(params['Manager'])
+    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    #         #
     
-            str_start = params['start'] + file_adress
-            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-            os.system( str_start and str_otoole_concate_csv )
-        #
-        # Delete log files when solver='cplex'
-        if params['solver'] == 'cplex' and params['del_files']:
-            shutil.os.remove('cplex.log')
-            shutil.os.remove('clone1.log')
-            shutil.os.remove('clone2.log')
+    #         str_start = params['start'] + file_adress
+    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+    #         os.system( str_start and str_otoole_concate_csv )
+    #     #
+    #     # Delete log files when solver='cplex'
+    #     if params['solver'] == 'cplex' and params['del_files']:
+    #         shutil.os.remove('cplex.log')
+    #         shutil.os.remove('clone1.log')
+    #         shutil.os.remove('clone2.log')
         
     
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
