@@ -154,8 +154,7 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
         if option == 'w':
             file.write("Check if children technologies are greater than mother technologies\n")
         # Iterate over each mother technology in the group dictionary
-        if parameter != 'ResidualCapacity':
-            file.write(f"\n\n\nResults for {parameter}:\n")
+        file.write(f"\n\n\nResults for {parameter}:\n")
         for tech_mother, children in fleet_groups.items():
             if tech_mother in results.index:
                 comparison_results[tech_mother] = {}
@@ -315,26 +314,33 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
                 if not sum_products >= specified_demand:
                     file.write(f"For {grandmother} in year {year}, the condition is NOT satisfied.\n")
 
-def check_demand_vs_capacity_variant(parameter, spec_an_dem_techs, oar_techs, output_filename, param_names):
+def check_demand_vs_capacity_variant(parameter, parameter_2, parameter_3, output_filename, param_names, parameter_4=None):
     """
     Function to check if param_names[0] is less than param_names[1] x param_names[2]
-    for each common technology present in the indices of parameter, spec_an_dem_techs, and oar_techs.
+    for each common technology present in the indices of parameter, parameter_2, and parameter_3.
     """
     # Find common indices (technologies)
-    common_techs = parameter.index.intersection(spec_an_dem_techs.index).intersection(oar_techs.index)
+    common_techs = parameter.index.intersection(parameter_2.index).intersection(parameter_3.index)
 
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write("\n\n\n\n\n\n\n###########################################################################################################################")
-        file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]}\n")
-
+        if parameter_4 is None:
+            file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]} x 31.536\n")
+        else:
+            file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]} x {param_names[3]} x 31.536\n")
         # Calculate the equation for each common technology
+        
         for tech in common_techs:
             for year in parameter.columns:
                 max_cap = parameter.loc[tech, year]
-                output_ratio = oar_techs.loc[tech, year]
-                specified_demand = spec_an_dem_techs.loc[tech, year]
-                product = max_cap * output_ratio * 31.56
+                output_ratio = parameter_3.loc[tech, year]
+                specified_demand = parameter_2.loc[tech, year]
+                if parameter_4 is None:
+                    product = max_cap * output_ratio * 31.536
+                else:
+                    aval_factor = parameter_4.loc[tech, year]
+                    product = max_cap * output_ratio * aval_factor * 31.536
                 
                 # Check if the product is greater than or equal to the specified demand
                 if not product >= specified_demand:
@@ -382,20 +388,21 @@ if __name__ == '__main__':
         specified_case = False # if you want other file outside of the Executables or futures folders
         
         # Specify the directory path here
-        dir_bau_files = './Futures/' + scen
+        dir_files = './Futures/' + scen
     
         # List all entries in the directory
-        all_entries = os.listdir(dir_bau_files)
+        all_entries = os.listdir(dir_files)
     
         # Filter only the directories
-        folders = [entry for entry in all_entries if os.path.isdir(os.path.join(dir_bau_files, entry))]
+        folders = [entry for entry in all_entries if os.path.isdir(os.path.join(dir_files, entry))]
       
         
         for f in folders:
             future = f
+            # future = 0
             
             if future == 0 and not specified_case:
-                file_path = f'Executables\{future}\{future}.txt'
+                file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
             elif specified_case:
                 file_path = f'{scen}_{future}.txt'
             else:
@@ -407,7 +414,7 @@ if __name__ == '__main__':
             # Define the path to the output file
             if not os.path.exists('tests_results'):
                 os.makedirs('tests_results')
-            output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
+            output_filename = f'tests_results/comparison_results_{future}.txt'
             
             
             for i in range(len(file_names)):
@@ -418,8 +425,11 @@ if __name__ == '__main__':
                 if result is not None:
                     # ###### TEST 2 ######
                     # Check mother - children diferrences
-                    comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
-                    if file_names[i] == "TotalAnnualMaxCapacity":
+                    if file_names[i] == 'ResidualCapacity' or file_names[i] == 'TotalAnnualMaxCapacity':
+                        pass
+                    else:
+                        comparison_results = compare_mother_children(file_names[i], result, fleet_groups, output_filename, i)
+                    if file_names[i] == 'TotalAnnualMaxCapacity':
                         # ###### TEST 3 ######
                         # Check for decreasing values specifically for this parameter
                         check_any_decreasing_values(result, file_names[i], output_filename)
@@ -427,15 +437,14 @@ if __name__ == '__main__':
                     print("No results available to compare.")
                    
                 # Only to check the technologies have this parameter
-                if file_names[i] == 'TotalAnnualMaxCapacity':
+                if file_names[i] == 'ResidualCapacity' and scen == 'LTS' and future == 1:
                     tech_param_check = result
                     
                 if file_names[i] == 'TotalTechnologyAnnualActivityUpperLimit':
                     upper_techs = result
                 elif file_names[i] == 'TotalTechnologyAnnualActivityLowerLimit':
                     lower_techs = result
-                
-                if file_names[i] == 'TotalAnnualMaxCapacity':
+                elif file_names[i] == 'TotalAnnualMaxCapacity':
                     maxcapa_techs = result
                 elif file_names[i] == 'ResidualCapacity':
                     resicapa_techs = result
@@ -466,6 +475,7 @@ if __name__ == '__main__':
             oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
             lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
             capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
+            avai_fac_techs = read_parameters(file_path, 'AvailabilityFactor')  # Make sure parameter is defined
             
             # TEST 6
             # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
@@ -478,6 +488,11 @@ if __name__ == '__main__':
             # TEST 8
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
             check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
+            
+            # TEST 9
+            # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
+            check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor', 'AvailabilityFactor'], avai_fac_techs)
+            
             
             if specified_case:
                 break
