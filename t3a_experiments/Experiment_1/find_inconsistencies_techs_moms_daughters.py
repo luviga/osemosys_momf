@@ -326,32 +326,43 @@ def check_demand_vs_capacity_variant(parameter, parameter_2, parameter_3, output
     with open(output_filename, 'a') as file:
         file.write("\n\n\n\n\n\n\n###########################################################################################################################")
         if parameter_4 is None:
-            file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]} x 31.536\n")
+            file.write(f"\nCheck if values of {param_names[2]} are less than {param_names[0]} x {param_names[1]} x 31.356\n")
         else:
-            file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]} x {param_names[3]} x 31.536\n")
+            file.write(f"\nCheck if values of {param_names[2]} are less than {param_names[0]} x {param_names[1]} x {param_names[3]} x 31.356\n")
         # Calculate the equation for each common technology
         
         for tech in common_techs:
             for year in parameter.columns:
-                max_cap = parameter.loc[tech, year]
-                output_ratio = parameter_3.loc[tech, year]
-                specified_demand = parameter_2.loc[tech, year]
+                param_1 = parameter.loc[tech, year]
+                param_2 = parameter_2.loc[tech, year]
+                param_3 = parameter_3.loc[tech, year]
                 if parameter_4 is None:
-                    product = max_cap * output_ratio * 31.536
+                    product = param_1 * param_2 * 31.356
                 else:
-                    aval_factor = parameter_4.loc[tech, year]
-                    product = max_cap * output_ratio * aval_factor * 31.536
+                    param_4 = parameter_4.loc[tech, year]
+                    product = param_1 * param_2 * param_4 * 31.356
                 
                 # Check if the product is greater than or equal to the specified demand
-                if not product >= specified_demand:
+                if not product >= param_3:
                     file.write(f"For {tech} in year {year}, the condition is NOT satisfied.\n")
 
 
 ############################################################################################################################
 
 if __name__ == '__main__':
+    
+    # Select tier
+    tier = 3
+    specified_case = False # if you want other file outside of the Executables or futures folders
+    if tier == 1:
+        pickle_path = 'A1_outputs/A-O_Fleet_Groups.pickle'
+    else:
+        pickle_path = '0_From_Confection/A-O_Fleet_Groups.pickle'
+        
+    
+    
     # Load mother and child technologies from the .pickle file
-    with open('0_From_Confection/A-O_Fleet_Groups.pickle', 'rb') as file:
+    with open(pickle_path, 'rb') as file:
         fleet_groups = pickle.load(file)
     
     # List of all technology names (mother and children)
@@ -385,10 +396,11 @@ if __name__ == '__main__':
     ###########################################################################################################################
     # Define the path to the text file
     for scen in scenarios:
-        specified_case = False # if you want other file outside of the Executables or futures folders
-        
         # Specify the directory path here
-        dir_files = './Futures/' + scen
+        if tier == 1:
+            dir_files = './Executables'
+        else:
+            dir_files = './Futures/' + scen
     
         # List all entries in the directory
         all_entries = os.listdir(dir_files)
@@ -398,11 +410,14 @@ if __name__ == '__main__':
       
         
         for f in folders:
-            future = f
-            # future = 0
+            if tier == 1:
+                future = 0
+            else:
+                future = f
             
             if future == 0 and not specified_case:
                 file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
+                
             elif specified_case:
                 file_path = f'{scen}_{future}.txt'
             else:
@@ -414,7 +429,10 @@ if __name__ == '__main__':
             # Define the path to the output file
             if not os.path.exists('tests_results'):
                 os.makedirs('tests_results')
-            output_filename = f'tests_results/comparison_results_{future}.txt'
+            if future == 0:
+                output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
+            else:
+                output_filename = f'tests_results/comparison_results_{future}.txt'
             
             
             for i in range(len(file_names)):
@@ -463,7 +481,10 @@ if __name__ == '__main__':
             ###########################################################################################################################
             
             # Load the Excel file
-            file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+            if tier == 1:
+                file_path_modes_transp = 'A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
+            else:
+                file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
             
             # Load the 'Mode_Broad' sheet
             df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
@@ -487,11 +508,11 @@ if __name__ == '__main__':
             
             # TEST 8
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
-            check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor'])
+            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit'])
             
             # TEST 9
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
-            check_demand_vs_capacity_variant(ta_maxcap_techs, lower_limit, capfac_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity', 'CapacityFactor', 'AvailabilityFactor'], avai_fac_techs)
+            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit', 'AvailabilityFactor'], avai_fac_techs)
             
             
             if specified_case:
