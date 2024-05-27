@@ -2286,14 +2286,13 @@ if __name__ == '__main__':
                         ####################
 
                         if params['Use_Waste']==True and Sectors_Involved[0][2]=="W":
-                            #print(params['Use_Waste'])
-                            print('Waste_3')
-                            ## FALTA CHEQUEAR
+
                             if X_Cat in list_variation_waste:
                                 # print('##############')
                                 # print('ENTRA 1')
                                 # print(this_parameter)
                                 # print('##############')
+                                print('Waste_3')
                                 if params['x_cat_no_orga_recy_org_comp'] in X_Cat:
                                     common_complement = params['common_complement_x_cat_no_orga_recy_org_comp']
 
@@ -2350,11 +2349,12 @@ if __name__ == '__main__':
 
                                     value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
                                     new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
+                                    new_value_list2 = [v*sum_value_list_mult_nvs[i]*1.001 for i, v in enumerate(value_list)]
 
                                     inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1] = deepcopy(new_value_list)
-                                    if nvs == 'LATR':
+                                    if nvs in ['LATR','COPROC','INCIN','EFLT_DISC','SEWER_NO_T']:
                                         this_nvs_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t']) if x == str(nvs)]
-                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_nvs_indices2[0]:this_nvs_indices2[-1]+1] = deepcopy(new_value_list)
+                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_nvs_indices2[0]:this_nvs_indices2[-1]+1] = deepcopy(new_value_list2)
 
 
                                     sum_value_list_new_nvs = [sum(x) for x in zip(sum_value_list_new_nvs, new_value_list)]
@@ -2375,7 +2375,6 @@ if __name__ == '__main__':
                             elif ( Math_Type==params['math_type_time_series'] and ( Explored_Parameter_of_X==params['ini_val'] or
                                                                 Explored_Parameter_of_X==params['fin_val'] ) ) and params['Use_Waste'] and Sectors_Involved[0][2]=="W":
                                 #print(params['Use_Waste'])
-                                print('Waste_4')
 
                                 #
                                 for a_set in range( len( Sets_Involved ) ):
@@ -2390,7 +2389,8 @@ if __name__ == '__main__':
                                             this_set_range_indices2 = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityUpperLimit' ][ this_set_type_initial ] ) if x == str( this_set ) ]
                                         #print(this_set_range_indices)
                                         #print(this_set_range_indices2)
-                                    if this_parameter == 'EmissionActivityRatio': # NO ENTRA ACÁ PERO LO DEJO PARA INCLUIR SI FUERA NECESARIO EN GUATEMALA U OTRO PROYECTO
+                                    if this_parameter == 'EmissionActivityRatio':
+                                        print('Waste_4')
                                         count_good = 0
                                         emis_list = list(set(inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['e'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ]))
                                         for e in emis_list:
@@ -2410,7 +2410,8 @@ if __name__ == '__main__':
                                     
                                     ## LISTO
                                     # recordar que esta línea es un eif cuando se descomente la condición anterior
-                                    if this_parameter in params['this_parameter'] and len(this_set_range_indices) != 0:
+                                    elif this_parameter in params['this_parameter'] and len(this_set_range_indices) != 0:
+                                        print('Waste_5')
                                         # for each index we extract the time and value in a list:
                                         # extracting time:                                                     
                                         time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
@@ -2436,15 +2437,17 @@ if __name__ == '__main__':
 
                                                     adj_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1])
                                                     new_adj_value_list = [mult_new_value_list[i]*v for i, v in enumerate(adj_value_list)]
+                                                    new_adj_value_list2 = [mult_new_value_list[i]*v*1.001 for i, v in enumerate(adj_value_list)]
 
                                                     inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1] = deepcopy(new_adj_value_list)
-                                                    if adj_set == "LATR":
+                                                    if adj_set in ['LATR','COPROC','INCIN','EFLT_DISC','SEWER_NO_T']:
                                                         this_adj_indices2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['t'] ) if x == str(adj_set)]
-                                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_adj_indices2[0]:this_adj_indices2[-1]+1] = deepcopy(new_adj_value_list)
+                                                        inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityUpperLimit']['value'][this_adj_indices2[0]:this_adj_indices2[-1]+1] = deepcopy(new_adj_value_list2)
                                                 inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list)
 
                                     ## LISTO
                                     elif X_Cat in params['x_cat_emi_wat_ind'] and len(this_set_range_indices) != 0:
+                                        print('Waste_6')
                                         #print(this_set_range_indices )
                                         # for each index we extract the time and value in a list:
                                         # extracting time:
@@ -2464,44 +2467,10 @@ if __name__ == '__main__':
 
                                             inherited_scenarios[scenario_list[s]][f][adjust_var1]['value'][this_set_range_indices[0]:this_set_range_indices[-1]+1] = deepcopy(new_value_list)
                                             inherited_scenarios[scenario_list[s]][f][adjust_var2]['value'][this_set_range_indices2[0]:this_set_range_indices2[-1]+1] = deepcopy(new_value_list)
-
-                                    ## LISTO
-                                    elif this_parameter in params['this_parameter_2'] and len(this_set_range_indices) != 0:
-                                        # print('##############')
-                                        # print('ENTRA 4')
-                                        # print(this_parameter)
-                                        # print('##############')
-                                        # for each index we extract the time and value in a list:
-                                        # extracting time:
-                                        time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
-                                        # extracting value:
-                                        value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                                        value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                                        #--------------------------------------------------------------------#
-                                        # now that the value is extracted, we must manipulate the result and assign back
-                                        if Explored_Parameter_of_X == params['fin_val']: # we must add a component to make occupancy rate be relative to BAU for the other 3 base scenarios
-                                            #
-                                            # this impacts normal variables
-                                            new_value_list = deepcopy( AUX.interpolation_non_linear_final( time_list, value_list, float(Values_per_Future[fut_id] ), params['final_year'], Initial_Year_of_Uncertainty))
-
-                                            if params['x_cat_na_waste_pro'] == X_Cat: # Perform additional adjustments:
-                                                mult_new_value_list = [v/value_list[i] for i, v in enumerate(new_value_list)]
-                                                adjust_var = 'TotalTechnologyAnnualActivityLowerLimit'
-                                                # adjust_sets = params['adjust_sets]
-
-                                                adjust_sets = params['adjust_sets_2']
-
-                                                for adj_set in adjust_sets:
-                                                    this_adj_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][adjust_var]['t'] ) if x == str(adj_set)]
-                                                                                                                
-                                                    adj_value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1])
-                                                    new_adj_value_list = [mult_new_value_list[i]*v for i, v in enumerate(adj_value_list)]
-
-                                                    inherited_scenarios[scenario_list[s]][f][adjust_var]['value'][this_adj_indices[0]:this_adj_indices[-1]+1] = deepcopy(new_adj_value_list)
                                     
                                     ## LISTO
                                     elif this_parameter in params['this_parameter_3'] and len(this_set_range_indices) != 0:
+                                        print('Waste_7')
                                         # print('##############')
                                         # print('ENTRA 5')
                                         # print(this_parameter)
@@ -2530,6 +2499,7 @@ if __name__ == '__main__':
                                         inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                         
                                     elif this_parameter in params['this_parameter_4'] and len(this_set_range_indices) != 0:
+                                        print('Waste_8')
                                         # print('##############')
                                         # print('ENTRA 6')
                                         # print(this_parameter, this_set)
