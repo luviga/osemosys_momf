@@ -160,13 +160,13 @@ glpk_option: 'new' # Could you use 'old' for the first method and 'new' for meth
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 2 # em
+Number_of_Runs: 10 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 2 # B1, em
+max_x_per_iter: 4 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True
@@ -698,7 +698,11 @@ trn_list_tech_groups: [ # em ### # Susana
 train: 'Train' # B1, em
 tech_train: 'Techs_Trains' # B1, em
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost'] # B1, em
-this_combina: ['salud_residuos', 'FERT_ORG','RM','contam_agua','Health','Accidents','turismo_residuos','Congestion'] # B1, em ##@
+this_combina: [ # B1, em ##@
+  'salud_residuos', 'FERT_ORG','RM','contam_agua','Health',
+  'Accidents','turismo_residuos','Congestion', 'CONHAB',
+  'CONTUR', 'CONVAR', 'CONHICK', 'RESHID', 'DAPANI'
+  ] 
 PRI: 'PRI' # B1, em
 PUB: 'PUB' # B1, em
 FEAHEA: 'FREHEA' # B1, em
@@ -766,11 +770,11 @@ acci: 'Accidents' # em
 this_set_tr_hyd: ['TRBPUHYD','TRMBSHYD','TRBTURHYD','TRYTKHYD'] # em ## From Where
 this_set_tra_pas_rai_ele: 'TRNPASRAIELE' # Transport passenger rail electric # em ## From Where
 this_set_waste: ['INORG_RCY_OS', 'COMPOST'] # em ###
-this_set_pp_wdn: 'PPWNDON' ##'PP_WND_US' # em ## From Where
+this_set_pp_wdn_on: 'PPWNDON' # em ##@
+this_set_pp_wdn_off: 'PPWNDOFF' # em ##@
 this_set_afolu_1: 'Cafe' # em ######
 this_set_afolu_2: 'Cana' # em ######
 this_set_techs_buses: ['Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_Trains'] # em ##@
-this_set_pp_hy: 'PP_HYDAMARORLAR' # em ##@
 TRA_BUS_HYD: 'TRBTURHYD' # em ##@
 TRA_BUS_ELE: 'TRBTURELE' # em ##@
 TRM_BUS_HYD: 'TRMBSHYD' # em ##@
@@ -781,10 +785,6 @@ TRY_TK_HYD: 'TRYTKHYD' # em ##@
 TRY_TK_ELE: 'TRYTKELE' # em ##@
 TRY_LF_ELE: 'TRYLFELE' # REVISAR SI HAY QUE AGREGAR
 TRY_TK_HD: 'TRYTKHD' # em ### ADEMAS TAMBIEN HAY BUSES DE LOS 3 TIPOS DE FUEL, Y CARGA LIVIANA Y PESADA
-PPPVT: 'PPPVT' # em ##@
-PPWNDON: 'PPWNDON' # em ##@
-PPPVDS: 'PPPVDS' # em ##@
-hyd: 'HYD' # em
 a_fuel_set: 'CLK_PROD' # em ##@
 
 ##############################################################################
@@ -832,7 +832,7 @@ copy: 'Copy' # B1
 uni_capex: 'UnitCapitalCost (USD)'
 uni_fopex: 'UnitFixedCost (USD)'
 num_runs: 'Number_of_Runs' # em
-x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales'] # em ##@
+x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales','Methane recovery'] # em ##@
 x_cat_na_waste_pro: 'National waste production' # em ##@
 x_cat_list: ['Electrical Demand', 'Fuel Demand', 'Freight Demand'] # em
 pass_dem: 'Passenger Demand' # em
@@ -931,13 +931,13 @@ valid_column_names: [ # em
   'Externalities_GDP'
   ]
 
-common_complement_x_cat_no_orga_recy_org_comp: [ ##@
+common_complement_x_cat_no_orga_recy_org_comp: [ #em ##@
   'LANDFILL', 'NO_CONTR_OD', 'COPROC', 'INCIN', 'OPEN_BURN',
   'SIT_CLAN', 'NO_OSS_BLEND', 'NO_OSS_NO_COLL', 'BLEND_NO_DCOLL', 
   'BLEND_NO_COLL', 'NO_SS'
   ]
 
-common_complement_x_cat_water_resi_mana: [ ##@
+common_complement_x_cat_water_resi_mana: [ #em ##@
   'LATR', 'EFLT_DISC',
   'WWWOT', 'DIRECT_DISC', 'SEWER_NO_T']
 
@@ -958,7 +958,7 @@ this_parameter_6: ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAn
 this_parameter_7: ['OutputActivityRatio'] # em
 ############################################
 
-adjust_sets_waste: [ ##@
+adjust_sets_waste: [ #em ##@
   "INORG_RCY_OS", "COMPOST", "LANDFILL", "NO_CONTR_OD", "COPROC", "INCIN", "OPEN_BURN",
   "SIT_CLAN", "AERO_PTAR", "SEPT_SYST", "LATR", "EFLT_DISC", "SEWER_NO_T", "OSS_INORG",
   "OSS_ORG", "NO_OSS_BLEND", "NO_OSS_NO_COLL", "INORG_DCOLL", "ORG_DCOLL", "BLEND_NO_DCOLL",
@@ -972,7 +972,7 @@ adjust_sets_waste: [ ##@
 #    "LU_OLU", "LU_LATHUM", "LU_CLF", "LU_LATSHUM", "LU_DCON", "LU_SCON", "LU_WET", "LU_DRY"
 #]
 
-all_covers_AFOLU: [
+all_covers_AFOLU: [ #em ##@
     "LU_FOR", "LU_AGR", "LU_GAN"
 ]
 
