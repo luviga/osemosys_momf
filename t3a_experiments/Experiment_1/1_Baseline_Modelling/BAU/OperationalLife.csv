@@ -15,7 +15,9 @@ OperationalLife,BAU,RD,PPHDAM,,,,,,,,,,50.0
 OperationalLife,BAU,RD,PPHROR,,,,,,,,,,30.0
 OperationalLife,BAU,RD,PPGEO,,,,,,,,,,50.0
 OperationalLife,BAU,RD,PPWNDON,,,,,,,,,,20.0
+OperationalLife,BAU,RD,PPWNDOFF,,,,,,,,,,20.0
 OperationalLife,BAU,RD,PPPVT,,,,,,,,,,20.0
+OperationalLife,BAU,RD,PPPVTHYD,,,,,,,,,,20.0
 OperationalLife,BAU,RD,PPPVTS,,,,,,,,,,20.0
 OperationalLife,BAU,RD,PPPVD,,,,,,,,,,25.0
 OperationalLife,BAU,RD,PPPVDS,,,,,,,,,,15.0

@@ -15,7 +15,9 @@ CapacityToActivityUnit,LTS,RD,PPHDAM,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPHROR,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPGEO,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPWNDON,,,,,,,,,,31.356
+CapacityToActivityUnit,LTS,RD,PPWNDOFF,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPPVT,,,,,,,,,,31.356
+CapacityToActivityUnit,LTS,RD,PPPVTHYD,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPPVTS,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPPVD,,,,,,,,,,31.356
 CapacityToActivityUnit,LTS,RD,PPPVDS,,,,,,,,,,31.356

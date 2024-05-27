@@ -15,7 +15,9 @@ OperationalLife,LTS,RD,PPHDAM,,,,,,,,,,50.0
 OperationalLife,LTS,RD,PPHROR,,,,,,,,,,30.0
 OperationalLife,LTS,RD,PPGEO,,,,,,,,,,50.0
 OperationalLife,LTS,RD,PPWNDON,,,,,,,,,,20.0
+OperationalLife,LTS,RD,PPWNDOFF,,,,,,,,,,20.0
 OperationalLife,LTS,RD,PPPVT,,,,,,,,,,20.0
+OperationalLife,LTS,RD,PPPVTHYD,,,,,,,,,,20.0
 OperationalLife,LTS,RD,PPPVTS,,,,,,,,,,20.0
 OperationalLife,LTS,RD,PPPVD,,,,,,,,,,25.0
 OperationalLife,LTS,RD,PPPVDS,,,,,,,,,,15.0
