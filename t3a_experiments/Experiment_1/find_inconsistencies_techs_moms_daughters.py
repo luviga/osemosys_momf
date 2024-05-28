@@ -152,7 +152,7 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
     # Open the file to write the results
     with open(output_filename, option) as file:
         if option == 'w':
-            file.write("Check if children technologies are greater than mother technologies\n")
+            file.write("Check if children technologies are greater than mother technologies for transport sector\n")
         # Iterate over each mother technology in the group dictionary
         file.write(f"\n\n\nResults for {parameter}:\n")
         for tech_mother, children in fleet_groups.items():
@@ -185,7 +185,7 @@ def compare_mother_children(parameter, results, fleet_groups, output_filename, i
 
                 # Write the results for the mother technology to the file
                 file.write(f"   Results for {tech_mother}:\n")
-                file.write("     Children are _______ than mother tech\n")
+                file.write("     Children are greater than mother tech\n")
                 if children_without_values:
                     file.write(f"     Children without values: {children_without_values}\n") 
                 for year, result in comparison_results[tech_mother].items():
@@ -295,7 +295,7 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write("\n\n\n\n\n\n\n###########################################################################################################################")
-        file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]}\n")
+        file.write(f"\nCheck if values of {param_names[0]} are less than {param_names[1]} x {param_names[2]}, for transport sector\n")
         
         # Calculate the equation for each grandmother technology
         for grandmother in df_mode_broad.columns[1:]:
@@ -346,10 +346,87 @@ def check_demand_vs_capacity_variant(parameter, parameter_2, parameter_3, output
                 if not product >= param_3:
                     file.write(f"For {tech} in year {year}, the condition is NOT satisfied.\n")
 
+def check_maxcapacity_vs_lowerlimit(param_1, param_2, output_filename, params_names):
+    common_techs = param_1.index.intersection(param_2.index)
+    common_techs_tr = [tech for tech in common_techs if 'PP' not in tech[:2]]
+    years = param_1.columns.tolist()
+    # Open output file for appending results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write(f'\nCheck if {params_names[0]} is less than {params_names[1]} for technologies transport\n')
+        for tech in common_techs_tr:
+            # for year in parameter.columns:
+            param_maxcap = param_1.loc[tech].tolist()
+            param_lowerlimit = param_2.loc[tech].tolist()
+           
+            diff_list = [a - b for a, b in zip(param_maxcap, param_lowerlimit)]
+            # Check if there are any negative values in the list
+            has_negative = any(diff < 0 for diff in diff_list)
+            
+            
+            if has_negative:
+                file.write(f'\n   Results for {tech}:\n')
+                
+                for dif in range(len(diff_list)):
+                    if diff_list[dif]<0:
+                        file.write(str(years[dif]) + ': greater   MaxCapacity value: ' + str(param_maxcap[dif]) + ',   LowerLimit value: ' + str(param_lowerlimit[dif]) + '\n')
+                file.write('-------------------------------------------------\n')
+
+def compare_mother_children_variant(param_1, param_2, fleet_groups, output_filename, params_names):
+    comparison_results = {}  # This dictionary will store the comparison results
+
+    # Open the file to write the results
+    with open(output_filename, 'a') as file:
+        file.write("\n\n\n\n\n\n\n###########################################################################################################################")
+        file.write("\nCheck if sum of 'TotalAnnualMaxCapacity' (children) are less than 'TotalTechnologyAnnualActivityLowerLimit' (mother)\n")
+        # Iterate over each mother technology in the group dictionary
+        for tech_mother, children in fleet_groups.items():
+            if tech_mother in lower_limit.index:
+                comparison_results[tech_mother] = {}
+                children_sum = pd.Series([0.0] * len(lower_limit.columns), index=lower_limit.columns)
+
+                for child in children:
+                    if child in ta_maxcap_techs.index:
+                        children_sum += ta_maxcap_techs.loc[child]
+
+                mother_values = lower_limit.loc[tech_mother]
+                for year in lower_limit.columns:
+                    if children_sum[year] > mother_values[year]:
+                        comparison = "greater"
+                    elif children_sum[year] < mother_values[year]:
+                        comparison = "less"
+                        comparison_2 = - mother_values[year] + children_sum[year]
+                    else:
+                        comparison = "equal"
+                    
+                    if comparison == "less":
+                        comparison_results[tech_mother][year] = str(comparison_2) + '      LowerLimit value: ' + str(mother_values[year]) + ',   Sum MaxCapacity value: ' + str(children_sum[year])
+
+                # Write the results for the mother technology to the file
+                file.write(f"   Results for {tech_mother}:\n")
+                file.write("     Sum MaxCapacity are less than LowerLimit tech\n")
+                for year, result in comparison_results[tech_mother].items():
+                    file.write(f"     {year}: {result}\n")
+                file.write("-------------------------------------------------\n")
 
 ############################################################################################################################
 
 if __name__ == '__main__':
+    
+    
+    transport_techs = [
+    "TRAUTDSL", "TRAUTELE", "TRAUTGSL", "TRAUTHG", "TRAUTLPG", 
+    "TRBPUDSL", "TRBPUELE", "TRBPUGSL", "TRBPULPG", "TRBTURDSL", 
+    "TRBTURELE", "TRBTURGSL", "TRBTURLPG", "TRMBSDSL", "TRMBSELE", 
+    "TRMBSGSL", "TRMBSLPG", "TRMOTELE", "TRMOTGSL", "TRSUVDSL", 
+    "TRSUVELE", "TRSUVGSL", "TRSUVLPG", "TRSUVNGS", "TRTAXELE", 
+    "TRTAXGSL", "TRTAXLPG", "TRYLFDSL", "TRYLFELE", "TRYLFGSL", 
+    "TRYLFLPG", "TRYTKDSL", "TRYTKELE", "TRYTKGSL", "TRYTKHYD", 
+    "TRYTKLPG", "Techs_Auto", "Techs_Buses_Micro", "Techs_Buses_Pub", 
+    "Techs_Buses_Tur", "Techs_He_Freight", "Techs_Li_Freight", 
+    "Techs_Motos", "Techs_SUV", "Techs_Taxi", "Techs_Telef", 
+    "Techs_Trains", "Techs_Trains_Freight"
+    ]
     
     # Select tier
     tier = 3
@@ -414,6 +491,7 @@ if __name__ == '__main__':
                 future = 0
             else:
                 future = f
+            # future = 0
             
             if future == 0 and not specified_case:
                 file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
@@ -498,22 +576,26 @@ if __name__ == '__main__':
             capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
             avai_fac_techs = read_parameters(file_path, 'AvailabilityFactor')  # Make sure parameter is defined
             
-            # TEST 6
+            # ###### TEST 6 ######
             # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
             check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'])
             
-            # TEST 7
+            # ###### TEST 7 ######
             # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
             check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'])
             
-            # TEST 8
+            # ###### TEST 8 ######
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
             check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit'])
             
-            # TEST 9
+            # ###### TEST 9 ######
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
             check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit', 'AvailabilityFactor'], avai_fac_techs)
-            
-            
-            if specified_case:
-                break
+
+            # ###### TEST 10 ######
+            # Check if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit
+            check_maxcapacity_vs_lowerlimit(ta_maxcap_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'])
+
+            # ###### TEST 11 ######
+            # Check if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit
+            compare_mother_children_variant(lower_limit, ta_maxcap_techs, fleet_groups, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'])              
