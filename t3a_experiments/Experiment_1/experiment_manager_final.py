@@ -1731,7 +1731,7 @@ if __name__ == '__main__':
     #
     # Also open the technological equivalencies for *Agricultural Demands*
     if params['Use_AFOLU']:
-        print('AFOLU_1')
+        #print('AFOLU_1')
         df_agr_dem_controls = pd.read_excel('_AFOLU_demand_controls.xlsx',
                                             'agr_demands')
         dict_agr_dem_controls = {}
@@ -2070,10 +2070,10 @@ if __name__ == '__main__':
                     elif math_type == params['math_type_cte']:
                         experiment_dictionary[ int( uncertainty_table.loc[ p ,params['x_num']] ) ][ 'Values' ][n] = this_future_X_param[-1]
 
-                u = int( uncertainty_table.loc[ p ,params['x_num']] )
-                print(u, len(experiment_dictionary[u].keys()),
-                    experiment_dictionary[u]['Category'],
-                    )
+                # u = int( uncertainty_table.loc[ p ,params['x_num']] )
+                # print(u, len(experiment_dictionary[u].keys()),
+                #     experiment_dictionary[u]['Category'],
+                #     )
                 
                 # if params['Use_Waste']:
                 #     print('Waste_2')
@@ -3540,11 +3540,11 @@ if __name__ == '__main__':
                                  # Get the sets that have not been adjusted and adjust relative to the new demand:
                                 all_possible_sets = list(set(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]))
                                 pending_sets = [i for i in all_possible_sets if i not in all_set_involved and ('PP' in i or 'PPI' in i) and ('PPH' not in i) and ('GEO' not in i)]
-                                if scenario_list[s] == 'LTS' and f == 3:
-                                    print('##########')
-                                    print('CHEQUEAR')
-                                    print(all_possible_sets,pending_sets)
-                                    print('##########')
+                                # if scenario_list[s] == 'LTS' and f == 3:
+                                #     print('##########')
+                                #     print('CHEQUEAR')
+                                #     print(all_possible_sets,pending_sets)
+                                #     print('##########')
                                 for a_set in range( len( pending_sets ) ):
                                     # Get the set:
                                     this_set = pending_sets[a_set]
@@ -4426,6 +4426,15 @@ if __name__ == '__main__':
                                 #
                                 this_set = Sets_Involved[a_set]
                                 this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
+     
+                                #####################################################
+                                ## Modificar TotalAnnualMaxCapacity en caso de existir
+                                MC_exist=False
+                                this_set_range_indices_mc = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                if len(this_set_range_indices_mc) != 0:
+                                    MC_exist=True
+                                #####################################################
+                                
                                 preliminary_pass = True
 
                                 if len(this_set_range_indices) > 0:
@@ -4557,6 +4566,14 @@ if __name__ == '__main__':
                                     #     print('Revisar TRAUTELE')
                                         # sys.exit()
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
+                                    
+                                    #####################################################
+                                    ## Modificar TotalAnnualMaxCapacity en caso de existir
+                                    new_value_list_mc_rounded = [ round(elem*1.01, params['round_#']) for elem in new_value_list_rounded ]
+                                    if MC_exist and this_set not in ['TRAUTELE']:
+                                        inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_mc[0]:this_set_range_indices_mc[-1]+1 ] = deepcopy(new_value_list_mc_rounded)
+                                    #####################################################
+                                    
                                     #-----------------------------------------------------------------------#
                                     # 
                                     # All the technologies that are not electric, we need to modify
@@ -4640,6 +4657,7 @@ if __name__ == '__main__':
 
                                         # Adjust: check check
                                         for r_set in rem_sets:
+                                            print(rem_sets)
                                             r_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(r_set)]
                                             r_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity'][this_set_type_initial]) if x == str(r_set)]
                                             if len(r_set_range_indices) != 0:
@@ -5541,87 +5559,87 @@ if __name__ == '__main__':
         '''
         #
     
-    ########################################################################################
+    #######################################################################################
     
-    # if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
-    #     #
-    #     print('5: We will produce the outputs and store the data.')
-    #     #
-    #     for a_scen in range( len( scenario_list_print ) ):
-    #         #
-    #         # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
-    #         packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
-    #         #
-    #         Executed_Scenario = scenario_list_print[ a_scen ]
-    #         set_first_list(Executed_Scenario, params)
-    #         #
-    #         if params['parallel']:
-    #             print('Entered Parallelization')
-    #             x = len(first_list)
-    #             #
-    #             max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
-    #             #
-    #             y = x / max_x_per_iter
-    #             y_ceil = math.ceil( y )
-    #             #
-    #             # sys.exit()
-    #             #'''
-    #             for n in range(0,y_ceil):
-    #                 print('###')
-    #                 n_ini = n*max_x_per_iter
-    #                 processes = []
-    #                 #
-    #                 start1 = time.time()
-    #                 #
-    #                 if n_ini + max_x_per_iter <= x:
-    #                     max_iter = n_ini + max_x_per_iter
-    #                 else:
-    #                     max_iter = x
-    #                 #
-    #                 for n2 in range( n_ini , max_iter ):
-    #                     print(n2)
-    #                     p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
-    #                     processes.append(p)
-    #                     p.start()
-    #                 #
-    #                 for process in processes:
-    #                     process.join()
+    if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
+        #
+        print('5: We will produce the outputs and store the data.')
+        #
+        for a_scen in range( len( scenario_list_print ) ):
+            #
+            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
+            packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
+            #
+            Executed_Scenario = scenario_list_print[ a_scen ]
+            set_first_list(Executed_Scenario, params)
+            #
+            if params['parallel']:
+                print('Entered Parallelization')
+                x = len(first_list)
+                #
+                max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
+                #
+                y = x / max_x_per_iter
+                y_ceil = math.ceil( y )
+                #
+                # sys.exit()
+                #'''
+                for n in range(0,y_ceil):
+                    print('###')
+                    n_ini = n*max_x_per_iter
+                    processes = []
+                    #
+                    start1 = time.time()
+                    #
+                    if n_ini + max_x_per_iter <= x:
+                        max_iter = n_ini + max_x_per_iter
+                    else:
+                        max_iter = x
+                    #
+                    for n2 in range( n_ini , max_iter ):
+                        print(n2)
+                        p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
+                        processes.append(p)
+                        p.start()
+                    #
+                    for process in processes:
+                        process.join()
 
-    #                 end_1 = time.time()   
-    #                 time_elapsed_1 = -start1 + end_1
-    #                 print( str( time_elapsed_1 ) + ' seconds' )
-    #                 time_list.append( time_elapsed_1 )
+                    end_1 = time.time()   
+                    time_elapsed_1 = -start1 + end_1
+                    print( str( time_elapsed_1 ) + ' seconds' )
+                    time_list.append( time_elapsed_1 )
 
-    #         else:
-    #             print('Started Linear Runs')
-    #             #
-    #             for n in range( len( first_list ) ):
-    #                 main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
-    #             #
-    #             end_1 = time.time()   
-    #             time_elapsed_1 = -start1 + end_1
-    #             print( str( time_elapsed_1 ) + ' seconds' )
-    #             time_list.append( time_elapsed_1 )
-    #             #'''
-    #             #
-    #         #
+            else:
+                print('Started Linear Runs')
+                #
+                for n in range( len( first_list ) ):
+                    main_executer(n,Executed_Scenario,packaged_useful_elements,scenario_list_print,params)
+                #
+                end_1 = time.time()   
+                time_elapsed_1 = -start1 + end_1
+                print( str( time_elapsed_1 ) + ' seconds' )
+                time_list.append( time_elapsed_1 )
+                #'''
+                #
+            #
             
-    #     # Module to concatenate csvs otoole outputs
-    #     if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-    #         file_aboslute_address = os.path.abspath(params['Manager'])
-    #         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-    #         file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-    #         #
+        # Module to concatenate csvs otoole outputs
+        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+            file_aboslute_address = os.path.abspath(params['Manager'])
+            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+            #
     
-    #         str_start = params['start'] + file_adress
-    #         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-    #         os.system( str_start and str_otoole_concate_csv )
-    #     #
-    #     # Delete log files when solver='cplex'
-    #     if params['solver'] == 'cplex' and params['del_files']:
-    #         shutil.os.remove('cplex.log')
-    #         shutil.os.remove('clone1.log')
-    #         shutil.os.remove('clone2.log')
+            str_start = params['start'] + file_adress
+            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+            os.system( str_start and str_otoole_concate_csv )
+        #
+        # Delete log files when solver='cplex'
+        if params['solver'] == 'cplex' and params['del_files']:
+            shutil.os.remove('cplex.log')
+            shutil.os.remove('clone1.log')
+            shutil.os.remove('clone2.log')
         
     
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')
