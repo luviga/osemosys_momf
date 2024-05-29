@@ -305,7 +305,7 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write(f"\n\n\n\n\n\n\n######################################################## TEST {num} ########################################################\n")
-        file.write(f"\nProblem if values of {param_names[0]}(fuels/grandma) are less than\n{param_names[1]}(mothers) x {param_names[2]}(mothers), only for transport sector.\n")
+        file.write(f"\nProblem if values of {param_names[0]}(fuels/grandma) are greater than\n{param_names[1]}(mothers) x {param_names[2]}(mothers), only for transport sector.\n")
         
         # Calculate the equation for each grandmother technology
         for grandmother in df_mode_broad.columns[1:]:
@@ -363,7 +363,7 @@ def check_maxcapacity_vs_lowerlimit(param_1, param_2, output_filename, params_na
     # Open output file for appending results
     with open(output_filename, 'a') as file:
         file.write(f"\n\n\n\n\n\n\n######################################################## TEST {num} ########################################################\n")
-        file.write(f'\nProblem if {params_names[0]} is less than {params_names[1]}, only for technologies transport.\n')
+        file.write(f'\nProblem if {params_names[0]} is less than {params_names[1]}, only for transport sector.\n')
         for tech in common_techs_tr:
             # for year in parameter.columns:
             param_maxcap = param_1.loc[tech].tolist()
