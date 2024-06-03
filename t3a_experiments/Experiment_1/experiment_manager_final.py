@@ -1583,9 +1583,7 @@ if __name__ == '__main__':
     #
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
-    # with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
-        # Load content file
-        # params = yaml.safe_load(file)
+
     params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
     '''
     Let us define some control inputs internally:

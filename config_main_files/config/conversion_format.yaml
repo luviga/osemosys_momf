@@ -476,16 +476,6 @@ AnnualTechnologyEmission:
   type: result
   dtype: float
   default: 0
-AnnualTechnologyEmissionByMode:
-  indices:
-  - REGION
-  - TECHNOLOGY
-  - EMISSION
-  - MODE_OF_OPERATION
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
 AnnualVariableOperatingCost:
   indices:
   - REGION
@@ -562,58 +552,8 @@ ProductionByTechnology:
   type: result
   dtype: float
   default: 0
-ProductionByTechnologyAnnual:
-  indices:
-  - REGION
-  - TECHNOLOGY
-  - FUEL
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
-RateOfActivity:
-  indices:
-  - REGION
-  - TIMESLICE
-  - TECHNOLOGY
-  - MODE_OF_OPERATION
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
-RateOfProductionByTechnology:
-  indices:
-  - REGION
-  - TIMESLICE
-  - TECHNOLOGY
-  - FUEL
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
 RateOfProductionByTechnologyByMode:
   short_name: RateOfProductionByTechByMode
-  indices:
-  - REGION
-  - TIMESLICE
-  - TECHNOLOGY
-  - MODE_OF_OPERATION
-  - FUEL
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
-RateOfUseByTechnology:
-  indices:
-  - REGION
-  - TIMESLICE
-  - TECHNOLOGY
-  - FUEL
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
-RateOfUseByTechnologyByMode:
   indices:
   - REGION
   - TIMESLICE
@@ -685,16 +625,6 @@ StorageLevelYearFinish:
   type: result
   dtype: float
   default: 0
-TotalAnnualTechnologyActivityByMode:
-  short_name: TotalAnnualTechActivityByMode
-  indices:
-  - REGION
-  - TECHNOLOGY
-  - MODE_OF_OPERATION
-  - YEAR
-  type: result
-  dtype: float
-  default: 0
 TotalCapacityAnnual:
   indices:
   - REGION
@@ -718,14 +648,6 @@ TotalTechnologyAnnualActivity:
   type: result
   dtype: float
   default: 0
-TotalTechnologyModelPeriodActivity:
-  short_name: TotalTechModelPeriodActivity
-  indices:
-  - REGION
-  - TECHNOLOGY
-  type: result
-  dtype: float
-  default: 0
 Trade:
   indices:
   - REGION
@@ -742,6 +664,24 @@ UseByTechnology:
   - TIMESLICE
   - TECHNOLOGY
   - FUEL
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+OperatingCost:
+  indices:
+  - REGION
+  - TECHNOLOGY
+  - YEAR
+  type: result
+  dtype: float
+  default: 0
+AnnualTechnologyEmissionPenaltyByEmission:
+  short_name: AnnualTechnologyEmissionPenalty
+  indices:
+  - REGION
+  - TECHNOLOGY
+  - EMISSION
   - YEAR
   type: result
   dtype: float

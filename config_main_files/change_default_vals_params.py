@@ -32,18 +32,7 @@ def get_config_main_path(full_path, base_folder='config_main_files'):
 
 if __name__ == '__main__':
 
-    # Parameters otoole has by default but don't use them in MOMF
-    parameters_otoole_no_momf = [
-        "AnnualTechnologyEmissionByMode",
-        "ProductionByTechnologyAnnual",
-        "RateOfActivity",
-        "RateOfProductionByTechnology",
-        "RateOfUseByTechnology",
-        "RateOfUseByTechnologyByMode",
-        "TotalAnnualTechnologyActivityByMode",
-        "TotalTechnologyModelPeriodActivity"
-    ]
-    
+
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
     # sys.exit()
@@ -53,6 +42,8 @@ if __name__ == '__main__':
     # Select dict with default values parameters
     default_val_params = params['default_val_params']
     default_val_sets = params['sets_otoole']
+    # Parameters otoole has by default but don't use them in MOMF
+    parameters_otoole_no_momf = params['parameters_otoole_no_momf']
     
     # Create defaul yaml file by otoole
     file_path = file_config_address + 'config\\conversion_format.yaml'
@@ -96,6 +87,11 @@ if __name__ == '__main__':
     
     # Delete key asociate with the variable "parameters_otoole_no_momf"
     cleaned_default_format = {k: v for k, v in default_format.items() if k not in parameters_otoole_no_momf}
+    
+    # Add new parameters need for MOMF
+    for key, value in params['new_parameters_add'].items():
+        if key not in cleaned_default_format:
+            cleaned_default_format[key] = value
     
     # Assing dict clean of the parameters aren't useful to default_format dict
     default_format = cleaned_default_format

@@ -151,16 +151,16 @@ results: 'Executables\\' # B1
 start: 'start cmd.exe /k cd ' # B1, em, FRM
 
 # Solver
-solver: 'glpk' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
+solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # Choose if want to delete or not the solver solutions files
-del_files: True # B1, em, FRM
+del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 10 # em
+Number_of_Runs: 1 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
@@ -688,7 +688,7 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 trains: 'Trains' # B1, em
 tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em ###
 tra_techs_for_passengers: ['Techs_Auto', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro'] # em ###
-trn_list_tech_groups: [ # em ### # Susana
+trn_list_tech_groups: [ # em ###
   'Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi',
   'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_Telef',
   'Techs_Trains', 'Techs_Trains_Freight', 'Techs_He_Freight',
@@ -996,3 +996,52 @@ excel_data_file_dir:  '..\\t3a_experiments\\Experiment_1\\Futures\\'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
 dir_main_script_yaml: '..\\config_main_files'
 scens: ['BAU', 'LTS']
+parameters_reference : [
+  'AnnualTechnologyEmissionPenaltyByEmission',
+  'CapitalInvestment',
+  'OperatingCost',
+  'AnnualFixedOperatingCost',
+  'AnnualVariableOperatingCost'
+]
+parameters_news: [
+  'Externalities2024',
+  'Capex2024',
+  'Opex2024',
+  'FixedOpex2024',
+  'VarOpex2024'
+]
+
+
+
+# Parameters to script change_default_vals_params.py 
+
+# Parameters do not need in MOMF
+parameters_otoole_no_momf: [
+  "AnnualTechnologyEmissionByMode",
+  "ProductionByTechnologyAnnual",
+  "RateOfActivity",
+  "RateOfProductionByTechnology",
+  "RateOfUseByTechnology",
+  "RateOfUseByTechnologyByMode",
+  "TotalAnnualTechnologyActivityByMode",
+  "TotalTechnologyModelPeriodActivity"
+]
+
+# Definition of main characteristics of parameters need in MOMF
+new_parameters_add: {
+  OperatingCost: {
+    indices:
+    [REGION, TECHNOLOGY, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  },
+  AnnualTechnologyEmissionPenaltyByEmission: {
+    short_name: AnnualTechnologyEmissionPenalty,
+    indices:
+    [REGION, TECHNOLOGY, EMISSION, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  }
+}

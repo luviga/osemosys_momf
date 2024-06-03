@@ -11,6 +11,7 @@ import yaml
 from copy import deepcopy
 import sys
 import shutil
+import numpy as np
 
 def get_config_main_path(full_path, base_folder='config_plots'):
     # Split the path into parts
@@ -30,18 +31,93 @@ def get_config_main_path(full_path, base_folder='config_plots'):
     
     return appended_path
 
-if __name__ == '__main__':
+def load_and_process_yaml(path):
+    """
+    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+    Args:
+    path (str): The path to the YAML file.
+    
+    Returns:
+    dict: The updated data from the YAML file where the specific placeholder is replaced.
+    """
+    with open(path, 'r') as file:
+        # Load the YAML content into 'params'
+        params = yaml.safe_load(file)
+
+    # Retrieve the reference year from the YAML file and convert it to string for replacement
+    reference_year = str(params['year_apply_discount_rate'])
+
+    # Function to recursively update strings containing the placeholder
+    def update_strings(obj):
+        if isinstance(obj, dict):
+            return {k: update_strings(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [update_strings(element) for element in obj]
+        elif isinstance(obj, str):
+            # Replace the specific placeholder with the reference year
+            return obj.replace('${year_apply_discount_rate}', reference_year)
+        else:
+            return obj
+
+    # Update all string values in the loaded YAML structure
+    updated_params = update_strings(params)
+
+    return updated_params
+
+def calculate_npv(dataframe, new_column_name, parametervalue_column, rod, year_column="YEAR", output_csv_r=0, output_csv_year=0):
+    # Verificar que las columnas necesarias existen en el DataFrame
+    if parametervalue_column not in dataframe.columns or year_column not in dataframe.columns:
+        raise ValueError("Las columnas especificadas no existen en el DataFrame")
+    
+    # Verificar que la columna de valores tiene datos numéricos
+    if not np.issubdtype(dataframe[parametervalue_column].dtype, np.number):
+        raise ValueError(f"La columna {parametervalue_column} no contiene valores numéricos")
+
+    # Calcular el NPV y agregar la nueva columna al DataFrame
+    dataframe[new_column_name] = dataframe.apply(
+        lambda row: round(row[parametervalue_column] / ((1 + output_csv_r / 100) ** (float(row[year_column]) - output_csv_year)), rod),
+        axis=1
+    )
+
+
+def calculate_npv_filtered(dataframe, new_column_name, parametervalue_column, rod, year_column="YEAR", filter_dict=None, output_csv_r=0, output_csv_year=0):
+    # Inicializar la nueva columna con valores nulos
+    dataframe[new_column_name] = np.nan
+
+    # Verificar que las columnas necesarias existen en el DataFrame
+    if parametervalue_column not in dataframe.columns or year_column not in dataframe.columns:
+        raise ValueError("Las columnas especificadas no existen en el DataFrame")
+    
+    # Verificar que la columna de valores tiene datos numéricos
+    if not np.issubdtype(dataframe[parametervalue_column].dtype, np.number):
+        raise ValueError(f"La columna {parametervalue_column} no contiene valores numéricos")
+    
+    # Verificar que filter_dict tiene solo una clave y obtener su valor
+    if filter_dict and len(filter_dict) == 1:
+        filter_column = list(filter_dict.keys())[0]
+        filter_values = filter_dict[filter_column]
+        
+        # Verificar que la columna de filtro existe en el DataFrame
+        if filter_column not in dataframe.columns:
+            raise ValueError("La columna de filtro especificada no existe en el DataFrame")
+        
+        # Iterar sobre las filas del DataFrame
+        for index, row in dataframe.iterrows():
+            # Verificar si el valor de la columna de filtro está en los valores de filtro
+            if row[filter_column] in filter_values:
+                # Verificar si el valor de parametervalue_column es numérico
+                if pd.notna(row[parametervalue_column]):
+                    npv = row[parametervalue_column] / ((1 + output_csv_r / 100) ** (float(row[year_column]) - output_csv_year))
+                    dataframe.at[index, new_column_name] = round(npv, rod)
+
+
+
+if __name__ == '__main__':    
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
-    with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
-        # Load content file
-        params = yaml.safe_load(file)
-        
-    # # Read yaml file with parameterization
-    # file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
-    # with open( file_config_address + '\\' + '/MOMF_B1_exp_manager.yaml', 'r') as file:
-    #     # Load content file
-    #     params_tiers = yaml.safe_load(file)
+
+    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
         
     sets_corrects = deepcopy(params['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
@@ -144,14 +220,50 @@ if __name__ == '__main__':
     
                         df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                     
+                    
+
+                    
+                    
+                    # Add NPV columns
+                    parameters_reference = params['parameters_reference']
+                    parameters_news = params['parameters_news']
+                    
+                    for k in range(len(parameters_reference)):
+                        if parameters_reference[k] == 'AnnualTechnologyEmissionPenaltyByEmission':
+                            parameter_filter = {'EMISSION':params['this_combina']}
+                            calculate_npv_filtered(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', parameter_filter, output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
+                        else:
+                            calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
+                                        
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
                     #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
                     #print(case)
                     df_all_3.to_csv(f'{file_df_dir}/{case}_Output.csv')
     
                     # Delete Outputs folder with otoole csvs files
-                    outputs_otoole_csvs = file_df_dir + out_quick
-                    if os.path.exists(outputs_otoole_csvs):
-                        shutil.rmtree(outputs_otoole_csvs)
+                    if params['del_files']:
+                        outputs_otoole_csvs = file_df_dir + out_quick
+                        if os.path.exists(outputs_otoole_csvs):
+                            shutil.rmtree(outputs_otoole_csvs)
                 else:
                     continue
+                
+                
+                
+                
+                
+'''
+output_csv_r = params['output_csv_r']*100
+output_csv_year = params['output_csv_year']
+
+npv = parametervalue/((1 + output_csv_r/100)**(float(this_year) - output_csv_year))
+'''
