@@ -47,11 +47,13 @@ if __name__ == '__main__':
         count = 0
         for scen in dict_scen_folder_unique:
             for case in dict_scen_folder_unique[f'{scen}']:
+                scen = 'BAU'
+                case = 'BAU_1'
                 # Select folder path
                 if params['tier']=='1':
-                    tier_dir = params['tier1_dir'] + '/' + case + params['out_dir']
+                    tier_dir = params['tier1_dir'] + '/' + case 
                 elif params['tier']=='3a':
-                    tier_dir = params['tier3a_dir'] + '/' + scen + '/' + case + params['out_dir']
+                    tier_dir = params['tier3a_dir'] + '/' + scen + '/' + case 
     
                 # 1st try
                 csv_file_list = os.listdir(tier_dir)

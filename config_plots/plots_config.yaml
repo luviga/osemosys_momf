@@ -11,11 +11,11 @@ tier: '3a' # two options: '1' or '3a'
 
 # Second: Select folders
 tier1_dir: '../t1_confection/Executables' # Don't change
-tier3a_dir: '../tests/Energy/t3a_experiments/Experiment_1/Futures' #'../t3a_experiments/Experiment_1/Futures'
-excel_data_file_dir:  '../tests/Energy/t3a_experiments/Experiment_1/Futures/'
+tier3a_dir: '../t3a_experiments/Experiment_1/Futures' #'../t3a_experiments/Experiment_1/Futures'
+excel_data_file_dir:  '../t3a_experiments/Experiment_1/Futures/'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
 out_dir: '/Outputs' # Don't change
-dir_main_script_yaml: '../tests/Energy/config_main_files'
+dir_main_script_yaml: '../config_main_files'
 
 # Third: Fill with scenarios
 scens: ['BAU', 'LTS']
