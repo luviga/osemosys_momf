@@ -65,16 +65,17 @@ def load_and_process_yaml(path):
 
     return updated_params
 
-def calculate_npv(dataframe, new_column_name, parametervalue_column, rod, year_column="YEAR", output_csv_r=0, output_csv_year=0):
-    # Verificar que las columnas necesarias existen en el DataFrame
-    if parametervalue_column not in dataframe.columns or year_column not in dataframe.columns:
-        raise ValueError("Las columnas especificadas no existen en el DataFrame")
-    
-    # Verificar que la columna de valores tiene datos numéricos
-    if not np.issubdtype(dataframe[parametervalue_column].dtype, np.number):
-        raise ValueError(f"La columna {parametervalue_column} no contiene valores numéricos")
 
-    # Calcular el NPV y agregar la nueva columna al DataFrame
+def calculate_npv(dataframe, new_column_name, parametervalue_column, rod, year_column="YEAR", output_csv_r=0, output_csv_year=0):
+    # Verify that the necessary columns exist in the DataFrame
+    if parametervalue_column not in dataframe.columns or year_column not in dataframe.columns:
+        raise ValueError("The specified columns do not exist in the DataFrame")
+    
+    # Verify that the value column contains numeric data
+    if not np.issubdtype(dataframe[parametervalue_column].dtype, np.number):
+        raise ValueError(f"The column {parametervalue_column} does not contain numeric values")
+
+    # Calculate the NPV and add the new column to the DataFrame
     dataframe[new_column_name] = dataframe.apply(
         lambda row: round(row[parametervalue_column] / ((1 + output_csv_r / 100) ** (float(row[year_column]) - output_csv_year)), rod),
         axis=1
@@ -82,35 +83,34 @@ def calculate_npv(dataframe, new_column_name, parametervalue_column, rod, year_c
 
 
 def calculate_npv_filtered(dataframe, new_column_name, parametervalue_column, rod, year_column="YEAR", filter_dict=None, output_csv_r=0, output_csv_year=0):
-    # Inicializar la nueva columna con valores nulos
+    # Initialize the new column with null values
     dataframe[new_column_name] = np.nan
 
-    # Verificar que las columnas necesarias existen en el DataFrame
+    # Verify that the necessary columns exist in the DataFrame
     if parametervalue_column not in dataframe.columns or year_column not in dataframe.columns:
-        raise ValueError("Las columnas especificadas no existen en el DataFrame")
+        raise ValueError("The specified columns do not exist in the DataFrame")
     
-    # Verificar que la columna de valores tiene datos numéricos
+    # Verify that the value column contains numeric data
     if not np.issubdtype(dataframe[parametervalue_column].dtype, np.number):
-        raise ValueError(f"La columna {parametervalue_column} no contiene valores numéricos")
+        raise ValueError(f"The column {parametervalue_column} does not contain numeric values")
     
-    # Verificar que filter_dict tiene solo una clave y obtener su valor
+    # Verify that filter_dict has only one key and get its value
     if filter_dict and len(filter_dict) == 1:
         filter_column = list(filter_dict.keys())[0]
         filter_values = filter_dict[filter_column]
         
-        # Verificar que la columna de filtro existe en el DataFrame
+        # Verify that the filter column exists in the DataFrame
         if filter_column not in dataframe.columns:
-            raise ValueError("La columna de filtro especificada no existe en el DataFrame")
+            raise ValueError("The specified filter column does not exist in the DataFrame")
         
-        # Iterar sobre las filas del DataFrame
+        # Iterate over the rows of the DataFrame
         for index, row in dataframe.iterrows():
-            # Verificar si el valor de la columna de filtro está en los valores de filtro
+            # Verify if the value in the filter column is in the filter values
             if row[filter_column] in filter_values:
-                # Verificar si el valor de parametervalue_column es numérico
+                # Verify if the value in parametervalue_column is numeric
                 if pd.notna(row[parametervalue_column]):
                     npv = row[parametervalue_column] / ((1 + output_csv_r / 100) ** (float(row[year_column]) - output_csv_year))
                     dataframe.at[index, new_column_name] = round(npv, rod)
-
 
 
 if __name__ == '__main__':    
@@ -220,10 +220,7 @@ if __name__ == '__main__':
     
                         df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
                     
-                    
 
-                    
-                    
                     # Add NPV columns
                     parameters_reference = params['parameters_reference']
                     parameters_news = params['parameters_news']
@@ -235,14 +232,6 @@ if __name__ == '__main__':
                         else:
                             calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
                                         
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                     
                     # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
                     #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')

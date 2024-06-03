@@ -1043,5 +1043,34 @@ new_parameters_add: {
     type: result,
     dtype: float,
     default: 0
-  }
+  },
+  AnnualTechnologyEmissionsPenalty: {
+    short_name:   AnnualTechnologyEmissionsPenalt,
+    indices:
+    [REGION, TECHNOLOGY, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  },
+  DiscountedCapitalInvestment: {
+    indices:
+    [REGION, STORAGE, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  },
+  DiscountedOperatingCost: {
+    indices:
+    [REGION, TECHNOLOGY, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  },
+  TotalDiscountedCostByTechnology: {
+    indices:
+    [REGION, TECHNOLOGY, YEAR],
+    type: result,
+    dtype: float,
+    default: 0
+  },
 }
