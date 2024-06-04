@@ -642,19 +642,19 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     
     time.sleep(1)
         
-    # Delete glp, lp, txt and sol files
-    if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
-        delete_files(output_file, solver)
+    # # Delete glp, lp, txt and sol files
+    # if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
+    #     delete_files(output_file, solver)
     
 #
-def delete_files(file, solver):
-    # Delete files
-    shutil.os.remove(file + '.sol')
+# def delete_files(file, solver):
+#     # Delete files
+#     shutil.os.remove(file + '.sol')
     
-    if solver == 'glpk':
-        shutil.os.remove(file + '.glp')        
-    else:
-        shutil.os.remove(file + '.lp')
+#     if solver == 'glpk':
+#         shutil.os.remove(file + '.glp')        
+#     else:
+#         shutil.os.remove(file + '.lp')
 #
 def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_useful_elements, params ):
     #
