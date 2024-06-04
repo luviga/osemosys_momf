@@ -73,6 +73,46 @@ if __name__ == '__main__':
                 # Assuming df is your pandas DataFrame with the relevant data
                 parameters = df_all['Parameter'].unique()  # Replace with your actual parameters column
                 
+                '''
+                parameters = df_all_3.columns.values
+                if params['tier']=='3a':
+                    columns_names_delete = [
+                        'YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION',
+                        'Externalities2024', 'Capex2024', 'Opex2024',
+                        'FixedOpex2024', 'VarOpex2024'
+                        ]
+                elif params['tier']=='1':
+                    columns_names_delete = [
+                                            "Strategy",
+                                            "Future.ID",
+                                            "Fuel",
+                                            "Technology",
+                                            "Emission",
+                                            "Year",
+                                            "Demand",
+                                            "DistanceDriven",
+                                            "Fleet",
+                                            "NewFleet",
+                                            "ProducedMobility",
+                                            "FilterFuelType",
+                                            "FilterVehicleType",
+                                            "Capex2024",
+                                            "FixedOpex2024",
+                                            "VarOpex2024",
+                                            "Opex2024",
+                                            "Externalities2024",
+                                            "Capex_GDP",
+                                            "FixedOpex_GDP",
+                                            "VarOpex_GDP",
+                                            "Opex_GDP",
+                                            "Externalities_GDP"
+                                        ]
+
+                for col in columns_names_delete:
+                    np.delete(ppp, np.where(ppp == col))
+                
+                '''
+                
                 
                 # Years availables
                 years = df_all['YEAR'].unique()

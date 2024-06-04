@@ -50,7 +50,7 @@ if run_for_first_time == True:
     local_dataset_creator_f.execute_local_dataset_creator_f_inputs()
 
 ############################################################################################################
-df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0)
+df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -109,7 +109,7 @@ li_output = [df_0_output, df_f_output]
 df_output = pd.concat(li_output, axis=0, ignore_index=True)
 df_output.sort_values(by=params['by_1'], inplace=True)
 ############################################################################################################
-df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0)
+df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0, low_memory=False)
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
 #----------------------------------------------------------------------------------------------------------#

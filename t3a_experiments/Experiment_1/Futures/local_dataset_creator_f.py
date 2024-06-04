@@ -33,7 +33,7 @@ def execute_local_dataset_creator_f_outputs ():
                 for row in csv_reader:
                     line_count += 1
             if line_count > 1:
-                df = pd.read_csv(filename, index_col=None, header=0)
+                df = pd.read_csv(filename, index_col=None, header=0, low_memory=False)
                 #print(case_list[n].split('_'))
                 df=df.assign(Strategy=case_list[n].split('_')[0])
                 df=df.assign(FutureNum=case_list[n].split('_')[1])
@@ -71,7 +71,7 @@ def execute_local_dataset_creator_f_inputs ():
                 for row in csv_reader:
                     line_count += 1
             if line_count > 1:
-                df = pd.read_csv(filename, index_col=None, header=0)
+                df = pd.read_csv(filename, index_col=None, header=0, low_memory=False)
                 li.append(df)
             else:
                 pass

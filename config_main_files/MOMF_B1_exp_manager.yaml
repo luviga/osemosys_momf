@@ -160,7 +160,7 @@ glpk_option: 'old' # Could you use 'old' for the first method and 'new' for meth
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 5 # em
+Number_of_Runs: 100 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
@@ -890,7 +890,7 @@ i_nt_ele: 'i_NT_elec' # em
 i_nt_fossil: 'i_NT_fossil' # em
 #########################################
 columns: {Run.ID: 'Strategy'} # em
-valid_column_names: [ # em
+valid_column_names: [ # em, Broad
   "Strategy",
   "Future.ID",
   "Fuel",
