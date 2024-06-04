@@ -616,7 +616,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         os.system( str_start and str_solve )
         if solver == 'cbc':
             # CBC
-            str_solve = 'cbc ' + output_file + '.lp solve -solu ' + output_file + '.sol'
+            str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
