@@ -223,15 +223,15 @@ if __name__ == '__main__':
                                 # Load the content of the file
                                 if params['solver'] == 'cbc':
                                     sol_status_line = file.readline().strip()
-                                elif params['solver'] == 'glpk':
+                                elif params['solver'] == 'glpk' and params['glpk_option'] == 'old':
                                     for current_line_number in range(5):
                                         line = file.readline().strip()
                                         if current_line_number == 5 - 1:
                                             # Remove the last character from the specified line
                                             sol_status_line = line[14:]
                         
-                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and sol_status_line == 'OPTIMAL'):# or (params['solver'] == 'cplex' and ):
-                            file_status.write(f'{case}: This case has an optimal solution.')
+                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL'):# or (params['solver'] == 'cplex' and ):
+                            file_status.write(f'\n{case}: Optimal solution.')
                         
                             df_list = []
                             
@@ -325,6 +325,6 @@ if __name__ == '__main__':
                                 # Delete glp, lp, txt and sol files
                                 if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
                                     delete_files(sol_file, params['solver'])
-                            file_status.write(f'{case}: This case has an infeasible solution.')
+                            file_status.write(f'\n{case}: Infeasible solution.')
                     else:
                         continue
