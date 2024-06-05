@@ -649,7 +649,8 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
 #
 # def delete_files(file, solver):
 #     # Delete files
-#     shutil.os.remove(file + '.sol')
+#     if file:
+#         shutil.os.remove(file)
     
 #     if solver == 'glpk':
 #         shutil.os.remove(file + '.glp')        

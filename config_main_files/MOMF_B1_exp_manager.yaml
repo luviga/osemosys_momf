@@ -154,7 +154,7 @@ start: 'start cmd.exe /k cd ' # B1, em, FRM
 solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # For CBC use
 iteration_time: 60
@@ -169,7 +169,7 @@ Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 2 # B1, em
+max_x_per_iter: 1 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True
@@ -186,7 +186,7 @@ inputs_txt_csv: 'Both' # 'Both', 'csv' # B1, em
 # Country
 coun_initial: 'RD' # B1
 
-output_csv_r: 0.05 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
+output_csv_r: 0.0504 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
 
 adjust_fre_rai: True # B1
 
@@ -290,7 +290,7 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   DaySplit: 0.00137,
   DaysInDayType: 7,
   DepreciationMethod: 1,
-  DiscountRate: 0.05, ###
+  DiscountRate: 0.0504, ###
   EmissionActivityRatio: 0,
   EmissionsPenalty: 0,
   FixedCost: 0,

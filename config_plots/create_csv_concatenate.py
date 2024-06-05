@@ -114,7 +114,8 @@ def calculate_npv_filtered(dataframe, new_column_name, parametervalue_column, ro
 
 def delete_files(file, solver):
     # Delete files
-    shutil.os.remove(file)
+    if file:
+        shutil.os.remove(file)
     
     if solver == 'glpk':
         shutil.os.remove(file.replace('sol', 'glp'))        
@@ -218,6 +219,7 @@ if __name__ == '__main__':
                                 break
                         
                         # If a .sol file is found, read its content
+                        sol_status_line = str()
                         if sol_file:
                             with open(sol_file, 'r') as file:
                                 # Load the content of the file
@@ -229,8 +231,14 @@ if __name__ == '__main__':
                                         if current_line_number == 5 - 1:
                                             # Remove the last character from the specified line
                                             sol_status_line = line[14:]
+                                elif params['solver'] == 'cplex':
+                                    for current_line_number in range(9):
+                                        line = file.readline().strip()
+                                        if current_line_number == 9 - 1:
+                                            # Remove the last character from the specified line
+                                            sol_status_line = line[22:29]
                         
-                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL'):# or (params['solver'] == 'cplex' and ):
+                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL') or (params['solver'] == 'cplex' and sol_status_line == 'optimal'):
                             file_status.write(f'\n{case}: Optimal solution.')
                         
                             df_list = []
@@ -261,7 +269,7 @@ if __name__ == '__main__':
                             df_all = df_all[ sets_csv_temp ]
                             file_df_dir = params["excel_data_file_dir"].replace('../','')
                             
-                            # df_all.to_csv(f'{file_df_dir}\\Data_plots_{case[-1]}.csv')
+                            # df_all.to_csv(f'Data_plots_{case}.csv')
                             
                             # 3rd try
                             # Assuming parameter_list and parameter_dict are defined
@@ -301,8 +309,8 @@ if __name__ == '__main__':
                                                 
                             
                             # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                            #df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
-                            #print(case)
+                            # df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+
                             df_all_3.to_csv(f'{sol_folder}/{case}_Output.csv')
             
                             # Delete Outputs folder with otoole csvs files
