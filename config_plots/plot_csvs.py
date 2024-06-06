@@ -153,9 +153,11 @@ if __name__ == '__main__':
             if params['tier']=='1':
                 all_files_internal = os.listdir(params['tier1_dir'])
                 dict_scen_folder_unique[f'{scen}_0'] = [i for i in all_files_internal if scen in i]
+                info_filename = params['tier1_dir'] + '/' + params['info_filename']
             elif params['tier']=='3a':
                 all_files_internal = os.listdir(params['tier3a_dir'] + '/' + scen)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
+                info_filename = params['tier3a_dir'] + '/' + params['info_filename']
         count = 0
         for scen in dict_scen_folder_unique:
             
@@ -234,10 +236,21 @@ if __name__ == '__main__':
                 years.sort()
                 
                 # Print info about years, only in the base case
+                if case == 'BAU_0':
+                    option = 'w'
+                else:
+                    option = 'a'
+
+                    
                 if params['info']: # and int(case[-1])==0:
-                    print(f'Data information of this scenario: {case[0:3]}')
-                    print(f'These are the years availables:\n{years}')
-                    print(f'\n\n\n{scen}\n')
+                    with open(info_filename, option) as file_info:
+                        file_info.write('\n###################################################################################')
+                        file_info.write(f'\n\nData information of this scenario: {case[0:3]}')
+                        file_info.write(f'\n\nThese are the years availables:\n{years}')
+                        file_info.write('\n-----------------------------------------------------------------------------------\n')
+
+                        option = 'a'
+                        file_info.close()
                 
                 # Plot attempts:
                 techs_desired = {}
@@ -248,8 +261,10 @@ if __name__ == '__main__':
                         
                         df_tech_filtered = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
                         technologies =  df_tech_filtered['TECHNOLOGY'].unique()
-                        print(f'\nFor {parameter}, these are the technologies availables:\n{technologies}')
-                        
+                        with open(info_filename, option) as file_info:
+                            file_info.write(f'\nFor {parameter}, these are the technologies availables:\n{technologies}')
+                            file_info.write('\n-----------------------------------------------------------------------------------\n')
+                            file_info.close()
 
                         continue
                     if not params['info']:
@@ -264,11 +279,6 @@ if __name__ == '__main__':
                                 print(f'For this scenario {scen}, this {parameter} do not has any technology select.')
                         except Exception:
                             continue
-                        # if scen == 'BAU':
-                        #     sys.exit()
-                        
-                            
-                            
                             
                             
                     

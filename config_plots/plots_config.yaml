@@ -7,7 +7,7 @@
 model: 'MOMF' # two options: 'MOMF' or 'BULAC'
 
 # If model is MOMF, select what tier use
-tier: '1' # two options: '1' or '3a'
+tier: '3a' # two options: '1' or '3a'
 
 # Second: Select folders
 tier1_dir: '../t1_confection/Executables' # Don't change
@@ -16,6 +16,7 @@ excel_data_file_dir:  '../t3a_experiments/Experiment_1/Futures/'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
 out_dir: '/Outputs' # Don't change
 dir_main_script_yaml: '../config_main_files'
+info_filename: 'Informacion_preliminar_graficacion.txt'
 
 # Third: Fill with scenarios
 scens: ['BAU', 'LTS']
@@ -30,10 +31,10 @@ separation_years: 5 # This is the gap  between each tick in the plot
 
 # Sixth: Fill list of each parameter with technologies you want to plot
 # Year to apply discount rate
-year_apply_discount_rate: 2023
+year_apply_discount_rate: 2024
 
 # BAU
-techs_BAU_AccumulatedNewCapacity: []
+techs_BAU_AccumulatedNewCapacity: ['DIST_FIR', 'DIST_BIM']
 techs_BAU_AnnualEmissions: []
 techs_BAU_AnnualFixedOperatingCost: []
 techs_BAU_AnnualTechnologyEmission: []
@@ -55,7 +56,7 @@ techs_BAU_TotalDiscountedCostByTechnology: []
 techs_BAU_TotalTechnologyAnnualActivity: []
 techs_BAU_UseByTechnology: []
 techs_BAU_Capex${year_apply_discount_rate}: []
-techs_BAU_Externalities${year_apply_discount_rate}: ['T4DSL_PRI', 'T4GSL_PRI', 'T4DSL_PUB']
+techs_BAU_Externalities${year_apply_discount_rate}: []
 techs_BAU_FixedOpex${year_apply_discount_rate}: []
 techs_BAU_Opex${year_apply_discount_rate}: []
 techs_BAU_VarOpex${year_apply_discount_rate}: []
