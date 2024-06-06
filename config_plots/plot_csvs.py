@@ -122,25 +122,16 @@ if __name__ == '__main__':
     
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_plots')
-
     params = load_and_process_yaml(file_config_address + '\\' + 'plots_config.yaml')
-    
-    # # Read yaml file with parameterization
-    # with open('plots_config.yaml', 'r') as file:
-    #     # Load content file
-    #     params = yaml.safe_load(file)
-        
-    
+
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
-
     params_tiers = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
         
     sets_corrects = deepcopy(params_tiers['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
     sets_corrects.append('VALUE')
     
-
     sets_csv = ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION']
     sets_csv_temp = deepcopy(sets_csv)
     sets_csv_temp.insert(0,'Parameter')
@@ -163,8 +154,6 @@ if __name__ == '__main__':
             
             for case in dict_scen_folder_unique[f'{scen}']:
                 scen = scen.replace('_0', '')
-                # scen = 'BAU'
-                # case = 'BAU_1'
                 # Select folder path
                 if params['tier']=='1':
                     tier_dir = params['tier1_dir'] + '/' + case
@@ -183,10 +172,6 @@ if __name__ == '__main__':
                 
                 if params['vis_dir'] in csv_file_list:
                     csv_file_list.remove(f'{params["vis_dir"]}')
-                
-                # # Read dataframe with csv concatenates in the script create_csv_concatenate.py
-                # df_all = pd.read_csv(f'{params["excel_data_file_dir"]}{scen}/{case}/Data_plots_{case[-1]}.csv')
-                # df_all.drop('Unnamed: 0', axis=1, inplace=True, errors='ignore')
 
                 
                 if params['tier']=='3a':
@@ -256,7 +241,7 @@ if __name__ == '__main__':
                 techs_desired = {}
                 for parameter in parameters:
                     # Print info about technologies, only in the base case
-                    if params['info']: # and int(case[-1])==0:
+                    if params['info']:
                         
                         
                         df_tech_filtered = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
@@ -286,8 +271,7 @@ if __name__ == '__main__':
                         
                         
                         # Info about ticks years 
-                        start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label
-                        
+                        start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label           
                         
                         # Filter the DataFrame for the current parameter
                         parameter_df = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
