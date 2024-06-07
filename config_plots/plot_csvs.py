@@ -123,12 +123,8 @@ if __name__ == '__main__':
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_plots')
     params = load_and_process_yaml(file_config_address + '\\' + 'plots_config.yaml')
-
-    # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(''))
-    params_tiers = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
         
-    sets_corrects = deepcopy(params_tiers['sets_otoole'])
+    sets_corrects = deepcopy(params['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
     sets_corrects.append('VALUE')
     
@@ -136,7 +132,7 @@ if __name__ == '__main__':
     sets_csv_temp = deepcopy(sets_csv)
     sets_csv_temp.insert(0,'Parameter')
     sets_csv_temp.append('VALUE')
-    set_no_needed = [item for item in params_tiers['sets_otoole'] if item not in sets_csv]
+    set_no_needed = [item for item in params['sets_otoole'] if item not in sets_csv]
     
     if params['model']=='MOMF':
         dict_scen_folder_unique = {}

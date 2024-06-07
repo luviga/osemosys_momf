@@ -118,3 +118,17 @@ oner: [
   'YEAR',
   'TIMESLICE'
   ]
+
+sets_otoole: [ # B1, em, FRM
+  YEAR,
+  TECHNOLOGY,
+  TIMESLICE,
+  FUEL,
+  EMISSION,
+  MODE_OF_OPERATION,
+  REGION,
+  SEASON,
+  DAYTYPE,
+  DAILYTIMEBRACKET,
+  STORAGE
+  ]
