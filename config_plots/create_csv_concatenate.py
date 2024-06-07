@@ -225,7 +225,7 @@ if __name__ == '__main__':
                                 # Load the content of the file
                                 if params['solver'] == 'cbc':
                                     sol_status_line = file.readline().strip()
-                                elif params['solver'] == 'glpk' and params['glpk_option'] == 'old':
+                                elif params['solver'] == 'glpk' and not params['glpk_option'] == 'old':
                                     for current_line_number in range(5):
                                         line = file.readline().strip()
                                         if current_line_number == 5 - 1:
@@ -238,7 +238,7 @@ if __name__ == '__main__':
                                             # Remove the last character from the specified line
                                             sol_status_line = line[22:29]
                         
-                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL') or (params['solver'] == 'cplex' and sol_status_line == 'optimal'):
+                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL') or (params['solver'] == 'cplex' and sol_status_line == 'optimal'):
                             file_status.write(f'\n{case}: Optimal solution.')
                         
                             df_list = []
@@ -320,7 +320,7 @@ if __name__ == '__main__':
                                     shutil.rmtree(outputs_otoole_csvs)
                             
                                 # Delete glp, lp, txt and sol files
-                                if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+                                if params['del_files'] and not (params['solver'] == 'glpk' and not params['glpk_option'] == 'old'):
                                     delete_files(sol_file, params['solver'])
     
                         else:

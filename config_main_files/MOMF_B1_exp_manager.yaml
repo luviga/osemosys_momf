@@ -163,20 +163,20 @@ iteration_time: 60
 del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 1 # em
+Number_of_Runs: 100 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 1 # B1, em
+max_x_per_iter: 10 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True
 
 # Control inputs
 is_this_last_update: True # B1, em
-generator_or_executor: 'Both' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
+generator_or_executor: 'Generator' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
 gen_or_exe_1: 'Generator' # B1, em
 gen_or_exe_2: 'Both' # B1, em
 gen_or_exe_3: 'Executor' # B1, em
