@@ -81,15 +81,8 @@ CapacityToActivityUnit,BAU,RD,HYD_DIST,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_FOR,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_AGR,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_GAN,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_MTS,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_SAB,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_URB,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_OLU,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_LATHUM,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_CLF,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_LATSHUM,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_DCON,,,,,,,,,,1.0
-CapacityToActivityUnit,BAU,RD,LU_SCON,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_WET,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,LU_DRY,,,,,,,,,,1.0
 CapacityToActivityUnit,BAU,RD,AG_RIC,,,,,,,,,,1.0

@@ -979,6 +979,14 @@ all_covers_AFOLU: [ #em ##@
     "LU_FOR", "LU_AGR", "LU_GAN"
 ]
 
+under_covers_AGR: [ #em ##@
+    "AG_BAN", "AG_CAF", "AG_COC", "AG_FRT", "AG_LEG", "AG_RIC", "AG_ROT", "AG_SGC", "AG_TRVEG", "AGR_CER", "AGR_OTP"
+]
+
+under_covers_GAN: [ #em ##@
+    "GA_CARAVI", "GA_CARBOV", "GA_CARPOR", "GA_LEC", "GA_OTRCAR", "GA_OTRCARPRO"
+]
+
 group_tech_set: 'Techs_Auto' # em ##@
 
 exception_list_TRAN: ['TRBPUHYD', 'TRYTKHYD'] # em ##@
