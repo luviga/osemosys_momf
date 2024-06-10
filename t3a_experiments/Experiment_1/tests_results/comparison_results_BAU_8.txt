@@ -1,0 +1,128 @@
+######################################################## TEST 2 ########################################################
+Problem if sum of daughters technologies are greater than mother technologies for the same parameter,
+only for transport sector.
+-----------------------------------------------------------------------------------------------
+
+
+
+Results for TotalTechnologyAnnualActivityLowerLimit:
+   Results for Techs_Taxi:
+     Check   2018: greater      mother value: 0.7757,   children value: 0.7926
+-------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+######################################################## TEST 3 ########################################################
+Problem with decreasing values of TotalAnnualMaxCapacity by available technologies, by available technologies.
+PPCCTDSL has decreases at the following points:
+  Check   from Year 2018: 0.4019 to Year 2019: 0.4
+  Check   from Year 2019: 0.4 to Year 2020: 0.133
+
+-------------------------------------------------
+PPCCFOIDSL has decreases at the following points:
+  Check   from Year 2020: 0.185 to Year 2021: 0.0
+
+-------------------------------------------------
+PPCCTNGS has decreases at the following points:
+  Check   from Year 2018: 0.8183 to Year 2019: 0.6782
+
+-------------------------------------------------
+PPICEFOI has decreases at the following points:
+  Check   from Year 2019: 1.0927 to Year 2020: 0.6126
+  Check   from Year 2021: 0.6126 to Year 2022: 0.4956
+
+-------------------------------------------------
+
+
+
+
+
+
+
+######################################################## TEST 4 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are greater than TotalTechnologyAnnualActivityUpperLimit,
+by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 5 ########################################################
+
+Problem if values of ResidualCapacity are greater than TotalAnnualMaxCapacity,
+by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 6 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalAnnualMaxCapacity(mothers) x OutputActivityRatio(mothers), only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 7 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalTechnologyAnnualActivityLowerLimit(mothers) x OutputActivityRatio(mothers), only for transport sector.
+ Check   for E6TDPASPUB in year 2018, the condition is NOT satisfied.
+ Check   for E6TDPASPRI in year 2018, the condition is NOT satisfied.
+ Check   for E6TDPASTUR in year 2018, the condition is NOT satisfied.
+
+
+
+
+
+
+
+######################################################## TEST 8 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 9 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x AvailabilityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 10 ########################################################
+
+Problem if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit, only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 11 ########################################################
+
+Problem if sum of TotalAnnualMaxCapacity(daughters) are less than TotalTechnologyAnnualActivityLowerLimit(mother),
+only for transport sector.
