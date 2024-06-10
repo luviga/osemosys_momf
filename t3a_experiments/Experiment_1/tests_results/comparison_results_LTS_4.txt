@@ -58,22 +58,6 @@ PPICEFOI has decreases at the following points:
 Problem if values of TotalTechnologyAnnualActivityLowerLimit are greater than TotalTechnologyAnnualActivityUpperLimit,
 by available technologies.
 
-Results for technology: AG_TRVEG
-  Check   negative difference in the year 2025: -8.366701342611693e-07
--------------------------------------------------
-
-Results for technology: AG_LEG
-  Check   negative difference in the year 2025: -2.0937775219304067e-06
--------------------------------------------------
-
-Results for technology: AG_ROT
-  Check   negative difference in the year 2025: -1.5640265826483146e-06
--------------------------------------------------
-
-Results for technology: AGR_CER
-  Check   negative difference in the year 2025: -1.0090494081578527e-06
--------------------------------------------------
-
 
 
 
