@@ -2940,6 +2940,7 @@ if __name__ == '__main__':
 
                             # Iterate again across the non-varied sets:
                             for nvs in non_varied_sets:
+                                print(nvs)
                                 this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(nvs)]
                                 value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
                                 new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
@@ -2962,7 +2963,49 @@ if __name__ == '__main__':
                                 this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
                                 value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
                                 new_value_list = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
-                                inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list)
+                                
+                                # Change values of 'TotalTechnologyAnnualActivityUpperLimit' to check TotalTechnologyAnnualActivityLowerLimit isn't bigger tan TotalAnnualMaxCapacity
+                                this_param_3 = 'TotalTechnologyAnnualActivityLowerLimit'
+                                this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3]['t']) if x == str(a_set)]
+                                this_param_4 = 'TotalTechnologyAnnualActivityUpperLimit'
+                                this_set_range_indices_4 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_4]['t']) if x == str(a_set)]
+                                if len(this_set_range_indices_3) != 0 and len(this_set_range_indices_4) != 0:
+                                    # 'TotalTechnologyAnnualActivityLowerLimit'
+                                    value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
+                                    # 'TotalTechnologyAnnualActivityUpperLimit'
+                                    value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
+                                    # Iterate over the lists and adjust value_list_5 if necessary
+                                    for i in range(len(value_list_4)):
+                                        lower_limit = value_list_3[i]
+                                        upper_limit = value_list_4[i]
+                                        
+                                        # Define a small increment
+                                        increment = 0.0001
+                                        
+                                        while lower_limit > upper_limit:
+                                            # print(this_set, i, "########################################################################")
+                                            # Adjust the value of TotalTechnologyAnnualActivityUpperLimit incrementally to satisfy the inequality
+                                            # upper_limit += increment
+                                            # Adjust the value of TotalTechnologyAnnualActivityLowerLimit decrementally to satisfy the inequality
+                                            lower_limit -= increment
+                                            
+                                        value_list_3[i] = lower_limit
+                                        # value_list_4[i] = upper_limit
+                                        
+                                        # For TotalTechnologyAnnualActivityLowerLimit
+                                        new_value_list_rounded_3 = [
+                                                round(elem, params['round_#']) for elem in value_list_3]
+                                        
+                                        inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                        # # For TotalTechnologyAnnualActivityUpperLimit
+                                        # new_value_list_rounded_4 = [
+                                        #         round(elem, params['round_#']) for elem in value_list_4]
+                                        
+                                        # inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
+
+                                else:
+                                
+                                    inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list)  
                                 sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
 
                             sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
@@ -3044,6 +3087,7 @@ if __name__ == '__main__':
                                             f_fuel_demand_exp_list, f_exp_adj)]
 
                                         tsri = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['f']) if x == str(f_fuel_demand_exp)]
+                                        f_fuel_demand_exp_list_new_rounded = [ round(elem, params['round_#']) for elem in f_fuel_demand_exp_list_new ]
                                         inherited_scenarios[scenario_list[s]][f]['SpecifiedAnnualDemand']['value'][ tsri[0]:tsri[-1]+1 ] = deepcopy(f_fuel_demand_exp_list_new)
                                         # print('Review this worked properly')
                                         # sys.exit()
@@ -3052,6 +3096,12 @@ if __name__ == '__main__':
 
                                     diff_f_tech_imp_ll = [b/a for a, b in zip(f_tech_nationalprod_list, f_tech_imp_list_ll)]
                                     diff_f_tech_imp_ul = [b/a for a, b in zip(f_tech_nationalprod_list_ul, f_tech_imp_list_ul)]
+                                    
+                                    f_tech_imp_list_ll_rounded = [ round(elem, params['round_#']) for elem in f_tech_imp_list_ll ]
+                                    f_tech_imp_list_ul_rounded = [ round(elem, params['round_#']) for elem in f_tech_imp_list_ul ]
+                                    
+                                    
+                                    
 
                                     tsri = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str(f_tech_imp)]
                                     inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['value'][ tsri[0]:tsri[-1]+1 ] = deepcopy(f_tech_imp_list_ll)
@@ -3505,7 +3555,7 @@ if __name__ == '__main__':
                                                 
                                                 # Adjust the value of TotalTechnologyAnnualActivityLowerLimit decrementally to satisfy the inequality
                                                 lower_limit -= increment
-                                                value_list_3[i] = lower_limit
+                                            value_list_3[i] = lower_limit
 
                                         # # For CapacityFactor
                                         # new_value_list_rounded_5 = [

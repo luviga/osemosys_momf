@@ -1,0 +1,205 @@
+######################################################## TEST 2 ########################################################
+Problem if sum of daughters technologies are greater than mother technologies for the same parameter,
+only for transport sector.
+-----------------------------------------------------------------------------------------------
+
+
+
+Results for TotalTechnologyAnnualActivityLowerLimit:
+   Results for Techs_Taxi:
+     Check   2018: greater      mother value: 0.7757,   children value: 0.7926
+-------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+######################################################## TEST 3 ########################################################
+Problem with decreasing values of TotalAnnualMaxCapacity by available technologies, by available technologies.
+PPCCTDSL has decreases at the following points:
+  Check   from Year 2018: 0.4019 to Year 2019: 0.4
+  Check   from Year 2019: 0.4 to Year 2020: 0.133
+
+-------------------------------------------------
+PPCCFOIDSL has decreases at the following points:
+  Check   from Year 2020: 0.185 to Year 2021: 0.0
+
+-------------------------------------------------
+PPCCTNGS has decreases at the following points:
+  Check   from Year 2018: 0.8183 to Year 2019: 0.6782
+
+-------------------------------------------------
+PPICEFOI has decreases at the following points:
+  Check   from Year 2019: 1.0927 to Year 2020: 0.6126
+  Check   from Year 2021: 0.6126 to Year 2022: 0.4956
+
+-------------------------------------------------
+
+
+
+
+
+
+
+######################################################## TEST 4 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are greater than TotalTechnologyAnnualActivityUpperLimit,
+by available technologies.
+
+Results for technology: AG_BAN
+  Check   negative difference in the year 2042: -8.488341469090055e-07
+  Check   negative difference in the year 2043: -9.627798921441055e-07
+  Check   negative difference in the year 2044: -1.9351863464120433e-07
+  Check   negative difference in the year 2045: -1.1912235773278712e-06
+  Check   negative difference in the year 2046: -1.3003521721101363e-06
+  Check   negative difference in the year 2047: -2.315538821569957e-06
+  Check   negative difference in the year 2048: -2.4567247578176354e-06
+  Check   negative difference in the year 2049: -1.6839763548950892e-06
+  Check   negative difference in the year 2050: -2.665808382547319e-06
+-------------------------------------------------
+
+Results for technology: AG_TRVEG
+  Check   negative difference in the year 2042: -8.257888759535814e-07
+  Check   negative difference in the year 2043: -9.367588139769234e-07
+  Check   negative difference in the year 2044: -1.8831185523426885e-07
+  Check   negative difference in the year 2047: -2.243818592585073e-06
+  Check   negative difference in the year 2048: -2.380966725636785e-06
+  Check   negative difference in the year 2049: -1.632275326454019e-06
+  Check   negative difference in the year 2050: -2.5843207900645704e-06
+-------------------------------------------------
+
+Results for technology: AG_LEG
+  Check   negative difference in the year 2044: -4.7121353636409014e-07
+  Check   negative difference in the year 2047: -5.6351608489560445e-06
+  Check   negative difference in the year 2050: -6.484084144442459e-06
+-------------------------------------------------
+
+Results for technology: AG_ROT
+  Check   negative difference in the year 2043: -1.752085929847269e-06
+  Check   negative difference in the year 2044: -3.5232540656487954e-07
+  Check   negative difference in the year 2047: -4.2110020162244854e-06
+  Check   negative difference in the year 2048: -4.469723898579969e-06
+  Check   negative difference in the year 2050: -4.8426912102120245e-06
+-------------------------------------------------
+
+Results for technology: AGR_CER
+  Check   negative difference in the year 2042: -9.947875296394126e-07
+  Check   negative difference in the year 2043: -1.1275800538626535e-06
+  Check   negative difference in the year 2044: -2.2649490422077534e-07
+  Check   negative difference in the year 2048: -2.878805222816805e-06
+  Check   negative difference in the year 2049: -1.9720249419159785e-06
+  Check   negative difference in the year 2050: -3.119810683502311e-06
+-------------------------------------------------
+
+Results for technology: GA_CARAVI
+  Check   negative difference in the year 2042: -2.193141619394323e-06
+  Check   negative difference in the year 2045: -3.0950541160951195e-06
+  Check   negative difference in the year 2046: -3.386694990475947e-06
+  Check   negative difference in the year 2049: -4.409359139784241e-06
+  Check   negative difference in the year 2050: -6.996291868593962e-06
+-------------------------------------------------
+
+Results for technology: GA_OTRCARPRO
+  Check   negative difference in the year 2042: -2.193141619394323e-06
+  Check   negative difference in the year 2045: -3.0950541160951195e-06
+  Check   negative difference in the year 2046: -3.386694990475947e-06
+  Check   negative difference in the year 2049: -4.409359139784241e-06
+  Check   negative difference in the year 2050: -6.996291868593962e-06
+-------------------------------------------------
+
+Results for technology: GA_CARPOR
+  Check   negative difference in the year 2042: -2.193141619394323e-06
+  Check   negative difference in the year 2045: -3.0950541160951195e-06
+  Check   negative difference in the year 2046: -3.386694990475947e-06
+  Check   negative difference in the year 2049: -4.409359139784241e-06
+  Check   negative difference in the year 2050: -6.996291868593962e-06
+-------------------------------------------------
+
+Results for technology: GA_OTRCAR
+  Check   negative difference in the year 2042: -2.193141619394323e-06
+  Check   negative difference in the year 2045: -3.0950541160951195e-06
+  Check   negative difference in the year 2046: -3.386694990475947e-06
+  Check   negative difference in the year 2049: -4.409359139784241e-06
+  Check   negative difference in the year 2050: -6.996291868593962e-06
+-------------------------------------------------
+
+
+
+
+
+
+
+######################################################## TEST 5 ########################################################
+
+Problem if values of ResidualCapacity are greater than TotalAnnualMaxCapacity,
+by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 6 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalAnnualMaxCapacity(mothers) x OutputActivityRatio(mothers), only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 7 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalTechnologyAnnualActivityLowerLimit(mothers) x OutputActivityRatio(mothers), only for transport sector.
+ Check   for E6TDPASPUB in year 2018, the condition is NOT satisfied.
+ Check   for E6TDPASPRI in year 2018, the condition is NOT satisfied.
+ Check   for E6TDPASTUR in year 2018, the condition is NOT satisfied.
+
+
+
+
+
+
+
+######################################################## TEST 8 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 9 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x AvailabilityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 10 ########################################################
+
+Problem if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit, only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 11 ########################################################
+
+Problem if sum of TotalAnnualMaxCapacity(daughters) are less than TotalTechnologyAnnualActivityLowerLimit(mother),
+only for transport sector.
