@@ -188,6 +188,7 @@ if __name__ == '__main__':
                 output_filename = output_filename.replace('\\\\', '\\')
                 output_filename = get_config_main_path(os.path.abspath(''), output_filename)
                 output_filename = output_filename[:-1]
+                output_filename = output_filename.replace('\Futures', '')
                 
                 
                 
