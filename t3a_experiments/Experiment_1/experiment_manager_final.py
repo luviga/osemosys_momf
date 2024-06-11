@@ -2986,15 +2986,15 @@ if __name__ == '__main__':
                                             value_list_3[i] = lower_limit
                                             value_list_4[i] = upper_limit
                                             
-                                            # For TotalTechnologyAnnualActivityLowerLimit
-                                            new_value_list_rounded_3 = [
-                                                    round(elem, params['round_#']) for elem in value_list_3]                                        
-                                            inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
-                                            
-                                            # For TotalTechnologyAnnualActivityUpperLimit
-                                            new_value_list_rounded_4 = [
-                                                    round(elem, params['round_#']) for elem in value_list_4]                                       
-                                            inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
+                                        # For TotalTechnologyAnnualActivityLowerLimit
+                                        new_value_list_rounded_3 = [
+                                                round(elem, params['round_#']) for elem in value_list_3]                                        
+                                        inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                        
+                                        # For TotalTechnologyAnnualActivityUpperLimit
+                                        new_value_list_rounded_4 = [
+                                                round(elem, params['round_#']) for elem in value_list_4]                                       
+                                        inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
 
                                     else:
                                         new_value_list_uca_rounded = [ round(elem, params['round_#']) for elem in new_value_list_uca ]
@@ -3036,15 +3036,16 @@ if __name__ == '__main__':
                                         value_list_3[i] = lower_limit
                                         value_list_4[i] = upper_limit
                                         
-                                        # For TotalTechnologyAnnualActivityLowerLimit
-                                        new_value_list_rounded_3 = [
-                                                round(elem, params['round_#']) for elem in value_list_3]                                        
-                                        inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
-                                        
-                                        # For TotalTechnologyAnnualActivityUpperLimit
-                                        new_value_list_rounded_4 = [
-                                                round(elem, params['round_#']) for elem in value_list_4]                                       
-                                        inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
+
+                                    # For TotalTechnologyAnnualActivityLowerLimit
+                                    new_value_list_rounded_3 = [
+                                            round(elem, params['round_#']) for elem in value_list_3]                                        
+                                    inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                    
+                                    # For TotalTechnologyAnnualActivityUpperLimit
+                                    new_value_list_rounded_4 = [
+                                            round(elem, params['round_#']) for elem in value_list_4]                                       
+                                    inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
 
                                 else:
                                 

@@ -1,0 +1,15 @@
+Status of solution of each future.
+Write in order of solution.
+
+
+################################# BAU #################################
+
+
+
+BAU_10: Infeasible solution.
+BAU_3: Infeasible solution.
+
+
+################################# LTS #################################
+
+
