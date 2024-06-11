@@ -131,25 +131,30 @@ encabezados=list(hoja)
 col_t=list(hoja[encabezados[0]])
 col_s=list(hoja[encabezados[1]])
 col_d=list(hoja[encabezados[2]])
+col_ss=list(hoja[encabezados[3]])
 dicSector=dict(zip(col_t,col_s))
 dicDescription=dict(zip(col_t,col_d))
+dicSpecificSector=dict(zip(col_t,col_ss))
 
 
 df_output=df_output.assign(Sector=np.NaN)
 df_output=df_output.assign(Description=np.NaN)
+df_output=df_output.assign(SpecificSector=np.NaN)
 
 df_input=df_input.assign(Sector=np.NaN)
 df_input=df_input.assign(Description=np.NaN)
+df_input=df_input.assign(SpecificSector=np.NaN)
 
 
 llaves=list(dicSector.keys())
-col_sector=np.array(list(df_output['Sector']))
 
 for i in range(len(llaves)):
     df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
     df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
     df_input.loc[df_input['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
     df_input.loc[df_input['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
 
 #############################
 #############################
