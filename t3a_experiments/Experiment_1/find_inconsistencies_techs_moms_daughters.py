@@ -11,6 +11,7 @@ import pandas as pd
 import pickle
 import os
 import re
+import yaml
 import sys
 
 
@@ -18,6 +19,60 @@ import sys
 
 
 ###############################################  Functions  ################################################################
+# Function to search the path of yaml file
+def get_config_main_path(full_path, base_folder='config_main_files'):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, base_folder) + os.sep
+    
+    return appended_path
+
+# Function to load yaml file and assing year of discount rate to some values
+def load_and_process_yaml(path):
+    """
+    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+    Args:
+    path (str): The path to the YAML file.
+    
+    Returns:
+    dict: The updated data from the YAML file where the specific placeholder is replaced.
+    """
+    with open(path, 'r') as file:
+        # Load the YAML content into 'params'
+        params = yaml.safe_load(file)
+
+    # Retrieve the reference year from the YAML file and convert it to string for replacement
+    reference_year = str(params['year_apply_discount_rate'])
+
+    # Function to recursively update strings containing the placeholder
+    def update_strings(obj):
+        if isinstance(obj, dict):
+            return {k: update_strings(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [update_strings(element) for element in obj]
+        elif isinstance(obj, str):
+            # Replace the specific placeholder with the reference year
+            return obj.replace('${year_apply_discount_rate}', reference_year)
+        else:
+            return obj
+
+    # Update all string values in the loaded YAML structure
+    updated_params = update_strings(params)
+
+    return updated_params
+
 # Function to load data and check for missing technologies
 def find_missing_technologies(scenario, file_name):
     file_path = os.path.join(base_path, scenario, file_name)
@@ -388,7 +443,7 @@ def compare_mother_daughters_variant(param_1, param_2, fleet_groups, output_file
     # Open the file to write the results
     with open(output_filename, 'a') as file:
         file.write(f"\n\n\n\n\n\n\n######################################################## TEST {num} ########################################################\n")
-        file.write("\nProblem if sum of TotalAnnualMaxCapacity(daughters) are less than TotalTechnologyAnnualActivityLowerLimit(mother),\nonly for transport sector.\n")
+        file.write(f"\nProblem if sum of {params_names[0]}(daughters) are less than {params_names[1]}(mother),\nonly for transport sector.\n")
         # Iterate over each mother technology in the group dictionary
         for tech_mother, children in fleet_groups.items():
             if tech_mother in lower_limit.index:
@@ -410,7 +465,46 @@ def compare_mother_daughters_variant(param_1, param_2, fleet_groups, output_file
                         comparison = "equal"
                     
                     if comparison == "less":
-                        comparison_results[tech_mother][year] = str(comparison_2) + '      LowerLimit value: ' + str(mother_values[year]) + ',   Sum MaxCapacity value: ' + str(children_sum[year])
+                        comparison_results[tech_mother][year] = str(comparison_2) + f'      {params_names[1]} value: ' + str(mother_values[year]) + f',   Sum {params_names[0]} value: ' + str(children_sum[year])
+
+                # Only write results if there are any
+                if comparison_results[tech_mother]:
+                    # Write the results for the mother technology to the file
+                    file.write(f"   Results for {tech_mother}:\n")            
+                    for year, result in comparison_results[tech_mother].items():
+                        file.write(f"     Check   {year}: {result}\n")
+                    file.write("-------------------------------------------------\n")
+
+def compare_mother_daughters_variant_2(param_1, param_2, fleet_groups, output_filename, params_names, num):
+    comparison_results = {}  # This dictionary will store the comparison results
+
+    # Open the file to write the results
+    with open(output_filename, 'a') as file:
+        file.write(f"\n\n\n\n\n\n\n######################################################## TEST {num} ########################################################\n")
+        file.write(f"\nProblem if sum of {params_names[0]}(daughters) are greater than {params_names[1]}(mother),\nonly for afolu sector.\n")
+        # Iterate over each mother technology in the group dictionary
+        for tech_mother, children in fleet_groups.items():
+            if tech_mother in lower_limit.index:
+                comparison_results[tech_mother] = {}
+                children_sum = pd.Series([0.0] * len(lower_limit.columns), index=lower_limit.columns)
+
+                for child in children:
+                    if child in ta_maxcap_techs.index:
+                        children_sum += ta_maxcap_techs.loc[child]
+
+                mother_values = lower_limit.loc[tech_mother]
+                for year in lower_limit.columns:
+                    if children_sum[year] > mother_values[year]:
+                        comparison = "greater"
+                        comparison_2 = - mother_values[year] + children_sum[year]
+                    elif children_sum[year] < mother_values[year]:
+                        comparison = "less"
+                        comparison_2 = - mother_values[year] + children_sum[year]
+                    else:
+                        comparison = "equal"
+                    
+                    if comparison == "greater":
+                        comparison_results[tech_mother][year] = str(comparison_2) + f'      {params_names[1]} value: ' + str(mother_values[year]) + f',   Sum {params_names[0]} value: ' + str(children_sum[year])
 
                 # Only write results if there are any
                 if comparison_results[tech_mother]:
@@ -452,6 +546,11 @@ if __name__ == '__main__':
     "Techs_Trains", "Techs_Trains_Freight"
     ]
     #------------------------------------------------------------------------------------------------------------------------------#
+    
+    
+    # Read yaml file
+    file_config_address = get_config_main_path(os.path.abspath(os.path.join('..', '..')))
+    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
   
     if specific_case:
         pickle_path = specific_case_pickle_path
@@ -549,16 +648,16 @@ if __name__ == '__main__':
                 result = read_parameters(file_path, file_names[i])  # Make sure parameter is defined
         
                 if result is not None:
-                    # ###### TEST 2 ######
+                    # ###### TEST 1 ######
                     # Check mother - daughters diferrences
                     if file_names[i] == 'ResidualCapacity' or file_names[i] == 'TotalAnnualMaxCapacity':
                         pass
                     else:
-                        comparison_results = compare_mother_daughters(file_names[i], result, fleet_groups, output_filename, i, 2)
+                        comparison_results = compare_mother_daughters(file_names[i], result, fleet_groups, output_filename, i, 1)
                     if file_names[i] == 'TotalAnnualMaxCapacity':
-                        # ###### TEST 3 ######
+                        # ###### TEST 2 ######
                         # Check for decreasing values specifically for this parameter
-                        check_any_decreasing_values(result, file_names[i], output_filename, 3)
+                        check_any_decreasing_values(result, file_names[i], output_filename, 2)
                 else:
                     print("No results available to compare.")
                 
@@ -575,16 +674,16 @@ if __name__ == '__main__':
                 elif file_names[i] == 'ResidualCapacity':
                     resicapa_techs = result
                 
-            # ###### TEST 4 ######
+            # ###### TEST 3 ######
             # Check if values of TotalTechnologyAnnualActivityLowerLimit 
             # is greater than TotalTechnologyAnnualActivityUpperLimit
-            compare_techs(upper_techs, lower_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalTechnologyAnnualActivityUpperLimit'], 4)
+            compare_techs(upper_techs, lower_techs, output_filename, ['TotalTechnologyAnnualActivityLowerLimit', 'TotalTechnologyAnnualActivityUpperLimit'], 3)
             
             
-            # ###### TEST 5 ######
+            # ###### TEST 4 ######
             # Check if values of ResidualCapacity 
             # is greater than TotalAnnualMaxCapacity
-            compare_techs(maxcapa_techs, resicapa_techs, output_filename, ['ResidualCapacity', 'TotalAnnualMaxCapacity'], 5)
+            compare_techs(maxcapa_techs, resicapa_techs, output_filename, ['ResidualCapacity', 'TotalAnnualMaxCapacity'], 4)
             
             ###########################################################################################################################
             
@@ -605,29 +704,45 @@ if __name__ == '__main__':
             spec_an_dem_techs = read_parameters(file_path, 'SpecifiedAnnualDemand')  # Make sure parameter is defined
             oar_techs = read_parameters_variant(file_path, 'OutputActivityRatio')  # Make sure parameter is defined
             lower_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityLowerLimit')  # Make sure parameter is defined
+            upper_limit = read_parameters(file_path, 'TotalTechnologyAnnualActivityUpperLimit')  # Make sure parameter is defined
             capfac_techs = read_parameters_variant(file_path, 'CapacityFactor')  # Make sure parameter is defined
             avai_fac_techs = read_parameters(file_path, 'AvailabilityFactor')  # Make sure parameter is defined
             
-            # ###### TEST 6 ######
+            # ###### TEST 5 ######
             # Check if SpecifiedAnnualDemand is less than TotalAnnualMaxCapacity x OutputActivityRatio
-            check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'], 6)
+            check_demand_vs_capacity(df_mode_broad, ta_maxcap_techs, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalAnnualMaxCapacity', 'OutputActivityRatio'], 5)
+            
+            # ###### TEST 6 ######
+            # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
+            check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'], 6)
             
             # ###### TEST 7 ######
-            # Check if SpecifiedAnnualDemand is less than TotalTechnologyAnnualActivityLowerLimit x OutputActivityRatio
-            check_demand_vs_capacity(df_mode_broad, lower_limit, spec_an_dem_techs, oar_techs, output_filename, ['SpecifiedAnnualDemand', 'TotalTechnologyAnnualActivityLowerLimit', 'OutputActivityRatio'], 7)
+            # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
+            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit'], 7)
             
             # ###### TEST 8 ######
             # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
-            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit'], 8)
-            
+            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit', 'AvailabilityFactor'], 8, avai_fac_techs)
+
             # ###### TEST 9 ######
-            # Check if TotalTechnologyAnnualActivityLowerLimit is less than TotalAnnualMaxCapacity x CapacityFactor x 31.56
-            check_demand_vs_capacity_variant(ta_maxcap_techs, capfac_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity', 'CapacityFactor', 'TotalTechnologyAnnualActivityLowerLimit', 'AvailabilityFactor'], 9, avai_fac_techs)
+            # Check if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit
+            check_maxcapacity_vs_lowerlimit(ta_maxcap_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'], 9)
 
             # ###### TEST 10 ######
-            # Check if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit
-            check_maxcapacity_vs_lowerlimit(ta_maxcap_techs, lower_limit, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'], 10)
+            # Check if TotalAnnualMaxCapacity(daughters) is less than TotalTechnologyAnnualActivityLowerLimit(mother)
+            compare_mother_daughters_variant(lower_limit, ta_maxcap_techs, fleet_groups, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'], 10)
+            
 
             # ###### TEST 11 ######
-            # Check if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit
-            compare_mother_daughters_variant(lower_limit, ta_maxcap_techs, fleet_groups, output_filename, ['TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit'], 11)              
+            # Create dict with structure mothers/daughters of the AFOLU sector
+            afolu_groups = {}
+            for mom in params['all_covers_AFOLU']:
+                mom_sector = mom[3:]
+                afolu_groups[mom] = params[f'under_covers_{mom[3:]}']
+            
+            # Check if TotalTechnologyAnnualActivityLowerLimit(daughters) is less than TotalTechnologyAnnualActivityUpperLimit(mother)
+            compare_mother_daughters_variant_2(upper_limit, lower_limit, afolu_groups, output_filename, ['TotalTechnologyAnnualActivityLowerLimit','TotalTechnologyAnnualActivityUpperLimit'], 11) 
+
+
+
+print('Tests are success.')             

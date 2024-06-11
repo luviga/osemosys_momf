@@ -978,7 +978,10 @@ adjust_sets_waste: [ #em ##@
 all_covers_AFOLU: [ #em ##@
     "LU_FOR", "LU_AGR", "LU_GAN"
 ]
-# 'LU_LATHUM', 'LU_DCON', 'LU_WET', 'LU_DRY', 'LU_AGR', 'LU_GAN'
+
+under_covers_FOR: [ #em ##@
+    'LU_LATHUM', 'LU_DCON', 'LU_WET', 'LU_DRY'
+]
 
 under_covers_AGR: [ #em ##@
     "AG_BAN", "AG_CAF", "AG_COC", "AG_FRT", "AG_LEG", "AG_RIC", "AG_ROT", "AG_SGC", "AG_TRVEG", "AGR_CER", "AGR_OTP"

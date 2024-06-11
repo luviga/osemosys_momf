@@ -1,4 +1,4 @@
-######################################################## TEST 2 ########################################################
+######################################################## TEST 1 ########################################################
 Problem if sum of daughters technologies are greater than mother technologies for the same parameter,
 only for transport sector.
 -----------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ Results for TotalTechnologyAnnualActivityLowerLimit:
 
 
 
-######################################################## TEST 3 ########################################################
+######################################################## TEST 2 ########################################################
 Problem with decreasing values of TotalAnnualMaxCapacity by available technologies, by available technologies.
 PPCCTDSL has decreases at the following points:
   Check   from Year 2018: 0.4019 to Year 2019: 0.4
@@ -43,7 +43,7 @@ PPICEFOI has decreases at the following points:
 
 
 
-######################################################## TEST 4 ########################################################
+######################################################## TEST 3 ########################################################
 
 Problem if values of TotalTechnologyAnnualActivityLowerLimit are greater than TotalTechnologyAnnualActivityUpperLimit,
 by available technologies.
@@ -54,7 +54,7 @@ by available technologies.
 
 
 
-######################################################## TEST 5 ########################################################
+######################################################## TEST 4 ########################################################
 
 Problem if values of ResidualCapacity are greater than TotalAnnualMaxCapacity,
 by available technologies.
@@ -65,7 +65,7 @@ by available technologies.
 
 
 
-######################################################## TEST 6 ########################################################
+######################################################## TEST 5 ########################################################
 
 Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
 TotalAnnualMaxCapacity(mothers) x OutputActivityRatio(mothers), only for transport sector.
@@ -76,7 +76,7 @@ TotalAnnualMaxCapacity(mothers) x OutputActivityRatio(mothers), only for transpo
 
 
 
-######################################################## TEST 7 ########################################################
+######################################################## TEST 6 ########################################################
 
 Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
 TotalTechnologyAnnualActivityLowerLimit(mothers) x OutputActivityRatio(mothers), only for transport sector.
@@ -90,7 +90,7 @@ TotalTechnologyAnnualActivityLowerLimit(mothers) x OutputActivityRatio(mothers),
 
 
 
-######################################################## TEST 8 ########################################################
+######################################################## TEST 7 ########################################################
 
 Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
 TotalAnnualMaxCapacity x CapacityFactor x 31.356, by available technologies.
@@ -101,7 +101,7 @@ TotalAnnualMaxCapacity x CapacityFactor x 31.356, by available technologies.
 
 
 
-######################################################## TEST 9 ########################################################
+######################################################## TEST 8 ########################################################
 
 Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
 TotalAnnualMaxCapacity x CapacityFactor x AvailabilityFactor x 31.356, by available technologies.
@@ -112,7 +112,7 @@ TotalAnnualMaxCapacity x CapacityFactor x AvailabilityFactor x 31.356, by availa
 
 
 
-######################################################## TEST 10 ########################################################
+######################################################## TEST 9 ########################################################
 
 Problem if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit, only for transport sector.
 
@@ -122,7 +122,18 @@ Problem if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowe
 
 
 
-######################################################## TEST 11 ########################################################
+######################################################## TEST 10 ########################################################
 
 Problem if sum of TotalAnnualMaxCapacity(daughters) are less than TotalTechnologyAnnualActivityLowerLimit(mother),
 only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 11 ########################################################
+
+Problem if sum of TotalTechnologyAnnualActivityLowerLimit(daughters) are greater than TotalTechnologyAnnualActivityUpperLimit(mother),
+only for afolu sector.
