@@ -124,6 +124,15 @@ def delete_files(file, solver):
 
 if __name__ == '__main__':    
     
+    # Take the path from the model (B1 or experiment_manager)
+    main_path = sys.argv
+    # Take only the case path
+    main_path = str(main_path[1])
+    
+    # Take scenario and future from the main_path
+    scen = main_path[-9:-6]
+    case = main_path[-5:]
+    
     # Define option to write the file with the detail of solution of each file
     option = str()
     
@@ -147,193 +156,190 @@ if __name__ == '__main__':
     
     if params['model']=='MOMF':
         dict_scen_folder_unique = {}
-        for scen in params['scens']:
-            if params['tier']=='1':
-                dir_tier = params['tier1_dir'].replace('..\\','')
-                dir_tier = get_config_main_path(os.path.abspath(''), dir_tier + '\\' + scen)
-                dir_tier = dir_tier = dir_tier.replace('\\', '\\\\')
-                dir_tier = dir_tier = dir_tier.replace('\\', '/')
-                all_files_internal = os.listdir(dir_tier)
-                dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-            elif params['tier']=='3a':
-                dir_tier = params['tier3a_dir'].replace('..\\\\','')
-                dir_tier = get_config_main_path(os.path.abspath('').replace('\\config_plots',''), dir_tier + '\\' + scen)
-                dir_tier = dir_tier = dir_tier.replace('\\\\', '/')
-                dir_tier = dir_tier = dir_tier.replace('\\', '/')
-                all_files_internal = os.listdir(dir_tier)
-                dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-        count = 0
-        for scen in dict_scen_folder_unique:
-            for case in dict_scen_folder_unique[f'{scen}']:
+        # for scen in params['scens']:
+        #     if params['tier']=='1':
+        #         dir_tier = params['tier1_dir'].replace('..\\','')
+        #         dir_tier = get_config_main_path(os.path.abspath(''), dir_tier + '\\' + scen)
+        #         dir_tier = dir_tier = dir_tier.replace('\\', '\\\\')
+        #         dir_tier = dir_tier = dir_tier.replace('\\', '/')
+        #         all_files_internal = os.listdir(dir_tier)
+        #         dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
+        #     elif params['tier']=='3a':
+        #         dir_tier = params['tier3a_dir'].replace('..\\\\','')
+        #         dir_tier = get_config_main_path(os.path.abspath('').replace('\\config_plots',''), dir_tier + '\\' + scen)
+        #         dir_tier = dir_tier = dir_tier.replace('\\\\', '/')
+        #         dir_tier = dir_tier = dir_tier.replace('\\', '/')
+        #         all_files_internal = os.listdir(dir_tier)
+        #         dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
+                
+        # for scen in dict_scen_folder_unique:
+            # for case in dict_scen_folder_unique[f'{scen}']:
 
-                
-                # Select folder path
-                if params['tier']=='1':
-                    tier_dir = params['tier1_dir'] + '\\\\' + case + params['outputs']
-                    output_filename = params['tier1_dir'] + '\\\\status_of_each_future.txt'
-                elif params['tier']=='3a':
-                    tier_dir = params['tier3a_dir'] + '\\\\' + scen + '\\\\' + case + params['outputs']
-                    output_filename = params['tier3a_dir'] + '\\\\status_of_each_future.txt'
-    
-                # 1st try
-                tier_dir = tier_dir.replace('/','\\\\')
-                tier_dir = tier_dir.replace('..\\\\','')
-                
-                tier_dir = tier_dir.replace('\\\\', '\\')
-                tier_dir = get_config_main_path(os.path.abspath(''), tier_dir)
-                
-                output_filename = output_filename.replace('/','\\\\')
-                output_filename = output_filename.replace('..\\\\','')
-                
-                output_filename = output_filename.replace('\\\\', '\\')
-                output_filename = get_config_main_path(os.path.abspath(''), output_filename)
-                output_filename = output_filename[:-1]
-                output_filename = output_filename.replace('\Futures', '')
-                
-                
-                
-                if case == 'BAU_1':
-                    option = 'w'
-                else:
-                    option = 'a'
-                with open(output_filename, option) as file_status:
-                    if case == 'BAU_1':
-                        file_status.write('Status of solution of each future.\nWrite in order of solution.')
-                        file_status.write('\n\n\n################################# BAU #################################\n\n\n')
-                    if case == 'LTS_1':
-                        file_status.write('\n\n\n################################# LTS #################################\n\n\n')
-                    
-                    
-                    out_quick = params['outputs'].replace('/','')
-                    file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
-                
-                
-                    if os.path.exists(tier_dir):
-                        csv_file_list = os.listdir(tier_dir)
-                        
-                        # Search for the .sol file in the specified directory
-                        sol_file = None
-                        sol_folder = tier_dir.replace('Outputs\\','')
-                        for file_name in os.listdir(sol_folder):
-                            if file_name.endswith('.sol'):
-                                sol_file = os.path.join(sol_folder, file_name)
-                                break
-                        
-                        # If a .sol file is found, read its content
-                        sol_status_line = str()
-                        if sol_file:
-                            with open(sol_file, 'r') as file:
-                                # Load the content of the file
-                                if params['solver'] == 'cbc':
-                                    sol_status_line = file.readline().strip()
-                                elif params['solver'] == 'glpk' and not params['glpk_option'] == 'old':
-                                    for current_line_number in range(5):
-                                        line = file.readline().strip()
-                                        if current_line_number == 5 - 1:
-                                            # Remove the last character from the specified line
-                                            sol_status_line = line[14:]
-                                elif params['solver'] == 'cplex':
-                                    for current_line_number in range(9):
-                                        line = file.readline().strip()
-                                        if current_line_number == 9 - 1:
-                                            # Remove the last character from the specified line
-                                            sol_status_line = line[22:29]
-                        
-                        if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL') or (params['solver'] == 'cplex' and sol_status_line == 'optimal'):
-                            file_status.write(f'\n{case}: Optimal solution.')
-                        
-                            df_list = []
-                            
-                            parameter_list = []
-                            parameter_dict = {}
-                            
-                            if params['vis_dir'] in csv_file_list:
-                                csv_file_list.remove(f'{params["vis_dir"]}')
-                            
-                            for f in csv_file_list:
-                                
-                                local_df = pd.read_csv(tier_dir + '/' + f)
-                                
-                                
-                                # Delete columns of sets do not use in otoole config yaml
-                                columns_check = [column for column in local_df.columns if column in sets_corrects]
-                                local_df = local_df[columns_check]
-            
-                                
-                                local_df['Parameter'] = f.split('.')[0]
-                                parameter_list.append(f.split('.')[0])
-                                parameter_dict.update({parameter_list[-1]: local_df})
-                                
-                                df_list.append(local_df)
-                            columns_check.insert(0,'Parameter')
-                            df_all = pd.concat(df_list, ignore_index=True, sort=False)
-                            df_all = df_all[ sets_csv_temp ]
-                            file_df_dir = params["excel_data_file_dir"].replace('../','')
-                            
-                            # df_all.to_csv(f'Data_plots_{case}.csv')
-                            
-                            # 3rd try
-                            # Assuming parameter_list and parameter_dict are defined
-                            # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
-                            first_param = parameter_list[0]
-                            df_all_3 = pd.DataFrame()
-                            df_all_3 = df_all[df_all['Parameter'] == first_param]
-                            df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
-                            df_all_3 = df_all_3.drop('Parameter', axis=1)
-                            df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
-                            df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
-            
-                            
-                            
-                            # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
-                            for p in parameter_list[1:]:  # Skip the first parameter since it's already added
-                                local_df_3 = df_all[df_all['Parameter'] == p]
-                                local_df_3 = local_df_3.rename(columns={'VALUE': p})
-                                local_df_3 = local_df_3.drop('Parameter', axis=1)
-                                local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
-                                local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
-                                count+=1
-            
-                                df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
-                            
         
-                            # Add NPV columns
-                            parameters_reference = params['parameters_reference']
-                            parameters_news = params['parameters_news']
-                            
-                            for k in range(len(parameters_reference)):
-                                if parameters_reference[k] == 'AnnualTechnologyEmissionPenaltyByEmission':
-                                    parameter_filter = {'EMISSION':params['this_combina']}
-                                    calculate_npv_filtered(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', parameter_filter, output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
-                                else:
-                                    calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
-                                                
-                            
-                            # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                            # df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+        # Select folder path
+        if params['tier']=='1':
+            tier_dir = params['tier1_dir'] + '\\\\' + str(case) + params['outputs']
+            output_filename = params['tier1_dir'] + '\\\\status_of_each_future.txt'
+        elif params['tier']=='3a':
+            tier_dir = params['tier3a_dir'] + '\\\\' + str(scen) + '\\\\' + str(case) + params['outputs']
+            output_filename = params['tier3a_dir'] + '\\\\status_of_each_future.txt'
 
-                            df_all_3.to_csv(f'{sol_folder}/{case}_Output.csv')
+        # 1st try
+        tier_dir = tier_dir.replace('/','\\\\')
+        tier_dir = tier_dir.replace('..\\\\','')
+        
+        tier_dir = tier_dir.replace('\\\\', '\\')
+        tier_dir = get_config_main_path(os.path.abspath(''), tier_dir)
+        
+        output_filename = output_filename.replace('/','\\\\')
+        output_filename = output_filename.replace('..\\\\','')
+        
+        output_filename = output_filename.replace('\\\\', '\\')
+        output_filename = get_config_main_path(os.path.abspath(''), output_filename)
+        output_filename = output_filename[:-1]
+        output_filename = output_filename.replace('\Futures', '')
+        
+        
+        
+        if case == 'BAU_1':
+            option = 'w'
+        else:
+            option = 'a'
+        with open(output_filename, option) as file_status:
+            if case == 'BAU_1':
+                file_status.write('Status of solution of each future.\nWrite in order of solution.')
+                file_status.write('\n\n\n################################# BAU #################################\n\n\n')
+            if case == 'LTS_1':
+                file_status.write('\n\n\n################################# LTS #################################\n\n\n')
             
-                            # Delete Outputs folder with otoole csvs files
-                            if params['del_files']:
-                                outputs_otoole_csvs = sol_folder + out_quick
-                                if os.path.exists(outputs_otoole_csvs):
-                                    shutil.rmtree(outputs_otoole_csvs)
-                            
-                                # Delete glp, lp, txt and sol files
-                                if params['del_files'] and not (params['solver'] == 'glpk' and not params['glpk_option'] == 'old'):
-                                    delete_files(sol_file, params['solver'])
+            
+            out_quick = params['outputs'].replace('/','')
+            file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
+        
+        
+            if os.path.exists(tier_dir):
+                csv_file_list = os.listdir(tier_dir)
+                
+                # Search for the .sol file in the specified directory
+                sol_file = None
+                sol_folder = tier_dir.replace('Outputs\\','')
+                for file_name in os.listdir(sol_folder):
+                    if file_name.endswith('.sol'):
+                        sol_file = os.path.join(sol_folder, file_name)
+                        break
+                
+                # If a .sol file is found, read its content
+                sol_status_line = str()
+                if sol_file:
+                    with open(sol_file, 'r') as file:
+                        # Load the content of the file
+                        if params['solver'] == 'cbc':
+                            sol_status_line = file.readline().strip()
+                        elif params['solver'] == 'glpk' and not params['glpk_option'] == 'old':
+                            for current_line_number in range(5):
+                                line = file.readline().strip()
+                                if current_line_number == 5 - 1:
+                                    # Remove the last character from the specified line
+                                    sol_status_line = line[14:]
+                        elif params['solver'] == 'cplex':
+                            for current_line_number in range(9):
+                                line = file.readline().strip()
+                                if current_line_number == 9 - 1:
+                                    # Remove the last character from the specified line
+                                    sol_status_line = line[22:29]
+                
+                if (params['solver'] == 'cbc' and sol_status_line[0:7] == 'Optimal') or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old' and sol_status_line == 'OPTIMAL') or (params['solver'] == 'cplex' and sol_status_line == 'optimal'):
+                    file_status.write(f'\n{case}: Optimal solution.')
+                
+                    df_list = []
+                    
+                    parameter_list = []
+                    parameter_dict = {}
+                    
+                    if params['vis_dir'] in csv_file_list:
+                        csv_file_list.remove(f'{params["vis_dir"]}')
+                    
+                    for f in csv_file_list:
+                        
+                        local_df = pd.read_csv(tier_dir + '/' + f)
+                        
+                        
+                        # Delete columns of sets do not use in otoole config yaml
+                        columns_check = [column for column in local_df.columns if column in sets_corrects]
+                        local_df = local_df[columns_check]
     
+                        
+                        local_df['Parameter'] = f.split('.')[0]
+                        parameter_list.append(f.split('.')[0])
+                        parameter_dict.update({parameter_list[-1]: local_df})
+                        
+                        df_list.append(local_df)
+                    columns_check.insert(0,'Parameter')
+                    df_all = pd.concat(df_list, ignore_index=True, sort=False)
+                    df_all = df_all[ sets_csv_temp ]
+                    file_df_dir = params["excel_data_file_dir"].replace('../','')
+                    
+                    # df_all.to_csv(f'Data_plots_{case}.csv')
+                    
+                    # 3rd try
+                    # Assuming parameter_list and parameter_dict are defined
+                    # Initialize df_all_2 with the first DataFrame to ensure the dimension columns are set
+                    first_param = parameter_list[0]
+                    df_all_3 = pd.DataFrame()
+                    df_all_3 = df_all[df_all['Parameter'] == first_param]
+                    df_all_3 = df_all_3.rename(columns={'VALUE': first_param})
+                    df_all_3 = df_all_3.drop('Parameter', axis=1)
+                    df_all_3 = df_all_3.drop(columns=[col for col in df_all_3.columns if col in set_no_needed], errors='ignore')
+                    df_all_3 = df_all_3.assign(**{col: 'nan' for col in sets_csv if col not in df_all_3.columns})
+    
+                    
+                    
+                    # Iterate over the remaining parameters and merge their respective DataFrames on the dimension columns
+                    for p in parameter_list[1:]:  # Skip the first parameter since it's already added
+                        local_df_3 = df_all[df_all['Parameter'] == p]
+                        local_df_3 = local_df_3.rename(columns={'VALUE': p})
+                        local_df_3 = local_df_3.drop('Parameter', axis=1)
+                        local_df_3 = local_df_3.drop(columns=[col for col in local_df_3.columns if col in set_no_needed], errors='ignore')
+                        local_df_3 = local_df_3.assign(**{col: 'nan' for col in sets_csv if col not in local_df_3.columns})
+    
+                        df_all_3 = pd.merge(df_all_3, local_df_3, on=sets_csv, how='outer')
+                    
+
+                    # Add NPV columns
+                    parameters_reference = params['parameters_reference']
+                    parameters_news = params['parameters_news']
+                    
+                    for k in range(len(parameters_reference)):
+                        if parameters_reference[k] == 'AnnualTechnologyEmissionPenaltyByEmission':
+                            parameter_filter = {'EMISSION':params['this_combina']}
+                            calculate_npv_filtered(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', parameter_filter, output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
                         else:
-                            # Delete Outputs folder with otoole csvs files
-                            if params['del_files']:
-                                outputs_otoole_csvs = file_df_dir + out_quick
-                                if os.path.exists(outputs_otoole_csvs):
-                                    shutil.rmtree(outputs_otoole_csvs)
-                            
-                                # Delete glp, lp, txt and sol files
-                                if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-                                    delete_files(sol_file, params['solver'])
-                            file_status.write(f'\n{case}: Infeasible solution.')
-                    else:
-                        continue
+                            calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
+                                        
+                    
+                    # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
+                    # df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
+
+                    df_all_3.to_csv(f'{sol_folder}/{case}_Output.csv')
+    
+                    # Delete Outputs folder with otoole csvs files
+                    if params['del_files']:
+                        outputs_otoole_csvs = sol_folder + out_quick
+                        if os.path.exists(outputs_otoole_csvs):
+                            shutil.rmtree(outputs_otoole_csvs)
+                    
+                        # Delete glp, lp, txt and sol files
+                        if params['del_files'] and not (params['solver'] == 'glpk' and not params['glpk_option'] == 'old'):
+                            delete_files(sol_file, params['solver'])
+
+                else:
+                    # Delete Outputs folder with otoole csvs files
+                    if params['del_files']:
+                        outputs_otoole_csvs = file_df_dir + out_quick
+                        if os.path.exists(outputs_otoole_csvs):
+                            shutil.rmtree(outputs_otoole_csvs)
+                    
+                        # Delete glp, lp, txt and sol files
+                        if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+                            delete_files(sol_file, params['solver'])
+                    file_status.write(f'\n{case}: Infeasible solution.')

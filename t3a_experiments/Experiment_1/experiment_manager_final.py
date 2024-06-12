@@ -641,6 +641,20 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         os.system( str_start and str_outputs )
     
     time.sleep(1)
+
+
+    # Module to concatenate csvs otoole outputs
+    if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+        # file_aboslute_address = os.path.abspath(params['Manager'])
+        file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+        # file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+        #
+    
+        # str_start = params['start'] + file_adress
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + case_address
+        os.system( str_start and str_otoole_concate_csv )
+
+
         
     # # Delete glp, lp, txt and sol files
     # if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
@@ -5805,16 +5819,16 @@ if __name__ == '__main__':
                 #
             #
             
-        # Module to concatenate csvs otoole outputs
-        if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-            file_aboslute_address = os.path.abspath(params['Manager'])
-            file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-            file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-            #
+        # # Module to concatenate csvs otoole outputs
+        # if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+        #     file_aboslute_address = os.path.abspath(params['Manager'])
+        #     file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+        #     file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+        #     #
     
-            str_start = params['start'] + file_adress
-            str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-            os.system( str_start and str_otoole_concate_csv )
+        #     str_start = params['start'] + file_adress
+        #     str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
+        #     os.system( str_start and str_otoole_concate_csv )
         #
         # Delete log files when solver='cplex'
         if params['solver'] == 'cplex' and params['del_files']:
