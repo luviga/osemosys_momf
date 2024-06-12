@@ -446,16 +446,16 @@ def compare_mother_daughters_variant(param_1, param_2, fleet_groups, output_file
         file.write(f"\nProblem if sum of {params_names[0]}(daughters) are less than {params_names[1]}(mother),\nonly for transport sector.\n")
         # Iterate over each mother technology in the group dictionary
         for tech_mother, children in fleet_groups.items():
-            if tech_mother in lower_limit.index:
+            if tech_mother in param_1.index:
                 comparison_results[tech_mother] = {}
-                children_sum = pd.Series([0.0] * len(lower_limit.columns), index=lower_limit.columns)
+                children_sum = pd.Series([0.0] * len(param_1.columns), index=param_1.columns)
 
                 for child in children:
-                    if child in ta_maxcap_techs.index:
-                        children_sum += ta_maxcap_techs.loc[child]
+                    if child in param_2.index:
+                        children_sum += param_2.loc[child]
 
-                mother_values = lower_limit.loc[tech_mother]
-                for year in lower_limit.columns:
+                mother_values = param_1.loc[tech_mother]
+                for year in param_1.columns:
                     if children_sum[year] > mother_values[year]:
                         comparison = "greater"
                     elif children_sum[year] < mother_values[year]:
@@ -484,16 +484,16 @@ def compare_mother_daughters_variant_2(param_1, param_2, fleet_groups, output_fi
         file.write(f"\nProblem if sum of {params_names[0]}(daughters) are greater than {params_names[1]}(mother),\nonly for afolu sector.\n")
         # Iterate over each mother technology in the group dictionary
         for tech_mother, children in fleet_groups.items():
-            if tech_mother in lower_limit.index:
+            if tech_mother in param_1.index:
                 comparison_results[tech_mother] = {}
-                children_sum = pd.Series([0.0] * len(lower_limit.columns), index=lower_limit.columns)
+                children_sum = pd.Series([0.0] * len(param_1.columns), index=param_1.columns)
 
                 for child in children:
-                    if child in ta_maxcap_techs.index:
-                        children_sum += ta_maxcap_techs.loc[child]
+                    if child in param_2.index:
+                        children_sum += param_2.loc[child]
 
-                mother_values = lower_limit.loc[tech_mother]
-                for year in lower_limit.columns:
+                mother_values = param_1.loc[tech_mother]
+                for year in param_1.columns:
                     if children_sum[year] > mother_values[year]:
                         comparison = "greater"
                         comparison_2 = - mother_values[year] + children_sum[year]

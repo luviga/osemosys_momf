@@ -2950,6 +2950,9 @@ if __name__ == '__main__':
                                 value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
                                 new_value_list = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list)]
                                 # new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                
+                                
+                                
                                 if this_parameter == 'TotalTechnologyAnnualActivityUpperLimit':
                                     # Change values of 'TotalTechnologyAnnualActivityUpperLimit' and 'TotalTechnologyAnnualActivityLowerLimit'
                                     # to check 'TotalTechnologyAnnualActivityLowerLimit' isn't bigger than 'TotalTechnologyAnnualActivityUpperLimit'
