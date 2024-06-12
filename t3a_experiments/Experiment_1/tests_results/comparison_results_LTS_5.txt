@@ -239,18 +239,18 @@ only for transport sector.
 Problem if sum of TotalTechnologyAnnualActivityLowerLimit(daughters) are greater than TotalTechnologyAnnualActivityUpperLimit(mother),
 only for afolu sector.
    Results for LU_AGR:
-     Check   2045: 0.0359      TotalTechnologyAnnualActivityUpperLimit value: -0.0359,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2046: 0.0908      TotalTechnologyAnnualActivityUpperLimit value: -0.0908,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2047: 0.1455      TotalTechnologyAnnualActivityUpperLimit value: -0.1455,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2048: 0.2      TotalTechnologyAnnualActivityUpperLimit value: -0.2,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2049: 0.2543      TotalTechnologyAnnualActivityUpperLimit value: -0.2543,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2050: 0.3083      TotalTechnologyAnnualActivityUpperLimit value: -0.3083,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2045: 0.03591679452261879      TotalTechnologyAnnualActivityUpperLimit value: -0.03591679452261879,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2046: 0.09080502007509593      TotalTechnologyAnnualActivityUpperLimit value: -0.09080502007509593,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2047: 0.14547768233246558      TotalTechnologyAnnualActivityUpperLimit value: -0.14547768233246558,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2048: 0.20001542727401997      TotalTechnologyAnnualActivityUpperLimit value: -0.20001542727401997,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2049: 0.2542899230448294      TotalTechnologyAnnualActivityUpperLimit value: -0.2542899230448294,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2050: 0.3083418426467871      TotalTechnologyAnnualActivityUpperLimit value: -0.3083418426467871,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
 -------------------------------------------------
    Results for LU_GAN:
-     Check   2045: 0.0349      TotalTechnologyAnnualActivityUpperLimit value: -0.0349,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2046: 0.0885      TotalTechnologyAnnualActivityUpperLimit value: -0.0885,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2047: 0.1424      TotalTechnologyAnnualActivityUpperLimit value: -0.1424,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2048: 0.1964      TotalTechnologyAnnualActivityUpperLimit value: -0.1964,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2049: 0.2507      TotalTechnologyAnnualActivityUpperLimit value: -0.2507,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2050: 0.3052      TotalTechnologyAnnualActivityUpperLimit value: -0.3052,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2045: 0.034880733142158636      TotalTechnologyAnnualActivityUpperLimit value: -0.034880733142158636,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2046: 0.08851143747848042      TotalTechnologyAnnualActivityUpperLimit value: -0.08851143747848042,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2047: 0.14235770510990933      TotalTechnologyAnnualActivityUpperLimit value: -0.14235770510990933,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2048: 0.19643889005715415      TotalTechnologyAnnualActivityUpperLimit value: -0.19643889005715415,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2049: 0.2506833241751436      TotalTechnologyAnnualActivityUpperLimit value: -0.2506833241751436,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2050: 0.3051503344619849      TotalTechnologyAnnualActivityUpperLimit value: -0.3051503344619849,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
 -------------------------------------------------

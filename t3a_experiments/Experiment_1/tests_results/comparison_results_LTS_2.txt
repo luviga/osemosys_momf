@@ -238,30 +238,30 @@ only for transport sector.
 Problem if sum of TotalTechnologyAnnualActivityLowerLimit(daughters) are greater than TotalTechnologyAnnualActivityUpperLimit(mother),
 only for afolu sector.
    Results for LU_AGR:
-     Check   2039: 0.0515      TotalTechnologyAnnualActivityUpperLimit value: -0.0515,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2040: 0.1302      TotalTechnologyAnnualActivityUpperLimit value: -0.1302,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2041: 0.2086      TotalTechnologyAnnualActivityUpperLimit value: -0.2086,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2042: 0.2868      TotalTechnologyAnnualActivityUpperLimit value: -0.2868,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2043: 0.3646      TotalTechnologyAnnualActivityUpperLimit value: -0.3646,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2044: 0.4422      TotalTechnologyAnnualActivityUpperLimit value: -0.4422,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2045: 0.5195      TotalTechnologyAnnualActivityUpperLimit value: -0.5195,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2046: 0.5965      TotalTechnologyAnnualActivityUpperLimit value: -0.5965,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2047: 0.6731      TotalTechnologyAnnualActivityUpperLimit value: -0.6731,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2048: 0.7496      TotalTechnologyAnnualActivityUpperLimit value: -0.7496,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2049: 0.8257      TotalTechnologyAnnualActivityUpperLimit value: -0.8257,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2050: 0.9015      TotalTechnologyAnnualActivityUpperLimit value: -0.9015,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2039: 0.05151378124902343      TotalTechnologyAnnualActivityUpperLimit value: -0.05151378124902343,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2040: 0.13015810448336793      TotalTechnologyAnnualActivityUpperLimit value: -0.13015810448336793,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2041: 0.20861981442310593      TotalTechnologyAnnualActivityUpperLimit value: -0.20861981442310593,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2042: 0.2867587067170438      TotalTechnologyAnnualActivityUpperLimit value: -0.2867587067170438,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2043: 0.3646164693148691      TotalTechnologyAnnualActivityUpperLimit value: -0.3646164693148691,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2044: 0.44217029600169283      TotalTechnologyAnnualActivityUpperLimit value: -0.44217029600169283,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2045: 0.5195056811415557      TotalTechnologyAnnualActivityUpperLimit value: -0.5195056811415557,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2046: 0.5965014966450162      TotalTechnologyAnnualActivityUpperLimit value: -0.5965014966450162,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2047: 0.6731417995376633      TotalTechnologyAnnualActivityUpperLimit value: -0.6731417995376633,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2048: 0.7496311185639423      TotalTechnologyAnnualActivityUpperLimit value: -0.7496311185639423,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2049: 0.8257400419494011      TotalTechnologyAnnualActivityUpperLimit value: -0.8257400419494011,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2050: 0.90150520857696      TotalTechnologyAnnualActivityUpperLimit value: -0.90150520857696,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
 -------------------------------------------------
    Results for LU_GAN:
-     Check   2039: 0.0489      TotalTechnologyAnnualActivityUpperLimit value: -0.0489,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2040: 0.1241      TotalTechnologyAnnualActivityUpperLimit value: -0.1241,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2041: 0.1997      TotalTechnologyAnnualActivityUpperLimit value: -0.1997,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2042: 0.2754      TotalTechnologyAnnualActivityUpperLimit value: -0.2754,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2043: 0.3515      TotalTechnologyAnnualActivityUpperLimit value: -0.3515,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2044: 0.4278      TotalTechnologyAnnualActivityUpperLimit value: -0.4278,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2045: 0.5045      TotalTechnologyAnnualActivityUpperLimit value: -0.5045,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2046: 0.5814      TotalTechnologyAnnualActivityUpperLimit value: -0.5814,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2047: 0.6587      TotalTechnologyAnnualActivityUpperLimit value: -0.6587,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2048: 0.7362      TotalTechnologyAnnualActivityUpperLimit value: -0.7362,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2049: 0.814      TotalTechnologyAnnualActivityUpperLimit value: -0.814,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
-     Check   2050: 0.8922      TotalTechnologyAnnualActivityUpperLimit value: -0.8922,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2039: 0.04894737695165549      TotalTechnologyAnnualActivityUpperLimit value: -0.04894737695165549,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2040: 0.12411379759735659      TotalTechnologyAnnualActivityUpperLimit value: -0.12411379759735659,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2041: 0.19966283153766368      TotalTechnologyAnnualActivityUpperLimit value: -0.19966283153766368,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2042: 0.27543468312377156      TotalTechnologyAnnualActivityUpperLimit value: -0.27543468312377156,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2043: 0.3514876644059917      TotalTechnologyAnnualActivityUpperLimit value: -0.3514876644059917,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2044: 0.4278445815992128      TotalTechnologyAnnualActivityUpperLimit value: -0.4278445815992128,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2045: 0.5045199403393954      TotalTechnologyAnnualActivityUpperLimit value: -0.5045199403393954,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2046: 0.5814348687159802      TotalTechnologyAnnualActivityUpperLimit value: -0.5814348687159802,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2047: 0.658705309703378      TotalTechnologyAnnualActivityUpperLimit value: -0.658705309703378,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2048: 0.7362267345571446      TotalTechnologyAnnualActivityUpperLimit value: -0.7362267345571446,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2049: 0.8140285550517312      TotalTechnologyAnnualActivityUpperLimit value: -0.8140285550517312,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
+     Check   2050: 0.8921741323042174      TotalTechnologyAnnualActivityUpperLimit value: -0.8921741323042174,   Sum TotalTechnologyAnnualActivityLowerLimit value: 0.0
 -------------------------------------------------
