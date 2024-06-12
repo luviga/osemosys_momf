@@ -2937,6 +2937,13 @@ if __name__ == '__main__':
                             sum_value_list_mult_nvs = [
                                 sum_value_list_new_nvs_target[i]/v for i, v in
                                 enumerate(sum_value_list_orig_nvs)]
+                            
+                            
+                            if any(item < 0 for item in sum_value_list_new_nvs_target):
+                                print('There is at least one negative value in the list.')
+                                sys.exit()
+                            else:
+                                print('There are no t negative values in the list.')
 
                             # Iterate again across the non-varied sets:
                             for nvs in non_varied_sets:
@@ -2985,12 +2992,11 @@ if __name__ == '__main__':
                                             while lower_limit > upper_limit:
                                                 # print(this_set, i, "########################################################################")
                                                 # Adjust the value of TotalTechnologyAnnualActivityUpperLimit incrementally to satisfy the inequality
-                                                if scenario_list[s] == 'LTS' and f == 2:
-                                                    sys.exit()
+                                                
                                                 upper_limit *= increment
                                                 # Adjust the value of TotalTechnologyAnnualActivityLowerLimit decrementally to satisfy the inequality
                                                 #lower_limit -= increment
-                                                
+                                            
                                             #new_value_list_3[i] = lower_limit
                                             new_value_list[i] = upper_limit
                                         
@@ -3002,11 +3008,12 @@ if __name__ == '__main__':
                                 sum_value_list_new_nvs = [sum(x) for x in zip(sum_value_list_new_nvs, new_value_list)]
 
                                 
-
                                 for uca in uca_list:
                                     this_uca_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(uca)]
                                     value_list_uca = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_uca_indices[0]:this_uca_indices[-1]+1])
                                     new_value_list_uca = [0.99*v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list_uca)]
+                                    # if scenario_list[s] == 'LTS' and f == 3 and uca == "AG_BAN":
+                                    #     sys.exit()
                                     
                                     # if this_parameter=='TotalTechnologyAnnualActivityLowerLimit':
                                     #     new_value_list_3=deepcopy(new_value_list_uca)
