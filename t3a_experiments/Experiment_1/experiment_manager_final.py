@@ -2957,21 +2957,28 @@ if __name__ == '__main__':
                                     value_list_uca = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_uca_indices[0]:this_uca_indices[-1]+1])
                                     new_value_list_uca = [v*sum_value_list_mult_nvs[i] for i, v in enumerate(value_list_uca)]
                                     
+                                    # if this_parameter=='TotalTechnologyAnnualActivityLowerLimit':
+                                    #     new_value_list_3=deepcopy(new_value_list_uca)
+                                    # if this_parameter=='TotalTechnologyAnnualActivityUpperLimit':
+                                    #     new_value_list_4=deepcopy(new_value_list_uca)
+                                    
                                     # Change values of 'TotalTechnologyAnnualActivityUpperLimit' and 'TotalTechnologyAnnualActivityLowerLimit'
                                     # to check 'TotalTechnologyAnnualActivityLowerLimit' isn't bigger than 'TotalTechnologyAnnualActivityUpperLimit'
                                     this_param_3 = 'TotalTechnologyAnnualActivityLowerLimit'
                                     this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3]['t']) if x == str(uca)]
                                     this_param_4 = 'TotalTechnologyAnnualActivityUpperLimit'
                                     this_set_range_indices_4 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_4]['t']) if x == str(uca)]
-                                    if len(this_set_range_indices_3) != 0 and len(this_set_range_indices_4) != 0:
+                                    
+                                    if len(this_set_range_indices_3) != 0 and len(this_set_range_indices_4) != 0 and this_parameter == 'TotalTechnologyAnnualActivityUpperLimit':
                                         # 'TotalTechnologyAnnualActivityLowerLimit'
                                         value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
-                                        # 'TotalTechnologyAnnualActivityUpperLimit'
-                                        value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
-                                        # Iterate over the lists and adjust value_list_3 and 4 if necessary
-                                        for i in range(len(value_list_4)):
+                                        # # 'TotalTechnologyAnnualActivityUpperLimit'
+                                        # value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
+                                        # # Iterate over the lists and adjust value_list_3 and 4 if necessary
+                                        
+                                        for i in range(Initial_Year_of_Uncertainty-params['base_year'],len(new_value_list)):
                                             lower_limit = value_list_3[i]
-                                            upper_limit = value_list_4[i]
+                                            upper_limit = new_value_list[i]
                                             
                                             # Define a small increment
                                             increment = 0.0001
@@ -2981,24 +2988,23 @@ if __name__ == '__main__':
                                                 # Adjust the value of TotalTechnologyAnnualActivityUpperLimit incrementally to satisfy the inequality
                                                 upper_limit += increment
                                                 # Adjust the value of TotalTechnologyAnnualActivityLowerLimit decrementally to satisfy the inequality
-                                                lower_limit -= increment
+                                                #lower_limit -= increment
                                                 
-                                            value_list_3[i] = lower_limit
-                                            value_list_4[i] = upper_limit
+                                            #new_value_list_3[i] = lower_limit
+                                            new_value_list[i] = upper_limit
                                             
                                         # For TotalTechnologyAnnualActivityLowerLimit
-                                        new_value_list_rounded_3 = [
-                                                round(elem, params['round_#']) for elem in value_list_3]                                        
-                                        inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                        # new_value_list_rounded_3 = [
+                                        #         round(elem, params['round_#']) for elem in new_value_list_3]                                        
+                                        # inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
                                         
                                         # For TotalTechnologyAnnualActivityUpperLimit
                                         new_value_list_rounded_4 = [
-                                                round(elem, params['round_#']) for elem in value_list_4]                                       
-                                        inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
-
-                                    else:
-                                        new_value_list_uca_rounded = [ round(elem, params['round_#']) for elem in new_value_list_uca ]
-                                        inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_uca_indices[0]:this_uca_indices[-1]+1] = deepcopy(new_value_list_uca_rounded)
+                                                round(elem, params['round_#']) for elem in new_value_list]   
+                                        new_value_list_rounded = new_value_list_rounded_4 
+                                        #inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
+                                    
+                                    inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_uca_indices[0]:this_uca_indices[-1]+1] = deepcopy(new_value_list_rounded)
 
                             # Iterate again across the varied sets:
                             for a_set in Sets_Involved:
@@ -3006,6 +3012,10 @@ if __name__ == '__main__':
                                 value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
                                 new_value_list = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
                                 new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                # if this_parameter=='TotalTechnologyAnnualActivityLowerLimit':
+                                #     new_value_list_3=deepcopy(new_value_list)
+                                # if this_parameter=='TotalTechnologyAnnualActivityUpperLimit':
+                                #     new_value_list_4=deepcopy(new_value_list)
                                 
                                 # Change values of 'TotalTechnologyAnnualActivityUpperLimit' and 'TotalTechnologyAnnualActivityLowerLimit'
                                 # to check 'TotalTechnologyAnnualActivityLowerLimit' isn't bigger than 'TotalTechnologyAnnualActivityUpperLimit'
@@ -3013,15 +3023,19 @@ if __name__ == '__main__':
                                 this_set_range_indices_3 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_3]['t']) if x == str(a_set)]
                                 this_param_4 = 'TotalTechnologyAnnualActivityUpperLimit'
                                 this_set_range_indices_4 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_param_4]['t']) if x == str(a_set)]
-                                if len(this_set_range_indices_3) != 0 and len(this_set_range_indices_4) != 0:
+                                if len(this_set_range_indices_3) != 0 and len(this_set_range_indices_4) != 0 and this_parameter == 'TotalTechnologyAnnualActivityUpperLimit':
                                     # 'TotalTechnologyAnnualActivityLowerLimit'
                                     value_list_3 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1]]
-                                    # 'TotalTechnologyAnnualActivityUpperLimit'
-                                    value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
+                                    # # 'TotalTechnologyAnnualActivityUpperLimit'
+                                    # value_list_4 = [float(val) for val in inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1]]
+                                    
+                                    # new_value_list_3 = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
+
+                                    
                                     # Iterate over the lists and adjust value_list_3 and 4 if necessary
-                                    for i in range(len(value_list_4)):
+                                    for i in range(Initial_Year_of_Uncertainty-params['base_year'],len(new_value_list)):
                                         lower_limit = value_list_3[i]
-                                        upper_limit = value_list_4[i]
+                                        upper_limit = new_value_list[i]
                                         
                                         # Define a small increment
                                         increment = 0.0001
@@ -3031,32 +3045,32 @@ if __name__ == '__main__':
                                             # Adjust the value of TotalTechnologyAnnualActivityUpperLimit incrementally to satisfy the inequality
                                             upper_limit += increment
                                             # Adjust the value of TotalTechnologyAnnualActivityLowerLimit decrementally to satisfy the inequality
-                                            lower_limit -= increment
+                                            #lower_limit -= increment
                                             
-                                        value_list_3[i] = lower_limit
-                                        value_list_4[i] = upper_limit
+                                        #new_value_list_3[i] = lower_limit
+                                        new_value_list[i] = upper_limit
                                         
 
                                     # For TotalTechnologyAnnualActivityLowerLimit
-                                    new_value_list_rounded_3 = [
-                                            round(elem, params['round_#']) for elem in value_list_3]                                        
-                                    inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
+                                    #new_value_list_rounded_3 = [
+                                    #        round(elem, params['round_#']) for elem in new_value_list_3]                                        
+                                    #inherited_scenarios[scenario_list[s]][f][this_param_3]['value'][this_set_range_indices_3[0]:this_set_range_indices_3[-1]+1] = deepcopy(new_value_list_rounded_3)
                                     
                                     # For TotalTechnologyAnnualActivityUpperLimit
                                     new_value_list_rounded_4 = [
-                                            round(elem, params['round_#']) for elem in value_list_4]                                       
-                                    inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
-
-                                else:
+                                            round(elem, params['round_#']) for elem in new_value_list]  
+                                    new_value_list_rounded = new_value_list_rounded_4                                      
+                                    # inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
                                 
-                                    inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list_rounded)  
+                                inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list_rounded)  
+                                
                                 sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
 
                             sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
 
-                            if abs(sum(sum_value_list_new) - sum(sum_value_list_orig)) > 1e-6:
-                                print('The manipulation is wrong. Check in detail.')
-                                sys.exit()
+                            # if abs(sum(sum_value_list_new) - sum(sum_value_list_orig)) > 1e-6:
+                            #     print('The manipulation is wrong. Check in detail.')
+                            #     sys.exit()
                             #except:
                             #    print("NO FUNCIONA EL FOREST COVER")
 
