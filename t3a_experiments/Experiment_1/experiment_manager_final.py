@@ -2903,7 +2903,8 @@ if __name__ == '__main__':
                                 this_aset_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter]['t']) if x == str(a_set)]
                                 value_list = deepcopy(inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1])
 
-                                sum_value_list_orig_chg = [sum(x) for x in zip(sum_value_list_orig_chg, value_list)]
+                                if a_set in all_covers:
+                                    sum_value_list_orig_chg = [sum(x) for x in zip(sum_value_list_orig_chg, value_list)]
 
                             sum_value_list_orig = [sum(x) for x in zip(sum_value_list_orig_nvs, sum_value_list_orig_chg)]
 
@@ -2937,14 +2938,18 @@ if __name__ == '__main__':
                             sum_value_list_mult_nvs = [
                                 sum_value_list_new_nvs_target[i]/v for i, v in
                                 enumerate(sum_value_list_orig_nvs)]
-                            
-                            
+
+
+
+                            # Check if any value is negative
                             if any(item < 0 for item in sum_value_list_new_nvs_target):
                                 print('There is at least one negative value in the list.')
                                 sys.exit()
                             else:
-                                print('There are no t negative values in the list.')
+                                print('There are no negative values in the list.')
 
+
+    
                             # Iterate again across the non-varied sets:
                             for nvs in non_varied_sets:
                                 
@@ -3089,7 +3094,6 @@ if __name__ == '__main__':
                                     
                                     # new_value_list_3 = [v*sum_value_list_mult_chg[i] for i, v in enumerate(value_list)]
 
-                                    
                                     # Iterate over the lists and adjust value_list_3 and 4 if necessary
                                     for i in range(Initial_Year_of_Uncertainty-params['base_year'],len(new_value_list)):
                                         lower_limit = value_list_3[i]
@@ -3107,7 +3111,6 @@ if __name__ == '__main__':
                                             
                                         #new_value_list_3[i] = lower_limit
                                         new_value_list[i] = upper_limit
-                                        
 
                                     # For TotalTechnologyAnnualActivityLowerLimit
                                     #new_value_list_rounded_3 = [
@@ -3119,16 +3122,19 @@ if __name__ == '__main__':
                                     #         round(elem, params['round_#']) for elem in new_value_list]  
                                     # new_value_list_rounded = new_value_list                                    
                                     # inherited_scenarios[scenario_list[s]][f][this_param_4]['value'][this_set_range_indices_4[0]:this_set_range_indices_4[-1]+1] = deepcopy(new_value_list_rounded_4)
-                                
+
                                 inherited_scenarios[scenario_list[s]][f][this_parameter]['value'][this_aset_indices[0]:this_aset_indices[-1]+1] = deepcopy(new_value_list)  
-                                
-                                sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
+
+                                if a_set in all_covers:
+                                    sum_value_list_new_chg = [sum(x) for x in zip(sum_value_list_new_chg, new_value_list)]
 
                             sum_value_list_new = [sum(x) for x in zip(sum_value_list_new_nvs, sum_value_list_new_chg)]
 
-                            # if abs(sum(sum_value_list_new) - sum(sum_value_list_orig)) > 1e-6:
-                            #     print('The manipulation is wrong. Check in detail.')
-                            #     sys.exit()
+
+                            if any(abs(new - orig) > 1e-3 for new, orig in zip(sum_value_list_new, sum_value_list_orig)):
+                                print('The manipulation is wrong. Check in detail.')
+                                sys.exit()
+
                             #except:
                             #    print("NO FUNCIONA EL FOREST COVER")
 
