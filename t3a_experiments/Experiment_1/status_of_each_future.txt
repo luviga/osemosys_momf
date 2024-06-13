@@ -6,26 +6,11 @@ Write in order of solution.
 
 
 
-BAU_1: Infeasible solution.
 BAU_10: Optimal solution.
-BAU_2: Optimal solution.
-BAU_3: Optimal solution.
-BAU_4: Optimal solution.
-BAU_5: Optimal solution.
-BAU_6: Optimal solution.
-BAU_7: Optimal solution.
-BAU_8: Optimal solution.
-BAU_9: Optimal solution.
 
 
 ################################# LTS #################################
 
 
 
-LTS_1: Optimal solution.
 LTS_10: Optimal solution.
-LTS_3: Optimal solution.
-LTS_4: Optimal solution.
-LTS_6: Optimal solution.
-LTS_7: Optimal solution.
-LTS_9: Optimal solution.

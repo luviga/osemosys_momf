@@ -131,7 +131,9 @@ if __name__ == '__main__':
     
     # Take scenario and future from the main_path
     scen = main_path[-9:-6]
+    # main_path = main_path.replace'C:\\\\Users\\\\ClimateLeadGroup\\\\Desktop\\\\CLG_repositories\\\\osemosys_momf\\\\t3a_experiments\\\\Experiment_1\\\\Futures\\\\LTS\\LTS_1'
     case = main_path[-5:]
+    print(case)
     
     # Define option to write the file with the detail of solution of each file
     option = str()
