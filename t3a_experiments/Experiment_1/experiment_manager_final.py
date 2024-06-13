@@ -651,7 +651,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         #
     
         # str_start = params['start'] + file_adress
-        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + case_address
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0])
         os.system( str_start and str_otoole_concate_csv )
 
 

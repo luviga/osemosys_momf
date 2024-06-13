@@ -124,16 +124,15 @@ def delete_files(file, solver):
 
 if __name__ == '__main__':    
     
-    # Take the path from the model (B1 or experiment_manager)
+    # Take the case from the model (B1 or experiment_manager)
     main_path = sys.argv
-    # Take only the case path
-    main_path = str(main_path[1])
-    
     # Take scenario and future from the main_path
-    scen = main_path[-9:-6]
-    # main_path = main_path.replace'C:\\\\Users\\\\ClimateLeadGroup\\\\Desktop\\\\CLG_repositories\\\\osemosys_momf\\\\t3a_experiments\\\\Experiment_1\\\\Futures\\\\LTS\\LTS_1'
-    case = main_path[-5:]
-    print(case)
+    # example
+    # this_case[0] = 'BAU_15.txt'
+    case = main_path[1].replace('.txt', '')
+    scen = main_path[1]
+    scen = scen[:3]
+    
     
     # Define option to write the file with the detail of solution of each file
     option = str()
