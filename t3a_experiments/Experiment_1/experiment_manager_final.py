@@ -3532,9 +3532,9 @@ if __name__ == '__main__':
                                                 new_value_list.append(value_list_ratio[y]*new_gdp*list_i[y]/1e6)
                                                 last_gdp = deepcopy(new_gdp)
 
-                                # Assign parameters back: for these subset of uncertainties
-                                new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
-                                inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
+                                    # Assign parameters back: for these subset of uncertainties
+                                    new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                             #
                         #
                         
