@@ -44,13 +44,13 @@ file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'
 run_for_first_time = True
 
 if run_for_first_time == True:
-    # local_dataset_creator_0.execute_local_dataset_creator_0_outputs()
-    # local_dataset_creator_f.execute_local_dataset_creator_f_outputs()
+    local_dataset_creator_0.execute_local_dataset_creator_0_outputs()
+    local_dataset_creator_f.execute_local_dataset_creator_f_outputs()
     local_dataset_creator_0.execute_local_dataset_creator_0_inputs()
     local_dataset_creator_f.execute_local_dataset_creator_f_inputs()
 
 ############################################################################################################
-# df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0, low_memory=False)
+df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -79,7 +79,7 @@ if run_for_first_time == True:
 #----------------------------------------------------------------------------------------------------------#
 
 
-# df_f_output = pd.read_csv( '.' + params['Futures_3'] + params['Out_dat_f'], index_col=None, header=0, low_memory=False)
+df_f_output = pd.read_csv( '.' + params['Futures_3'] + params['Out_dat_f'], index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -104,10 +104,10 @@ if run_for_first_time == True:
 # df_0_output["Year"]=df_0_output["Year"].fillna(0).astype(int)
 #----------------------------------------------------------------------------------------------------------#
 
-#li_output = [df_0_output, df_f_output]
-#
-# df_output = pd.concat(li_output, axis=0, ignore_index=True)
-# df_output.sort_values(by=params['by_1'], inplace=True)
+li_output = [df_0_output, df_f_output]
+
+df_output = pd.concat(li_output, axis=0, ignore_index=True)
+df_output.sort_values(by=params['by_1'], inplace=True)
 ############################################################################################################
 df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0, low_memory=False)
 
@@ -137,9 +137,9 @@ dicDescription=dict(zip(col_t,col_d))
 dicSpecificSector=dict(zip(col_t,col_ss))
 
 
-# df_output=df_output.assign(Sector=np.NaN)
-# df_output=df_output.assign(Description=np.NaN)
-# df_output=df_output.assign(SpecificSector=np.NaN)
+df_output=df_output.assign(Sector=np.NaN)
+df_output=df_output.assign(Description=np.NaN)
+df_output=df_output.assign(SpecificSector=np.NaN)
 
 df_input=df_input.assign(Sector=np.NaN)
 df_input=df_input.assign(Description=np.NaN)
@@ -149,9 +149,9 @@ df_input=df_input.assign(SpecificSector=np.NaN)
 llaves=list(dicSector.keys())
 
 for i in range(len(llaves)):
-    # df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
-    # df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
-    # df_output.loc[df_output['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
     df_input.loc[df_input['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
     df_input.loc[df_input['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
     df_input.loc[df_input['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
@@ -159,14 +159,14 @@ for i in range(len(llaves)):
 #############################
 #############################
 
-dfa_list = [ df_input ] #[ df_output, df_input ]
+dfa_list = [ df_output, df_input ]
 
 today = date.today()
 #
-# df_output = dfa_list[0]
-# df_output.to_csv ( params['ose_cou_out'] + '.csv', index = None, header=True)
-# df_output.to_csv ( params['ose_cou_out'] + '_' + str( today ).replace( '-', '_' ) + '.csv', index = None, header=True)
+df_output = dfa_list[0]
+df_output.to_csv ( params['ose_cou_out'] + '.csv', index = None, header=True)
+df_output.to_csv ( params['ose_cou_out'] + '_' + str( today ).replace( '-', '_' ) + '.csv', index = None, header=True)
 #
-df_input = dfa_list[0] #dfa_list[1]
+df_input = dfa_list[1]
 df_input.to_csv ( params['ose_cou_in'] + '.csv', index = None, header=True)
 df_input.to_csv ( params['ose_cou_in'] + '_' + str( today ).replace( '-', '_' ) + '.csv', index = None, header=True)

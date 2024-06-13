@@ -838,6 +838,8 @@ num_runs: 'Number_of_Runs' # em
 x_cat_emi_wat_ind: ['Emisiones por aguas residuales industriales','Methane recovery'] # em ##@
 x_cat_na_waste_pro: 'National waste production' # em ##@
 x_cat_list: ['Electrical Demand', 'Fuel Demand', 'Freight Demand'] # em
+x_cat_tur_dem: ['Other Transport Demands'] # em
+x_cat_tourism_1: 'Other Transport Demands' # em
 pass_dem: 'Passenger Demand' # em
 fre_dem: 'Freight Demand'  # em
 ele_dem: 'Electrical Demand' # em

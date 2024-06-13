@@ -3532,12 +3532,47 @@ if __name__ == '__main__':
                                                 new_value_list.append(value_list_ratio[y]*new_gdp*list_i[y]/1e6)
                                                 last_gdp = deepcopy(new_gdp)
 
-                                    # Assign parameters back: for these subset of uncertainties
-                                    new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
-                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
+                                # Assign parameters back: for these subset of uncertainties
+                                new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                             #
                         #
-                                    
+                        
+                        elif X_Cat in params['x_cat_tur_dem'] and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
+                            print('Energy_99', X_Cat)
+                            #------------------------------------------
+                            for a_set in range( len( Sets_Involved ) ):
+                                #######
+                                ####### EDITAR AQUÍ PARA TURISMO
+                                #######
+
+                                # Demand adjustment:
+                                this_set = Sets_Involved[a_set]
+                                if params['x_cat_tourism_1'] == X_Cat:
+                                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ][ 'f' ] ) if x == str( this_set ) ]
+                                    this_set_fuels_len = 1
+                                else:
+                                    print('Undefined X_Cat selection')
+                                    sys.exit()
+
+                                for n_afuel in range(this_set_fuels_len):
+                                    #
+                                    # extracting time:
+                                    time_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                    time_list = [ int( time_list[j] ) for j in range( len( time_list ) ) ]
+                                    #
+                                    value_list = deepcopy( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                                    value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+                                    #
+                                    # print(this_set, this_parameter)
+                                    new_value_list = deepcopy( interpolation_non_linear_final_year( time_range_vector, value_list, float(Values_per_Future[fut_id] ), params['final_year']))
+                                    new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
+                                    #
+                                    #-----------------------------------------------------------------------#
+                                #
+                            #
+                        #                        
                         elif params['math_type_mult_rest'] in Math_Type and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
                             ###
                             ### ACA NO SE ENTRA
