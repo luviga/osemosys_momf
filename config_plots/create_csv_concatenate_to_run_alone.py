@@ -150,7 +150,7 @@ if __name__ == '__main__':
         for scen in params['scens']:
             if params['tier']=='1':
                 dir_tier = params['tier1_dir'].replace('..\\','')
-                dir_tier = get_config_main_path(os.path.abspath(''), dir_tier + '\\' + scen)
+                dir_tier = get_config_main_path(os.path.abspath(''), dir_tier[1:])
                 dir_tier = dir_tier = dir_tier.replace('\\', '\\\\')
                 dir_tier = dir_tier = dir_tier.replace('\\', '/')
                 all_files_internal = os.listdir(dir_tier)
@@ -188,7 +188,10 @@ if __name__ == '__main__':
                 output_filename = output_filename.replace('\\\\', '\\')
                 output_filename = get_config_main_path(os.path.abspath(''), output_filename)
                 output_filename = output_filename[:-1]
-                output_filename = output_filename.replace('\Futures', '')
+                if params['tier']=='1':
+                    output_filename = output_filename.replace('\Executables', '')
+                elif params['tier']=='3a':
+                    output_filename = output_filename.replace('\Futures', '')
                 
                 
                 
@@ -321,7 +324,7 @@ if __name__ == '__main__':
                                     shutil.rmtree(outputs_otoole_csvs)
                             
                                 # Delete glp, lp, txt and sol files
-                                if params['del_files'] and not (params['solver'] == 'glpk' and not params['glpk_option'] == 'old'):
+                                if params['del_files'] and (params['solver'] == 'cplex' or params['solver'] == 'cbc' or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old')):
                                     delete_files(sol_file, params['solver'])
     
                         else:
@@ -332,7 +335,7 @@ if __name__ == '__main__':
                                     shutil.rmtree(outputs_otoole_csvs)
                             
                                 # Delete glp, lp, txt and sol files
-                                if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+                                if params['del_files'] and (params['solver'] == 'cplex' or params['solver'] == 'cbc' or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old')):
                                     delete_files(sol_file, params['solver'])
                             file_status.write(f'\n{case}: Infeasible solution.')
                     else:

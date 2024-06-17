@@ -62,7 +62,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     set_first_list(scenario_list_print, params)
     file_aboslute_address = os.path.abspath(params['B1_script'])
     file_config_address = get_config_main_path(os.path.abspath(''))
-    file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+    # file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
     file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
     #
     case_address = file_adress + params['results'] + str( first_list[n1] )
@@ -72,7 +72,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
-
+        
     # Solve model
     solver = params['solver']
 
@@ -93,7 +93,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         os.system( str_start and str_solve )
         if solver == 'cbc':
             # CBC
-            str_solve = 'cbc ' + output_file + '.lp solve -solu ' + output_file + '.sol'
+            str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
@@ -105,35 +105,27 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     # If not existe yaml file to use with otoole
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
         str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
-        print(str_otoole_config)
         os.system( str_start and str_otoole_config )
-
+        
     # Conversion of outputs from .sol to csvs
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
         os.system( str_start and str_outputs )
+        
     elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
-          # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + params['Executables'] + '/' + this_case[0].replace('.txt','') + params['outputs'] + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
+        # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
         os.system( str_start and str_outputs )
-        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-        os.system( str_start and str_otoole_concate_csv )
     
     time.sleep(1)
-        
-    # Delete glp, lp, txt and sol files
-    if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
-        delete_files(output_file, solver)
-    
-#
-def delete_files(file, solver):
-    # Delete files
-    shutil.os.remove(file + '.sol')
-    
-    if solver == 'glpk':
-        shutil.os.remove(file + '.glp')        
-    else:
-        shutil.os.remove(file + '.lp')
+
+
+    # Module to concatenate csvs otoole outputs
+    if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+        # file_aboslute_address = os.path.abspath(params['Manager'])
+        file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0])
+        os.system( str_start and str_otoole_concate_csv )
 
 #
 def set_first_list(scenario_list_print, params):
