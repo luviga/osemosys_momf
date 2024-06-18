@@ -12,8 +12,15 @@ import pickle
 import time
 import yaml
 
+import warnings
+warnings.filterwarnings('ignore')
+
+from setup_utils import install_requirements               
 start1 = time.time()
 # OBJECTIVE: to establish the elements of the model to set up a BAU.
+
+requirements_file = 'requirements.txt'
+install_requirements(requirements_file)
 
 # Read yaml file with parameterization
 with open('MOMF_T1_A.yaml', 'r') as file:
@@ -560,7 +567,9 @@ max_lens_psd = max( all_lens_psd )
 all_lens_trn = [ len( codes_list_techs_DISTTRN ), len( codes_list_techs_TRN ), len( codes_list_techs_TRNGROUP ) ]
 max_lens_trn = max( all_lens_trn )
 #
-###################################################################################################################
+# Initialize an empty list to accumulate rows
+accumulated_rows = []
+
 for n in range( max_lens_psd ):
     #----------------------------------------------------------------------------------------------#
     if n < len( codes_list_techs_primary ):
@@ -588,20 +597,29 @@ for n in range( max_lens_psd ):
         this_demand_tech = ''
         this_demand_fuel_o = ''
     #----------------------------------------------------------------------------------------------#
-    #
-    codes_primary_secondary_demands_df =  codes_primary_secondary_demands_df._append( {   
-                                        'Primary.Tech'      : this_primary_tech,
-                                        'Primary.Fuel.O'    : this_primary_fuel_o,
-                                        'Secondary.Fuel.I'  : this_secondary_fuel_i,
-                                        'Secondary.Tech'    : this_secondary_tech,
-                                        'Secondary.Fuel.O'  : this_secondary_fuel_o,
-                                        'Demands.Fuel.I'    : this_demand_fuel_i,
-                                        'Demands.Tech'      : this_demand_tech,
-                                        'Demands.Fuel.O'    : this_demand_fuel_o
-                                        }, ignore_index=True)
-    #
-#
+    # Create a dictionary for the new row and append it to the list
+    accumulated_rows.append({
+        'Primary.Tech': this_primary_tech,
+        'Primary.Fuel.O': this_primary_fuel_o,
+        'Secondary.Fuel.I': this_secondary_fuel_i,
+        'Secondary.Tech': this_secondary_tech,
+        'Secondary.Fuel.O': this_secondary_fuel_o,
+        'Demands.Fuel.I': this_demand_fuel_i,
+        'Demands.Tech': this_demand_tech,
+        'Demands.Fuel.O': this_demand_fuel_o
+    })
+
+# After the loop, convert the list of dictionaries to a DataFrame
+new_rows_df = pd.DataFrame(accumulated_rows)
+
+# Use pd.concat to append all new rows at once to the original DataFrame
+codes_primary_secondary_demands_df = pd.concat([codes_primary_secondary_demands_df, new_rows_df], ignore_index=True)
+
+ 
 ###################################################################################################################
+# Initialize an empty list to accumulate rows
+accumulated_rows_transport = []
+                                            
 for n in range( max_lens_trn ):
     #----------------------------------------------------------------------------------------------#
     if n < len( codes_list_techs_DISTTRN ):
@@ -631,162 +649,258 @@ for n in range( max_lens_trn ):
         this_TRNGROUP_tech      = ''
         this_TRNGROUP_fuel_o    = ''
     #----------------------------------------------------------------------------------------------#
-    #
-    codes_transport_df =  codes_transport_df._append( {   
-                                                        'DISTTRN.Fuel.I'    :this_DISTTRN_fuel_i    ,
-                                                        'DISTTRN.Tech'      :this_DISTTRN_tech      ,
-                                                        'DISTTRN.Fuel.O'    :this_DISTTRN_fuel_o    ,
-                                                        'TRN.Fuel.I'        :this_TRN_fuel_i        ,
-                                                        'TRN.Tech'          :this_TRN_tech          ,
-                                                        'TRN.Fuel.O'        :this_TRN_fuel_o        ,
-                                                        'TRNGROUP.Fuel.I'   :this_TRNGROUP_fuel_i   ,
-                                                        'TRNGROUP.Tech'     :this_TRNGROUP_tech     ,
-                                                        'TRNGROUP.Fuel.O'   :this_TRNGROUP_fuel_o
-                                                        }, ignore_index=True)
-    #
-#
+    # Append the structured row to the list
+    accumulated_rows_transport.append({
+        'DISTTRN.Fuel.I': this_DISTTRN_fuel_i,
+        'DISTTRN.Tech': this_DISTTRN_tech,
+        'DISTTRN.Fuel.O': this_DISTTRN_fuel_o,
+        'TRN.Fuel.I': this_TRN_fuel_i,
+        'TRN.Tech': this_TRN_tech,
+        'TRN.Fuel.O': this_TRN_fuel_o,
+        'TRNGROUP.Fuel.I': this_TRNGROUP_fuel_i,
+        'TRNGROUP.Tech': this_TRNGROUP_tech,
+        'TRNGROUP.Fuel.O': this_TRNGROUP_fuel_o
+    })
+
+# After the loop, convert the list of dictionaries to a DataFrame
+new_rows_transport_df = pd.DataFrame(accumulated_rows_transport)
+# Concatenate the new rows with the original DataFrame
+codes_transport_df = pd.concat([codes_transport_df, new_rows_transport_df], ignore_index=True)
+
+ 
 #####################################################################################################
 #---------------------------------------------------------------------------------------------------#
 # Primary Techs
-for n in range( len( codes_list_techs_primary ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Primary'                         ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_primary[n]       ,
-                                            'Tech.Name'             : primary_techs_names_eng[n]        ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len( tech_param_list_primary ) ):
-        tech_param_list_yearly_primary_df = tech_param_list_yearly_primary_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_primary[n]       ,
-                                            'Tech.Name'             : primary_techs_names_eng[n]        ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_primary[p]        ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
-#
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly = []
+accumulated_rows_yearly_primary = []                         
+# Loop through primary techs
+for n in range(len(codes_list_techs_primary)):
+    # First part: For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly.append({
+            'Tech.Type': 'Primary',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_primary[n],
+            'Tech.Name': primary_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # Second part: For yearly primary parameters
+    for p in range(len(tech_param_list_primary)):
+        accumulated_rows_yearly_primary.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_primary[n],
+            'Tech.Name': primary_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_primary[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_df = pd.DataFrame(accumulated_rows_all_notyearly)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly primary parameters into a DataFrame and concatenate
+new_rows_yearly_primary_df = pd.DataFrame(accumulated_rows_yearly_primary)
+tech_param_list_yearly_primary_df = pd.concat([tech_param_list_yearly_primary_df, new_rows_yearly_primary_df], ignore_index=True)
 #---------------------------------------------------------------------------------------------------#
 # Secondary Techs
-for n in range( len( codes_list_techs_secondary ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Secondary'                       ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_secondary[n]      ,
-                                            'Tech.Name'             : secondary_techs_names_eng[n]      ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len( tech_param_list_secondary ) ):
-        tech_param_list_yearly_secondary_df = tech_param_list_yearly_secondary_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_secondary[n]      ,
-                                            'Tech.Name'             : secondary_techs_names_eng[n]      ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_secondary[p]      ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
-#
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_secondary = []
+accumulated_rows_yearly_secondary = []
+
+# Loop through secondary techs
+for n in range(len(codes_list_techs_secondary)):
+    # For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly_secondary.append({
+            'Tech.Type': 'Secondary',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_secondary[n],
+            'Tech.Name': secondary_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # For yearly secondary parameters
+    for p in range(len(tech_param_list_secondary)):
+        accumulated_rows_yearly_secondary.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_secondary[n],
+            'Tech.Name': secondary_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_secondary[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_secondary_df = pd.DataFrame(accumulated_rows_all_notyearly_secondary)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_secondary_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly secondary parameters into a DataFrame and concatenate
+new_rows_yearly_secondary_df = pd.DataFrame(accumulated_rows_yearly_secondary)
+tech_param_list_yearly_secondary_df = pd.concat([tech_param_list_yearly_secondary_df, new_rows_yearly_secondary_df], ignore_index=True)
+
 #---------------------------------------------------------------------------------------------------#
 # Demand Techs (simple)
-for n in range( len( codes_list_techs_demands ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Demand Techs'                    ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_demands[n]       ,
-                                            'Tech.Name'             : techs_demand_simple_eng[n]        ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len( tech_param_list_demands ) ):
-        tech_param_list_yearly_demands_df = tech_param_list_yearly_demands_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_demands[n]       ,
-                                            'Tech.Name'             : techs_demand_simple_eng[n]        ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_demands[p]        ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_demands = []
+accumulated_rows_yearly_demands = []
+
+# Loop through demand techs
+for n in range(len(codes_list_techs_demands)):
+    # For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly_demands.append({
+            'Tech.Type': 'Demand Techs',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_demands[n],
+            'Tech.Name': techs_demand_simple_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # For yearly demand parameters
+    for p in range(len(tech_param_list_demands)):
+        accumulated_rows_yearly_demands.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_demands[n],
+            'Tech.Name': techs_demand_simple_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_demands[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_demands_df = pd.DataFrame(accumulated_rows_all_notyearly_demands)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_demands_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly demands parameters into a DataFrame and concatenate
+new_rows_yearly_demands_df = pd.DataFrame(accumulated_rows_yearly_demands)
+tech_param_list_yearly_demands_df = pd.concat([tech_param_list_yearly_demands_df, new_rows_yearly_demands_df], ignore_index=True)
+
 #---------------------------------------------------------------------------------------------------#
 # Transport fuel distribution techs:
-for n in range( len( codes_list_techs_DISTTRN ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Transport Fuel Distribution'     ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_DISTTRN[n]       ,
-                                            'Tech.Name'             : sp_trn_techs_dist_eng[n]          ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len(tech_param_list_disttrn) ):
-        tech_param_list_yearly_disttrn_df = tech_param_list_yearly_disttrn_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_DISTTRN[n]       ,
-                                            'Tech.Name'             : sp_trn_techs_dist_eng[n]          ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_disttrn[p]        ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_disttrn = []
+accumulated_rows_yearly_disttrn = []
+
+# Loop through distribution transport techs
+for n in range(len(codes_list_techs_DISTTRN)):
+    # For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly_disttrn.append({
+            'Tech.Type': 'Transport Fuel Distribution',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_DISTTRN[n],
+            'Tech.Name': sp_trn_techs_dist_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # For yearly distribution parameters
+    for p in range(len(tech_param_list_disttrn)):
+        accumulated_rows_yearly_disttrn.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_DISTTRN[n],
+            'Tech.Name': sp_trn_techs_dist_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_disttrn[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_disttrn_df = pd.DataFrame(accumulated_rows_all_notyearly_disttrn)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_disttrn_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly distribution parameters into a DataFrame and concatenate
+new_rows_yearly_disttrn_df = pd.DataFrame(accumulated_rows_yearly_disttrn)
+tech_param_list_yearly_disttrn_df = pd.concat([tech_param_list_yearly_disttrn_df, new_rows_yearly_disttrn_df], ignore_index=True)
+
 #---------------------------------------------------------------------------------------------------#
 # Transport vehicle techs:
-for n in range( len( codes_list_techs_TRN ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Transport Vehicles'              ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_TRN[n]           ,
-                                            'Tech.Name'             : sp_trn_techs_names_eng[n]         ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len( tech_param_list_trn ) ):
-        tech_param_list_yearly_trn_df = tech_param_list_yearly_trn_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_TRN[n]           ,
-                                            'Tech.Name'             : sp_trn_techs_names_eng[n]         ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_trn[p]            ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_trn = []
+accumulated_rows_yearly_trn = []
+
+# Loop through transport vehicle techs
+for n in range(len(codes_list_techs_TRN)):
+    # For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly_trn.append({
+            'Tech.Type': 'Transport Vehicles',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_TRN[n],
+            'Tech.Name': sp_trn_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # For yearly transport vehicle parameters
+    for p in range(len(tech_param_list_trn)):
+        accumulated_rows_yearly_trn.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_TRN[n],
+            'Tech.Name': sp_trn_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_trn[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_trn_df = pd.DataFrame(accumulated_rows_all_notyearly_trn)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_trn_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly transport vehicle parameters into a DataFrame and concatenate
+new_rows_yearly_trn_df = pd.DataFrame(accumulated_rows_yearly_trn)
+tech_param_list_yearly_trn_df = pd.concat([tech_param_list_yearly_trn_df, new_rows_yearly_trn_df], ignore_index=True)
+
 #---------------------------------------------------------------------------------------------------#
 # Transport vehicle group techs:
-for n in range( len( codes_list_techs_TRNGROUP ) ):
-    for p in range( len( tech_param_list_all_notyearly ) ):
-        tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df._append( {
-                                            'Tech.Type'             : 'Vehicle Groups'                  ,
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_TRNGROUP[n]      ,
-                                            'Tech.Name'             : sp_trn_group_techs_names_eng[n]   ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_all_notyearly[p]
-                                            }, ignore_index=True)
-    #
-    for p in range( len( tech_param_list_trngroups ) ):
-        tech_param_list_yearly_trngroups_df = tech_param_list_yearly_trngroups_df._append( {
-                                            'Tech.ID'               : n+1                               ,
-                                            'Tech'                  : codes_list_techs_TRNGROUP[n]      ,
-                                            'Tech.Name'             : sp_trn_group_techs_names_eng[n]   ,
-                                            'Parameter.ID'          : p+1                               ,
-                                            'Parameter'             : tech_param_list_trngroups[p]      ,
-                                            'Projection.Parameter'  : 0
-                                            }, ignore_index=True)
-    #
-#
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_trngroups = []
+accumulated_rows_yearly_trngroups = []
+
+# Loop through vehicle group techs
+for n in range(len(codes_list_techs_TRNGROUP)):
+    # For all not yearly parameters
+    for p in range(len(tech_param_list_all_notyearly)):
+        accumulated_rows_all_notyearly_trngroups.append({
+            'Tech.Type': 'Vehicle Groups',
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_TRNGROUP[n],
+            'Tech.Name': sp_trn_group_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_all_notyearly[p]
+        })
+
+    # For yearly vehicle group parameters
+    for p in range(len(tech_param_list_trngroups)):
+        accumulated_rows_yearly_trngroups.append({
+            'Tech.ID': n + 1,
+            'Tech': codes_list_techs_TRNGROUP[n],
+            'Tech.Name': sp_trn_group_techs_names_eng[n],
+            'Parameter.ID': p + 1,
+            'Parameter': tech_param_list_trngroups[p],
+            'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+        })
+
+# Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+new_rows_all_notyearly_trngroups_df = pd.DataFrame(accumulated_rows_all_notyearly_trngroups)
+tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_trngroups_df], ignore_index=True)
+
+# Convert the accumulated rows for yearly vehicle group parameters into a DataFrame and concatenate
+new_rows_yearly_trngroups_df = pd.DataFrame(accumulated_rows_yearly_trngroups)
+tech_param_list_yearly_trngroups_df = pd.concat([tech_param_list_yearly_trngroups_df, new_rows_yearly_trngroups_df], ignore_index=True)
+
 ###################################################################################################################
 # We must create different sheets with every section of the model, and we must create:
 #   1) Base Year calibration data, 2) Projection Data
@@ -806,35 +920,49 @@ df_techs_primary_projection = pd.DataFrame(columns=df_techs_primary_projection_H
 this_complete_fuel_o = []
 for n in range( len( codes_list_techs_primary ) ):
     this_complete_fuel_o.append( codes_dict_techs_primary_output[ codes_list_techs_primary[ n ] ] )
-#
-for n in range( len( codes_list_techs_primary ) ):
-    #
+# Initialize empty lists to accumulate rows
+accumulated_rows_base_year = []
+accumulated_rows_projection = []
+
+# Loop through primary techs
+for n in range(len(codes_list_techs_primary)):
+    # Extract values for the current iteration
     this_tech_names = primary_techs_names_eng[n]
-    this_fuel_o = codes_dict_techs_primary_output[ codes_list_techs_primary[ n ] ]
-    this_fuel_o_name_index = this_complete_fuel_o.index( this_fuel_o )
-    this_fuel_o_name = primary_o_fuels_names_eng[ this_fuel_o_name_index ]
-    #
-    df_techs_primary_base_year = df_techs_primary_base_year._append( {
-                                                        'Tech'          : codes_list_techs_primary[n]   ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name                ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_primary_projection = df_techs_primary_projection._append( {
-                                                        'Tech'                  : codes_list_techs_primary[n]   ,
-                                                        'Tech.Name'             : this_tech_names               ,
-                                                        'Fuel'                  : this_fuel_o                   ,
-                                                        'Fuel.Name'             : this_fuel_o_name                ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : '' # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-#
+    this_fuel_o = codes_dict_techs_primary_output[codes_list_techs_primary[n]]
+    this_fuel_o_name_index = this_complete_fuel_o.index(this_fuel_o)
+    this_fuel_o_name = primary_o_fuels_names_eng[this_fuel_o_name_index]
+
+    # Append dictionaries for base year
+    accumulated_rows_base_year.append({
+        'Tech': codes_list_techs_primary[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # This should be filled by the user
+    })
+
+    # Append dictionaries for projection
+    accumulated_rows_projection.append({
+        'Tech': codes_list_techs_primary[n],
+        'Tech.Name': this_tech_names,
+        'Fuel': this_fuel_o,
+        'Fuel.Name': this_fuel_o_name,
+        'Direction': 'Output',
+        'Projection.Mode': '',
+        'Projection.Parameter': ''  # This should be filled by the user
+    })
+
+# Convert the accumulated rows into DataFrames
+new_rows_base_year_df = pd.DataFrame(accumulated_rows_base_year)
+new_rows_projection_df = pd.DataFrame(accumulated_rows_projection)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_primary_base_year = pd.concat([df_techs_primary_base_year, new_rows_base_year_df], ignore_index=True)
+df_techs_primary_projection = pd.concat([df_techs_primary_projection, new_rows_projection_df], ignore_index=True)
+
+# Replace NaN values in df_techs_primary_projection
+ 
 df_techs_primary_projection = df_techs_primary_projection.replace(np.nan, '', regex=True)
-#
 #---------------------------------------------------------------------------------------------------------------------------------#
 # B - Let's now take the elements for the secondary energy and reproduce what we did above:
 df_techs_secondary_base_year_HEADER   = params['df_techs_secondary_base_year_HEADER']
@@ -848,51 +976,67 @@ this_complete_fuel_o = []
 for n in range( len( codes_list_techs_secondary ) ):
     this_complete_fuel_i.append( codes_dict_techs_secondary_input[ codes_list_techs_secondary[ n ] ] )
     this_complete_fuel_o.append( codes_dict_techs_secondary_output[ codes_list_techs_secondary[ n ] ] )
-#
-for n in range( len( codes_list_techs_secondary ) ):
-    #
+# Initialize empty lists to accumulate rows
+accumulated_rows_secondary_base_year = []
+accumulated_rows_secondary_projection = []
+
+# Loop through secondary techs
+for n in range(len(codes_list_techs_secondary)):
+    # Extract values for the current iteration
     this_tech_names = secondary_techs_names_eng[n]
-    #
-    this_fuel_i = codes_dict_techs_secondary_input[ codes_list_techs_secondary[ n ] ]
-    this_fuel_i_name_index = this_complete_fuel_i.index( this_fuel_i )
-    this_fuel_i_name = secondary_i_fuels_names_eng[ this_fuel_i_name_index ]
-    #
-    this_fuel_o = codes_dict_techs_secondary_output[ codes_list_techs_secondary[ n ] ]
-    this_fuel_o_name_index = this_complete_fuel_o.index( this_fuel_o )
-    this_fuel_o_name = secondary_o_fuels_names_eng[ this_fuel_o_name_index ]
-    #
-    df_techs_secondary_base_year = df_techs_secondary_base_year._append( {
-                                                        'Fuel.I'        : this_fuel_i                   ,
-                                                        'Fuel.I.Name'   : this_fuel_i_name              ,
-                                                        'Value.Fuel.I'  : 0 , # This should be filled by the user
-                                                        'Tech'          : codes_list_techs_secondary[n] ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name              ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_secondary_projection = df_techs_secondary_projection._append( {
-                                                        'Tech'                  : codes_list_techs_secondary[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_i                       ,
-                                                        'Fuel.Name'             : this_fuel_i_name                  ,
-                                                        'Direction'             : 'Input',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_secondary_projection = df_techs_secondary_projection._append( {
-                                                        'Tech'                  : codes_list_techs_secondary[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_o                       ,
-                                                        'Fuel.Name'             : this_fuel_o_name                  ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-#
+     
+    this_fuel_i = codes_dict_techs_secondary_input[codes_list_techs_secondary[n]]
+    this_fuel_i_name_index = this_complete_fuel_i.index(this_fuel_i)
+    this_fuel_i_name = secondary_i_fuels_names_eng[this_fuel_i_name_index]
+     
+    this_fuel_o = codes_dict_techs_secondary_output[codes_list_techs_secondary[n]]
+    this_fuel_o_name_index = this_complete_fuel_o.index(this_fuel_o)
+    this_fuel_o_name = secondary_o_fuels_names_eng[this_fuel_o_name_index]
+
+    # Accumulate rows for base year
+    accumulated_rows_secondary_base_year.append({
+        'Fuel.I': this_fuel_i,
+        'Fuel.I.Name': this_fuel_i_name,
+        'Value.Fuel.I': 0,  # This should be filled by the user
+        'Tech': codes_list_techs_secondary[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # This should be filled by the user
+    })
+
+    # Accumulate rows for projection (Input)
+    accumulated_rows_secondary_projection.append({
+        'Tech': codes_list_techs_secondary[n],
+        'Tech.Name': this_tech_names,
+        'Fuel': this_fuel_i,
+        'Fuel.Name': this_fuel_i_name,
+        'Direction': 'Input',
+        'Projection.Mode': '',
+        'Projection.Parameter': 0  # This should be filled by the user
+    })
+
+    # Accumulate rows for projection (Output)
+    accumulated_rows_secondary_projection.append({
+        'Tech': codes_list_techs_secondary[n],
+        'Tech.Name': this_tech_names,
+        'Fuel': this_fuel_o,
+        'Fuel.Name': this_fuel_o_name,
+        'Direction': 'Output',
+        'Projection.Mode': '',
+        'Projection.Parameter': 0  # This should be filled by the user
+    })
+
+# Convert the accumulated rows into DataFrames
+new_rows_secondary_base_year_df = pd.DataFrame(accumulated_rows_secondary_base_year)
+new_rows_secondary_projection_df = pd.DataFrame(accumulated_rows_secondary_projection)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_secondary_base_year = pd.concat([df_techs_secondary_base_year, new_rows_secondary_base_year_df], ignore_index=True)
+df_techs_secondary_projection = pd.concat([df_techs_secondary_projection, new_rows_secondary_projection_df], ignore_index=True)
+
+# Replace NaN values in df_techs_secondary_projection
+ 
 df_techs_secondary_projection = df_techs_secondary_projection.replace(np.nan, '', regex=True)
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
@@ -902,62 +1046,83 @@ df_techs_demand_projection_HEADER  = params['df_techs_demand_projection_HEADER']
 #
 df_techs_demand_base_year = pd.DataFrame(columns=df_techs_demand_base_year_HEADER)
 df_techs_demand_projection = pd.DataFrame(columns=df_techs_demand_projection_HEADER)
-#
-for n in range( len( codes_list_techs_demands ) ):
-    #
+# Initialize empty lists to accumulate rows
+accumulated_rows_demand_base_year = []
+accumulated_rows_demand_projection = []
+accumulated_rows_demands_all = []
+
+# Loop through demand techs
+for n in range(len(codes_list_techs_demands)):
+    # Extract values for the current iteration
     this_tech_names = techs_demand_simple_eng[n]
-    #
-    this_fuel_i = codes_dict_techs_demands_input[ codes_list_techs_demands[ n ] ]
-    this_fuel_i_name_index = '' # this should be completed later
-    this_fuel_i_name = '' # this should be completed later
-    #
-    this_fuel_o = codes_dict_techs_demands_output[ codes_list_techs_demands[ n ] ]
-    this_fuel_o_name_index = demands_simple.index( this_fuel_o )
-    this_fuel_o_name = demands_simple_eng[ this_fuel_o_name_index ]
-    #
-    df_techs_demand_base_year = df_techs_demand_base_year._append( {
-                                                        'Fuel.I'        : this_fuel_i                   ,
-                                                        'Fuel.I.Name'   : this_fuel_i_name              ,
-                                                        'Value.Fuel.I'  : 0 , # This should be filled by the user
-                                                        'Tech'          : techs_demand_simple[n] ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name              ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_demand_projection = df_techs_demand_projection._append( {
-                                                        'Tech'                  : techs_demand_simple[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_i                       ,
-                                                        'Fuel.Name'             : this_fuel_i_name                  ,
-                                                        'Direction'             : 'Input',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_demand_projection = df_techs_demand_projection._append( {
-                                                        'Tech'                  : techs_demand_simple[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_o                       ,
-                                                        'Fuel.Name'             : this_fuel_o_name                  ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_demands_all = df_demands_all._append ( {
-                                                        'Ref.Cap.BY'            : 'not needed'      ,
-                                                        'Ref.OAR.BY'            : 'not needed'      ,
-                                                        'Ref.km.BY'             : 'not needed'      ,
-                                                        'Demand/Share'          : 'Demand'          ,
-                                                        'Fuel/Tech'             : this_fuel_o       ,
-                                                        'Name'                  : this_fuel_o_name  ,
-                                                        'Projection.Mode'       : ''                ,
-                                                        'Projection.Parameter'  : 0
-                                                        }, ignore_index=True )
-    #
-#
+     
+    this_fuel_i = codes_dict_techs_demands_input[codes_list_techs_demands[n]]
+    # Placeholder for fuel_i_name_index and fuel_i_name - to be completed later
+    this_fuel_i_name_index = ''  # this should be completed later
+    this_fuel_i_name = ''  # this should be completed later
+     
+    this_fuel_o = codes_dict_techs_demands_output[codes_list_techs_demands[n]]
+    this_fuel_o_name_index = demands_simple.index(this_fuel_o)
+    this_fuel_o_name = demands_simple_eng[this_fuel_o_name_index]
+
+    # Accumulate rows for base year
+    accumulated_rows_demand_base_year.append({
+        'Fuel.I': this_fuel_i,
+        'Fuel.I.Name': this_fuel_i_name,
+        'Value.Fuel.I': 0,  # This should be filled by the user
+        'Tech': techs_demand_simple[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # This should be filled by the user
+    })
+
+    # Accumulate rows for projection (Input and Output)
+    accumulated_rows_demand_projection.extend([
+        {
+            'Tech': techs_demand_simple[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_i,
+            'Fuel.Name': this_fuel_i_name,
+            'Direction': 'Input',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # This should be filled by the user
+        },
+        {
+                                                                      
+            'Tech': techs_demand_simple[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_o,
+            'Fuel.Name': this_fuel_o_name,
+            'Direction': 'Output',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # This should be filled by the user
+        }
+    ])
+
+    # Accumulate rows for demands all
+    accumulated_rows_demands_all.append({
+        'Ref.Cap.BY': 'not needed',
+        'Ref.OAR.BY': 'not needed',
+        'Ref.km.BY': 'not needed',
+        'Demand/Share': 'Demand',
+        'Fuel/Tech': this_fuel_o,
+        'Name': this_fuel_o_name,
+        'Projection.Mode': '',
+        'Projection.Parameter': 0
+    })
+
+# Convert the accumulated rows into DataFrames
+new_rows_demand_base_year_df = pd.DataFrame(accumulated_rows_demand_base_year)
+new_rows_demand_projection_df = pd.DataFrame(accumulated_rows_demand_projection)
+new_rows_demands_all_df = pd.DataFrame(accumulated_rows_demands_all)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_demand_base_year = pd.concat([df_techs_demand_base_year, new_rows_demand_base_year_df], ignore_index=True)
+df_techs_demand_projection = pd.concat([df_techs_demand_projection, new_rows_demand_projection_df], ignore_index=True)
+df_demands_all = pd.concat([df_demands_all, new_rows_demands_all_df], ignore_index=True)
+
+# Replace NaN values in the DataFrames
 df_techs_demand_projection = df_techs_demand_projection.replace(np.nan, '', regex=True)
 df_demands_all = df_demands_all.replace(np.nan, '', regex=True)
 #
@@ -969,51 +1134,67 @@ df_techs_DISTTRN_projection_HEADER  = params['df_techs_DISTTRN_projection_HEADER
 #
 df_techs_DISTTRN_base_year = pd.DataFrame(columns=df_techs_DISTTRN_base_year_HEADER)
 df_techs_DISTTRN_projection = pd.DataFrame(columns=df_techs_DISTTRN_projection_HEADER)
-#
-for n in range( len( codes_list_techs_DISTTRN ) ):
-    #
+# Initialize empty lists to accumulate rows
+accumulated_rows_DISTTRN_base_year = []
+accumulated_rows_DISTTRN_projection = []
+
+# Loop through DISTTRN techs
+for n in range(len(codes_list_techs_DISTTRN)):
+    # Extract values for the current iteration
     this_tech_names = sp_trn_techs_dist_eng[n]
-    #
-    this_fuel_i = codes_list_techs_DISTTRN_input[ codes_list_techs_DISTTRN[ n ] ]
-    this_fuel_i_name_index = '' # this should be completed later
-    this_fuel_i_name = '' # this should be completed later
-    #
-    this_fuel_o = codes_list_techs_DISTTRN_output[ codes_list_techs_DISTTRN[ n ] ]
-    this_fuel_o_name_index = sp_trn_fuel_dist.index( this_fuel_o ) # this should be completed later
-    this_fuel_o_name = sp_trn_fuel_dist_eng[ this_fuel_o_name_index ] # this should be completed later
-    #
-    df_techs_DISTTRN_base_year = df_techs_DISTTRN_base_year._append( {
-                                                        'Fuel.I'        : this_fuel_i                   ,
-                                                        'Fuel.I.Name'   : this_fuel_i_name              ,
-                                                        'Value.Fuel.I'  : 0 , # This should be filled by the user
-                                                        'Tech'          : codes_list_techs_DISTTRN[n] ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name              ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_DISTTRN_projection = df_techs_DISTTRN_projection._append( {
-                                                        'Tech'                  : codes_list_techs_DISTTRN[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_i                       ,
-                                                        'Fuel.Name'             : this_fuel_i_name                  ,
-                                                        'Direction'             : 'Input',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_DISTTRN_projection = df_techs_DISTTRN_projection._append( {
-                                                        'Tech'                  : codes_list_techs_DISTTRN[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_o                       ,
-                                                        'Fuel.Name'             : this_fuel_o_name                  ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-#
+     
+    this_fuel_i = codes_list_techs_DISTTRN_input[codes_list_techs_DISTTRN[n]]
+    # Placeholder for fuel_i_name_index and fuel_i_name - to be completed later
+    this_fuel_i_name_index = ''  # Placeholder, needs completion
+    this_fuel_i_name = ''  # Placeholder, needs completion
+    this_fuel_o = codes_list_techs_DISTTRN_output[codes_list_techs_DISTTRN[n]]
+    this_fuel_o_name_index = sp_trn_fuel_dist.index(this_fuel_o)  # Assume index finding is correct
+    this_fuel_o_name = sp_trn_fuel_dist_eng[this_fuel_o_name_index]
+
+    # Accumulate rows for base year
+    accumulated_rows_DISTTRN_base_year.append({
+        'Fuel.I': this_fuel_i,
+        'Fuel.I.Name': this_fuel_i_name,
+        'Value.Fuel.I': 0,  # This should be filled by the user
+        'Tech': codes_list_techs_DISTTRN[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # This should be filled by the user
+    })
+
+    # Accumulate rows for projection (Input and Output)
+    accumulated_rows_DISTTRN_projection.extend([
+        {
+            'Tech': codes_list_techs_DISTTRN[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_i,
+            'Fuel.Name': this_fuel_i_name,
+            'Direction': 'Input',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # This should be filled by the user
+        },
+        {
+                                                                        
+            'Tech': codes_list_techs_DISTTRN[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_o,
+            'Fuel.Name': this_fuel_o_name,
+            'Direction': 'Output',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # This should be filled by the user
+        }
+    ])
+
+# Convert the accumulated rows into DataFrames
+new_rows_DISTTRN_base_year_df = pd.DataFrame(accumulated_rows_DISTTRN_base_year)
+new_rows_DISTTRN_projection_df = pd.DataFrame(accumulated_rows_DISTTRN_projection)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_DISTTRN_base_year = pd.concat([df_techs_DISTTRN_base_year, new_rows_DISTTRN_base_year_df], ignore_index=True)
+df_techs_DISTTRN_projection = pd.concat([df_techs_DISTTRN_projection, new_rows_DISTTRN_projection_df], ignore_index=True)
+
+# Replace NaN values in df_techs_DISTTRN_projection
 df_techs_DISTTRN_projection = df_techs_DISTTRN_projection.replace(np.nan, '', regex=True)
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
@@ -1024,76 +1205,91 @@ df_techs_TRN_projection_HEADER  = params['df_techs_TRN_projection_HEADER'] + tim
 #
 df_techs_TRN_base_year = pd.DataFrame(columns=df_techs_TRN_base_year_HEADER)
 df_techs_TRN_projection = pd.DataFrame(columns=df_techs_TRN_projection_HEADER)
-#
-for n in range( len( codes_list_techs_TRN ) ):
-    #
+# Initialize empty lists to accumulate rows
+accumulated_rows_TRN_base_year = []
+accumulated_rows_TRN_projection = []
+
+# Loop through TRN techs
+for n in range(len(codes_list_techs_TRN)):
+    # Extract values for the current iteration
     this_tech_names = sp_trn_techs_names_eng[n]
-    #
-    this_fuel_i = codes_list_techs_TRN_input[ codes_list_techs_TRN[ n ] ]
-    if len( this_fuel_i ) >= 1:
-        this_fuel_i_1 = this_fuel_i[0]
-        this_fuel_i_1_name_index = '' # this should be completed later // sp_trn_fuel_dist.index( this_fuel_i )
-        this_fuel_i_1_name = '' # this should be completed later // sp_trn_fuel_dist_eng[ this_fuel_i_name_index ]
-        #
-        this_fuel_i_2 = 'none'
-        this_fuel_i_2_name_index = '' # this should be completed later // sp_trn_fuel_dist.index( this_fuel_i )
-        this_fuel_i_2_name = '' # this should be completed later // sp_trn_fuel_dist_eng[ this_fuel_i_name_index ]
-        #
-    #
-    if len( this_fuel_i ) == 2:
-        this_fuel_i_2 = this_fuel_i[1]
-        #
-    #
-    this_fuel_o = codes_list_techs_TRN_output[ codes_list_techs_TRN[ n ] ]
-    this_fuel_o_name_index = '' # this should be completed later
-    this_fuel_o_name = '' # this should be completed later
-    #
-    df_techs_TRN_base_year = df_techs_TRN_base_year._append( {
-                                                        'Fuel.I.1'      : this_fuel_i_1                 ,
-                                                        'Fuel.I.1.Name' : this_fuel_i_1_name            ,
-                                                        'Value.Fuel.I.1': 0 , # This should be filled by the user
-                                                        'Fuel.I.2'      : this_fuel_i_2                 ,
-                                                        'Fuel.I.2.Name' : this_fuel_i_2_name            ,
-                                                        'Value.Fuel.I.2': 0 , # This should be filled by the user
-                                                        'Tech'          : codes_list_techs_TRN[n] ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name              ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_TRN_projection = df_techs_TRN_projection._append( {
-                                                        'Tech'                  : codes_list_techs_TRN[n]           ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_i_1                     ,
-                                                        'Fuel.Name'             : this_fuel_i_1_name                ,
-                                                        'Direction'             : 'Input',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    if len( this_fuel_i ) == 2:
-        df_techs_TRN_projection = df_techs_TRN_projection._append( {
-                                                            'Tech'                  : codes_list_techs_TRN[n]           ,
-                                                            'Tech.Name'             : this_tech_names                   ,
-                                                            'Fuel'                  : this_fuel_i_2                     ,
-                                                            'Fuel.Name'             : this_fuel_i_2_name                ,
-                                                            'Direction'             : 'Input',
-                                                            'Projection.Mode'       : '',
-                                                            'Projection.Parameter'  : 0 # This should be filled by the user
-                                                            }, ignore_index=True )
-    #
-    df_techs_TRN_projection = df_techs_TRN_projection._append( {
-                                                        'Tech'                  : codes_list_techs_TRN[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_o                       ,
-                                                        'Fuel.Name'             : this_fuel_o_name                  ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-#
+     
+    this_fuel_i = codes_list_techs_TRN_input[codes_list_techs_TRN[n]]
+
+    # Initialize default values for secondary input fuel
+    this_fuel_i_1 = 'none' if len(this_fuel_i) == 0 else this_fuel_i[0]
+    this_fuel_i_1_name = ''  # Placeholder for name, to be completed later
+         
+    this_fuel_i_2 = 'none'  # Default value for secondary input fuel
+                                                                                                               
+    this_fuel_i_2_name = ''  # Placeholder for name, to be completed later
+
+     
+    if len(this_fuel_i) > 1:
+        this_fuel_i_2 = this_fuel_i[1]  # Assign second input fuel if exists
+
+     
+    this_fuel_o = codes_list_techs_TRN_output[codes_list_techs_TRN[n]]
+    this_fuel_o_name = ''  # Placeholder for output fuel name, to be completed later
+
+    # Accumulate rows for base year
+    accumulated_rows_TRN_base_year.append({
+        'Fuel.I.1': this_fuel_i_1,
+        'Fuel.I.1.Name': this_fuel_i_1_name,
+        'Value.Fuel.I.1': 0,  # This should be filled by the user
+        'Fuel.I.2': this_fuel_i_2,
+        'Fuel.I.2.Name': this_fuel_i_2_name,
+        'Value.Fuel.I.2': 0,  # This should be filled by the user
+        'Tech': codes_list_techs_TRN[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # This should be filled by the user
+    })
+
+    # Accumulate rows for projection (Input for both fuels and Output)
+    accumulated_rows_TRN_projection.append({
+        'Tech': codes_list_techs_TRN[n],
+        'Tech.Name': this_tech_names,
+        'Fuel': this_fuel_i_1,
+        'Fuel.Name': this_fuel_i_1_name,
+        'Direction': 'Input',
+        'Projection.Mode': '',
+        'Projection.Parameter': 0  # This should be filled by the user
+    })
+
+    # Additional input fuel (if exists)
+    if len(this_fuel_i) > 1:
+        accumulated_rows_TRN_projection.append({
+            'Tech': codes_list_techs_TRN[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_i_2,
+            'Fuel.Name': this_fuel_i_2_name,
+            'Direction': 'Input',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # This should be filled by the user
+        })
+
+    # Output fuel
+    accumulated_rows_TRN_projection.append({
+        'Tech': codes_list_techs_TRN[n],
+        'Tech.Name': this_tech_names,
+        'Fuel': this_fuel_o,
+        'Fuel.Name': this_fuel_o_name,
+        'Direction': 'Output',
+        'Projection.Mode': '',
+        'Projection.Parameter': 0  # This should be filled by the user
+    })
+
+# Convert the accumulated rows into DataFrames
+new_rows_TRN_base_year_df = pd.DataFrame(accumulated_rows_TRN_base_year)
+new_rows_TRN_projection_df = pd.DataFrame(accumulated_rows_TRN_projection)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_TRN_base_year = pd.concat([df_techs_TRN_base_year, new_rows_TRN_base_year_df], ignore_index=True)
+df_techs_TRN_projection = pd.concat([df_techs_TRN_projection, new_rows_TRN_projection_df], ignore_index=True)
+
+# Replace NaN values in df_techs_TRN_projection
 df_techs_TRN_projection = df_techs_TRN_projection.replace(np.nan, '', regex=True)
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
@@ -1103,68 +1299,92 @@ df_techs_TRNGROUP_projection_HEADER  = params['df_techs_TRNGROUP_projection_HEAD
 #
 df_techs_TRNGROUP_base_year = pd.DataFrame(columns=df_techs_TRNGROUP_base_year_HEADER)
 df_techs_TRNGROUP_projection = pd.DataFrame(columns=df_techs_TRNGROUP_projection_HEADER)
-#
-for n in range( len( codes_list_techs_TRNGROUP ) ):
-    #
-    this_tech_names = sp_trn_group_techs_names_eng[n] # this should be completed later
-    #
-    this_fuel_i = codes_list_techs_TRNGROUP_input[ codes_list_techs_TRNGROUP[ n ] ]
-    this_fuel_i_name_index = '' # this should be completed later
-    this_fuel_i_name = '' # this should be completed later
-    #
-    this_fuel_o = codes_list_techs_TRNGROUP_output[ codes_list_techs_TRNGROUP[ n ] ]
-    this_fuel_o_name_index = sp_trn_dem_to_code_Code.index( this_fuel_o )
-    this_fuel_o_name = sp_trn_dem_to_code_names_eng[ this_fuel_o_name_index ]
-    #
-    df_techs_TRNGROUP_base_year = df_techs_TRNGROUP_base_year._append( {
-                                                        'Fuel.I'        : this_fuel_i                   ,
-                                                        'Fuel.I.Name'   : this_fuel_i_name              ,
-                                                        'Value.Fuel.I'  : 0 , # This should be filled by the user
-                                                        'Tech'          : codes_list_techs_TRNGROUP[n] ,
-                                                        'Tech.Name'     : this_tech_names               ,
-                                                        'Fuel.O'        : this_fuel_o                   ,
-                                                        'Fuel.O.Name'   : this_fuel_o_name              ,
-                                                        'Value.Fuel.O'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_TRNGROUP_projection = df_techs_TRNGROUP_projection._append( {
-                                                        'Tech'                  : codes_list_techs_TRNGROUP[n]     ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_i                       ,
-                                                        'Fuel.Name'             : this_fuel_i_name                  ,
-                                                        'Direction'             : 'Input',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    df_techs_TRNGROUP_projection = df_techs_TRNGROUP_projection._append( {
-                                                        'Tech'                  : codes_list_techs_TRNGROUP[n]      ,
-                                                        'Tech.Name'             : this_tech_names                   ,
-                                                        'Fuel'                  : this_fuel_o                       ,
-                                                        'Fuel.Name'             : this_fuel_o_name                  ,
-                                                        'Direction'             : 'Output',
-                                                        'Projection.Mode'       : '',
-                                                        'Projection.Parameter'  : 0 # This should be filled by the user
-                                                        }, ignore_index=True )
-    #
-    if this_fuel_o not in df_demands_fuel_list: # we need this because it is repeated
-        df_demands_fuel_list.append( this_fuel_o )
-        df_demands_all = df_demands_all._append ( {
-                                                            'Demand/Share'          : 'Demand'          ,
-                                                            'Fuel/Tech'             : this_fuel_o       ,
-                                                            'Name'                  : this_fuel_o_name  ,
-                                                            'Projection.Mode'       : ''                ,
-                                                            'Projection.Parameter'  : 0
-                                                            }, ignore_index=True )
-    df_demands_all = df_demands_all._append ( {
-                                                        'Demand/Share'          : 'Share'                       ,
-                                                        'Fuel/Tech'             : codes_list_techs_TRNGROUP[n]  ,
-                                                        'Name'                  : this_tech_names               ,
-                                                        'Projection.Mode'       : ''                            ,
-                                                        'Projection.Parameter'  : 0
-                                                        }, ignore_index=True )
-    #
-#
+# Initialize empty lists to accumulate rows
+accumulated_rows_TRNGROUP_base_year = []
+accumulated_rows_TRNGROUP_projection = []
+accumulated_demands_fuel_list = []  # To track which fuels have been added
+accumulated_rows_demands_all = []
+
+# Loop through TRNGROUP techs
+for n in range(len(codes_list_techs_TRNGROUP)):
+    # Extract values for the current iteration
+    this_tech_names = sp_trn_group_techs_names_eng[n]  # Placeholder for names, to be completed later
+     
+    this_fuel_i = codes_list_techs_TRNGROUP_input[codes_list_techs_TRNGROUP[n]]
+    # Placeholder for input fuel name, to be completed later
+    this_fuel_i_name_index = ''  
+    this_fuel_i_name = ''  
+     
+    this_fuel_o = codes_list_techs_TRNGROUP_output[codes_list_techs_TRNGROUP[n]]
+    this_fuel_o_name_index = sp_trn_dem_to_code_Code.index(this_fuel_o)
+    this_fuel_o_name = sp_trn_dem_to_code_names_eng[this_fuel_o_name_index]
+
+    # Accumulate rows for base year
+    accumulated_rows_TRNGROUP_base_year.append({
+        'Fuel.I': this_fuel_i,
+        'Fuel.I.Name': this_fuel_i_name,
+        'Value.Fuel.I': 0,  # Placeholder for user to fill
+        'Tech': codes_list_techs_TRNGROUP[n],
+        'Tech.Name': this_tech_names,
+        'Fuel.O': this_fuel_o,
+        'Fuel.O.Name': this_fuel_o_name,
+        'Value.Fuel.O': 0  # Placeholder for user to fill
+    })
+
+    # Accumulate rows for projection (Input and Output)
+    accumulated_rows_TRNGROUP_projection.extend([
+        {
+            'Tech': codes_list_techs_TRNGROUP[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_i,
+            'Fuel.Name': this_fuel_i_name,
+            'Direction': 'Input',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # Placeholder for user to fill
+        },
+        {
+                                                                          
+            'Tech': codes_list_techs_TRNGROUP[n],
+            'Tech.Name': this_tech_names,
+            'Fuel': this_fuel_o,
+            'Fuel.Name': this_fuel_o_name,
+            'Direction': 'Output',
+            'Projection.Mode': '',
+            'Projection.Parameter': 0  # Placeholder for user to fill
+        }
+    ])
+
+    # Check and add to demands list if not already present
+    if this_fuel_o not in accumulated_demands_fuel_list:
+        accumulated_demands_fuel_list.append(this_fuel_o)
+        accumulated_rows_demands_all.append({
+            'Demand/Share': 'Demand',
+            'Fuel/Tech': this_fuel_o,
+            'Name': this_fuel_o_name,
+            'Projection.Mode': '',
+            'Projection.Parameter': 0
+        })
+
+    # Always add the share row
+    accumulated_rows_demands_all.append({
+        'Demand/Share': 'Share',
+        'Fuel/Tech': codes_list_techs_TRNGROUP[n],
+        'Name': this_tech_names,
+        'Projection.Mode': '',
+        'Projection.Parameter': 0
+    })
+
+# Convert the accumulated rows into DataFrames
+new_rows_TRNGROUP_base_year_df = pd.DataFrame(accumulated_rows_TRNGROUP_base_year)
+new_rows_TRNGROUP_projection_df = pd.DataFrame(accumulated_rows_TRNGROUP_projection)
+new_rows_demands_all_df = pd.DataFrame(accumulated_rows_demands_all)
+
+# Concatenate the new rows with the original DataFrames
+df_techs_TRNGROUP_base_year = pd.concat([df_techs_TRNGROUP_base_year, new_rows_TRNGROUP_base_year_df], ignore_index=True)
+df_techs_TRNGROUP_projection = pd.concat([df_techs_TRNGROUP_projection, new_rows_TRNGROUP_projection_df], ignore_index=True)
+df_demands_all = pd.concat([df_demands_all, new_rows_demands_all_df], ignore_index=True)
+
+# Replace NaN values in the DataFrames
 df_techs_TRNGROUP_projection = df_techs_TRNGROUP_projection.replace(np.nan, '', regex=True)
 df_demands_all = df_demands_all.replace(np.nan, '', regex=True)
 #
@@ -1198,7 +1418,7 @@ for n in range( len( df_base_year_names ) ):
     this_df = df_base_year_list[n]
     this_df_sheet_name = df_base_year_names[n]
     this_df.to_excel(writer_df_baseyear,sheet_name = this_df_sheet_name, index=False)
-writer_df_baseyear._save()
+writer_df_baseyear.close()
 #
 # Print the Projection "Activity Ratio", without the units.
 writer_df_projection = pd.ExcelWriter( params['A1_outputs'] + params['Print_Proj'], engine='xlsxwriter') # These are activity ratios // we should add the units.
@@ -1209,7 +1429,7 @@ for n in range( len( df_projection_names ) ):
     this_df = df_projection_list[n]
     this_df_sheet_name = df_projection_names[n]
     this_df.to_excel(writer_df_projection,sheet_name = this_df_sheet_name, index=False)
-writer_df_projection._save()
+writer_df_projection.close()
 #
 # REMEMBER to apply this: https://support.microsoft.com/en-us/office/change-the-column-width-and-row-height-72f5e3cc-994d-43e8-ae58-9774a0905f46
 
@@ -1220,7 +1440,7 @@ With that done, we now need to print the final demands. This is crucial for para
 writer_df_demand = pd.ExcelWriter(params['A1_outputs'] + params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 this_df_sheet_name = params['Dem_Proj']
 df_demands_all.to_excel(writer_df_demand, sheet_name = this_df_sheet_name, index=False)
-writer_df_demand._save()
+writer_df_demand.close()
 #
 '''
 -------------------------------------------------------------------------------------------------------------
@@ -1231,7 +1451,7 @@ for n in range( len( tech_param_list_dfs_names ) ):
     this_df = tech_param_list_dfs[n]
     this_df_sheet_name = tech_param_list_dfs_names[n]
     this_df.to_excel(writer_df_parameters, sheet_name = this_df_sheet_name, index=False)
-writer_df_parameters._save()
+writer_df_parameters.close()
 #
 '''
 -------------------------------------------------------------------------------------------------------------
@@ -1252,29 +1472,43 @@ for n in range( len( codes_list_techs_TRN ) ):
 df_techs_fleet_HEADER   = params['df_techs_fleet_HEADER']
 #
 df_techs_fleet = pd.DataFrame(columns=df_techs_fleet_HEADER)
-#
-for n in range( len( codes_list_techs_TRNGROUP ) ):
-    #
-    trn_group_list = codes_list_techs_TRNGROUP_dict[ codes_list_techs_TRNGROUP[n] ]
-    df_techs_fleet = df_techs_fleet._append( {
-                                                'Group.ID'          : n+1                               ,
-                                                'Group/Vehicle'     : 'Group'                           ,
-                                                'Techs'             : codes_list_techs_TRNGROUP[n]      ,
-                                                'Description'       : sp_trn_group_techs_names_eng[n]   ,
-                                                'Fleet Unit'        : 'Unidades'
-                                            }, ignore_index=True )
-    #
-    for n2 in range( len( trn_group_list ) ):
-        codes_list_techs_TRN_index = codes_list_techs_TRN.index( trn_group_list[n2] )
-        df_techs_fleet = df_techs_fleet._append( {
-                                                    'Group.ID'          : n+1                                                   ,
-                                                    'Group/Vehicle'     : 'Vehicle'                                             ,
-                                                    'Techs'             : trn_group_list[n2]                                    ,
-                                                    'Description'       : sp_trn_techs_names_eng[ codes_list_techs_TRN_index ]  ,
-                                                    'Fleet Unit'        : 'Unidades'
-                                                }, ignore_index=True )
-        #
-    #
+# Initialize empty list to accumulate rows
+accumulated_rows_fleet = []
+
+# Loop through transport group techs
+for n in range(len(codes_list_techs_TRNGROUP)):
+    # Extract the list of techs for the current group
+    trn_group_list = codes_list_techs_TRNGROUP_dict[codes_list_techs_TRNGROUP[n]]
+    
+    # Append the group itself to the fleet
+    accumulated_rows_fleet.append({
+        'Group.ID': n+1,
+        'Group/Vehicle': 'Group',
+        'Techs': codes_list_techs_TRNGROUP[n],
+        'Description': sp_trn_group_techs_names_eng[n],
+        'Fleet Unit': 'Unidades'
+    })
+
+    # Loop through the techs within the current group
+    for n2 in range(len(trn_group_list)):
+        # Find the index for the vehicle in the main tech list
+        codes_list_techs_TRN_index = codes_list_techs_TRN.index(trn_group_list[n2])
+        
+        # Append each vehicle in the group to the fleet
+        accumulated_rows_fleet.append({
+            'Group.ID': n+1,
+            'Group/Vehicle': 'Vehicle',
+            'Techs': trn_group_list[n2],
+            'Description': sp_trn_techs_names_eng[codes_list_techs_TRN_index],
+            'Fleet Unit': 'Unidades'
+        })
+
+# Convert the accumulated rows into a DataFrame
+new_rows_fleet_df = pd.DataFrame(accumulated_rows_fleet)
+
+# Concatenate the new rows with the original DataFrame
+df_techs_fleet = pd.concat([df_techs_fleet, new_rows_fleet_df], ignore_index=True)
+
 #
 with open( params['A1_outputs'] + params['Pickle_Fleet_Groups'], 'wb') as handle0:
     pickle.dump(codes_list_techs_TRNGROUP_dict, handle0, protocol=pickle.HIGHEST_PROTOCOL)
@@ -1282,7 +1516,7 @@ with open( params['A1_outputs'] + params['Pickle_Fleet_Groups'], 'wb') as handle
 writer_df_fleet = pd.ExcelWriter(params['A1_outputs'] + params['Print_Fleet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 this_df_sheet_name = params['Cali_Fleet']
 df_techs_fleet.to_excel(writer_df_fleet, sheet_name = this_df_sheet_name, index=False)
-writer_df_fleet._save()
+writer_df_fleet.close()
 '''
 -------------------------------------------------------------------------------------------------------------
 '''
