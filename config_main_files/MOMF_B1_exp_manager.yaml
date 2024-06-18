@@ -83,6 +83,9 @@ Elec: 'Electrical' # B1
 Smart_Grid: 'SmartGrid' # B1
 Effi: 'Efficiency' # B1
 Waste: 'Waste' # B1
+IPPU: 'IPPU' # B1
+IPPU: 'IPPU' # B1
+Emission_Restriction: 'Emission_Restriction' # B1
 # Pickle Blend Shares 0
 # File
 Blend_Shares_0: 'Blend_Shares_0.pickle' # em
@@ -186,7 +189,7 @@ inputs_txt_csv: 'Both' # 'Both', 'csv' # B1, em
 # Country
 coun_initial: 'RD' # B1
 
-output_csv_r: 0.0504 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
+disc_rate: 0.0504 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
 
 adjust_fre_rai: True # B1
 
@@ -241,11 +244,11 @@ year_final_blend_point: 2022 # B1
 year_final_blend_point_2: 2030 # B1
 
 # Changed year
-change_year: 2025 # B1, em ###
+change_year_B1: 2024 # B1 ###
+change_year: 2025 # em ###
 # driven_distance_change_year == driven_distance_2024 Do not uncommented, this is a variable defined at the script
 # index_change_year == index_2024
 year_resticcion_tech: 2024 # em ###
-output_csv_year: 2024 # B1, em ###
 
 # Final year
 final_year: 2050 # B1, em ###
@@ -465,18 +468,6 @@ filter_vars: [ # B1, em
   'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
   ]
 
-filter_vars_2: [
-  'FilterFuelType',
-  'FilterVehicleType',
-  # 'DiscountedTechnEmissionsPen',
-  #
-  'Capex${year_apply_discount_rate}', # CapitalInvestment
-  'FixedOpex${year_apply_discount_rate}', # AnnualFixedOperatingCost
-  'VarOpex${year_apply_discount_rate}', # AnnualVariableOperatingCost
-  'Opex${year_apply_discount_rate}', # OperatingCost
-  'Externalities${year_apply_discount_rate}' # AnnualTechnologyEmissionPenaltyByEmission
-  ]
-
 output_header: ['Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year'] # B1, em, FRM
 #----------------------------------------------------------------------------------#
 
@@ -504,6 +495,39 @@ parameters_to_print: [ # B1, em, FRM
   'TotalAnnualMinCapacityInvestment',
   'TotalTechnologyAnnualActivityUpperLimit',
   'TotalTechnologyAnnualActivityLowerLimit'
+  ]
+
+parameters_to_print_last: [ # B1
+  'AnnualEmissionLimit',
+  'AvailabilityFactor',
+  'CapacityFactor',
+  'CapacityToActivityUnit',
+  'CapitalCost',
+  'DepreciationMethod',
+  'DiscountRate',
+  'EmissionActivityRatio',
+  'EmissionsPenalty',
+  'FixedCost',
+  'InputActivityRatio',
+  'ModelPeriodEmissionLimit',
+  'OperationalLife',
+  'OutputActivityRatio',
+  'REMinProductionTarget',
+  'ResidualCapacity',
+  'RETagFuel',
+  'RETagTechnology',
+  'SpecifiedAnnualDemand',
+  'SpecifiedDemandProfile',
+  'TotalAnnualMaxCapacity',
+  'TotalAnnualMaxCapacityInvestment',
+  'TotalAnnualMinCapacity',
+  'TotalAnnualMinCapacityInvestment',
+  'TotalTechnologyAnnualActivityLowerLimit',
+  'TotalTechnologyAnnualActivityUpperLimit',
+  'TotalTechnologyModelPeriodActivityLowerLimit',
+  'TotalTechnologyModelPeriodActivityUpperLimit',
+  'VariableCost',
+  'YearSplit'
   ]
 
 more_params: [ # B1, em, FRM
@@ -569,7 +593,7 @@ capacity_variables: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLow
 cost_sets_eliminate: ['TRANOMOTBike', 'TRANOMOTWalk', 'TRANPUB', 'TRANRAILINF', 'TRANRAILCAR'] # B1
 
 set_list_group_dict: { # B1
-  Passenger: ['E6TDPASPRI', 'E6TDPASPUB', 'E6TRNOMOT'],
+  Passenger: ['E6TDPASPRI', 'E6TDPASPUB', 'E6TDPASTUR', 'E6TRNOMOT'],
   Freight: ['E6TDFREHEA', 'E6TDFRELIG']
   }
 
@@ -590,9 +614,18 @@ params_to_adjust: [ # B1, em
   ]
 
 ignore_techs: [ # B1
-  'TRANRAILFREINF',  'TRANOMOTWalk', 'TRANOMOTBike', 'TRXTRAIELE',
-  'TRXTRAIFREELE', 'TRANRAILINF', 'TRANPUB', 'TRANRAILCAR'
+  'TRANRAILFREINF',  'TRANOMOTWalk', 'TRANOMOTBike',
+  'TRXTRAIELE', 'TRXTRAIFREELE', 'TRANRAILINF', 'TRANPUB',
+  'TRANRAILCAR', 'LATR', 'PROD_CLK_TRAD', 'NO_CONTR_OD',
+  'AG_TRVEG'
   ]
+
+
+# IGNORE_TECHS:
+# is defined to control "rewrite_techs_maxcap". It updates capacities of
+# transport that belong to the Fleet_Groups dictionary.
+# Other implementations may also be effected by .
+
 
 cap_vars: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'] # B1
 
@@ -689,6 +722,7 @@ by_2: ['Future.ID','Strategy.ID','Strategy','Fuel','Technology','Emission','Seas
 
 ################################# Conditions #################################
 trains: 'Trains' # B1, em
+group_tech: 'Telef' # B1
 tra_techs: ['Techs_Auto', 'Techs_Motos', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro', 'Techs_He_Freight', 'Techs_Li_Freight'] # em ###
 tra_techs_for_passengers: ['Techs_Auto', 'Techs_SUV' , 'Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Tur', 'Techs_Buses_Micro'] # em ###
 trn_list_tech_groups: [ # em ###
@@ -719,6 +753,13 @@ type: 'Type' # B1, em
 techs_var: 'Techs' # You must be careful because 'Techs' is also used as a sheet, but here are diferent parameter name. # B1, em
 tech_train_fre: 'Techs_Trains_Freight' # B1, em
 tech_he_fre: 'Techs_He_Freight' # B1, em
+tech_telef: 'Techs_Telef' # B1
+techs_trans_pass: ['Techs_Taxi', 'Techs_Buses_Pub', 'Techs_Buses_Micro'] # B1
+this_set_complement_vals_rel_100: { # B1
+  'Techs_Taxi': 0.67,
+  'Techs_Buses_Pub': 33.53,
+  'Techs_Buses_Micro': 65.80
+  }
 built_in: 'Built-in' # B1, em
 tech_train_ele: 'TRXTRAIELE' # Technologies Trains Electric # B1, em
 exact: 'Exact' # B1, em
@@ -821,6 +862,7 @@ tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight # B1, em ###
 tra_dem_med: 'DEMTRNFREMED' # B1, em ###
 tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight # B1, em ###
 tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize # B1, em ###
+tra_dem_tur: 'E6TDPASTUR' # Transport Demand - Passenger Tourism # B1
 tra_mot_gls: 'TRMOTGSL' # B1
 cost: 'Cost' # B1
 inter_escal: 'Interpolate_Escalate' # B1
