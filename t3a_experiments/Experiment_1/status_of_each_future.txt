@@ -7,10 +7,12 @@ Write in order of solution.
 
 
 BAU_1: Optimal solution.
+BAU_2: Optimal solution.
+LTS_2: Optimal solution.
 
 
 ################################# LTS #################################
 
 
 
-LTS_1: Optimal solution.
+LTS_1: Infeasible solution.

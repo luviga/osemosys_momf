@@ -307,9 +307,9 @@ if __name__ == '__main__':
                             for k in range(len(parameters_reference)):
                                 if parameters_reference[k] == 'AnnualTechnologyEmissionPenaltyByEmission':
                                     parameter_filter = {'EMISSION':params['this_combina']}
-                                    calculate_npv_filtered(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', parameter_filter, output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
+                                    calculate_npv_filtered(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', parameter_filter, output_csv_r=params['disc_rate']*100, output_csv_year=params['year_apply_discount_rate'])
                                 else:
-                                    calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['output_csv_r']*100, output_csv_year=params['output_csv_year'])
+                                    calculate_npv(df_all_3, parameters_news[k], parameters_reference[k], params['round_#'], 'YEAR', output_csv_r=params['disc_rate']*100, output_csv_year=params['year_apply_discount_rate'])
                                                 
                             
                             # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN

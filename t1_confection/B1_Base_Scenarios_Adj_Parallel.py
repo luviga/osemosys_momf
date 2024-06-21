@@ -30,6 +30,7 @@ import multiprocessing as mp
 import yaml
 import openpyxl
 from setup_utils import install_requirements
+import subprocess
 
 '''
 We implement OSEMOSYS-CR in a csv based system for semi-automatic manipulation of parameters.
@@ -75,12 +76,27 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     #
     data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
     output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
-        
+
     # Solve model
     solver = params['solver']
 
     if solver == 'glpk' and params['glpk_option'] == 'old':
         # OLD GLPK
+        # Search for the location of 'glpsol'
+        where_solver = subprocess.run(['where', 'glpsol'], capture_output=True, text=True)
+        paths = where_solver.stdout.splitlines()
+        
+        if paths:  # Ensure at least one path was found
+            path_solver = paths[0]
+        
+            # Check if the path is already in the environment variable PATH
+            if path_solver not in os.environ["PATH"]:
+                # If not in PATH, add it
+                os.environ["PATH"] += os.pathsep + path_solver
+                print("Path added:", path_solver)
+        else:
+            print("No 'glpsol' found on the system.")
+
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
         os.system( str_start and str_solve )
         #
@@ -88,6 +104,20 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
 
     elif solver == 'glpk'and params['glpk_option'] == 'new':
         # GLPK
+        # Search for the location of 'glpsol'
+        where_solver = subprocess.run(['where', 'glpsol'], capture_output=True, text=True)
+        paths = where_solver.stdout.splitlines()
+        
+        if paths:  # Ensure at least one path was found
+            path_solver = paths[0]
+        
+            # Check if the path is already in the environment variable PATH
+            if path_solver not in os.environ["PATH"]:
+                # If not in PATH, add it
+                os.environ["PATH"] += os.pathsep + path_solver
+                print("Path added:", path_solver)
+        else:
+            print("No 'glpsol' found on the system.")
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
         os.system( str_start and str_solve )        
     else:      
@@ -96,12 +126,41 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         os.system( str_start and str_solve )
         if solver == 'cbc':
             # CBC
+            # Search for the location of 'cbc'
+            where_solver = subprocess.run(['where', 'cbc'], capture_output=True, text=True)
+            paths = where_solver.stdout.splitlines()
+            
+            if paths:  # Ensure at least one path was found
+                path_solver = paths[0]
+            
+                # Check if the path is already in the environment variable PATH
+                if path_solver not in os.environ["PATH"]:
+                    # If not in PATH, add it
+                    os.environ["PATH"] += os.pathsep + path_solver
+                    print("Path added:", path_solver)
+            else:
+                print("No 'cbc' found on the system.")
             str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
             if os.path.exists(output_file + '.sol'):
                 shutil.os.remove(output_file + '.sol')
+            
+            # Search for the location of 'cplex'
+            where_solver = subprocess.run(['where', 'cplex'], capture_output=True, text=True)
+            paths = where_solver.stdout.splitlines()
+            
+            if paths:  # Ensure at least one path was found
+                path_solver = paths[0]
+            
+                # Check if the path is already in the environment variable PATH
+                if path_solver not in os.environ["PATH"]:
+                    # If not in PATH, add it
+                    os.environ["PATH"] += os.pathsep + path_solver
+                    print("Path added:", path_solver)
+            else:
+                print("No 'cplex' found on the system.")
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
             os.system( str_start and str_solve )
     
@@ -877,12 +936,12 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     print_adress =                      unpackaged_useful_elements[5]
 
     # Extract the default (national) discount rate parameter
-    dr_default = params['disc_rate']
+    dr_default = params['disc_rate']                                                      
 
     Reference_driven_distance =         unpackaged_useful_elements[6]
     Fleet_Groups_inv =                  unpackaged_useful_elements[7]
     time_range_vector =                 unpackaged_useful_elements[8]
-    if params['Use_Blend_Shares']:
+    if params['Use_Blend_Shares_B1']:
         Blend_Shares =                      unpackaged_useful_elements[9]
     #
     # Briefly open up the system coding to use when processing for visualization:
@@ -1165,11 +1224,13 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     g.write('#\n' + 'end;\n')
     #
     g.close()
+    # print(sorted_combined_params)
+    # sys.exit()
     #
     ###########################################################################################################################
     # Furthermore, we must print the inputs separately for faste deployment of the input matrix:
     #
-    if scenario_list[scen] != params['BAU'] and params['Use_Blend_Shares']:
+    if scenario_list[scen] != params['BAU'] and params['Use_Blend_Shares_B1']:
         this_Blend_Shares_data = Blend_Shares[ scenario_list[scen] ]
     #
     basic_header_elements = params['basic_header_elements']
@@ -1320,7 +1381,7 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
                 this_year = this_data_row[7]
                 this_year_index = time_range_vector.index( int( this_year ) )
                 #
-                if scenario_list[scen] != params['BAU'] and params['Use_Blend_Shares']:
+                if scenario_list[scen] != params['BAU'] and params['Use_Blend_Shares_B1']:
                     if this_tech in list( this_Blend_Shares_data.keys() ):
                         if this_emission in list( this_Blend_Shares_data[ this_tech ].keys() ):
                             #
@@ -1872,7 +1933,7 @@ if __name__ == '__main__':
 
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_config.yaml')
+    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
 
     # if config
 
@@ -1962,7 +2023,7 @@ if __name__ == '__main__':
     '''
     Fleet_Groups =              pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups'],            "rb" ) )
     ### Ind_Groups =                pickle.load( open( './A1_Outputs/A-O_Ind_Groups.pickle',            "rb" ) )
-    Fleet_Groups['Techs_Microbuses'] += [ 'TRMBUSHYD' ] # this is an add on, kind of a patch
+    ### Fleet_Groups['Techs_Microbuses'] += [ 'TRMBUSHYD' ] # this is an add on, kind of a patch
     Fleet_Groups_Distance =     pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_Dist'],   "rb" ) )
     Fleet_Groups_OR =           pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_OR'],         "rb" ) )
     Fleet_Groups_techs_2_dem =  pickle.load( open( params['A1_Outputs'] + params['Pickle_Fleet_Groups_T2D'],        "rb" ) )
@@ -2031,7 +2092,7 @@ if __name__ == '__main__':
     base_configuration_smartGrid = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Smart_Grid'] )
     base_configuration_E_and_D = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Effi'] )
     base_configuration_transport_elasticity = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['TElas'])                                                                                                             
-    base_configuration_emi_res = pd.read_excel(params['B1_Scen_Config'], sheet_name=param['Emission_Restriction'])                                                                                       
+    base_configuration_emi_res = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Emission_Restriction'])                                                                                       
     #
     all_dataset_address = params['A2_Output_Params']
     ''' 
@@ -2219,7 +2280,7 @@ if __name__ == '__main__':
     ##########################################################################
     '''
     transport_group_sets = list( Fleet_Groups.keys() )
-    transport_group_sets = [ i for i in transport_group_sets if params['train'] not in i and 'Telef' not in i ]
+    transport_group_sets = [ i for i in transport_group_sets if params['train'] not in i and params['group_tech'] not in i ]
     Reference_driven_distance = {}
     Reference_occupancy_rate = {}
     Reference_op_life = {}
@@ -2270,7 +2331,7 @@ if __name__ == '__main__':
     ii) We first perform changes to the _Base_Dataset file to fix the errors found in the system.
     iii) We execute the changes in the scenario restrictions.
     '''
-    if params['Use_Blend_Shares']:
+    if params['Use_Blend_Shares_B1']:
         Blend_Shares = {}
         for s in range( len( scenario_list ) ):
             Blend_Shares.update({scenario_list[s]:{}})
@@ -2311,7 +2372,7 @@ if __name__ == '__main__':
             Total_Demand = []
             Total_Demand_Fre = []
             for n in range( len( time_range_vector ) ):
-                Total_Demand.append( float( passpub_values[n] ) + float( passpriv_values[n] ) + float ( nonmotorized_values[n] ) )
+                Total_Demand.append(float( passpub_values[n]) + float(passpriv_values[n]) + float(nonmotorized_values[n])  + float(tourism_values[n]))
                 Total_Demand_Fre.append( float( ref_fre_hea[n] ) + float( ref_fre_lig[n] ) )
             #
             ref_pass_pub_shares     = [ float(passpub_values[n])/Total_Demand[n] for n in range( len( time_range_vector ) ) ]
@@ -2573,7 +2634,7 @@ if __name__ == '__main__':
             #
             tourism_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_tur'] ) ]
             tourism_values = deepcopy( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ tourism_range_indices[0]:tourism_range_indices[-1]+1 ] )                                                                                                                                                         
-            new_value_list_PRIV = [ Total_Demand[n] - new_value_list_PUB_rounded[n] - new_value_list_NOMOT_rounded[n] for n in range( len( time_range_vector ) ) ]
+            new_value_list_PRIV = [ Total_Demand[n] - new_value_list_PUB_rounded[n] - new_value_list_NOMOT_rounded[n] - float(tourism_values[n]) for n in range( len( time_range_vector ) ) ]
             new_value_list_PRIV_rounded = [ round(elem, params['round_#']) for elem in new_value_list_PRIV ]
             #
             # Assign parameters back: for these subset of uncertainties
@@ -2780,7 +2841,7 @@ if __name__ == '__main__':
         ### BLOCK 6: modify demand ###
         
         # Waste
-        if params['Use_Waste']:
+        if params['Use_Waste_B1']:
             if scenario_list[s] in list(set(base_configuration_waste['Scenario'].tolist())):            
                 ''' MODIFYING *base_configuration_waste* '''
                 this_scenario_df = deepcopy(base_configuration_waste.loc[base_configuration_waste['Scenario'].isin([scenario_list[s]])])
@@ -2818,16 +2879,16 @@ if __name__ == '__main__':
                                     value_list = deepcopy(stable_scenarios[scenario_list[s]][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1])
                                     value_list = [float(e) for e in value_list]
                                     #
-                                    new_value_list = [round(value_list_new_vals, params['round_#']) for e in range(len(value_list))]
+                                    new_value_list = [round(value_list_new_vals[e], params['round_#']) for e in range(len(value_list))]
                                     stable_scenarios[scenario_list[s]][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1] = deepcopy(new_value_list)
                                 
                                 else:
                                 
-                                for ite in range(len(value_list_new_vals)):
-                                    stable_scenarios[scenario_list[s]][param_list[p]]['r'].append(params['coun_initial'])
-                                    stable_scenarios[scenario_list[s]][param_list[p]]['e'].append(set_item)
-                                    stable_scenarios[scenario_list[s]][param_list[p]]['y'].append(str(time_range_vector[ite]))
-                                    stable_scenarios[scenario_list[s]][param_list[p]]['value'].append(value_list_new_vals[ite])
+                                    for ite in range(len(value_list_new_vals)):
+                                        stable_scenarios[scenario_list[s]][param_list[p]]['r'].append(params['coun_initial'])
+                                        stable_scenarios[scenario_list[s]][param_list[p]]['e'].append(set_item)
+                                        stable_scenarios[scenario_list[s]][param_list[p]]['y'].append(str(time_range_vector[ite]))
+                                        stable_scenarios[scenario_list[s]][param_list[p]]['value'].append(value_list_new_vals[ite])
         
         # IPPU
         if scenario_list[s] in list(set(base_configuration_ippu['Scenario'].tolist())):            
@@ -2881,7 +2942,7 @@ if __name__ == '__main__':
         
         
         # Transport
-        if params['Use_Transport']:
+        if params['Use_Transport_B1']:
             if scenario_list[s] in list(set(base_configuration_transport_elasticity['Scenario'].tolist())):            
                 ''' MODIFYING *base_configuration_transport_elasticity* '''
                 this_scenario_df = deepcopy( base_configuration_transport_elasticity.loc[ base_configuration_transport_elasticity['Scenario'].isin( [ scenario_list[s] ] ) ] )
@@ -2947,7 +3008,46 @@ if __name__ == '__main__':
         rewrite_techs_lowlim = \
             [e for e in unique_low_lim_techs if
              params['tr'] in e[:2] and params['in'] not in e and 'IMP' not in e and e not in ignore_techs]
+        '''
+        # Here we need to adjust the max capacities based on the adjusted demand
+        for tech_gr in Fleet_Groups_techs_2_dem:
+            use_dem = Fleet_Groups_techs_2_dem[tech_gr]
 
+            dem_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( use_dem ) ]
+            dem_value_list_fr = stable_scenarios_freeze[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ dem_set_range_indices[0]:dem_set_range_indices[-1]+1 ]
+            dem_value_list_fr = [ float(dem_value_list_fr[j]) for j in range( len( dem_value_list_fr ) ) ]
+
+            dem_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( use_dem ) ]
+            dem_value_list = stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ dem_set_range_indices[0]:dem_set_range_indices[-1]+1 ]
+            dem_value_list = [ float(dem_value_list[j]) for j in range( len( dem_value_list ) ) ]
+
+            print(use_dem)
+            print(dem_value_list_fr)
+            print(dem_value_list)
+
+            cap_vars = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+            for cp in cap_vars:
+                if cp == 'TotalAnnualMaxCapacity':
+                    mult_constant = 1.01
+                else:
+                    mult_constant = 0.99
+                group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ cp ][ 't' ] ) if x == str( tech_gr ) ]
+                group_value_list = stable_scenarios[ scenario_list[s] ][ cp ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
+                new_group_value_list = [
+                    float(gv) * (1/float(d_fr)) * float(d_adj) * mult_constant
+                    for gv, d_fr, d_adj in zip(
+                    group_value_list, dem_value_list_fr, dem_value_list)]
+
+                if cp == 'TotalAnnualMaxCapacity':
+                    print(tech_gr)
+                    print([i/j for i, j in zip(dem_value_list, dem_value_list_fr)])
+                    print('\n')
+
+                stable_scenarios[ scenario_list[s] ][ cp ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ] = deepcopy(new_group_value_list)
+
+        print('Check up until here 1')
+        sys.exit()
+        '''   
         # Let's adjust existing restrictions to new capacities (transport sector);
         # First, max capacity:
         for t in range(len(rewrite_techs_maxcap)):
@@ -3212,7 +3312,7 @@ if __name__ == '__main__':
                     dem_adj_public = True
                     dem_adj_private = True
                     dem_adj_heafre = True
-                    dem_adj_medfre = True
+                    # dem_adj_medfre = True
                     dem_adj_ligfre = True
         
                 for a_set in range( len( transport_group_sets ) ):
@@ -3231,7 +3331,7 @@ if __name__ == '__main__':
                     if ((this_demand_set == params['tra_dem_pri'] and dem_adj_private is True) or
                         (this_demand_set == params['tra_dem_pub'] and dem_adj_public is True) or
                         (this_demand_set == params['tra_dem_hea'] and dem_adj_heafre is True) or
-                        (this_demand_set == params['tra_dem_med'] and dem_adj_medfre is True) or
+                        # (this_demand_set == params['tra_dem_med'] and dem_adj_medfre is True) or
                         (this_demand_set == params['tra_dem_lig'] and dem_adj_ligfre is True)):
         
                         # let's extract rail capacity to adjust this apropiately
@@ -3281,6 +3381,9 @@ if __name__ == '__main__':
                             #
                         if this_demand_set == params['tra_dem_hea']:
                             dem_adj_heafre = False
+                            #
+                        # if this_demand_set == params['tra_dem_med']:
+                            # dem_adj_medfre = False
                             #
                         if this_demand_set == params['tra_dem_lig']:
                             dem_adj_ligfre = False
@@ -3393,7 +3496,7 @@ if __name__ == '__main__':
                         if time_range_vector[y] <= Initial_Year_of_Uncertainty:
                             stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( this_g_tech_values[y] )
                         else:
-                            stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( 99 ) # this 99 is a top that is hardly ever reached
+                            stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( params['top_maxcap'] ) # this 9999 is a top that is hardly ever reached
 
                 elif this_tech not in unique_residual_cap_techs and this_tech not in unique_max_cap_techs and this_tech not in unique_low_lim_techs: # or ('LPG' in this_tech and 'He' in this_group_set):
                     #
@@ -3406,7 +3509,7 @@ if __name__ == '__main__':
                         if time_range_vector[y] <= Initial_Year_of_Uncertainty:
                             stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( 0 )
                         else:
-                            stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( 99 ) # this 99 is a top that is hardly ever reached
+                            stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( params['top_maxcap'] ) # this 9999 is a top that is hardly ever reached
         #
 
         unique_min_cap_techs = list(set(stable_scenarios[scenario_list[s]]['TotalAnnualMinCapacity']['t']))
@@ -3424,6 +3527,9 @@ if __name__ == '__main__':
                 stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'].append( str( this_min_tech_values[y] ) )
 
         '''
+        ### BLOCK 9: makes the code have coherent restrictions for industry // applies for any scenario:
+        '''
+        '''
         #***********************************************************************************************
         ### BLOCK 10: Integrate biofuels according to RECOPE / *we must use a new interpolation function*.
         #  Note: the biodiesel blend will affect all the sectors, not only transport.
@@ -3440,7 +3546,7 @@ if __name__ == '__main__':
             # 10.1. Let us adjust for diesel and biodiesel: (remember to use  *time_range_vector*)
             for n in range( len( Diesel_Techs ) ):
                 #
-                if params['Use_Blend_Shares']:
+                if params['Use_Blend_Shares_B1']:
                     Blend_Shares[ scenario_list[s] ].update( { Diesel_Techs[n]:{} } )
                 #
                 for n2 in range( len( Diesel_Techs_Emissions[ Diesel_Techs[n] ] ) ):
@@ -3460,7 +3566,7 @@ if __name__ == '__main__':
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                     #
-                    if params['Use_Blend_Shares']:
+                    if params['Use_Blend_Shares_B1']:
                         Blend_Shares[ scenario_list[s] ][  Diesel_Techs[n] ].update( { Diesel_Techs_Emissions[ Diesel_Techs[n] ][n2]: deepcopy( biofuel_shares ) } )
                     #
                 #
@@ -3468,7 +3574,7 @@ if __name__ == '__main__':
             # 10.2. Let us adjust for gasoline and ethanol: (remember to use  *time_range_vector*)
             for n in range( len( Gasoline_Techs ) ):
                 #
-                if params['Use_Blend_Shares']:
+                if params['Use_Blend_Shares_B1']:
                     Blend_Shares[ scenario_list[s] ].update( { Gasoline_Techs[n]:{} } )
                 #
                 for n2 in range( len( Gasoline_Techs_Emissions[ Gasoline_Techs[n] ] ) ):
@@ -3489,7 +3595,7 @@ if __name__ == '__main__':
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                     #
-                    if params['Use_Blend_Shares']:
+                    if params['Use_Blend_Shares_B1']:
                         Blend_Shares[ scenario_list[s] ][  Gasoline_Techs[n] ].update( { Gasoline_Techs_Emissions[ Gasoline_Techs[n] ][n2]:biofuel_shares } )
         '''
         # BLOCK 11: Integrate emission restriction
@@ -3506,7 +3612,7 @@ if __name__ == '__main__':
                 value_list = this_scenario_tech_df.loc[this_index, time_range_vector].tolist()
 
                 for n in range(len(time_range_vector)):
-                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['r'].append(REGION_STR)
+                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['r'].append(params['coun_initial'])
                     stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['e'].append(set_list[l])
                     stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['y'].append(time_range_vector[n])
                     stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['value'].append(value_list[n])
@@ -3525,7 +3631,7 @@ if __name__ == '__main__':
             stable_scenarios.update( { this_scenario_name:{} } )
             stable_scenarios[ this_scenario_name ] = deepcopy( stable_scenarios[ scenario_list_based[sb] ] )
             #
-            if params['Use_Blend_Shares']:
+            if params['Use_Blend_Shares_B1']:
                 if scenario_list_based[sb] != params['BAU']:
                     Blend_Shares.update( { this_scenario_name:Blend_Shares[ scenario_list_based[sb] ] } )
                 else:
@@ -3534,7 +3640,7 @@ if __name__ == '__main__':
             Reference_occupancy_rate.update( { this_scenario_name:Reference_occupancy_rate[ scenario_list_based[sb] ] } )
             Reference_op_life.update( { this_scenario_name:Reference_op_life[ scenario_list_based[sb] ] } )
     #
-    if params['Use_Blend_Shares']:
+    if params['Use_Blend_Shares_B1']:
         with open(params['Blend_Shares_0'], 'wb') as handle:
             pickle.dump(Blend_Shares, handle, protocol=pickle.HIGHEST_PROTOCOL)
         handle.close()
@@ -3591,7 +3697,7 @@ if __name__ == '__main__':
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
     
-                        if params['inter'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
+                        if params['interpo'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] + [ float(e) for e in electrical_Params_mYears ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
@@ -3614,14 +3720,14 @@ if __name__ == '__main__':
                         this_param_indices = [ i for i, x in enumerate( stable_scenarios[ this_scenario_name ][ param_list[p] ][ 't' ] ) if x == str( set_list[l] ) ]
                         this_param_values = deepcopy( stable_scenarios[ this_scenario_name ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] )
                         #
-                        if params['inter'] in electrical_Params_methods and params['intact'] in electrical_Params_exactYears:
+                        if params['interpo'] in electrical_Params_methods and params['intact'] in electrical_Params_exactYears:
                             known_years = [ y for y in time_range_vector if y <= electrical_Params_initialYear ]
                             known_values = [ float( this_param_values[y] ) for y in range( len(time_range_vector) ) if time_range_vector[y] <= electrical_Params_initialYear ]
                             known_years += [ float(e) for e in electrical_Params_mYears ]
                             known_values += [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
                         #
-                        if params['inter'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
+                        if params['interpo'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] + [ float(e) for e in electrical_Params_mYears ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
@@ -3642,7 +3748,7 @@ if __name__ == '__main__':
                 tech_indicator_list_raw = set_list[l].replace( ' ','' ).split( ':' )[1] # This is a string with a list after a colon
                 tech_indicator_list = tech_indicator_list_raw.split( ';' ) # This could be a list of strings separated by semicolon
                 for tech_indicator in tech_indicator_list:
-                    tech_list = [ e for e in all_techs_list if tech_indicator in e ]
+                    tech_list = [ e for e in all_techs_list if tech_indicator in e and 'IMP' not in e]
             else:
                 tech_list = [ set_list[l] ]
             #
@@ -3693,12 +3799,12 @@ if __name__ == '__main__':
                                                      
                         this_param_indices = [ i for i, x in enumerate( stable_scenarios[ smartGrid_Params_reference ][ param_list[p] ][ 't' ] ) if x == str( this_set ) ]                             
                         value_list = deepcopy( stable_scenarios[ smartGrid_Params_reference ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] )
-                            #------------------------------
-                            # OBTAINED VALUES, NOW PRINTING
-                            if smartGrid_Params_built_in == 'YES':
-                                value_list = [round(e, params['round_#']) for e in value_list]
-                                this_param_indices = [i for i, x in enumerate(stable_scenarios[this_scenario_name][param_list[p]]['t']) if x == str(this_set)]
-                                stable_scenarios[this_scenario_name][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1] = deepcopy(value_list)
+                    #------------------------------
+                    # OBTAINED VALUES, NOW PRINTING
+                    if smartGrid_Params_built_in == 'YES':
+                        value_list = [round(e, params['round_#']) for e in value_list]
+                        this_param_indices = [i for i, x in enumerate(stable_scenarios[this_scenario_name][param_list[p]]['t']) if x == str(this_set)]
+                        stable_scenarios[this_scenario_name][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1] = deepcopy(value_list)
 
         #########################################################################################
         ''' MODIFYING *base_configuration_E_and_D* '''
@@ -3799,7 +3905,7 @@ if __name__ == '__main__':
         #
         print_adress = params['Executables']
         #
-        if params['Use_Blend_Shares']:
+        if params['Use_Blend_Shares_B1']:
             packaged_useful_elements = [scenario_list_print, S_DICT_sets_structure, S_DICT_params_structure, list_param_default_value_params, list_param_default_value_value,
                                         print_adress, Reference_driven_distance,
                                         Fleet_Groups_inv, time_range_vector, Blend_Shares ]

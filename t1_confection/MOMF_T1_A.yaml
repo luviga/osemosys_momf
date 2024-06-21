@@ -215,7 +215,7 @@ dict_dist_fam_to_name_spa: {
 xtra_scen: {
   Main_Scenario: 'BAU',
   Other_Scenarios: 'LTS',
-  Region: 'CR',
+  Region: 'RD',
   Mode_of_Operation: 1,
   Timeslice: 'All'
   }

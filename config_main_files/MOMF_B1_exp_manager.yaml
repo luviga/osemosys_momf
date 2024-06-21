@@ -84,7 +84,6 @@ Smart_Grid: 'SmartGrid' # B1
 Effi: 'Efficiency' # B1
 Waste: 'Waste' # B1
 IPPU: 'IPPU' # B1
-IPPU: 'IPPU' # B1
 Emission_Restriction: 'Emission_Restriction' # B1
 # Pickle Blend Shares 0
 # File
@@ -157,7 +156,7 @@ start: 'start cmd.exe /k cd ' # B1, em, FRM
 solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # For CBC use
 iteration_time: 60
@@ -166,7 +165,7 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 1 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
@@ -201,18 +200,23 @@ manipulate_param_keys_2: True # em
 
 initial_year_index: 1 # em
 
+# this # is a top that is hardly ever reached
+top_maxcap: 9999 # B1
+
+
 # Number to round
 round_#: 4 # B1, em
 
 # Sectors variables
 Use_Energy: True # em 
-Use_Waste: True # B1, em
-Use_Transport: False # B1
+Use_Waste: True #  em
+Use_Waste_B1: True # B1
+Use_Transport_B1: True # B1
 Use_AFOLU: True # em
 Use_PIUP: True # em
 
-
-Use_Blend_Shares: False # You musn't change # B1, em
+Use_Blend_Shares_B1: True # You musn't change # B1
+Use_Blend_Shares: False # You musn't change #  em
 
 # Scenarios
 # Only use the three main letters                                 
@@ -279,7 +283,7 @@ v_sec_decade_year: 'v_2040' # B1
 #----------------------------------------------------------------------------------#
 default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   AccumulatedAnnualDemand: 0,
-  AnnualEmissionLimit: 999999999999999999999,
+  AnnualEmissionLimit: 99999999999,
   AnnualExogenousEmission: 0,
   AvailabilityFactor: 1,
   CapacityFactor: 1,
@@ -299,7 +303,7 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   FixedCost: 0,
   InputActivityRatio: 0,
   MinStorageCharge: 0,
-  ModelPeriodEmissionLimit: 999999999999999999999,
+  ModelPeriodEmissionLimit: 99999999999,
   ModelPeriodExogenousEmission: 0,
   OperationalLife: 1,
   OperationalLifeStorage: 1,
@@ -319,14 +323,14 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   StorageMaxDischargeRate: 0,
   TechnologyFromStorage: 0,
   TechnologyToStorage: 0,
-  TotalAnnualMaxCapacity: 999999999999999999999,
-  TotalAnnualMaxCapacityInvestment: 999999999999999999999,
+  TotalAnnualMaxCapacity: 99999999999,
+  TotalAnnualMaxCapacityInvestment: 99999999999,
   TotalAnnualMinCapacity: 0,
   TotalAnnualMinCapacityInvestment: 0,
   TotalTechnologyAnnualActivityLowerLimit: 0,
-  TotalTechnologyAnnualActivityUpperLimit: 999999999999999999999,
+  TotalTechnologyAnnualActivityUpperLimit: 99999999999,
   TotalTechnologyModelPeriodActivityLowerLimit: 0,
-  TotalTechnologyModelPeriodActivityUpperLimit: 999999999999999999999,
+  TotalTechnologyModelPeriodActivityUpperLimit: 99999999999,
   TradeRoute: 0,
   VariableCost: 0.0001,
   YearSplit: 0
@@ -468,14 +472,14 @@ filter_vars: [ # B1, em
   'Externalities_GDP' # AnnualTechnologyEmissionPenaltyByEmission
   ]
 
-output_header: ['Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year'] # B1, em, FRM
+output_header: [ 'Strategy', 'Future.ID', 'Fuel', 'Technology', 'Emission', 'Year' ] # B1, em, FRM
 #----------------------------------------------------------------------------------#
 
 # Function C Mathprog Parallel
 #--------------------------------------------------------------------------------------------------------------------#
 header_indices: ['Scenario','Parameter','r','t','f','e','m','l','y','ls','ld','lh','s','value'] # B1, em, FRM
 
-basic_header_elements: ['Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year'] # B1, em, FRM
+basic_header_elements: [ 'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel', 'Technology', 'Emission', 'Season', 'Year' ] # B1, em, FRM
 
 parameters_to_print: [ # B1, em, FRM
   'SpecifiedAnnualDemand',
@@ -543,9 +547,7 @@ filter_params: ['FilterFuelType', 'FilterVehicleType'] # B1, em, FRM
 # CSV Printer Parallel Function
 #--------------------------------------------------------------------------------------------------------------------#
 sets: [ # B1
-  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION',
-  'MODE_OF_OPERATION','YEAR','TIMESLICE','SEASON','DAYTYPE',
-  'DAILYTIMEBRACKET','STORAGE','Value'
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','YEAR','TIMESLICE','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value'
   ]
 
 expand_plants: ['PPPVT', 'PPWNDON', 'PPPVDS']
@@ -588,7 +590,7 @@ header_row: [ # B1
 ################################# PART 2 #################################
 # 2: Manipulate each scenario for later printing of the .csv files in the same adress
 #--------------------------------------------------------------------------------------------------------------------#
-capacity_variables: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'] # B1
+capacity_variables: [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ] # B1
 
 cost_sets_eliminate: ['TRANOMOTBike', 'TRANOMOTWalk', 'TRANPUB', 'TRANRAILINF', 'TRANRAILCAR'] # B1
 
@@ -626,12 +628,8 @@ ignore_techs: [ # B1
 # transport that belong to the Fleet_Groups dictionary.
 # Other implementations may also be effected by .
 
-
-cap_vars: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'] # B1
-
 parameters_involved: [ # B1
-  'CapitalCost','FixedCost','TotalAnnualMaxCapacity',
-  'TotalTechnologyAnnualActivityLowerLimit','ResidualCapacity'
+  'CapitalCost','FixedCost','TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit','ResidualCapacity'
   ]
 
 Diesel_Techs: ['T4DSL_HEA', 'T4DSL_LIG', 'T4DSL_PRI', 'T4DSL_PUB'] # B1
@@ -657,7 +655,7 @@ basic_header_elements: [ # B1
   'Technology', 'Emission', 'Season', 'Year'
   ]
 
-blend_shares: {
+blend_shares: { # em
   NDP: {},
   NDPA: {},
   NDPB: {},
@@ -680,9 +678,7 @@ each_parameter_header: [
 # 2.B Read all the base scenarios
 #----------------------------------------------------------------------------------#
 header_row_em: [ # em
-  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION',
-  'MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE',
-  'DAILYTIMEBRACKET','STORAGE','Value'
+  'PARAMETER','Scenario','REGION','TECHNOLOGY','FUEL','EMISSION','MODE_OF_OPERATION','TIMESLICE','YEAR','SEASON','DAYTYPE','DAILYTIMEBRACKET','STORAGE','Value'
   ]
 
 Techs_Emissions: { # em
@@ -772,6 +768,7 @@ min: 'Min' # B1, em
 max: 'Max' # B1, em
 trans: 'Transport' # B1, em
 indus: 'Industry' # B1, em
+cap_vars: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'] # B1
 cap_vars_cond: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityUpperLimit'] # B1, em
 cap_vars_cond_2: ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'] # B1, em
 techs_: 'Techs_' # B1, em
@@ -862,13 +859,12 @@ tra_dem_hea: 'E6TDFREHEA' # Transport Demand - Heavy Freight # B1, em ###
 tra_dem_med: 'DEMTRNFREMED' # B1, em ###
 tra_dem_lig: 'E6TDFRELIG' # Transport Demand - Light Freight # B1, em ###
 tra_non_mot: 'E6TRNOMOT' # Transport Non Motorize # B1, em ###
-tra_dem_tur: 'E6TDPASTUR' # Transport Demand - Passenger Tourism # B1
 tra_mot_gls: 'TRMOTGSL' # B1
 cost: 'Cost' # B1
 inter_escal: 'Interpolate_Escalate' # B1
 fix_last: 'Fix_Last' # B1
 intact: 'intact' # B1
-inter: 'Interpolate' # B1
+interpo: Interpolate # B1
 fix_ind: 'Fix_Indicated' # B1
 write: 'Write' # B1
 overwrite: 'Overwrite' # B1

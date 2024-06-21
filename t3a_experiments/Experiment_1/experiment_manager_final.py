@@ -61,10 +61,10 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     if not (params['Use_PIUP'] or params['Use_Waste']) or params['Use_Energy']:
         df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
         df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
+        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
         df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
         df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-        df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+        df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     # 1 - Always call the structure for the model:
     #-------------------------------------------#
@@ -691,10 +691,10 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     if not (params['Use_PIUP'] or params['Use_Waste']) or (params['Use_Energy'] or params['Use_AFOLU']):
         df_fuel_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
         df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
-        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain_English'].tolist()
+        df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
         df_tech_to_code = pd.read_excel( params['From_Confection'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
         df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
-        df_tech_2_code_plain_english    = df_tech_to_code['Plain_English'].tolist()
+        df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
     if fut_index < len( all_futures ):
         fut = all_futures[fut_index]
