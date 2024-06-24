@@ -211,9 +211,6 @@ if __name__ == '__main__':
             option = 'w'
         else:
             option = 'a'
-        print(case)
-        print(option)
-        print(output_filename)
         with open(output_filename, option) as file_status:
             if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
                 file_status.write('Status of solution of each future.\nWrite in order of solution.')

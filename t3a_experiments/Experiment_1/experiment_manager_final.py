@@ -27,6 +27,7 @@ from pyDOE import *
 import yaml
 import operator
 import Auxiliares as AUX # only for PIUP
+import subprocess
 
 '''
 We implement OSEMOSYS-CR in a procedimental code
@@ -601,13 +602,42 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
 
     if solver == 'glpk' and params['glpk_option'] == 'old':
         # OLD GLPK
+        # Search for the location of 'glpsol'
+        where_solver = subprocess.run(['where', 'glpsol'], capture_output=True, text=True)
+        paths = where_solver.stdout.splitlines()
+        
+        if paths:  # Ensure at least one path was found
+            path_solver = paths[0]
+        
+            # Check if the path is already in the environment variable PATH
+            if path_solver not in os.environ["PATH"]:
+                # If not in PATH, add it
+                os.environ["PATH"] += os.pathsep + path_solver
+                print("Path added:", path_solver)
+        else:
+            print("No 'glpsol' found on the system.")
+
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
         os.system( str_start and str_solve )
         #
-        data_processor(n1,Executed_Scenario,packaged_useful_elements,params)
+        data_processor(n1,packaged_useful_elements, params)
 
     elif solver == 'glpk'and params['glpk_option'] == 'new':
         # GLPK
+        # Search for the location of 'glpsol'
+        where_solver = subprocess.run(['where', 'glpsol'], capture_output=True, text=True)
+        paths = where_solver.stdout.splitlines()
+        
+        if paths:  # Ensure at least one path was found
+            path_solver = paths[0]
+        
+            # Check if the path is already in the environment variable PATH
+            if path_solver not in os.environ["PATH"]:
+                # If not in PATH, add it
+                os.environ["PATH"] += os.pathsep + path_solver
+                print("Path added:", path_solver)
+        else:
+            print("No 'glpsol' found on the system.")
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
         os.system( str_start and str_solve )        
     else:      
@@ -616,12 +646,41 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         os.system( str_start and str_solve )
         if solver == 'cbc':
             # CBC
+            # Search for the location of 'cbc'
+            where_solver = subprocess.run(['where', 'cbc'], capture_output=True, text=True)
+            paths = where_solver.stdout.splitlines()
+            
+            if paths:  # Ensure at least one path was found
+                path_solver = paths[0]
+            
+                # Check if the path is already in the environment variable PATH
+                if path_solver not in os.environ["PATH"]:
+                    # If not in PATH, add it
+                    os.environ["PATH"] += os.pathsep + path_solver
+                    print("Path added:", path_solver)
+            else:
+                print("No 'cbc' found on the system.")
             str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
             if os.path.exists(output_file + '.sol'):
                 shutil.os.remove(output_file + '.sol')
+            
+            # Search for the location of 'cplex'
+            where_solver = subprocess.run(['where', 'cplex'], capture_output=True, text=True)
+            paths = where_solver.stdout.splitlines()
+            
+            if paths:  # Ensure at least one path was found
+                path_solver = paths[0]
+            
+                # Check if the path is already in the environment variable PATH
+                if path_solver not in os.environ["PATH"]:
+                    # If not in PATH, add it
+                    os.environ["PATH"] += os.pathsep + path_solver
+                    print("Path added:", path_solver)
+            else:
+                print("No 'cplex' found on the system.")
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
             os.system( str_start and str_solve )
     
@@ -654,22 +713,6 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 3a' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
 
-
-        
-    # # Delete glp, lp, txt and sol files
-    # if params['del_files'] and not (solver == 'glpk' and params['glpk_option'] == 'old'):
-    #     delete_files(output_file, solver)
-    
-#
-# def delete_files(file, solver):
-#     # Delete files
-#     if file:
-#         shutil.os.remove(file)
-    
-#     if solver == 'glpk':
-#         shutil.os.remove(file + '.glp')        
-#     else:
-#         shutil.os.remove(file + '.lp')
 #
 def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_useful_elements, params ):
     #
