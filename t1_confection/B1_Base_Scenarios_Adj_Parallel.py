@@ -174,7 +174,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
         os.system( str_start and str_outputs )
         
-    elif not (solver == 'glpk' and params['glpk_option'] == 'old'): # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+    elif solver == 'cbc' or solver == 'cplex': # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
         os.system( str_start and str_outputs )
@@ -183,10 +183,10 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
 
 
     # Module to concatenate csvs otoole outputs
-    if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+    if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
         # file_aboslute_address = os.path.abspath(params['Manager'])
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0])
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
 
 #

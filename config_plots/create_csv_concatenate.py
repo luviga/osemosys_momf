@@ -132,6 +132,8 @@ if __name__ == '__main__':
     case = main_path[1].replace('.txt', '')
     scen = main_path[1]
     scen = scen[:3]
+    tier_by_path = main_path[2]
+    
     
     
     # Define option to write the file with the detail of solution of each file
@@ -178,10 +180,10 @@ if __name__ == '__main__':
 
         
         # Select folder path
-        if params['tier']=='1':
+        if tier_by_path=='1':
             tier_dir = params['tier1_dir'] + '\\\\' + str(case) + params['outputs']
             output_filename = params['tier1_dir'] + '\\\\status_of_each_future.txt'
-        elif params['tier']=='3a':
+        elif tier_by_path=='3a':
             tier_dir = params['tier3a_dir'] + '\\\\' + str(scen) + '\\\\' + str(case) + params['outputs']
             output_filename = params['tier3a_dir'] + '\\\\status_of_each_future.txt'
 
@@ -198,22 +200,25 @@ if __name__ == '__main__':
         output_filename = output_filename.replace('\\\\', '\\')
         output_filename = get_config_main_path(os.path.abspath(''), output_filename)
         output_filename = output_filename[:-1]
-        if params['tier']=='1':
+        if tier_by_path=='1':
             output_filename = output_filename.replace('\Executables', '')
-        elif params['tier']=='3a':
+        elif tier_by_path=='3a':
             output_filename = output_filename.replace('\Futures', '')
         
         
         
-        if case == 'BAU_1':
+        if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
             option = 'w'
         else:
             option = 'a'
+        print(case)
+        print(option)
+        print(output_filename)
         with open(output_filename, option) as file_status:
-            if case == 'BAU_1':
+            if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
                 file_status.write('Status of solution of each future.\nWrite in order of solution.')
                 file_status.write('\n\n\n################################# BAU #################################\n\n\n')
-            if case == 'LTS_1':
+            if (case == 'LTS_1' and tier_by_path=='3a') or (case == 'LTS_0' and tier_by_path=='1'):
                 file_status.write('\n\n\n################################# LTS #################################\n\n\n')
             
             

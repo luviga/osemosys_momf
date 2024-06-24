@@ -644,14 +644,14 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
 
 
     # Module to concatenate csvs otoole outputs
-    if params['del_files'] and not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
+    if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
         # file_aboslute_address = os.path.abspath(params['Manager'])
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
         # file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
         #
     
         # str_start = params['start'] + file_adress
-        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0])
+        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 3a' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
 
 
