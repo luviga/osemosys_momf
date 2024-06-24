@@ -19,60 +19,6 @@ import sys
 
 
 ###############################################  Functions  ################################################################
-# Function to search the path of yaml file
-def get_config_main_path(full_path, base_folder='config_main_files'):
-    # Split the path into parts
-    parts = full_path.split(os.sep)
-    
-    # Find the index of the target directory 'osemosys_momf'
-    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
-    
-    # If the directory is found, reconstruct the path up to that point
-    if target_index is not None:
-        base_path = os.sep.join(parts[:target_index + 1])
-    else:
-        base_path = full_path  # If not found, return the original path
-    
-    # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, base_folder) + os.sep
-    
-    return appended_path
-
-# Function to load yaml file and assing year of discount rate to some values
-def load_and_process_yaml(path):
-    """
-    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
-    
-    Args:
-    path (str): The path to the YAML file.
-    
-    Returns:
-    dict: The updated data from the YAML file where the specific placeholder is replaced.
-    """
-    with open(path, 'r') as file:
-        # Load the YAML content into 'params'
-        params = yaml.safe_load(file)
-
-    # Retrieve the reference year from the YAML file and convert it to string for replacement
-    reference_year = str(params['year_apply_discount_rate'])
-
-    # Function to recursively update strings containing the placeholder
-    def update_strings(obj):
-        if isinstance(obj, dict):
-            return {k: update_strings(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [update_strings(element) for element in obj]
-        elif isinstance(obj, str):
-            # Replace the specific placeholder with the reference year
-            return obj.replace('${year_apply_discount_rate}', reference_year)
-        else:
-            return obj
-
-    # Update all string values in the loaded YAML structure
-    updated_params = update_strings(params)
-
-    return updated_params
-
 # Function to load data and check for missing technologies
 def find_missing_technologies(scenario, file_name):
     file_path = os.path.join(base_path, scenario, file_name)
@@ -514,14 +460,73 @@ def compare_mother_daughters_variant_2(param_1, param_2, fleet_groups, output_fi
                         file.write(f"     Check   {year}: {result}\n")
                     file.write("-------------------------------------------------\n")
 
+# Function to search the path of yaml file
+def get_config_main_path(full_path, base_folder='config_main_files'):
+    # Split the path into parts
+    parts = full_path.split(os.sep)
+    
+    # Find the index of the target directory 'osemosys_momf'
+    target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+    # If the directory is found, reconstruct the path up to that point
+    if target_index is not None:
+        base_path = os.sep.join(parts[:target_index + 1])
+    else:
+        base_path = full_path  # If not found, return the original path
+    
+    # Append the specified directory to the base path
+    appended_path = os.path.join(base_path, base_folder) + os.sep
+    
+    return appended_path
+
+# Function to load yaml file and assing year of discount rate to some values
+def load_and_process_yaml(path):
+    """
+    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+    Args:
+    path (str): The path to the YAML file.
+    
+    Returns:
+    dict: The updated data from the YAML file where the specific placeholder is replaced.
+    """
+    with open(path, 'r') as file:
+        # Load the YAML content into 'params'
+        params = yaml.safe_load(file)
+
+    # Retrieve the reference year from the YAML file and convert it to string for replacement
+    reference_year = str(params['year_apply_discount_rate'])
+
+    # Function to recursively update strings containing the placeholder
+    def update_strings(obj):
+        if isinstance(obj, dict):
+            return {k: update_strings(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [update_strings(element) for element in obj]
+        elif isinstance(obj, str):
+            # Replace the specific placeholder with the reference year
+            return obj.replace('${year_apply_discount_rate}', reference_year)
+        else:
+            return obj
+
+    # Update all string values in the loaded YAML structure
+    updated_params = update_strings(params)
+
+    return updated_params
+
 ############################################################################################################################
 
 if __name__ == '__main__':
     
+    # Take the case from the model (B1 or experiment_manager)
+    main_path = sys.argv
+    initial_path = main_path[1]
+    tier = main_path[2]
+    
     #------------------------------------------------------------------------------------------------------------------------------#
     # Configuration parameters
     # Select tier
-    tier = 3 # 1 for B1 and 3 for RDM
+    # tier = 1 # 1 for B1 and 3 for RDM
     base_case_RDM = False # Only for RDM, if you use specific case or tier = 1  put in False
     
     # For specific case
@@ -547,17 +552,16 @@ if __name__ == '__main__':
     ]
     #------------------------------------------------------------------------------------------------------------------------------#
     
-    
     # Read yaml file
-    file_config_address = get_config_main_path(os.path.abspath(os.path.join('..', '..')))
+    file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
     params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
   
     if specific_case:
         pickle_path = specific_case_pickle_path
-    elif tier == 1:
-        pickle_path = 'A1_outputs/A-O_Fleet_Groups.pickle'
+    elif tier == str(1):
+        pickle_path = initial_path + 'A1_outputs\A-O_Fleet_Groups.pickle'
     else:
-        pickle_path = '0_From_Confection/A-O_Fleet_Groups.pickle'
+        pickle_path = initial_path + '0_From_Confection\A-O_Fleet_Groups.pickle'
         
     # Load mother and child technologies from the .pickle file
     with open(pickle_path, 'rb') as file:
@@ -597,10 +601,10 @@ if __name__ == '__main__':
         # Specify the directory path here
         if specific_case:
             dir_files = os.path.dirname(os.path.abspath(__file__))
-        elif tier == 1:
-            dir_files = './Executables'
+        elif tier == str(1):
+            dir_files = initial_path + '\Executables'
         else:
-            dir_files = './Futures/' + scen
+            dir_files = initial_path + '\Futures\\' + scen
     
         # List all entries in the directory
         all_entries = os.listdir(dir_files)
@@ -612,7 +616,7 @@ if __name__ == '__main__':
             folders = [folders[0]]
             
         for f in folders:
-            if tier == 1:
+            if tier == str(1):
                 future = 0
             else:
                 if base_case_RDM:
@@ -621,12 +625,12 @@ if __name__ == '__main__':
                     future = f
             
             if future == 0 and not specific_case:
-                file_path = f'Executables\{scen}_{future}\{scen}_{future}.txt'
+                file_path = f'{initial_path}\Executables\{scen}_{future}\{scen}_{future}.txt'
                 
             elif specific_case:
                 file_path = specific_case_path_txt
             else:
-                file_path = f'Futures\{scen}\{future}\{future}.txt'
+                file_path = f'{initial_path}\Futures\{scen}\{future}\{future}.txt'
             
             with open(file_path, 'r') as file:
                 lines = file.readlines()
@@ -637,9 +641,9 @@ if __name__ == '__main__':
             if specific_case:
                 output_filename = f'tests_results/comparison_results_{specific_case_path_txt}'
             elif future == 0:
-                output_filename = f'tests_results/comparison_results_{scen}_{future}.txt'
+                output_filename = f'{initial_path}tests_results\comparison_results_{scen}_{future}.txt'
             else:
-                output_filename = f'tests_results/comparison_results_{future}.txt'
+                output_filename = f'{initial_path}tests_results\comparison_results_{future}.txt'
             
             
             for i in range(len(file_names)):
@@ -688,12 +692,12 @@ if __name__ == '__main__':
             ###########################################################################################################################
             
             # Load the Excel file
-            if tier == 1:
-                file_path_modes_transp = 'A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
+            if tier == str(1):
+                file_path_modes_transp = initial_path + 'A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
             elif specific_case:
                 file_path_modes_transp = specific_case_file_path_modes_transp
             else:
-                file_path_modes_transp = '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+                file_path_modes_transp = initial_path + '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
             
             # Load the 'Mode_Broad' sheet
             df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')

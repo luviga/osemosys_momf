@@ -704,12 +704,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
 
     # Module to concatenate csvs otoole outputs
     if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
-        # file_aboslute_address = os.path.abspath(params['Manager'])
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        # file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-        #
-    
-        # str_start = params['start'] + file_adress
         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 3a' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
 
@@ -5895,24 +5890,22 @@ if __name__ == '__main__':
                 time_list.append( time_elapsed_1 )
                 #'''
                 #
-            #
-            
-        # # Module to concatenate csvs otoole outputs
-        # if not (params['solver'] == 'glpk' and params['glpk_option'] == 'old'):
-        #     file_aboslute_address = os.path.abspath(params['Manager'])
-        #     file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        #     file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
-        #     #
-    
-        #     str_start = params['start'] + file_adress
-        #     str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs']
-        #     os.system( str_start and str_otoole_concate_csv )
-        #
-        # Delete log files when solver='cplex'
+            #  
         if params['solver'] == 'cplex' and params['del_files']:
             shutil.os.remove('cplex.log')
             shutil.os.remove('clone1.log')
             shutil.os.remove('clone2.log')
+            
+    else:
+        # Module to run test when mode is 'Generator'
+        file_aboslute_address = os.path.abspath(params['Manager'])
+        file_config_plots_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+        file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+        #
+        str_start = params['start'] + file_adress
+        str_tests = 'python -u ' + str(file_config_plots_csvs) + params['test_path'] + ' ' + str(file_adress) + ' 3a' # last int is the ID tier
+        print(str_tests)
+        os.system( str_start and str_tests )
         
     
     print('   The total time producing outputs and storing data has been: ' + str( sum( time_list ) ) + ' seconds')

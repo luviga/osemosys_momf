@@ -184,7 +184,6 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
 
     # Module to concatenate csvs otoole outputs
     if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
-        # file_aboslute_address = os.path.abspath(params['Manager'])
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
@@ -3978,7 +3977,17 @@ if __name__ == '__main__':
             print('Started Linear Runs')
             for n in range( len( first_list ) ):
                 main_executer(n, packaged_useful_elements, scenario_list_print, params)
-                
+    
+    else:
+        # Module to run test when mode is 'Generator'
+        file_aboslute_address = os.path.abspath(params['B1_script'])
+        file_config_plots_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+        file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
+        #
+        str_start = params['start'] + file_adress
+        str_tests = 'python -u ' + str(file_config_plots_csvs) + params['test_path'] + ' ' + str(file_adress) + ' 1' # last int is the ID tier
+        os.system( str_start and str_tests )            
+    
     # Delete log files when solver='cplex'
     if params['solver'] == 'cplex' and params['del_files']:
         shutil.os.remove('cplex.log')
