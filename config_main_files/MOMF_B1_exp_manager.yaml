@@ -99,7 +99,7 @@ otoole_config: change_default_vals_params.py # em
 concat_csvs: create_csv_concatenate.py # B1, em
 # Script to concatenate the csvs otoole's outputs
 # File
-test_path: find_inconsistencies_techs_moms_daughters.py # B1, em                                         
+test_path: test_inputs.py # B1, em                                         
 # Classifier Modes Transport
 # File
 Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx' # em
