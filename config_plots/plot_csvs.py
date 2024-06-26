@@ -252,10 +252,12 @@ if __name__ == '__main__':
                         year_apply_discount_rate = params['year_apply_discount_rate']
                         
                         try:
-                            if params[f'techs_{scen}_{parameter}'] != []:
-                                techs_desired[f'{parameter}'] = params[f'techs_{scen}_{parameter}']
-                            elif parameter.endswith(str(year_apply_discount_rate)) and params[f'techs_{scen}_{parameter}'] != []:
-                                techs_desired[f'{parameter}'] = params[f'techs_{scen}_{parameter}']
+                            if params[f'techs_{scen}_{parameter}'][0] != []:
+                                techs_desired[f'{parameter}'] = params[f'techs_{scen}_{parameter}'][0]
+                                y_label_title = params[f'techs_{scen}_{parameter}'][1]
+                            elif parameter.endswith(str(year_apply_discount_rate)) and params[f'techs_{scen}_{parameter}'][0] != []:
+                                techs_desired[f'{parameter}'] = params[f'techs_{scen}_{parameter}'][0]
+                                y_label_title = params[f'techs_{scen}_{parameter}'][1]
                             else:
                                 print(f'For this scenario {scen}, this {parameter} do not has any technology select.')
                         except Exception:
@@ -304,19 +306,28 @@ if __name__ == '__main__':
                             plt.xticks(rotation=0, ticks=xticks, labels=xticklabels)
                             
                             # Labels and title
-                            plt.title(f'{parameter} Investment by Technology {case}')
-                            plt.ylabel('Million $')
+                            plt.title(f'{parameter} {case}')
                             plt.xlabel('Year')
+                            if y_label_title:
+                                plt.ylabel(y_label_title[0])
                             
                             # Display the legend and the chart
                             plt.legend(title='Technology').set_visible(params['visible_legend'])
+                            if params['visible_legend']:
+                                plt.legend(title='Technology', bbox_to_anchor=(1.05, 1), loc='upper left')
+                            
+                            # Adjust layout to ensure everything fits without overlap
+                            plt.tight_layout()
+                            
+                            # Adjust margins if necessary to avoid cutting off the legend
+                            plt.subplots_adjust(right=0.75)
                             
                             # Show/save the plot
                             if params['show_fig']:
                                 plt.show()
                             # To save the plot, uncomment the following line
                             if params['save_fig']:
-                                file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}_investment_by_technology.png'
+                                file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
                                 directory = os.path.dirname(file_path)
                                 if not os.path.exists(directory):
                                     os.makedirs(directory)
@@ -324,4 +335,3 @@ if __name__ == '__main__':
                             plt.close()
                         else:
                             print(f"No technologies associated with parameter {parameter} {case}.")
-                            
