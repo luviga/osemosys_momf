@@ -10,6 +10,7 @@ import string
 import re
 import yaml
 import os
+import sys
 
 # Function to generate Excel-style column names
 def generate_excel_column_names(num_columns):
@@ -24,6 +25,19 @@ def generate_excel_column_names(num_columns):
         column_names.append(name)
     
     return column_names
+
+def read_parameters_variant_simple(file_path, parameters_name):
+    data = {}  # This dictionary will store the extracted data
+
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Search for the parameter definition
+    for parameter_name in parameters_name:
+        for i, line in enumerate(lines):
+            if f"param {parameter_name} default" in line:
+                data[f'{parameter_name}'] = [line]
+    return pd.DataFrame.from_dict(data, orient='index', columns=['Definition'])
 
 def read_parameters(file_path, parameter_name):
     data = {}  # This dictionary will store the extracted data
@@ -59,7 +73,7 @@ def read_parameters(file_path, parameter_name):
     # Convert the dictionary to a pandas DataFrame for easier manipulation
     return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
 
-def read_parameters_variant(file_path, parameter_name):
+def read_parameters_variant(file_path, parameter_name, number):
     data = {}  # Dictionary to store extracted data
     years = []  # List to store the years
 
@@ -84,7 +98,10 @@ def read_parameters_variant(file_path, parameter_name):
         if line.startswith('['):
             # Extract technologies and other identifiers
             identifiers = line.strip('[]').split(',')
-            tech_identifier = f"{identifiers[1]}" # / {identifiers[-3]}"
+            if number == 5 and parameter_name == 'EmissionActivityRatio':
+                tech_identifier = f"{identifiers[1]}/{identifiers[2]}"
+            else:
+                tech_identifier = f"{identifiers[1]}"
             
             # Extract years from the next line
             years_line = lines[i + 1].strip().split()
@@ -95,9 +112,6 @@ def read_parameters_variant(file_path, parameter_name):
             
             # Extract values from the line after the years
             values_line = lines[i + 2].strip().split()
-            # Stop processing if ';' is found
-            # if ';' in values_line:
-            #     values_line.remove(';')
             
             # Ignore the first value (always 1) and convert the rest to float
             values = [float(value) for value in values_line[1:] if re.match(r'^-?\d+(?:\.\d+)?$', value)]
@@ -106,7 +120,7 @@ def read_parameters_variant(file_path, parameter_name):
             if len(values) == len(years):
                 data[tech_identifier] = values
             else:
-                print(f"Mismatch in lengths for {tech_identifier}: {len(values)} values, {len(years)} years")
+                print(f"Mismatch in lengths for {tech_identifier} in this {parameter_name}: {len(values)} values, {len(years)} years")
             
         # Stop processing if ';' is found
         if ';' in line:
@@ -119,6 +133,138 @@ def read_parameters_variant(file_path, parameter_name):
 
     # Convert the dictionary to a pandas DataFrame
     return pd.DataFrame(data, index=years).T  # Transpose so that technologies are rows and years are columns
+
+def read_parameters_variant_shorts(file_path, params_exeption):
+    # Leer el archivo de texto
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Diccionario para almacenar los DataFrames
+    data_dict = {}
+
+    for param in params_exeption:
+        # Buscar la definición del parámetro
+        for i, line in enumerate(lines):
+            if f"param {param} default" in line:
+                # Extraer las columnas y valores
+                columns_line = lines[i + 1].strip().split()
+                values_line = lines[i + 2].strip().split()
+                
+                # Remover ':=' si está presente
+                if ':=' in columns_line:
+                    columns_line.remove(':=')
+                if ':=' in values_line:
+                    values_line.remove(':=')
+                
+                # Primer dato de la tercera fila es el identificador
+                identifier = values_line[0]
+                values = list(map(float, values_line[1:]))  # Convertir los valores a float
+                
+                # Crear el DataFrame
+                df = pd.DataFrame([values], columns=columns_line, index=[identifier])
+                
+                # Agregar el DataFrame al diccionario
+                data_dict[param] = df
+                
+                # Saltar al siguiente parámetro
+                break
+
+    return data_dict
+
+def compare_parameters_without_data(df1, df2, dict1_name, dict2_name):
+    differences = {}
+
+    # Check if indices are the same
+    index_diff_df1 = df1.index.difference(df2.index).tolist()
+    index_diff_df2 = df2.index.difference(df1.index).tolist()
+    
+    if index_diff_df1 or index_diff_df2:
+        index_diff = {}
+        if index_diff_df1:
+            index_diff[f'In this file {dict1_name} not in this {dict2_name}'] = index_diff_df1
+        if index_diff_df2:
+            index_diff[f'In this file {dict2_name} not in this {dict1_name}'] = index_diff_df2
+        differences['index_difference'] = index_diff
+
+    # Align the indices to ensure they can be compared
+    df1_aligned, df2_aligned = df1.align(df2, fill_value='')
+
+    # Compare the 'Definition' column directly
+    if 'Definition' in df1_aligned.columns and 'Definition' in df2_aligned.columns:
+        diff_mask = df1_aligned['Definition'] != df2_aligned['Definition']
+
+        # Filter out the indices that are already in index differences
+        if 'index_difference' in differences:
+            diff_mask = diff_mask & ~df1_aligned.index.isin(index_diff_df1) & ~df1_aligned.index.isin(index_diff_df2)
+
+        if diff_mask.any():
+            value_diffs = pd.DataFrame({
+                'Index': df1_aligned.index[diff_mask],
+                f'Value_in_{dict1_name}': df1_aligned['Definition'][diff_mask],
+                f'Value_in_{dict2_name}': df2_aligned['Definition'][diff_mask]
+            })
+            differences['value_difference'] = value_diffs
+    
+    return differences
+
+def compare_dicts(main_dict, tolerance=0.01):
+    # Get the keys of the inner dictionaries
+    dict_keys = list(main_dict.keys())
+    dict1_name, dict2_name = dict_keys[0], dict_keys[1]
+    dict1, dict2 = main_dict[dict1_name], main_dict[dict2_name]
+    differences = {}
+
+    # Get all keys from both dictionaries
+    all_keys = set(dict1.keys()).union(set(dict2.keys()))
+
+    for key in all_keys:
+        if key == 'Parameters without data':
+            # Handle 'Parameters without data' comparison separately
+            if key in dict1 and key in dict2:
+                diff = compare_parameters_without_data(dict1[key], dict2[key], dict1_name, dict2_name)
+                if diff:
+                    differences[key] = diff
+            continue  # Skip further processing for 'Parameters without data'
+
+        differences[key] = {}
+
+        if key not in dict1:
+            differences[key]['missing_in_dict1'] = dict2[key]
+        elif key not in dict2:
+            differences[key]['missing_in_dict2'] = dict1[key]
+        else:
+            df1 = dict1[key]
+            df2 = dict2[key]
+
+            # Check if indices are the same
+            index_diff_df1 = df1.index.difference(df2.index).tolist()
+            index_diff_df2 = df2.index.difference(df1.index).tolist()
+            if index_diff_df1 or index_diff_df2:
+                index_diff = {}
+                if index_diff_df1:
+                    index_diff[f'In this file {dict1_name} not in this {dict2_name}'] = index_diff_df1
+                if index_diff_df2:
+                    index_diff[f'In this file {dict2_name} not in this {dict1_name}'] = index_diff_df2
+                differences[key]['index_difference'] = index_diff
+
+            # Check if columns are the same
+            if not df1.columns.equals(df2.columns):
+                differences[key]['column_difference'] = f'Column mismatch in {key} between {dict1_name} and {dict2_name}'
+
+            # Compare values with tolerance
+            diff_mask = (df1 - df2).abs() > tolerance
+            if diff_mask.any().any():
+                value_diffs = df1[diff_mask].stack().reset_index()
+                value_diffs.columns = ['Index', 'Column', f'Value_in_{dict1_name}']
+                value_diffs[f'Value_in_{dict2_name}'] = df2[diff_mask].stack().values
+
+                differences[key]['value_difference'] = value_diffs
+
+        # Remove empty difference entries
+        if not differences[key]:
+            del differences[key]
+
+    return differences
 
 def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
@@ -174,20 +320,30 @@ def load_and_process_yaml(path):
 
 if __name__ == '__main__':
     # Read yaml file with parameterization
-    file_config_address = get_config_main_path(os.path.abspath(os.path.join('..', '..')))
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_config.yaml')
+    file_config_address = file_config_address = get_config_main_path(os.path.abspath(''))
+    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
     
     
     
     # Variables
-    nombre_archivo = 'B1_Model_Structure.xlsx'  # Name of the Excel file
-    nombre_hoja = 'parameters'  # Name of the sheet to read
+    name_file = 'B1_Model_Structure.xlsx'  # Name of the Excel file
+    name_sheet = 'parameters'  # Name of the sheet to read
     value_A_1 = 'parameter'  # First value in column A to read
     value_A_2 = 'number'  # Second value in column A to read
     
     # Read the Excel file
-    df = pd.read_excel(nombre_archivo, sheet_name=nombre_hoja)
+    df = pd.read_excel(name_file, sheet_name=name_sheet)
     
+    # Parameters without data it write in the final of the txt file
+    without_values_params = params['params_inputs_data']
+    
+    # Parameters have a write diferent write structure
+    params_exeption = [
+        "CapacityToActivityUnit",
+        "OperationalLife",
+        "YearSplit"
+    ]
+
     # Generate Excel-style column names
     num_columns = df.shape[1]
     excel_column_names = generate_excel_column_names(num_columns)
@@ -197,20 +353,63 @@ if __name__ == '__main__':
     
     # Filter data based on the values in column A
     sets_number_by_param = df[df['A'].isin([value_A_1, value_A_2])]
+
+    # Search files to compare
+    directory_path = 'Inputs_files'
+    all_files = os.listdir(directory_path)
+    txt_files = [file for file in all_files if file.endswith('.txt')]
+
+
+    dict_files_data = {}
+    for fil in txt_files:
+        file_path = './' + directory_path + '/' + fil
+        dict_params_data = {}
+        
+        # For parameters with data and whith this structure ([Region,*,*,*])
+        for col in sets_number_by_param.columns:
+            parameter = df[col][0]
+            number = df[col][1]
+            
+            if number == 3:
+                temp_param_data = read_parameters(file_path, parameter)
+                temp_param_data = temp_param_data.sort_index()
+                dict_params_data[parameter] = temp_param_data
+            elif number == 4 or number ==5:
+                temp_param_data = read_parameters_variant(file_path, parameter, number)
+                temp_param_data = temp_param_data.sort_index()
+                dict_params_data[parameter] = temp_param_data
+    
+        # For parameters without data
+        without_values_params_data = read_parameters_variant_simple(file_path, without_values_params)
+        
+        # For parameters to have diferent wirte structure
+        shorts_values_params_data = read_parameters_variant_shorts(file_path, params_exeption)
+        
+        # Add into "dict_params_data"
+        dict_params_data['Parameters without data'] = without_values_params_data
+        dict_params_data.update(shorts_values_params_data) 
+        
+        
+        # Delete inputs with size (0, 0) or (0, 1)
+        keys_to_delete = [key for key, df in dict_params_data.items() if df.shape == (0, 0) or df.shape == (0, 1)]
+        for key in keys_to_delete:
+            del dict_params_data[key]
+        
+        # Update dict with data of the two files
+        dict_files_data[fil.replace('.txt', '')] = dict_params_data
+
+             
+    # Compare data of both dictionaries with a tolerance of 0.01
+    differences = compare_dicts(dict_files_data, tolerance=0.01)
+    
+    # Print final messages
+    if differences == {}:
+        print('The files are the same.')
+    else:
+        print('The files have differences, check variable "differences"')
+        
+    print('\nThe test process ran successful')
     
     
+     
     
-    file_path = 'C:\\Users\\ClimateLeadGroup\\Desktop\\CLG_repositories\\osemosys_momf\\t1_confection\\Executables\\BAU_0\\BAU_0.txt'
-    parameter_name = 'TotalAnnualMaxCapacity'
-    num_values = 3  # or 2, 4, 5 depending on the case
-    
-    TotalAnnualMaxCapacity = read_parameters(file_path, parameter_name)
-    
-    parameter_name = 'OutputActivityRatio'
-    OutputActivityRatio = read_parameters_variant(file_path, parameter_name)
-    
-    parameter_name = 'SpecifiedDemandProfile'
-    SpecifiedDemandProfile = read_parameters_variant(file_path, parameter_name)
-    
-    parameter_name = 'VariableCost'
-    VariableCost = read_parameters_variant(file_path, parameter_name)
