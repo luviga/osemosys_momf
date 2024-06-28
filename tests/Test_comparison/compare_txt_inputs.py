@@ -10,6 +10,7 @@ import string
 import re
 import yaml
 import os
+import sys
 
 # Function to generate Excel-style column names
 def generate_excel_column_names(num_columns):
@@ -36,7 +37,7 @@ def read_parameters_variant_simple(file_path, parameters_name):
         for i, line in enumerate(lines):
             if f"param {parameter_name} default" in line:
                 data[f'{parameter_name}'] = [line]
-    return pd.DataFrame.from_dict(data, orient='index', columns=['Definition'])
+    return data#pd.DataFrame.from_dict(data, orient='index', columns=['Definition'])
 
 def read_parameters(file_path, parameter_name):
     data = {}  # This dictionary will store the extracted data
@@ -170,39 +171,21 @@ def read_parameters_variant_shorts(file_path, params_exeption):
 
     return data_dict
 
-def compare_parameters_without_data(df1, df2, dict1_name, dict2_name):
+def compare_parameters_without_data(list1, list2, list1_name, list2_name):
     differences = {}
-
-    # Check if indices are the same
-    index_diff_df1 = df1.index.difference(df2.index).tolist()
-    index_diff_df2 = df2.index.difference(df1.index).tolist()
     
-    if index_diff_df1 or index_diff_df2:
-        index_diff = {}
-        if index_diff_df1:
-            index_diff[f'In this file {dict1_name} not in this {dict2_name}'] = index_diff_df1
-        if index_diff_df2:
-            index_diff[f'In this file {dict2_name} not in this {dict1_name}'] = index_diff_df2
-        differences['index_difference'] = index_diff
-
-    # Align the indices to ensure they can be compared
-    df1_aligned, df2_aligned = df1.align(df2, fill_value='')
-
-    # Compare the 'Definition' column directly
-    if 'Definition' in df1_aligned.columns and 'Definition' in df2_aligned.columns:
-        diff_mask = df1_aligned['Definition'] != df2_aligned['Definition']
-
-        # Filter out the indices that are already in index differences
-        if 'index_difference' in differences:
-            diff_mask = diff_mask & ~df1_aligned.index.isin(index_diff_df1) & ~df1_aligned.index.isin(index_diff_df2)
-
-        if diff_mask.any():
-            value_diffs = pd.DataFrame({
-                'Index': df1_aligned.index[diff_mask],
-                f'Value_in_{dict1_name}': df1_aligned['Definition'][diff_mask],
-                f'Value_in_{dict2_name}': df2_aligned['Definition'][diff_mask]
+    if list1 != list2:
+        
+        value_diffs = pd.DataFrame({
+            'Index': 'list1_name',
+            f'Value_in_{list1_name}': list1,
+            f'Value_in_{list2_name}': list2
             })
-            differences['value_difference'] = value_diffs
+        
+        print(value_diffs)
+        differences['value_difference'] = value_diffs
+        
+    
     
     return differences
 
@@ -217,9 +200,11 @@ def compare_dicts(main_dict, tolerance=0.01):
     all_keys = set(dict1.keys()).union(set(dict2.keys()))
 
     for key in all_keys:
-        if key == 'Parameters without data':
+        if isinstance(dict1.get(key), list) and isinstance(dict2.get(key), list):
             # Handle 'Parameters without data' comparison separately
             if key in dict1 and key in dict2:
+                # print(dict1[key], dict2[key], dict1_name, dict2_name)
+                # sys.exit(1)
                 diff = compare_parameters_without_data(dict1[key], dict2[key], dict1_name, dict2_name)
                 if diff:
                     differences[key] = diff
@@ -385,15 +370,16 @@ if __name__ == '__main__':
         # For parameters to have diferent wirte structure
         shorts_values_params_data = read_parameters_variant_shorts(file_path, params_exeption)
         
-        # Add into "dict_params_data"
-        dict_params_data['Parameters without data'] = without_values_params_data
+        # Add "shorts_values_params_data" into "dict_params_data" 
+        # dict_params_data['Parameters without data'] = without_values_params_data
         dict_params_data.update(shorts_values_params_data) 
-        
-        
         # Delete inputs with size (0, 0) or (0, 1)
         keys_to_delete = [key for key, df in dict_params_data.items() if df.shape == (0, 0) or df.shape == (0, 1)]
         for key in keys_to_delete:
             del dict_params_data[key]
+           
+        # Add "without_values_params_data" into "dict_params_data"
+        dict_params_data.update(without_values_params_data)
         
         # Update dict with data of the two files
         dict_files_data[fil.replace('.txt', '')] = dict_params_data
