@@ -140,11 +140,11 @@ if __name__ == '__main__':
             if params['tier']=='1':
                 all_files_internal = os.listdir(params['tier1_dir'])
                 dict_scen_folder_unique[f'{scen}_0'] = [i for i in all_files_internal if scen in i]
-                info_filename = params['tier1_dir'] + '/' + params['info_filename']
+                info_filename = params['tier1_dir'].replace('Executables','') + '/' + params['info_filename']
             elif params['tier']=='3a':
                 all_files_internal = os.listdir(params['tier3a_dir'] + '/' + scen)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-                info_filename = params['tier3a_dir'] + '/' + params['info_filename']
+                info_filename = params['tier3a_dir'].replace('Futures','') + '/' + params['info_filename']
         count = 0
         for scen in dict_scen_folder_unique:
             
