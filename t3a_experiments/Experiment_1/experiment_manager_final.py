@@ -601,7 +601,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     set_first_list(Executed_Scenario, params)
     file_aboslute_address = os.path.abspath(params['Manager'])
     file_config_address = get_config_main_path(os.path.abspath(''))
-    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) )
     #
     
 
@@ -1157,7 +1157,7 @@ def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_use
     ###########################################################################################################################
     #
     file_aboslute_address = os.path.abspath(params['Manager'])
-    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+    file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) )
     with open( file_adress + '\\' + params['futures_2'] + str( scenario_list[scen] ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '\\' + str( scenario_list[scen] ) + '_' + str( fut ) + '_Input.csv', 'w', newline = '') as param_csv:
         csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # Print the header:
@@ -5871,7 +5871,7 @@ if __name__ == '__main__':
         # Module to run test when mode is 'Generator'
         file_aboslute_address = os.path.abspath(params['Manager'])
         file_config_plots_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) ).replace( '\:', ':' )
+        file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) )
         #
         str_start = params['start'] + file_adress
         str_tests = 'python -u ' + str(file_config_plots_csvs) + params['test_path'] + ' ' + str(file_adress) + ' 3a' # last int is the ID tier

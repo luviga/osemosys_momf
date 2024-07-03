@@ -174,7 +174,7 @@ Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 1 # B1, em
+max_x_per_iter: 2 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True

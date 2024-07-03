@@ -201,9 +201,9 @@ if __name__ == '__main__':
         output_filename = get_config_main_path(os.path.abspath(''), output_filename)
         output_filename = output_filename[:-1]
         if tier_by_path=='1':
-            output_filename = output_filename.replace('\Executables', '')
+            output_filename = output_filename.replace('\\Executables', '')
         elif tier_by_path=='3a':
-            output_filename = output_filename.replace('\Futures', '')
+            output_filename = output_filename.replace('\\Futures', '')
         
         
         

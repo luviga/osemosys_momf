@@ -82,8 +82,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     set_first_list(scenario_list_print, params)
     file_aboslute_address = os.path.abspath(params['B1_script'])
     file_config_address = get_config_main_path(os.path.abspath(''))
-    # file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-    file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
+    file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) )
     #
     case_address = file_adress + params['results'] + str( first_list[n1] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
@@ -3953,7 +3952,7 @@ if __name__ == '__main__':
         # Module to run test when mode is 'Generator'
         file_aboslute_address = os.path.abspath(params['B1_script'])
         file_config_plots_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) ).replace( '\:', ':' )
+        file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) )
         #
         str_start = params['start'] + file_adress
         str_tests = 'python -u ' + str(file_config_plots_csvs) + params['test_path'] + ' ' + str(file_adress) + ' 1' # last int is the ID tier
