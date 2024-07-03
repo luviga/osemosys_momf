@@ -93,19 +93,19 @@ Blend_Shares_0: 'Blend_Shares_0.pickle' # em
 conv_format: 'conversion_format.yaml' # em
 # Script to create and change values of the yaml file to use with otoole
 # File
-otoole_config: change_default_vals_params.py # em
+otoole_config: 'change_default_vals_params.py' # em
 # Script to concatenate the csvs otoole's outputs
 # File
-concat_csvs: create_csv_concatenate.py # B1, em
+concat_csvs: 'create_csv_concatenate.py' # B1, em
 # Script to concatenate the csvs otoole's outputs
 # File
-test_path: test_inputs.py # B1, em                                         
+test_path: 'find_inconsistencies_techs_moms_daughters.py' # B1, em                                         
 # Classifier Modes Transport
 # File
 Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx' # em
 # Experiment Manager Script
 # File
-Manager: 'experiment_manager.py' # em
+Manager: 'experiment_manager_final.py' # em
 # FRM Cleanup script
 # File
 FRM_clean: 'FRM_cleanup.py'
@@ -174,7 +174,7 @@ Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 2 # B1, em
+max_x_per_iter: 1 # B1, em
 
 # Choose if want run script in parallel or not
 parallel: True

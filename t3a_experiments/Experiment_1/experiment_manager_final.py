@@ -578,7 +578,23 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     time.sleep(0.05)
     #-----------------------------------------------------------------------------------------------------------%
     print(  'We finished with printing the outputs.', case)
-
+############################################################################################################################################################################################################
+def check_enviro_variables(solver_command):
+    where_solver = subprocess.run(['where', solver_command], capture_output=True, text=True)
+    paths = where_solver.stdout.splitlines()
+    
+    if paths:  # Ensure at least one path was found
+        path_solver = paths[0]
+    
+        # Check if the path is already in the environment variable PATH
+        if path_solver not in os.environ["PATH"]:
+            # If not in PATH, add it
+            os.environ["PATH"] += os.pathsep + path_solver
+            print("Path added:", path_solver)
+    else:
+        print("No 'glpsol' found on the system.")
+    #
+#
 ############################################################################################################################################################################################################
 def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list_print, params, n2=None):  
 
