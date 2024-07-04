@@ -39,7 +39,7 @@ import local_dataset_creator_f
 
 'Define control parameters:'
 file_aboslute_address = os.path.abspath(params['Bro_out_dat_cre'])
-file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) ).replace( '\:', ':' )
+file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) )
 
 run_for_first_time = True
 

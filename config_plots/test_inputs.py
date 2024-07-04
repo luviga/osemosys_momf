@@ -587,7 +587,7 @@ if __name__ == '__main__':
     
     # missing_info
     
-    # ###### TEST 1 ######
+    # ###### TEST 0 ######
     # If i want to know about what mothers o daughters techs are not there      
     # # Calling the function with the provided data
     # check_tech_presence(missing_info, fleet_groups)
