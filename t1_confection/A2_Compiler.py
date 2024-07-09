@@ -26,7 +26,7 @@ time_range_vector = [ n for n in range( baseyear, endyear+1 ) ]
 Wide_Param_Header = params['sets']
 #
 dict_xtra_scen = params['xtra_scen']
-other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=params['columns1'])
+other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=['Name', 'Param'])
 other_setup_params_name = other_setup_parameters['Name'].tolist()
 other_setup_params_param = other_setup_parameters['Param'].tolist() 
 other_setup_params = {}
@@ -38,13 +38,27 @@ print_aid_parameter = False
 print('1 - Define Yearsplit')
 #
 df_Yearsplit = pd.DataFrame( columns = Wide_Param_Header )
-for y in range( len( time_range_vector ) ):
-    this_dict_4_wide = {}
-    this_dict_4_wide.update( { 'PARAMETER':'Yearsplit', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                'TIMESLICE':other_setup_params['Timeslice'], 'YEAR':time_range_vector[y],
-                                'Value':1 } )
-    df_Yearsplit = df_Yearsplit._append( this_dict_4_wide, ignore_index=True )
-#
+# Initialize an empty list to accumulate dictionaries
+accumulated_dicts_Yearsplit = []
+
+# Loop through the time range vector
+for y in range(len(time_range_vector)):
+    # Create a dictionary for the current iteration
+    this_dict_4_wide = {
+        'PARAMETER': 'Yearsplit',
+        'Scenario': other_setup_params['Main_Scenario'],
+        'TIMESLICE': other_setup_params['Timeslice'],
+        'YEAR': time_range_vector[y],
+        'Value': 1
+    }
+    # Add the dictionary to the list
+    accumulated_dicts_Yearsplit.append(this_dict_4_wide)
+
+# Convert the accumulated list of dictionaries to a DataFrame
+new_rows_Yearsplit_df = pd.DataFrame(accumulated_dicts_Yearsplit)
+
+# Use pd.concat to append the new rows to the original DataFrame
+df_Yearsplit = pd.concat([df_Yearsplit, new_rows_Yearsplit_df], ignore_index=True)
 #------------------------------------------------------------------------------
 print('2 - Connect the model activity ratios.')
 #
@@ -74,6 +88,10 @@ AR_Base_proj_df = {}
 AR_Base_proj_df_new = {}
 AR_Base = {}
 #
+# Initialization of lists for accumulating data for bulk append operations
+accumulated_rows_OAR = []
+accumulated_rows_IAR = []
+
 for g in range( len( groups_list ) ):
     AR_Base_df.update( { groups_list[g]:AR_Model_Base_Year.parse( groups_list[g] ) } )
     this_df = AR_Base_df[ groups_list[g] ]
@@ -84,8 +102,8 @@ for g in range( len( groups_list ) ):
     this_proj_df_new = deepcopy( this_proj_df )
     this_proj_df_new.replace( { 'Direction': 'Output'}, 'OutputActivityRatio', inplace=True )
     this_proj_df_new.replace( { 'Direction': 'Input'}, 'InputActivityRatio', inplace=True )
-    this_proj_df_new.rename( columns=params['columns2'], inplace=True )
-    this_proj_df_new = this_proj_df_new.drop(columns=params['columns3'])
+    this_proj_df_new.rename(columns={ "Direction": "Parameter" }, inplace=True)
+    this_proj_df_new = this_proj_df_new.drop(columns=['Projection.Mode', 'Projection.Parameter'])
     #
     if groups_list[g] != params['primary'] and groups_list[g] != params['transport']:
         this_df_fuel_i = this_df['Fuel.I'].tolist()
@@ -185,11 +203,21 @@ for g in range( len( groups_list ) ):
             # Filling the data :
             if this_tech + '+' + output_fuel not in tech_plus_fuel_unique_oar:
                 this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
-                df_OAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                    'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':output_fuel ,
-                                    'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] ,
-                                    'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-                df_OAR = df_OAR._append( df_OAR_dict, ignore_index=True )
+                # Handling OutputActivityRatio
+                this_value_o = deepcopy(
+                    this_proj_df_new.loc[mask, time_range_vector[y]][this_mask_index])
+                oar_row = {
+                    'PARAMETER': 'OutputActivityRatio',
+                    'Scenario': other_setup_params['Main_Scenario'],
+                    'REGION': other_setup_params['Region'],
+                    'TECHNOLOGY': this_tech,
+                    'FUEL': output_fuel,
+                    'MODE_OF_OPERATION': other_setup_params['Mode_of_Operation'],
+                    'YEAR': time_range_vector[y],
+                    'Value': deepcopy(this_value_o)  # Placeholder for the computed value for OutputActivityRatio
+                }
+                accumulated_rows_OAR.append(oar_row)
+                
             #
             if groups_list[g] != params['primary']:
                 input_fuel_list = [ input_fuel ]
@@ -217,17 +245,26 @@ for g in range( len( groups_list ) ):
                     #
                     ###################################################################################################
                     # Filling the data :
-                    if this_tech + '+' + this_input_fuel not in tech_plus_fuel_unique_iar:
-                        this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
-                        df_IAR_dict.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                            'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':this_input_fuel ,
-                                            'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'] , 'YEAR':time_range_vector[y] , 
-                                            'Value':deepcopy( this_proj_df_new.loc[ mask , time_range_vector[y] ][ this_mask_index ] ) } )
-                        df_IAR = df_IAR._append( df_IAR_dict, ignore_index=True )
+                                                                                          
+                    this_mask_index = this_proj_df_new.loc[ mask , time_range_vector[y] ].index.tolist()[0]
+
+                    # Here, instead of updating df_IAR_dict and appending directly to df_IAR:
+                    this_value = deepcopy(this_proj_df_new.loc[mask, time_range_vector[y]][this_mask_index])
+
+                    # Create a new dictionary for each row to append
+                    iar_row = {
+                        'PARAMETER': this_param, 
+                        'Scenario': other_setup_params['Main_Scenario'],
+                        'REGION': other_setup_params['Region'], 
+                        'TECHNOLOGY': this_tech, 
+                        'FUEL': this_input_fuel,
+                        'MODE_OF_OPERATION': other_setup_params['Mode_of_Operation'], 
+                        'YEAR': time_range_vector[y], 
+                        'Value': this_value
+                    }
+                    # Append the new dictionary to the list for bulk append later
+                    accumulated_rows_IAR.append(iar_row)
                     
-                    # Create a tech + fuel string to show uniqueness in iar values:
-                    if (this_tech + '+' + this_input_fuel not in tech_plus_fuel_unique_iar) and y == len(time_range_vector)-1:
-                        tech_plus_fuel_unique_iar.append(this_tech + '+' + this_input_fuel)
                     #
                 #
             #
@@ -236,49 +273,14 @@ for g in range( len( groups_list ) ):
             tech_plus_fuel_unique_oar.append(this_tech + '+' + output_fuel)
         #
     #
-    AR_Base_proj_df_new.update( { groups_list[g]:this_proj_df_new } )
-    #
+    AR_Base_proj_df_new.update({ groups_list[g]:this_proj_df_new })
 #
+# After the loops, convert accumulated data into DataFrames and concatenate them with the original ones
+df_OAR = pd.concat([df_OAR, pd.DataFrame(accumulated_rows_OAR)], ignore_index=True) if accumulated_rows_OAR else df_OAR
+df_IAR = pd.concat([df_IAR, pd.DataFrame(accumulated_rows_IAR)], ignore_index=True) if accumulated_rows_IAR else df_IAR
+
 # HERE WE HAVE A FUNCTIONING IAR AND OAR FOR BOTH NEEDS: WIDE AND LONG FORMATS
-# After the completion of the IAR and OAR dictionaries, we can produce the dfs
-
-# These lines are for insert the values of each key as a list`
-df_OAR_dict_temp = {key: [value] for key, value in df_OAR_dict.items()}
-df_IAR_dict_temp = {key: [value] for key, value in df_IAR_dict.items()}
-
-df_OAR_gen = pd.DataFrame.from_dict(df_OAR_dict_temp)
-df_IAR_gen = pd.DataFrame.from_dict(df_IAR_dict_temp)
-
-df_OAR = pd.concat([df_OAR, df_OAR_gen], ignore_index=True)
-df_IAR = pd.concat([df_IAR, df_IAR_gen], ignore_index=True)
-
-# Define a test to check whether the connections are repeated or not:
-print('OAR techs and fuels connections unique/repeated')
-all_techs_plus_fuel_oar = []
-for atech in range(len(df_OAR['TECHNOLOGY'].index.tolist())):
-    this_techs_oar = df_OAR['TECHNOLOGY'].tolist()[atech]
-    this_fuels_oar = df_OAR['FUEL'].tolist()[atech]
-    all_techs_plus_fuel_oar.append(this_techs_oar+'+'+this_fuels_oar)
-
-all_techs_plus_fuel_oar_uni = list(set(all_techs_plus_fuel_oar))
-all_techs_plus_fuel_oar_sum = []
-for atech in range(len(all_techs_plus_fuel_oar_uni)):
-    all_indices_oars = [i for i, x in enumerate(all_techs_plus_fuel_oar) if x == all_techs_plus_fuel_oar_uni[atech] ]
-    all_techs_plus_fuel_oar_sum.append(len(all_indices_oars))
-
-print('IAR techs and fuels connections unique/repeated')
-all_techs_plus_fuel_iar = []
-for atech in range(len(df_IAR['TECHNOLOGY'].index.tolist())):
-    this_techs_iar = df_IAR['TECHNOLOGY'].tolist()[atech]
-    this_fuels_iar = df_IAR['FUEL'].tolist()[atech]
-    all_techs_plus_fuel_iar.append(this_techs_iar+'+'+this_fuels_iar)
-
-all_techs_plus_fuel_iar_uni = list(set(all_techs_plus_fuel_iar))
-all_techs_plus_fuel_iar_sum = []
-for atech in range(len(all_techs_plus_fuel_iar_uni)):
-    all_indices_iars = [i for i, x in enumerate(all_techs_plus_fuel_iar) if x == all_techs_plus_fuel_iar_uni[atech] ]
-    all_techs_plus_fuel_iar_sum.append(len(all_indices_iars))
-
+#
 print('2 (end) - The model has ben connected.')
 #------------------------------------------------------------------------------
 # DEMAND
@@ -286,32 +288,6 @@ print('3 - Process the model demand.')
 
 Demand = pd.ExcelFile(params['A1_outputs'] + params['Print_Demand'])
 Demand_df = Demand.parse( Demand.sheet_names[0] )
-
-
-# #------------------------------------------------------------------------------
-# import openpyxl
-
-# # Carga el libro de trabajo de Excel
-# wb = openpyxl.load_workbook(params['A1_outputs'] + params['Print_Demand'])
-
-# # Selecciona la primera hoja del libro
-# sheet = wb[wb.sheetnames[0]]
-
-# # Leer los datos de la hoja en una lista de diccionarios
-# data = []
-# for row in sheet.iter_rows(values_only=True, min_row=2):  # Asume que la primera fila tiene encabezados
-#     row_data = {sheet.cell(row=1, column=i).value: cell for i, cell in enumerate(row, start=1)}
-#     data.append(row_data)
-
-# # Convertir la lista de diccionarios en un DataFrame
-# Demand_df = pd.DataFrame(data)
-
-# # Cierra el libro para liberar memoria
-# wb.close()
-# sys.exit()
-# #------------------------------------------------------------------------------
-
-
 
 
 #
@@ -350,7 +326,9 @@ for i in range( len( list_fuel_or_tech ) ):
 #
 list_projection_mode = Demand_df[ 'Projection.Mode' ].tolist()
 list_projection_param = Demand_df[ 'Projection.Parameter' ].tolist()
-#
+# Initialize lists to accumulate data
+accumulated_rows_SpecAnnualDemand = []
+accumulated_rows_SpecDemandProfile = []
 for m in range( len( list_demand_or_share ) ):
     # This is the case for *Passenger* transport:
     if params['gdp'] in list_projection_mode[m]:
@@ -359,149 +337,62 @@ for m in range( len( list_demand_or_share ) ):
         if params['joint'] in list_projection_mode[m]:
             other_tech = list_projection_mode[m].split(' ')[-1]
             other_tech_index = list_fuel_or_tech.index( other_tech )
-            other_value_BY = Demand_df.loc[ other_tech_index, 2018 ]
-        this_value_BY = Demand_df.loc[ m, 2018 ]
+            other_value_BY = Demand_df.loc[ other_tech_index, params['initial_year'] ]
+        this_value_BY = Demand_df.loc[ m, params['initial_year'] ]
         #
         this_net_value_BY = this_value_BY + other_value_BY
         #
         demand_trajectory = [ this_net_value_BY ]
         for y in range( len( Projections_sheet['Year'].tolist() ) ):
 
-            gr_e_pass = Projections_sheet['e_Passenger'].tolist()[y]
-            gr_e_fre = Projections_sheet['e_Freight'].tolist()[y]
-            var_gdp = Projections_sheet['Variation_GDP'].tolist()[y]
-            this_yr = Projections_sheet['Year'].tolist()[y]
-
             if params['passenger'] in list_projection_param[m]:
                 demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Passenger'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
-            if params['freight'] in list_projection_param[m]:
+            if params['freight_column'] in list_projection_param[m]:
                 demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Freight'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
             Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( demand_trajectory[-1]*( this_value_BY/( this_value_BY + other_value_BY ) ), 4 )
         #
     #
-    '''
-    The next four projetion mode have variation percentages (and do not need
-    to be divided by 100). In this project, the same applies to the projection
-    mode above.
-    '''
-    # # Use additional "extra" variables for the updated projections: check check
-    # var_km_pas_list = Projections_sheet['Variation_km_Passenger'].tolist()
-    # var_km_fre_list = Projections_sheet['Variation_km_Freight'].tolist()
-    # var_pop_list = Projections_sheet['Variation_Population'].tolist()
-    # var_gdp_pc_list = Projections_sheet['Variation_GDP_per_cap'].tolist()
-    # var_gdp_tra_list = Projections_sheet['Variation_GDP_transport'].tolist()
-
-    # var_ini_pass_list = Projections_sheet['Initial variation passenger'].tolist()
-    # var_ini_fre_list = Projections_sheet['Initial variation freight'].tolist()
-    # #
-    # # This is for passenger transport:
-    # if 'Population coupling' in list_projection_mode[m]:
-    #     this_tech = list_fuel_or_tech[m]
-    #     this_net_value_BY = Demand_df.loc[m, 2018]
-    #     demand_trajectory = [this_net_value_BY]
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         this_yr = Projections_sheet['Year'].tolist()[y]
-    #         if this_yr <= 2022:  # population affects passenger
-    #             apply_var = var_ini_pass_list[y]
-    #         else:  # grow with population:
-    #             apply_var = var_pop_list[y]            
-    #         demand_trajectory.append(demand_trajectory[-1]*(1 + apply_var))
-    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
-    #     #
-    # #
-    # # This is for freight transport:
-    # if 'GDP transport coupling' in list_projection_mode[m]:
-    #     this_tech = list_fuel_or_tech[m]
-    #     this_net_value_BY = Demand_df.loc[m, 2018]
-    #     demand_trajectory = [this_net_value_BY]
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         this_yr = Projections_sheet['Year'].tolist()[y]
-    #         if this_yr <= 2022:  # gdp transport affects affects freight
-    #             apply_var = var_ini_fre_list[y]
-    #         else:  # grow with population:
-    #             apply_var = var_gdp_tra_list[y]            
-    #         demand_trajectory.append(demand_trajectory[-1]*(1 + apply_var))
-    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
-    #     #
-    # #
-    # # This is for maritime transport:
-    # if 'GDP total coupling after last' in list_projection_mode[m]:
-    #     this_tech = list_fuel_or_tech[m]
-    #     this_net_value_BY = Demand_df.loc[m, 2018]
-    #     demand_trajectory = [this_net_value_BY]
-
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         this_yr = Projections_sheet['Year'].tolist()[y]
-    #         this_value_add_check = Demand_df.loc[m, this_yr]
-    #         # differentiating factor
-    #         apply_var = Projections_sheet['Variation_GDP'].tolist()[y]
-    #         if math.isnan(this_value_add_check):
-    #             this_value_add = demand_trajectory[-1]*(1 + apply_var)
-    #         else:
-    #             this_value_add = Demand_df.loc[m, this_yr]
-    #         demand_trajectory.append(this_value_add)
-    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
-    #     #
-    #     # print('review this projection')
-    #     # sys.exit()
-    # #
-    # # This is for air transport:
-    # if 'GDP per capita coupling after last' in list_projection_mode[m]:
-    #     this_tech = list_fuel_or_tech[m]
-    #     this_net_value_BY = Demand_df.loc[m, 2018]
-    #     demand_trajectory = [this_net_value_BY]
-
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         this_yr = Projections_sheet['Year'].tolist()[y]
-    #         this_value_add_check = Demand_df.loc[m, this_yr]
-    #         # differentiating factor
-    #         apply_var = var_gdp_pc_list[y]
-    #         if math.isnan(this_value_add_check):
-    #             this_value_add = demand_trajectory[-1]*(1 + apply_var)
-    #         else:
-    #             this_value_add = Demand_df.loc[m, this_yr]
-    #         demand_trajectory.append(this_value_add)
-    #         Demand_df.loc[m, this_yr] = round(demand_trajectory[-1], 4)
-    #     #
-    # #
-    # if 'Flat' == list_projection_mode[m]:
-    #     this_value_BY = Demand_df.loc[m, 2018]
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         Demand_df.loc[m, Projections_sheet['Year'].tolist()[y]] = round(this_value_BY, 4)
-    # #
-    # if 'Flat after last' == list_projection_mode[m]:
-    #     year_query_valid = []
-    #     for y in range(len(Projections_sheet['Year'].tolist())):
-    #         year_query = Projections_sheet['Year'].tolist()[y]
-    #         this_value_add = Demand_df.loc[m, year_query]
-    #         if math.isnan(this_value_add):
-    #             this_value_add = Demand_df.loc[m, year_query_valid[-1]]
-    #         else:
-    #             year_query_valid.append(deepcopy(year_query))
-    #         Demand_df.loc[m, Projections_sheet['Year'].tolist()[y]] = round(this_value_add, 4)
+    if 'Flat' == list_projection_mode[m]:                                               
+        this_value_BY = Demand_df.loc[ m, 2018 ]
+        for y in range(len(Projections_sheet['Year'].tolist())):
+            Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round(this_value_BY, 4)
     #
-    if Demand_df['Demand/Share'].tolist()[m] == params['demand']:
+    # Appending to df_SpecAnnualDemand and df_SpecDemandProfile
+    if Demand_df['Demand/Share'].tolist()[m] == 'Demand':
         this_fuel = list_fuel_or_tech[m]
-        for y in range( len( time_range_vector ) ):
-            this_dict_4_wide = {}
-            this_dict_4_wide.update( { 'PARAMETER':'SpecifiedAnnualDemand', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'FUEL':this_fuel,
-                                        'YEAR':time_range_vector[y],
-                                        'Value':Demand_df.loc[ m, time_range_vector[y] ] } )
-            df_SpecAnnualDemand = df_SpecAnnualDemand._append( this_dict_4_wide, ignore_index=True )
-            #
-            this_dict_4_wide = {}
-            this_dict_4_wide.update( { 'PARAMETER':'SpecifiedDemandProfile', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'FUEL':this_fuel,
-                                        'TIMESLICE':other_setup_params['Timeslice'], 'YEAR':time_range_vector[y],
-                                        'Value':1 } )
-            df_SpecDemandProfile = df_SpecDemandProfile._append( this_dict_4_wide, ignore_index=True )
-            #
-        #
-    #
-#
+        for y in range(len(time_range_vector)):
+            # SpecifiedAnnualDemand
+            spec_annual_demand_row = {
+                'PARAMETER': 'SpecifiedAnnualDemand', 
+                'Scenario': other_setup_params['Main_Scenario'],
+                'REGION': other_setup_params['Region'], 
+                'FUEL': this_fuel,
+                'YEAR': time_range_vector[y],
+                'Value': Demand_df.loc[m, time_range_vector[y]]
+            }
+            accumulated_rows_SpecAnnualDemand.append(spec_annual_demand_row)
+            
+            # SpecifiedDemandProfile
+            spec_demand_profile_row = {
+                'PARAMETER': 'SpecifiedDemandProfile', 
+                'Scenario': other_setup_params['Main_Scenario'],
+                'REGION': other_setup_params['Region'], 
+                'FUEL': this_fuel,
+                'TIMESLICE': other_setup_params['Timeslice'], 
+                'YEAR': time_range_vector[y],
+                'Value': 1
+            }
+            accumulated_rows_SpecDemandProfile.append(spec_demand_profile_row)
+            
+# Convert the accumulated rows into DataFrames and append them to the original DataFrames
+if accumulated_rows_SpecAnnualDemand:
+    new_rows_SpecAnnualDemand_df = pd.DataFrame(accumulated_rows_SpecAnnualDemand)
+    df_SpecAnnualDemand = pd.concat([df_SpecAnnualDemand, new_rows_SpecAnnualDemand_df], ignore_index=True)
 
-# sys.exit()
+if accumulated_rows_SpecDemandProfile:
+    new_rows_SpecDemandProfile_df = pd.DataFrame(accumulated_rows_SpecDemandProfile)
+    df_SpecDemandProfile = pd.concat([df_SpecDemandProfile, new_rows_SpecDemandProfile_df], ignore_index=True)
+                                                                                                   
 
 print('4 - Parameterize technologies.')
 # HERE WE HAVE A FUNCTIONING DEMAND *DF* // still have to add the wide format
@@ -528,6 +419,7 @@ params_columns_dict = {}
 overall_param_list = []
 for s in range( len( param_sheets ) ):
     this_df = Parametrization.parse( param_sheets[s] )
+    this_df = this_df.replace('\xa0', np.nan)                                        
     overall_param_list_raw = this_df[ 'Parameter' ].tolist()
     for p in range( len( list( set( overall_param_list_raw ) ) ) ):
         if list( set( overall_param_list_raw ) )[p] not in overall_param_list:
@@ -552,55 +444,69 @@ Alternatives: change the value of oar (occupancy rate) in time, here it is left 
 Demand_df_new = deepcopy( Demand_df )
 Demand_df_techs = Demand_df_new[ 'Fuel/Tech' ].tolist()
 groups_list = list( Fleet_Groups.keys() )
-#
+# Initialize dictionaries to accumulate data for each parameter
+accumulated_data = {param: [] for param in ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']}
 for g in range( len( groups_list ) ):
     this_group_tech_index = Demand_df_techs.index( groups_list[g] )
     oar = Demand_df_new.loc[ this_group_tech_index, 'Ref.OAR.BY' ]
-    if type( oar ) == float or type( oar ) == int:
+    closest_demand_index = None
+    if isinstance(oar, (float, int)):                                 
         for d in range( this_group_tech_index ):
             if params['E6'] in Demand_df_new.loc[ d, params['fuel__tech'] ]:
                 closest_demand_index =  d
-        #
+        # Assuming Fleet_Groups_OR is predefined and handled as per your logic
         Fleet_Groups_OR.update( { groups_list[g]:[ oar for y in range( len( time_range_vector ) ) ] } )
-        #
-        for y in range( len( time_range_vector ) ):
-            ref_demand_value = Demand_df_new.loc[ closest_demand_index, time_range_vector[y] ]
-            target_share = Demand_df.loc[ this_group_tech_index, time_range_vector[y] ]
-            Demand_df_new.loc[ this_group_tech_index, time_range_vector[y] ] = round( ref_demand_value*target_share/oar, 4 )
-            #
-            # Insert *max capacities* and *lower limits* here
-            #
-            cap_params = params['cap_params']
-            for i in range( len( cap_params ) ):
-                this_dict_4_wide = {}
-                this_param = cap_params[i]
-                this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                          'REGION':other_setup_params['Region'] , 'TECHNOLOGY':groups_list[g],
-                                          'YEAR':time_range_vector[y],
-                                          'Value':deepcopy( round( ref_demand_value*target_share/oar, 4 ) ) } )
-                overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
- 
+        if closest_demand_index is not None:  # Ensure closest_demand_index was found
+            for y in range(len(time_range_vector)):
+                ref_demand_value = Demand_df_new.loc[closest_demand_index, time_range_vector[y]]
+                target_share = Demand_df.loc[this_group_tech_index, time_range_vector[y]]
+                adjusted_value = round(ref_demand_value * target_share / oar, 4)
+                Demand_df_new.loc[this_group_tech_index, time_range_vector[y]] = adjusted_value
+
+                # Preparing data for 'TotalAnnualMaxCapacity' and 'TotalTechnologyAnnualActivityLowerLimit'
+                for param in ['TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit']:
+                    accumulated_data[param].append({
+                        'PARAMETER': param,
+                                     
+                                          
+                        'Scenario': other_setup_params['Main_Scenario'],
+                        'REGION': other_setup_params['Region'],
+                        'TECHNOLOGY': groups_list[g],
+                        'YEAR': time_range_vector[y],
+                        'Value': deepcopy(adjusted_value)
+                    })
             #
         Demand_df_new.loc[ this_group_tech_index, 'Target.Unit' ] = params['Gvkm']
     #
-    elif oar == params['not_considered']: # THIS WORKS FOR RAIL
-        # sys.exit()
-        for y in range( len( time_range_vector ) ):
-            ref_cap = Demand_df_new.loc[ this_group_tech_index, time_range_vector[y] ]
-            for i in range( len( cap_params ) ):
-                this_dict_4_wide = {}
-                this_param = cap_params[i]
-                this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                          'REGION':other_setup_params['Region'] , 'TECHNOLOGY':groups_list[g],
-                                          'YEAR':time_range_vector[y],
-                                          'Value':deepcopy( round( ref_cap, 4 ) ) } )
-                overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
+    elif oar == params['not_considered']: # Handling 'not considered', assumed for RAIL
+
+        for y in range(len(time_range_vector)):
+            ref_cap = Demand_df_new.loc[this_group_tech_index, time_range_vector[y]]
+            for param in params['cap_params_Rail']:
+                accumulated_data[param].append({
+                    'PARAMETER': param,
+                    'Scenario': other_setup_params['Main_Scenario'],
+                    'REGION': other_setup_params['Region'],
+                    'TECHNOLOGY': groups_list[g],
+                    'YEAR': time_range_vector[y],
+                    'Value': deepcopy(round(ref_cap, 4))
+                })
+
+# Convert the accumulated data into DataFrames and append them to the corresponding DataFrames within overall_param_df_dict
+for param in accumulated_data:
+    if accumulated_data[param]:  # Check if there is any data to append
+        new_rows_df = pd.DataFrame(accumulated_data[param])
+        overall_param_df_dict[param] = pd.concat([overall_param_df_dict[param], new_rows_df], ignore_index=True)
+
+# Fill list to be part of a dataframe later on:
+accumulated_data = {}
 #
 print('4.b. - Remaining parameters.')
 for s in range( len( param_sheets ) ):
     params_dict.update( { param_sheets[s]:Parametrization.parse( param_sheets[s] ) } )
     this_df = params_dict[ param_sheets[s] ]
     #
+    this_df = this_df.replace('\xa0', np.nan)                                        
     this_df_new = deepcopy( this_df )
     this_df_new_2 = deepcopy( this_df )
     #
@@ -620,7 +526,7 @@ for s in range( len( param_sheets ) ):
             #-----------------------------------------
             if this_projection_mode == params['flat']:
                 for y in range( len( time_range_vector ) ):
-                    this_df_new.loc[ n, time_range_vector[y] ] = round( this_df.loc[ n, 2018 ], 4 )
+                    this_df_new.loc[ n, time_range_vector[y] ] = round( this_df.loc[ n, params['initial_year'] ], 4 )
                     this_df_new_2.loc[ n, time_range_vector[y] ] = this_df_new.loc[ n, time_range_vector[y] ]
             #-----------------------------------------
             if this_projection_mode == params['perce_grow_incom_years']:
@@ -647,7 +553,7 @@ for s in range( len( param_sheets ) ):
                     if y != 0:
                         value_field_prior = this_df.loc[ n, time_range_vector[y-1] ]
                         if y > flatten_y_index and flatten_y_index != 0:
-                            flatten_y_value = this_df.loc[n, time_range_vector[y]]
+                            
                             xp_coord_known.append( y )
                             yp_coord_known.append( flatten_y_value )
                         if math.isnan(value_field) == False and math.isnan(value_field_prior) == True and time_range_vector[y] > final_year_to_interpolate:
@@ -695,6 +601,12 @@ for s in range( len( param_sheets ) ):
             this_projection_mode = this_df.loc[ n, 'Projection.Mode' ]
             this_unit_introduced = this_df.loc[ n, 'Unit.Introduced' ] 
             this_unit_target = this_df.loc[ n, 'Unit' ] 
+            if type(this_projection_mode) != str:
+                this_unit_target = ''
+            if type(this_unit_introduced) != str:
+                this_unit_target = ''
+            if type(this_unit_target) != str:
+                this_unit_target = ''
             # we must use fleet // demand // projections to calibrate the vehicle fleets
             if type( this_unit_introduced ) == str:
             
@@ -752,8 +664,9 @@ for s in range( len( param_sheets ) ):
                     #
                     Fleet_Groups_Distance.update( { this_tech:this_km_list } )
                     #
+
                     if params['Gvkm'] in this_unit_target and ( params['veh'] in this_unit_introduced or params['relative'] in this_unit_introduced ): # this acts on the cost parameters
-                        # print( 'got here' )
+
                         for y in range( len( time_range_vector ) ): # we employ a conversion of units
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( 1000*this_df_new.loc[ n, time_range_vector[y] ]/this_km_list[y] , 4 )
                         this_df_new_2.loc[ n, 'Unit.Introduced' ] = this_df_new.loc[ n, 'Unit' ]
@@ -797,10 +710,22 @@ for s in range( len( param_sheets ) ):
                             #
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( this_correct_capacity[-1], 4 )
                             #
-                            this_dict_4_wide = {}
-                            this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ], 'REGION':other_setup_params['Region'] ,
-                                                        'TECHNOLOGY':this_tech, 'YEAR':time_range_vector[y], 'Value':deepcopy( round( this_correct_capacity[-1], 4 ) ) } )
-                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
+                            new_row = {
+                                'PARAMETER': this_param,
+                                'Scenario': other_setup_params['Main_Scenario'],
+                                'REGION': other_setup_params['Region'],
+                                'TECHNOLOGY': this_tech,
+                                'YEAR': time_range_vector[y],
+                                'Value': deepcopy(round(this_correct_capacity[-1], 4))
+                            }
+
+                            # Check if this parameter already has a list in accumulated_data; if not, initialize it
+                            if this_param not in accumulated_data:
+                                accumulated_data[this_param] = []
+
+                            # Append the new row to the list for this parameter in accumulated_data
+                            accumulated_data[this_param].append(new_row)
+
                     #
                     if type( start_year ) == int:
                         x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
@@ -827,47 +752,61 @@ for s in range( len( param_sheets ) ):
                         for y in range( len( time_range_vector ) ):
                             this_main_cap_list.append( Demand_df_new.loc[ demand_df_index, time_range_vector[y] ] )
                             this_df_new_2.loc[ n, time_range_vector[y] ] = round( this_main_cap_list[-1]*interpolated_values[y], 4 )
-                            this_dict_4_wide = {}
-                            this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ], 'REGION':other_setup_params['Region'] ,
-                                                        'TECHNOLOGY':this_tech, 'YEAR':time_range_vector[y], 'Value':deepcopy( round( this_main_cap_list[-1]*interpolated_values[y], 4 ) ) } )
-                            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
+                            # Inside your condition where you're preparing this_dict_4_wide
+                            new_row = {
+                                'PARAMETER': this_param,
+                                'Scenario': other_setup_params['Main_Scenario'],
+                                'REGION': other_setup_params['Region'],
+                                'TECHNOLOGY': this_tech,
+                                'YEAR': time_range_vector[y],
+                                'Value': deepcopy(round(this_main_cap_list[-1] * interpolated_values[y], 4))
+                            }
+
+                            # Check if this parameter already has a list in accumulated_data; if not, initialize it
+                            if this_param not in accumulated_data:
+                                accumulated_data[this_param] = []
+
+                            # Append the new row to the list for this parameter in accumulated_data
+                            accumulated_data[this_param].append(new_row)                                
             #
         #
         #********************************************#
         # Remember to call: *this_tech*, *this_param*
-        if s == 0: # we store the parameters without years
-            this_dict_4_wide = {}
-            this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
-                                'Value':deepcopy( this_df_new_2.loc[ n , 'Value' ] ) } )
-            overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
-        #
-        elif this_projection_mode != params['empty'] and this_projection_mode != params['zero'] and this_projection_mode != '' and type(this_projection_mode) == str and this_projection_mode != 'None' and this_projection_mode != params['accor_dem']:
-            for y in range( len( time_range_vector ) ):
-                this_dict_4_wide = {}
-                #
-                if s != 0 and param_sheets[s] != params['other_techs']:
-                    if this_param in [ 'CapacityFactor' ]: # must include timeslice
-                        this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                                'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
-                                                'YEAR':time_range_vector[y], 'TIMESLICE':other_setup_params['Timeslice'],
-                                                'Value':deepcopy( round( this_df_new_2.loc[ n, time_range_vector[y] ], 4 ) ) } )
-                    if this_param in [ 'VariableCost' ]: # include mode of operation
-                        this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                                'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
-                                                'YEAR':time_range_vector[y], 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],
-                                                'Value':deepcopy( round( this_df_new_2.loc[ n, time_range_vector[y] ], 4 ) ) } )
-                    if this_param not in [ 'CapacityFactor', 'VariableCost' ] and this_projection_mode != params['accor_dem']:
-                        this_dict_4_wide.update( { 'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                                'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech,
-                                                'YEAR':time_range_vector[y],
-                                                'Value':deepcopy( round( this_df_new_2.loc[ n, time_range_vector[y] ], 4 ) ) } )
-                    #
-                    if this_projection_mode == params['accor_dem']:
-                        pass
-                        #
-                    #
-                    overall_param_df_dict[this_param] = overall_param_df_dict[this_param]._append( this_dict_4_wide, ignore_index=True )
+        if s == 0:  # we store the parameters without years
+            new_row = {
+                'PARAMETER': this_param,
+                'Scenario': other_setup_params['Main_Scenario'],
+                'REGION': other_setup_params['Region'],
+                'TECHNOLOGY': this_tech,
+                'Value': deepcopy(this_df_new_2.loc[n, 'Value'])
+            }
+            if this_param not in accumulated_data:
+                accumulated_data[this_param] = []
+            accumulated_data[this_param].append(new_row)
+
+        elif this_projection_mode not in ['EMPTY', 'Zero', '', None, 'According to demand'] and type(this_projection_mode) == str and param_sheets[s] != 'Other_Techs':
+            for y in range(len(time_range_vector)):
+                                     
+                # Prepare dictionary to accumulate data based on conditions
+                new_row = {
+                    'PARAMETER': this_param,
+                    'Scenario': other_setup_params['Main_Scenario'],
+                    'REGION': other_setup_params['Region'],
+                    'TECHNOLOGY': this_tech,
+                    'YEAR': time_range_vector[y],
+                    'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4))
+                }
+
+                # Additional conditions for specific parameters
+                if this_param in ['CapacityFactor']:
+                    new_row['TIMESLICE'] = other_setup_params['Timeslice']
+                elif this_param in ['VariableCost']:
+                    new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
+
+                # Accumulate data for bulk append
+                if this_param not in accumulated_data:
+                    accumulated_data[this_param] = []
+                accumulated_data[this_param].append(new_row)
                     #
                 #
             #
@@ -876,6 +815,14 @@ for s in range( len( param_sheets ) ):
     params_dict_new.update( { param_sheets[s]:this_df_new_2 } ) # this has the model ready for osemosys, but it may be less intuitive for the rest of the system
     params_dict_new_natural.update( { param_sheets[s]:this_df_new } ) # this has the model in natural terms
     #
+# After the loop, convert accumulated data into DataFrames and append them in bulk
+for param, rows in accumulated_data.items():
+    if rows:  # Check if there are rows to append for this parameter
+        new_rows_df = pd.DataFrame(rows)
+        if param in overall_param_df_dict:
+            overall_param_df_dict[param] = pd.concat([overall_param_df_dict[param], new_rows_df], ignore_index=True)
+        else:
+            overall_param_df_dict[param] = new_rows_df                                                                                  
 #
 #------------------------------------------------------------------------------
 print('5 - Include emissions.')
@@ -886,30 +833,35 @@ Emissions_ext_df = Emissions.parse( params['Externalities'] )
 #
 emissions_list = list( set( Emissions_ghg_df['Emission'].tolist() + Emissions_ext_df['External Cost'].tolist() ) )
 
-# Inputs data about emissions check check
-# Emissions_csc_df = Emissions.parse('Externalities_SCC')
-# #
-# emissions_list = list(set(
-#     Emissions_ghg_df['Emission'].tolist() + \
-#     Emissions_ext_df['External Cost'].tolist() + \
-#     Emissions_csc_df['Emission'].tolist()))
 
 #
 df_Emissions = pd.DataFrame( columns = Wide_Param_Header )
 these_emissions = Emissions_ghg_df['Emission'].tolist()
 these_e_techs = Emissions_ghg_df['Tech'].tolist()
 these_e_values = Emissions_ghg_df['EmissionActivityRatio'].tolist()
-for e in range( len( these_emissions ) ):
+
+accumulated_emission_data = []
+
+for e in range(len(these_emissions)):
     this_emission = these_emissions[e]
     this_tech = these_e_techs[e]
-    #
-    for y in range( len( time_range_vector ) ):
-        this_dict_4_wide = {}
-        this_dict_4_wide.update( { 'PARAMETER':'EmissionActivityRatio', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                    'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
-                                    'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
-                                    'Value':these_e_values[e] } )
-        df_Emissions = df_Emissions._append( this_dict_4_wide, ignore_index=True )
+    
+    for y in range(len(time_range_vector)):
+        new_row = {
+            'PARAMETER': 'EmissionActivityRatio',
+            'Scenario': other_setup_params['Main_Scenario'],
+            'REGION': other_setup_params['Region'],
+            'TECHNOLOGY': this_tech,
+            'EMISSION': this_emission,
+            'MODE_OF_OPERATION': other_setup_params['Mode_of_Operation'],
+            'YEAR': time_range_vector[y],
+            'Value': these_e_values[e]
+        }
+        accumulated_emission_data.append(new_row)
+
+if accumulated_emission_data:  # Ensure there's something to append
+    new_emissions_df = pd.DataFrame(accumulated_emission_data)
+    df_Emissions = pd.concat([df_Emissions, new_emissions_df], ignore_index=True)
 #
 df_EmissionPenalty = pd.DataFrame( columns = Wide_Param_Header )
 these_emissions = Emissions_ext_df['External Cost'].tolist()
@@ -917,102 +869,104 @@ these_e_techs = Emissions_ext_df['Tech'].tolist()
 these_e_values = Emissions_ext_df['EmissionActivityRatio'].tolist()
 these_e_penalty = Emissions_ext_df['EmissionsPenalty'].tolist()
 this_emission_unique = []
-for e in range( len( these_emissions ) ):
-    this_emission = these_emissions[e]
-    this_tech = these_e_techs[e]
-    #
-    for y in range( len( time_range_vector ) ):
-        this_dict_4_wide = {}
-        this_dict_4_wide_2 = {}
-        this_dict_4_wide.update( { 'PARAMETER':'EmissionActivityRatio', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                    'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
-                                    'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
-                                    'Value':these_e_values[e] } )
-        df_Emissions = df_Emissions._append( this_dict_4_wide, ignore_index=True )
-        #
-        if this_emission + ' ' + str( time_range_vector[y] ) not in this_emission_unique:
-            this_dict_4_wide_2.update( { 'PARAMETER':'EmissionsPenalty', 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'TECHNOLOGY':'', 'EMISSION':this_emission,
-                                        'YEAR':time_range_vector[y],
-                                        'Value':these_e_penalty[e] } )
-            df_EmissionPenalty = df_EmissionPenalty._append( this_dict_4_wide_2, ignore_index=True )
-            this_emission_unique.append( this_emission + ' ' + str( time_range_vector[y] ) )
-        #
-    #
-#
-# Other inputs data about emissions check check
-# # Fill the social cost of carbon based on the dataframe "Emissions_csc_df"
-# these_emissions = Emissions_csc_df['Emission'].tolist() 
-# these_e_techs = Emissions_csc_df['Tech'].tolist()
-# these_e_values = Emissions_csc_df['EmissionActivityRatio'].tolist()
-# these_e_penalty_factor = Emissions_csc_df['EmissionsPenalty_Factor'].tolist()
-# these_e_penalty_factor_multyr = {}
-# for y in range(len(time_range_vector)):
-#     these_e_penalty_factor_multyr.update({
-#         time_range_vector[y]:deepcopy(Emissions_csc_df[time_range_vector[y]])})
-# for e in range(len(these_emissions)):
-#     this_emission = these_emissions[e]
-#     this_tech = these_e_techs[e]
-#     #
-#     for y in range(len(time_range_vector)):
-#         this_dict_4_wide = {}
-#         this_dict_4_wide_2 = {}
-#         this_dict_4_wide.update({'PARAMETER':'EmissionActivityRatio', 'Scenario':other_setup_params['Main_Scenario'],
-#                                     'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'EMISSION':this_emission,
-#                                     'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],'YEAR':time_range_vector[y],
-#                                     'Value':these_e_values[e]})
-#         df_Emissions = df_Emissions._append(this_dict_4_wide, ignore_index=True)
-#         #
-#         if this_emission + ' ' + str(time_range_vector[y]) not in this_emission_unique:
-#             these_e_penalty = these_e_penalty_factor[e] * \
-#                 these_e_penalty_factor_multyr[time_range_vector[y]][e]
-#             this_dict_4_wide_2.update({'PARAMETER':'EmissionsPenalty', 'Scenario':other_setup_params['Main_Scenario'],
-#                                         'REGION':other_setup_params['Region'] , 'TECHNOLOGY':'', 'EMISSION':this_emission,
-#                                         'YEAR':time_range_vector[y],
-#                                         'Value':these_e_penalty})
-#             df_EmissionPenalty = df_EmissionPenalty._append(this_dict_4_wide_2, ignore_index=True)
-#             this_emission_unique.append(this_emission + ' ' + str(time_range_vector[y]))
-#         #
-#     #
-# #
+# Initialize accumulators
+accumulated_emission_data = []
+accumulated_emission_penalty_data = []
+emission_unique_set = set()  # For tracking unique emission-year combinations
 
-overall_param_df_dict.update( { 'EmissionActivityRatio':df_Emissions } )
-overall_param_df_dict.update( { 'EmissionsPenalty':df_EmissionPenalty } )
+for e in range(len(these_emissions)):
+    this_emission = these_emissions[e]
+    this_tech = these_e_techs[e]  # Assuming this is relevant for both emissions and penalties
+
+    for y in range(len(time_range_vector)):
+        # Accumulate EmissionActivityRatio data
+        accumulated_emission_data.append({
+            'PARAMETER': 'EmissionActivityRatio',
+            'Scenario': other_setup_params['Main_Scenario'],
+            'REGION': other_setup_params['Region'],
+            'TECHNOLOGY': this_tech,
+            'EMISSION': this_emission,
+            'MODE_OF_OPERATION': other_setup_params['Mode_of_Operation'],
+            'YEAR': time_range_vector[y],
+            'Value': these_e_values[e]  # Assuming these_e_values corresponds to EmissionActivityRatio values
+        })
+
+        # Check for uniqueness and accumulate EmissionsPenalty data if unique
+        emission_year_key = f"{this_emission} {time_range_vector[y]}"
+        if emission_year_key not in emission_unique_set:
+            accumulated_emission_penalty_data.append({
+                'PARAMETER': 'EmissionsPenalty',
+                'Scenario': other_setup_params['Main_Scenario'],
+                'REGION': other_setup_params['Region'],
+                'TECHNOLOGY': '',  # Empty as per the structure for penalties
+                'EMISSION': this_emission,
+                'YEAR': time_range_vector[y],
+                'Value': these_e_penalty[e]  # Assuming these_e_penalty corresponds to EmissionsPenalty values
+            })
+            emission_unique_set.add(emission_year_key)
+
+# Bulk append for EmissionActivityRatio
+if accumulated_emission_data:
+    df_Emissions = pd.concat([df_Emissions, pd.DataFrame(accumulated_emission_data)], ignore_index=True)
+
+# Bulk append for EmissionsPenalty
+if accumulated_emission_penalty_data:
+    df_EmissionPenalty = pd.concat([df_EmissionPenalty, pd.DataFrame(accumulated_emission_penalty_data)], ignore_index=True)
+
+# Update the overall_param_df_dict
+overall_param_df_dict['EmissionActivityRatio'] = df_Emissions
+overall_param_df_dict['EmissionsPenalty'] = df_EmissionPenalty                                                                                                                      
 #
-# Let us create the basis for the NDP:
-overall_param_df_dict_ndp = deepcopy( overall_param_df_dict )
+# Let us create the basis for the LTS:                                    
+overall_param_df_dict_ndp = deepcopy(overall_param_df_dict)
 additional_params_df = params_dict_new[ 'Other_Techs' ]
 additional_params_list = additional_params_df[ 'Parameter' ].tolist()
 additional_tech_list = additional_params_df[ 'Tech' ].tolist()
 additional_fuel_list = additional_params_df[ 'Fuel' ].tolist()
-for p in range( len( additional_params_list ) ):
+# Initialize a dictionary to hold accumulators for each parameter
+accumulated_data_by_param = {}
+
+for p in range(len(additional_params_list)):
     this_param = additional_params_list[p]
     this_tech = additional_tech_list[p]
-    this_fuel = additional_fuel_list[p]
-    #
-    if this_fuel == 'none':
-        this_fuel = ''
-    #
+    this_fuel = additional_fuel_list[p] if additional_fuel_list[p] != 'none' else ''
+
+    # Ensure the tech and fuel lists are updated
+                      
+     
     if this_tech not in All_Tech_list:
-        All_Tech_list.append( this_tech )
-    if this_fuel not in All_Fuel_list and this_fuel != '':
-        All_Fuel_list.append( this_fuel )
-    # 
-    for y in range( len( time_range_vector ) ):
-        this_dict_4_wide = {}
-        if this_param not in ['OutputActivityRatio']:
-            this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech , 'FUEL':this_fuel ,
-                                        'YEAR':time_range_vector[y] , # 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation']
-                                        'Value':deepcopy( additional_params_df.loc[ p , time_range_vector[y] ] ) } )
-        else:
-            this_dict_4_wide.update( {  'PARAMETER':this_param, 'Scenario':other_setup_params[ 'Main_Scenario' ],
-                                        'REGION':other_setup_params['Region'] , 'TECHNOLOGY':this_tech, 'FUEL':this_fuel,
-                                        'YEAR':time_range_vector[y], 'MODE_OF_OPERATION':other_setup_params['Mode_of_Operation'],
-                                        'Value':deepcopy( round( additional_params_df.loc[ p, time_range_vector[y] ], 4 ) ) } )
-        overall_param_df_dict_ndp[ this_param ] = overall_param_df_dict_ndp[ this_param ]._append( this_dict_4_wide, ignore_index=True )
-    #
-#
+        All_Tech_list.append(this_tech)
+    if this_fuel and this_fuel not in All_Fuel_list:
+        All_Fuel_list.append(this_fuel)
+
+    for y in range(len(time_range_vector)):
+        new_row = {
+            'PARAMETER': this_param,
+            'Scenario': other_setup_params['Main_Scenario'],
+            'REGION': other_setup_params['Region'],
+            'TECHNOLOGY': this_tech,
+            'FUEL': this_fuel,
+            'YEAR': time_range_vector[y],
+            'Value': deepcopy(additional_params_df.loc[p, time_range_vector[y]])
+        }
+
+        # Special handling for OutputActivityRatio
+        if this_param == 'OutputActivityRatio':
+            new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
+            new_row['Value'] = deepcopy(round(additional_params_df.loc[p, time_range_vector[y]], 4))
+
+        # Accumulate data based on parameter
+        if this_param not in accumulated_data_by_param:
+            accumulated_data_by_param[this_param] = []
+        accumulated_data_by_param[this_param].append(new_row)
+
+for param, rows in accumulated_data_by_param.items():
+    if rows:  # Check if there are rows to append for this parameter
+        new_rows_df = pd.DataFrame(rows)
+        # Check if the parameter already exists in overall_param_df_dict_ndp, if not, initialize it
+        if param not in overall_param_df_dict_ndp:
+            overall_param_df_dict_ndp[param] = pd.DataFrame(columns=Wide_Param_Header)
+        overall_param_df_dict_ndp[param] = pd.concat([overall_param_df_dict_ndp[param], new_rows_df], ignore_index=True)
 end_1 = time.time()   
 time_elapsed_1 = -start1 + end_1
 print( str( time_elapsed_1 ) + ' seconds /', str( time_elapsed_1/60 ) + ' minutes' )
@@ -1021,10 +975,10 @@ print('*: For all effects, we have finished the processing tasks of this script.
 #---------------------------------
 # Print updated demand DF (user)
 writer_Demand_df_new = pd.ExcelWriter(params['A1_outputs'] + params['Print_Dem_Completed'], engine='xlsxwriter')
-Demand_df_new[2018] = Demand_df_new[2018].astype(float)
+Demand_df_new[params['initial_year']] = Demand_df_new[params['initial_year']].astype(float)
 Demand_df_new = Demand_df_new.round( 4 )
 Demand_df_new.to_excel( writer_Demand_df_new, sheet_name = params['A_O_Dem'], index=False)
-writer_Demand_df_new._save()
+writer_Demand_df_new.close()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in Osemosys terms
 writer_Param_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Completed'], engine='xlsxwriter')
@@ -1033,7 +987,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_Param_df, sheet_name = param_sheets_print[s], index=False)
-writer_Param_df._save()
+writer_Param_df.close()
 #---------------------------------
 # Print updated *parameterization* DF (user) // this is in "natural" terms, i.e. the value of each one of the vehicles per unit
 writer_Param_Natural_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Paramet_Natural_Completed'], engine='xlsxwriter')
@@ -1042,7 +996,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = params_dict_new_natural[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_Param_Natural_df, sheet_name = param_sheets_print[s], index=False)
-writer_Param_Natural_df._save()
+writer_Param_Natural_df.close()
 #---------------------------------
 # Print updated 'Activity Ratio' projections
 writer_AR_Proj_df = pd.ExcelWriter(params['A1_outputs'] + params['Print_Proj_Completed'], engine='xlsxwriter')
@@ -1051,7 +1005,7 @@ for s in range( len( param_sheets_print ) ):
     this_df_print = AR_Base_proj_df_new[ param_sheets_print[s] ]
     this_df_print = this_df_print.round( 4 )
     this_df_print.to_excel( writer_AR_Proj_df, sheet_name = param_sheets_print[s], index=False)
-writer_AR_Proj_df._save()
+writer_AR_Proj_df.close()
 #
 #***********************************************************************************
 #
@@ -1094,7 +1048,7 @@ df_structure['MOO'] = df_structure_moo
 df_structure['Region'] = df_structure_region
 writer_Structure_df = pd.ExcelWriter(params['Print_A2_Struct_List'], engine='xlsxwriter')
 df_structure.to_excel( writer_Structure_df, sheet_name = params['lists'], index=False)
-writer_Structure_df._save()
+writer_Structure_df.close()
 #
 #***********************************************************************************
 # Print important pickles below:

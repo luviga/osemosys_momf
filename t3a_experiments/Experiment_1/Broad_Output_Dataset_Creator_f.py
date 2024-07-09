@@ -4,6 +4,8 @@ import pandas as pd
 import os
 import re
 import yaml
+import numpy as np
+
 
 def get_config_main_path(full_path):
     # Split the path into parts
@@ -37,7 +39,7 @@ import local_dataset_creator_f
 
 'Define control parameters:'
 file_aboslute_address = os.path.abspath(params['Bro_out_dat_cre'])
-file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) ).replace( '\:', ':' )
+file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) )
 
 run_for_first_time = True
 
@@ -48,7 +50,7 @@ if run_for_first_time == True:
     local_dataset_creator_f.execute_local_dataset_creator_f_inputs()
 
 ############################################################################################################
-df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0)
+df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -103,11 +105,11 @@ df_f_output = pd.read_csv( '.' + params['Futures_3'] + params['Out_dat_f'], inde
 #----------------------------------------------------------------------------------------------------------#
 
 li_output = [df_0_output, df_f_output]
-#
+
 df_output = pd.concat(li_output, axis=0, ignore_index=True)
 df_output.sort_values(by=params['by_1'], inplace=True)
 ############################################################################################################
-df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0)
+df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0, low_memory=False)
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
 #----------------------------------------------------------------------------------------------------------#
@@ -119,6 +121,43 @@ li_intput = [df_0_input, df_f_input]
 #
 df_input = pd.concat(li_intput, axis=0, ignore_index=True)
 df_input.sort_values(by=params['by_2'], inplace=True)
+
+#############################
+#############################
+libro = pd.ExcelFile('./0_From_Confection/B1_Model_Structure.xlsx')
+hoja=libro.parse( 'sector' , skiprows = 0 )
+encabezados=list(hoja)
+
+col_t=list(hoja[encabezados[0]])
+col_s=list(hoja[encabezados[1]])
+col_d=list(hoja[encabezados[2]])
+col_ss=list(hoja[encabezados[3]])
+dicSector=dict(zip(col_t,col_s))
+dicDescription=dict(zip(col_t,col_d))
+dicSpecificSector=dict(zip(col_t,col_ss))
+
+
+df_output=df_output.assign(Sector=np.NaN)
+df_output=df_output.assign(Description=np.NaN)
+df_output=df_output.assign(SpecificSector=np.NaN)
+
+df_input=df_input.assign(Sector=np.NaN)
+df_input=df_input.assign(Description=np.NaN)
+df_input=df_input.assign(SpecificSector=np.NaN)
+
+
+llaves=list(dicSector.keys())
+
+for i in range(len(llaves)):
+    df_output.loc[df_output['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_output.loc[df_output['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+    df_input.loc[df_input['Technology'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
+
+#############################
+#############################
 
 dfa_list = [ df_output, df_input ]
 

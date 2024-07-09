@@ -430,7 +430,7 @@ S_DICT_sets_structure: {
   number_of_elements: [],
   elements_list: []
   }
-git
+
 S_DICT_params_structure: { 
   category: [],
   parameter: [],

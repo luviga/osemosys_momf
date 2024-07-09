@@ -1,0 +1,201 @@
+[33me96f1f7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mRD_RDM_WBG[m[33m)[m Upload test with 5 futures
+[33mffe01f9[m[33m ([m[1;31morigin/RD_RDM_WBG[m[33m)[m Update concatenate script and add new parameters than Data_Processor has and otoole by default not before
+[33m099403e[m Adapt MOMF with otoole to use these new parameters (AnnualTechnologyEmissionPenaltyByEmission, CapitalInvestment, OperatingCost, AnnualFixedOperatingCost, AnnualVariableOperatingCost). These parameters are add to the results in concatenate script
+[33m6ba412a[m restore local_dataset_creator_f.py
+[33ma81fcc6[m Update concatenate script, en delete some columns of the output files
+[33m5e2fcce[m Improve coments in the test. Also, upload the results run with CBC for 10 futures with optimal solution, without AFOLU variations activate
+[33m8916ef2[m Change variable change_year in the yaml file. Improve test script to use easier and understand easier the results. Update inputs txt files
+[33m73b0a87[m Merge branch 'RD_RDM_WBG' of https://github.com/luviga/osemosys_momf into RD_RDM_WBG
+[33m9931755[m Include Freight groups in Occupancy Rate variations in UT cells
+[33m0a49cf6[m Add tests 10 and 11, those tests are for technologies of transport sector
+[33m1969b27[m Set adjusted MaxCapacity to electric transport technologies in case it exist in the electrification (LowerLimit) uncertainty.
+[33md7c267b[m Change the name of a column in one excel file
+[33m126d2c7[m Waste restrictions adjustments in exp_man_final code
+[33ma5033d9[m Update the base model data. Also, clean the folder
+[33m05431b5[m Update this config file with the last changes of the Uncertainty Tables on 27/05/2024
+[33mb25c52c[m Update uncertainty Tables with the last model, was run 27/05/2024 morning (v9_Andrey)
+[33m946fe3c[m Improve this test to use more easy with tier1
+[33m2be8a5b[m Add module to check the restriction problem with thermic power plants
+[33m83700d7[m Try to change one uncertainty to check the errors. This uncertainty is related with all mothers techs of transport
+[33m94ac545[m Make less changes to try to the errors
+[33mf955f9d[m Improve the test, add the test of the other scrip test and clean comments
+[33m0ca523f[m Add code to break the processes when the specified_case is True
+[33m5cd97eb[m Add code to write into the result test txt files if has it a warning
+[33m33cdc49[m Improve loop to make test for all futures available
+[33me4fba67[m Improve create_csv_concatenate.py. When it find one run infeasible continue concatenate the others runs optimals
+[33m0f6ce97[m Add test related with ResidualCapacity
+[33m4ee02ea[m Fix EmissionActivityRatio uncertainty code in AFOLU and Waste
+[33mfbc35b6[m Improve comments. Also, introduce grandma test for TotalTechnologyAnnualActivity
+[33mf14c029[m Update cells EmissionActivityRatio of AFOLU sectors in Uncertainty Table.
+[33m78ca3aa[m Delete from the Uncertainty Tables MaxCapacity for electrificaction for heave and light freight, and also for electric autos. Check and change the parameter in adjust check check
+[33md455b58[m Include grand test functional
+[33m46d634d[m Improve tests, start with grandma test, but for now is commented. Check problem in electrification and hydrogen uncertainty
+[33m9d68b4b[m Clean prints in terminal.
+[33md3b251b[m Update Base_Modelling files, with these files energy/transport sector run with optimal solutions
+[33mbe199c4[m Update data of the base model, with v7 model download 15/5/24 before 2pm from the drive
+[33mcf83fad[m Diferenciated initial year (2033) interpolation function for power plants
+[33mad4a2ff[m Tableau Inputs of the Energy sector.
+[33m8efe91e[m For Math Type math_type_mult_rest make changes to manipulate vector when TotalTechnologyAnnualActivityLowerLimit are bigger than TotalTechnologyAnnualActivityUpperLimit. Also, improve prints of the test.
+[33m01f2059[m Add new module into the script test to compare TotalTechnologyAnnualActivityUpperLimit with TotalTechnologyAnnualActivityLowerLimit. Also, improve descreasing check
+[33m1fc7fcd[m Update test, correct order of restrictions. Make changes about MaxCapacity for renewables energys into the Uncertainty Tables
+[33m8936fdf[m Update code, renewable electicity uncertainty.
+[33mdd1529a[m Add new module to the test, to check if vector of MaxCapacity are decresing
+[33m49d2050[m Add test to compare mother with their children technologies, for now only for transport
+[33meed4cf2[m Update future 0 files. Update tourism demand sections in experiment_manager_final.py
+[33m0f68250[m Uncomment two lines in the experiment code
+[33mb28d132[m Include EmissionActivityRatio like a uncertainty in the Waste sector and some changes in Tableaus
+[33m4451322[m Make test with the lastest V7 version
+[33mbd563f5[m Resolve merging
+[33m8154e71[m Include Tableau inputs for PIUP and Waste sectors and datasets with 10 futures. Modify params[scens] in plots_config file.
+[33m58b9179[m Include Tableau inputs for PIUP and Waste sectors and datasets with 10 futures. Modify params[scens] in plots_config file.
+[33m7d2c928[m Include uncertainties about renewable electricity and in th category about thermical techs include for PPICEGASFOI MaxCapacity restriction
+[33m5a5b6b1[m Make a few changes in experiment_manager as comment codes do not run because do not has a restriction. Also, delete a few rows of the Uncertainty tables about renewable energy
+[33m8924756[m Include sector column to cvs inputs dataset.
+[33m6417819[m Modifications from normal operation of codes.
+[33m7ad328d[m Add a module to delete folder with csvs of otoole outputs in the script create_csv_concatenate
+[33m3f56b50[m Modifications from normal operation of the code execution.
+[33m5a327d5[m Include Sector column un the general CSV output.
+[33md40d953[m Modifications from normal operation of codes
+[33mfb58ca2[m Change path so that the output CSV files have the correct name and the Broad code works without any modification
+[33m44e6c28[m Multiple cahnges. Sort uncertainties by sector. Try en AFOLU forest cover. Solve Upper constraint in PIUP. The uncertainties marked with Energy_6 and Energy_10 are commented because the code does not work with them.
+[33mffa8179[m Add old find_mismatches script. This script do a diference between TotalAnnualMaxCapacity and TotalTechnologyAnnualActivityLowerLimit
+[33md84ebfa[m Comment upperlimmit restriction of the ForrestCover category into the Uncertainty_Tables, because any techs of AFOLU have this restriction. Also, uncomment the codition of the ForrestCover category into the experiment_manager. The error has in the solution procces with RateOfActivity in 2026 for Techs_He_Freight
+[33mdcbc671[m Update cement production restriction. Modify Uncertainty Table: AFOLU emission factor cells.
+[33mc958bd6[m Update exp_manager of PIUP  and Waste sector. Sustitute 98 to 9999 in trasport conditions. Use xlmr_id in experiment_dictionary to set sectors in conditions.
+[33m058ebd5[m Delete some files do not need for RDM of RD
+[33mab37077[m[33m ([m[1;31morigin/parametrization_files[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mparametrization_files[m[33m, [m[1;32mmain[m[33m)[m Update some excels files
+[33m3647c9d[m Add the final experiment_manager version in this procces
+[33me77d068[m Make changes in the script to cancatenate the csv files, because had dependecies of the plots yaml file
+[33m7cedd12[m Include improvements of th experiment_manager, are in some functions
+[33m1550d24[m Create a yaml file version only for B1 script
+[33mff66fd6[m Add tag to identify which parameters use in each one script asociate to this yaml file
+[33mf5392f2[m Delete 2 conditions of AFOLU
+[33m4463223[m Delete some un useful files for now
+[33ma362e4d[m Adapt the last version of experiment_manager and yaml file to AFOLU sector
+[33m52618f5[m Adapt the last version of experiment_manager and yaml file to PIUP sector
+[33mc0336e7[m Adapt the last version of experiment_manager and yaml file to Waste sector
+[33m4e8ff55[m Adapt the last version of experiment_manager and yaml file to energy sector
+[33m7747536[m Change some new parameters names, create new parameters include some very important as output_csv_year, params_inputs_data, params_inputs_data_excep_by_scen
+[33m3aedd8c[m Firstly, delete the last version of the experiment_manager. Then, create the new version of the experiment_manager and that version is useful for each sector individually
+[33m1820e10[m Make improvements to have better otooles yaml file
+[33m210570e[m Better adaptation of the code to the results of otoole.Also, now need the file concatenate by config_plots/create_csv_concatenate.py
+[33mf8de7cd[m Create a script to only concatenate the csvs create by Otoole with the Luis script but with improments of Andrey, this script is derivate from de plot script for using in the experiment_manager workflow
+[33m8034751[m Improve scripts tests to use more easily
+[33m7337ef5[m Uncommented module related with "PROD_CEM" and correct the country of the yaml file
+[33mae52bf4[m Uncommented module related with "PROD_CEM" and correct the country of the yaml file
+[33m7028dce[m Make changes to be useful with outputs data and add new funcionalities to make new comparisons
+[33m6148d58[m Add Energy test
+[33m2c76402[m Add PIUP test
+[33mc9769dc[m Add Waste test
+[33m7c4fe9c[m Update AFOLU test with the last parameters in the yaml file and the last experiment_manager
+[33m3c59f2d[m Add new parameters of the energy sector
+[33mdfe38c8[m Make changes to manage better the columns sets for otoole
+[33me468067[m Delete parameter for Tansport sector, because is the same than energy, and a few times only change Use_Transport by Use_Energy
+[33m206c477[m Add test of AFOLU sector
+[33mc9c3acd[m Make changes to use with AFOLU test. Also, add a few functions to use later
+[33mdb0dceb[m Correct some sections to obtain good with AFOLU sector
+[33mb7bc88d[m Make changes to delete the sets do not use
+[33m5a4a07e[m Add new parameters
+[33maacbf4c[m Make changes in the names of parameters of the yaml file to understand them easier
+[33mb83c8f3[m Make corrections in the sentences of some conditions, related with new atributtes of use each sector
+[33ma995405[m Make some changes to make better the conditions of each sector
+[33m72d06f4[m Delete twice csvs
+[33mfb4989c[m Create a plot module with your yaml file
+[33m4913a88[m Add comment about a trouble to check in the future, related with waste
+[33m5f0033d[m Changed parameters related with years for names easier to comprehensive
+[33mebbad30[m Add some more parameters about waste
+[33mc1cf54e[m Add new parameters into the yaml file
+[33m50ed6bc[m Add some new parameters
+[33ma1df0b9[m Add new parameters from the yaml file, this parameters are related with the last changes about merge of countries versions
+[33m92b685b[m Add new parameters from the yaml file
+[33m7fb8b7e[m Add new parameters
+[33mad735cc[m Add new parameters from the yaml file
+[33m449f999[m Make changes to add new parameters from the yaml file
+[33mc169a6e[m Adapt new lines form GUA version, but those lines are only useful if you use the solver glpk with old way so, this part was indetified with commets and was comment. I f you needed you have to uncomment
+[33m10be775[m Check a few errors about read the futures files
+[33m25bab69[m Comment some lines in PIUP section because does not has a restriction and make errors about the lenght of the tech PROD_CEM in the parameter TotalTechnologyAnnualActivityUpperLimit
+[33m7d2b18c[m Adapt waste section from de GUA version
+[33m8a90a1d[m Export set_firts_list(and adapt) and data_processor functions form experiment_manager script
+[33mca3a7fd[m Make some changes to run this script, the changes were in the section Step 1
+[33mc72333f[m Add and make changes into the find_mismatches script
+[33ma2370a8[m Homogenize in two scripts the parameter list_ana_iter_int
+[33m18cf370[m Adapt section 3 and 5 from ECU version, but it need some inputs are not have, so these new lines are comment
+[33m23bd31e[m Change function_C_Mathprog to new version of ECU. Also, comment section to check after
+[33m3e629f1[m Add new script with some functions for PIUP section
+[33ma3d5952[m Adapt section about PIUP from GUA version
+[33mb8af23a[m Adapt the last section of the energy version of the GUA version. Also, is important remember check a little part, more notes in Loop
+[33mca9629f[m Add some changes, with a version preliminary with changes of the energy sector of GUA version
+[33m0f6ad6f[m Add waste section from HON version
+[33m55cf355[m Add and adapt section 2 of the A2 script from ECU model
+[33mdc9795e[m Adapt parameters with ECU version
+[33mbd6be2d[m Add and adapt secci[on 2 of the A2 script from ECU model
+[33me7c1c51[m Changes to adapt more easy with versions of other countries
+[33m1e2fef8[m Make parametrization with the yaml file. Also, make change to adapt with others countires versions
+[33m66f7685[m Change conditions, years to parametrization with yaml file
+[33mb344af3[m Change parameters to use MOMF_B1_exp_manager.yaml
+[33mb6c1424[m Change default values into the functions mathprog
+[33md3d216c[m Delete excels short
+[33mbcd0cfc[m Delete MOMF_T3a_Manager.yaml, because in any files use it
+[33m9c0ead6[m Change yaml file to use MOMF_B1_exp_manager.yaml
+[33m8adaac5[m Delete the method propuse to use linear processing for cvs_printer_parallel and mathprog_C_parallel
+[33mb01a372[m Make changes need to use the new parametrization yaml file
+[33m9a9aaca[m Create only file for parametrization of the B1 parallel and experiment_manager scripts. Also, change to the folder the script to create yaml for otoole parametrization
+[33m55c9e99[m Fix a few paths, because the last ones were very long, and having some errors
+[33m2aef4fe[m Add data of the some excels into the yaml file to delete these shorts excels
+[33md93df2b[m Add data of some excels into the yaml files to delete these short excels
+[33m028f861[m Add years and variables fo years to the parametrization.
+[33m065a0ef[m Add conditions and general variables to the parametrization.
+[33mfe4a983[m Add years variables to the parametrization file
+[33ma1a7f74[m Add conditions and general variables to the parametrization file
+[33meb4fdea[m Create routines to choose if user want to use GLPK old or new method. Also, if user want to delete or not the solver solution files. Finally, add the parameters it needs in the yaml file.
+[33maf7d152[m Change columns names for strings
+[33mc68b57a[m Change columns names for strings, and check a few pathes
+[33md87fd10[m Change parameters of the condition to manage with yaml file
+[33m481f27a[m Add new parameters for condictions in A2_Compiler.py
+[33ma728ea6[m Change columns parameteres and folders parameters
+[33m9c5e709[m Change some folders parameters
+[33mf8e69c8[m Change append() for _append() and save() for _save(), only to Dataframes, beacause pandas version > 2.0 changed these methods.
+[33m898a3f6[m Add new folders and changes path of some files
+[33m45df92d[m Change columns parameteres and folders parameters
+[33mf7a847a[m Introduce routine to use solver GLPK, CBC and CPLEX with the methodolgy proposed by otoole documentation in the function main_executor. Also, make routine to delete solutions files.
+[33mcf00f1a[m Create script with routine to create and make changes to the yaml file to use with otoole
+[33mbd9532a[m Add solver parameter and dict with parameters default values
+[33ma982619[m Add new values to parametrization parameters of the files t3f4_range_finder.py and t3f6_validation_analysis.py
+[33mb124aca[m Change parameters to use values from MOMF_T3b_t3f.yaml
+[33m998d91c[m Change parameters to use values from MOMF_T3b_t3f.yaml
+[33mdfc9e91[m Change a few part of the code
+[33m90bd638[m Change parameters to use MOMF_T3b_t3f.yaml
+[33mbd29a74[m Add new parameters
+[33md3ccd53[m Change some parameters
+[33mb00ebe2[m Change other parameters to use MOMF_T3b_t3f.yaml
+[33m8dc3b0a[m Add new variable from the script t3f3_prim_manager.py
+[33mc9b3d98[m Change parameters to use values of the MOMF_T3b_t3f.yaml
+[33m3cb1435[m Add parameters of the script t3f3_prim_manager.py
+[33mf7c5e06[m Correct a few variables
+[33m7c4af56[m Create parametrization yaml file to use in the scripts t3fs. In this first commit add parameters of the t3f1_prim_structure.py
+[33m86c0087[m Fix error in a variable
+[33mc2d7cfc[m Change parameters with the values of the MOMF_T3a_TEM_SimuMode.yaml
+[33m56c6032[m Create yaml file to parametrization of the TEM_SimuMode.py
+[33m12ec25d[m Add new variables to parametrization
+[33mc7163ad[m Change parameters in TEM_Compilation.py to use MOMF_T3a_Manager.yaml
+[33m2bfb21d[m Add variables of TEM_Compilation.py to yaml file parametrization
+[33m1c84286[m Improve a few paths with the yaml parametrization file
+[33m7516248[m Add variables from TEM_Compilation.py
+[33m5e6e877[m Change variables to use the parametrization file MOMF_T3a_Manager.yaml
+[33m85a8322[m Add the variable of the script FRM_cleanup_multiple.py
+[33mf857e92[m Change a varible to use the yaml file
+[33m5aabe13[m Fix a path
+[33m0f68dd8[m Change the variables to manage the variables from yaml file
+[33m331e99e[m Create the MOMF_T3a_Manager.yaml to use of parametrization of the experiment_manager.py
+[33mef3c49c[m Change name of a few colums
+[33m2c21fdf[m Create yaml file with the parametrization of the files B1 and B1 parallel
+[33madb2fbb[m Change parameters in B1 to use MOMF_T1_B1.yaml
+[33mb4d011c[m Change parameters in B1 parallel to use MOMF_T1_B1.yaml
+[33md91f682[m Create yaml file with the parametrization of the files A1 and A2
+[33mf558de1[m Change parameters in A2 to use MOMF_T1_A.yaml
+[33me2b3adc[m Change parameters in A1 to use MOMF_T1_A.yaml
+[33mcc6eaaa[m Change the name of a few columns
+[33m59e8801[m Remove large files
+[33m7275e80[m Merge branch 'main' of https://github.com/luviga/osemosys_momf
+[33m4977170[m Initial commit
+[33m9f72bd3[m Initial commit

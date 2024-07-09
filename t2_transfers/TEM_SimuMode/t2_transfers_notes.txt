@@ -1,2 +1,0 @@
-NOTE 1: These future-0 transfers estimation module has *empty* Experimental_Platform and all corresponding internal folders.
-NOTE 2: the runs at "Executables" come from t1_confection (simply copy and paste)

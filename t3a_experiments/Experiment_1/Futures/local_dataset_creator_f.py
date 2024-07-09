@@ -24,13 +24,22 @@ def execute_local_dataset_creator_f_outputs ():
         for n in range( len( case_list ) ):
             filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Output.csv'
             #
+            print('######################')
+            print(case_list[n])
+            print('######################')
             line_count = 0
             with open( filename ) as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',')
                 for row in csv_reader:
                     line_count += 1
             if line_count > 1:
-                df = pd.read_csv(filename, index_col=None, header=0)
+                df = pd.read_csv(filename, index_col=None, header=0, low_memory=False)
+                #print(case_list[n].split('_'))
+                df=df.assign(Strategy=case_list[n].split('_')[0])
+                df=df.assign(FutureNum=case_list[n].split('_')[1])
+                df.rename(columns={'FutureNum':'Future.ID','YEAR':'Year','TECHNOLOGY':'Technology','FUEL':'Fuel','EMISSION':'Emission'}, inplace=True)
+                df=df.drop(['Unnamed: 0'], axis=1)
+                print(list(df.columns))
                 li.append(df)
             else:
                 pass
@@ -62,7 +71,7 @@ def execute_local_dataset_creator_f_inputs ():
                 for row in csv_reader:
                     line_count += 1
             if line_count > 1:
-                df = pd.read_csv(filename, index_col=None, header=0)
+                df = pd.read_csv(filename, index_col=None, header=0, low_memory=False)
                 li.append(df)
             else:
                 pass
