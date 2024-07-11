@@ -99,7 +99,7 @@ otoole_config: 'change_default_vals_params.py' # em
 concat_csvs: 'create_csv_concatenate.py' # B1, em
 # Script to concatenate the csvs otoole's outputs
 # File
-test_path: 'find_inconsistencies_techs_moms_daughters.py' # B1, em                                         
+test_path: 'test_inputs.py' # B1, em                                         
 # Classifier Modes Transport
 # File
 Modes_Trans: 'A-I_Classifier_Modes_Transport.xlsx' # em
@@ -168,7 +168,7 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 1 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
@@ -287,7 +287,7 @@ v_sec_decade_year: 'v_2040' # B1
 #----------------------------------------------------------------------------------#
 default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   AccumulatedAnnualDemand: 0,
-  AnnualEmissionLimit: 99999999999,
+  AnnualEmissionLimit: 999999999999999999999,
   AnnualExogenousEmission: 0,
   AvailabilityFactor: 1,
   CapacityFactor: 1,
@@ -307,7 +307,7 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   FixedCost: 0,
   InputActivityRatio: 0,
   MinStorageCharge: 0,
-  ModelPeriodEmissionLimit: 99999999999,
+  ModelPeriodEmissionLimit: 999999999999999999999,
   ModelPeriodExogenousEmission: 0,
   OperationalLife: 1,
   OperationalLifeStorage: 1,
@@ -327,14 +327,14 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   StorageMaxDischargeRate: 0,
   TechnologyFromStorage: 0,
   TechnologyToStorage: 0,
-  TotalAnnualMaxCapacity: 99999999999,
-  TotalAnnualMaxCapacityInvestment: 99999999999,
+  TotalAnnualMaxCapacity: 999999999999999999999,
+  TotalAnnualMaxCapacityInvestment: 999999999999999999999,
   TotalAnnualMinCapacity: 0,
   TotalAnnualMinCapacityInvestment: 0,
   TotalTechnologyAnnualActivityLowerLimit: 0,
-  TotalTechnologyAnnualActivityUpperLimit: 99999999999,
+  TotalTechnologyAnnualActivityUpperLimit: 999999999999999999999,
   TotalTechnologyModelPeriodActivityLowerLimit: 0,
-  TotalTechnologyModelPeriodActivityUpperLimit: 99999999999,
+  TotalTechnologyModelPeriodActivityUpperLimit: 999999999999999999999,
   TradeRoute: 0,
   VariableCost: 0.0001,
   YearSplit: 0
@@ -836,15 +836,15 @@ a_fuel_set: 'CLK_PROD' # em ##@
 
 ################################# General Var #################################
 newfleet: 'NewFleet' # B1, em
-externa_base_year: 'Externalities${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # B1, em
+externa_base_year: 'Externalities${year_apply_discount_rate}'
 externa_gdp: 'Externalities_GDP' # B1, em
-capex_base_year: 'Capex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # B1, em
+capex_base_year: 'Capex${year_apply_discount_rate}'
 capex_gdp: 'Capex_GDP' # B1, em
-fopex_base_year: 'FixedOpex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # B1, em
+fopex_base_year: 'FixedOpex${year_apply_discount_rate}'
 fopex_gdp: 'FixedOpex_GDP' # B1, em
-vopex_base_year: 'VarOpex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # B1, em
+vopex_base_year: 'VarOpex${year_apply_discount_rate}'
 vopex_gdp: 'VarOpex_GDP' # B1, em
-opex_base_year: 'Opex${year_apply_discount_rate}' # Check with dicts filter_vars and filter_vars_2 # B1, em
+opex_base_year: 'Opex${year_apply_discount_rate}'
 opex_gdp: 'Opex_GDP' # B1, em
 biofuel_shares: 'BiofuelShares' # B1, em
 fleet: 'Fleet' # B1, em
@@ -868,7 +868,7 @@ cost: 'Cost' # B1
 inter_escal: 'Interpolate_Escalate' # B1
 fix_last: 'Fix_Last' # B1
 intact: 'intact' # B1
-interpo: Interpolate # B1
+interpo: 'Interpolate' # B1
 fix_ind: 'Fix_Indicated' # B1
 write: 'Write' # B1
 overwrite: 'Overwrite' # B1
