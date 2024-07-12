@@ -28,7 +28,7 @@ Wide_Param_Header = params['sets']
 dict_xtra_scen = params['xtra_scen']
 other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=['Name', 'Param'])
 other_setup_params_name = other_setup_parameters['Name'].tolist()
-other_setup_params_param = other_setup_parameters['Param'].tolist() 
+other_setup_params_param = other_setup_parameters['Param'].tolist()
 other_setup_params = {}
 for n in range( len( other_setup_params_name ) ):
     other_setup_params.update( { other_setup_params_name[n]:other_setup_params_param[n] } )
@@ -501,6 +501,11 @@ for param in accumulated_data:
 # Fill list to be part of a dataframe later on:
 accumulated_data = {}
 #
+# Define variable to check how many Timeslices model has
+timeslices_dict = {}
+timeslices_dict.update( { 'Timeslices':Parametrization.parse( 'Timeslices' ) } )
+timeslices_list_check = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
+#
 print('4.b. - Remaining parameters.')
 for s in range( len( param_sheets ) ):
     params_dict.update( { param_sheets[s]:Parametrization.parse( param_sheets[s] ) } )
@@ -783,30 +788,88 @@ for s in range( len( param_sheets ) ):
             if this_param not in accumulated_data:
                 accumulated_data[this_param] = []
             accumulated_data[this_param].append(new_row)
-
+        
         elif this_projection_mode not in ['EMPTY', 'Zero', '', None, 'According to demand'] and type(this_projection_mode) == str and param_sheets[s] != 'Other_Techs':
-            for y in range(len(time_range_vector)):
-                                     
-                # Prepare dictionary to accumulate data based on conditions
-                new_row = {
-                    'PARAMETER': this_param,
-                    'Scenario': other_setup_params['Main_Scenario'],
-                    'REGION': other_setup_params['Region'],
-                    'TECHNOLOGY': this_tech,
-                    'YEAR': time_range_vector[y],
-                    'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4))
-                }
+            if this_param in ['CapacityFactor']:
+                
+                if other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
+                    timeslices_list = timeslices_list_check
+                    # if param_sheets[s] == 'Timeslices':
+                    #     sys.exit(1)
+                elif (other_setup_params['Timeslice'] == 'Some' and timeslices_list_check == []) or \
+                    (other_setup_params['Timeslice'] == 'All' and timeslices_list_check != []):
+                    print('Check the defintion of Timeslices, into A-O_Parametrization.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen')
+                    sys.exit()
+                elif other_setup_params['Timeslice'] == 'All':
+                    timeslices_list = [other_setup_params['Timeslice']]
+                
+                for ts in range(len(timeslices_list)):    
+                    for y in range(len(time_range_vector)):
+                        if param_sheets[s] == 'Timeslices' and timeslices_list_check != []:
+                            # Prepare dictionary to accumulate data based on conditions
+                            new_row = {
+                                'PARAMETER': this_param,
+                                'Scenario': other_setup_params['Main_Scenario'],
+                                'REGION': other_setup_params['Region'],
+                                'TECHNOLOGY': this_tech,
+                                'YEAR': time_range_vector[y],
+                                'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4)),
+                                'TIMESLICE': timeslices_list[ts]
+                            }
+                            
+                            
+                            # Accumulate data for bulk append
+                            if this_param not in accumulated_data:
+                                accumulated_data[this_param] = []
+                            accumulated_data[this_param].append(new_row)
+                            
+                        elif param_sheets[s] != 'Timeslices' and timeslices_list_check == []:
 
-                # Additional conditions for specific parameters
-                if this_param in ['CapacityFactor']:
-                    new_row['TIMESLICE'] = other_setup_params['Timeslice']
-                elif this_param in ['VariableCost']:
+                            # Prepare dictionary to accumulate data based on conditions
+                            if this_param == 'DIST_NGS':
+                                sys.exit(4)
+                            new_row = {
+                                'PARAMETER': this_param,
+                                'Scenario': other_setup_params['Main_Scenario'],
+                                'REGION': other_setup_params['Region'],
+                                'TECHNOLOGY': this_tech,
+                                'YEAR': time_range_vector[y],
+                                'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4)),
+                                'TIMESLICE': timeslices_list[ts]
+                            }
+                            
+                            
+                            # Accumulate data for bulk append
+                            if this_param not in accumulated_data:
+                                accumulated_data[this_param] = []
+                            accumulated_data[this_param].append(new_row)
+            
+            else:
+                for y in range(len(time_range_vector)):
+                                         
+                    # Prepare dictionary to accumulate data based on conditions
+                    new_row = {
+                        'PARAMETER': this_param,
+                        'Scenario': other_setup_params['Main_Scenario'],
+                        'REGION': other_setup_params['Region'],
+                        'TECHNOLOGY': this_tech,
+                        'YEAR': time_range_vector[y],
+                        'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4))
+                    }
+    
+                    # Additional conditions for specific parameters
+                    
+                    
+                    # if this_param in ['CapacityFactor']:
+                    #     new_row['TIMESLICE'] = other_setup_params['Timeslice']
+                    # elif this_param in ['VariableCost']:
+                    #     new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
                     new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
-
-                # Accumulate data for bulk append
-                if this_param not in accumulated_data:
-                    accumulated_data[this_param] = []
-                accumulated_data[this_param].append(new_row)
+    
+                    # Accumulate data for bulk append
+                    if this_param not in accumulated_data:
+                        accumulated_data[this_param] = []
+                    accumulated_data[this_param].append(new_row)
                     #
                 #
             #

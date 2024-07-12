@@ -217,7 +217,7 @@ xtra_scen: {
   Other_Scenarios: 'LTS',
   Region: 'RD',
   Mode_of_Operation: 1,
-  Timeslice: 'All'
+  Timeslice: 'Some'
   }
 #---------------------------------------------------------------#
 # Technologies parameters
