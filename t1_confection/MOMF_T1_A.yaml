@@ -217,7 +217,8 @@ xtra_scen: {
   Other_Scenarios: 'LTS',
   Region: 'RD',
   Mode_of_Operation: 1,
-  Timeslice: 'Some'
+  Timeslice: 'Some',
+  Timeslices: ['P1', 'P2']
   }
 #---------------------------------------------------------------#
 # Technologies parameters
@@ -362,8 +363,8 @@ df_techs_TRNGROUP_projection_HEADER: [
 
 tech_param_list_dfs_names: [
   'Fixed Horizon Parameters', 'Primary Techs', 'Secondary Techs', 
-  'Demand Techs', 'Transport Fuel Distribution', 'Vehicle Techs',
-  'Vehicle Groups'
+  'Timeslices', 'Demand Techs', 'Transport Fuel Distribution',
+  'Vehicle Techs', 'Vehicle Groups'
   ]
 #---------------------------------------------------------------#
 

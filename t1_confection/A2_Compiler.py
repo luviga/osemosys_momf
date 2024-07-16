@@ -287,7 +287,14 @@ print('2 (end) - The model has ben connected.')
 print('3 - Process the model demand.')
 
 Demand = pd.ExcelFile(params['A1_outputs'] + params['Print_Demand'])
-Demand_df = Demand.parse( Demand.sheet_names[0] )
+param_sheets = Demand.sheet_names # see all sheet names
+
+
+
+# Define variable to check how many Timeslices model has
+timeslices_dict = {}
+timeslices_dict.update( { 'Timeslices':Demand.parse( 'Timeslices' ) } )
+timeslices_list_check = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
 
 
 #
@@ -310,80 +317,102 @@ for n in range( len( Projection_Driver_Vars ) ):
 #
 demand_headers = params['demand_headers']
 #
-list_demand_or_share = Demand_df[ 'Demand/Share' ].tolist()
-#
-list_fuel_or_tech = Demand_df[ 'Fuel/Tech' ].tolist()
-Fuels_dems = [ i for i in range( len( list_fuel_or_tech ) ) if params['E6'] in list_fuel_or_tech[i] ] 
-Fuels_techs = [ i for i in range( len( list_fuel_or_tech ) ) if params['techs'] in list_fuel_or_tech[i] ]
-Fuels_techs_2_dems = {}
-for i in range( len( list_fuel_or_tech ) ):
-    if i in Fuels_techs:
-        for k in range( len( Fuels_dems ) ):
-            if Fuels_dems[k] > i:
-                Fuel_dem_index = Fuels_dems[k-1]
-                break
-        Fuels_techs_2_dems.update( { list_fuel_or_tech[i]:list_fuel_or_tech[Fuel_dem_index] } )
-#
-list_projection_mode = Demand_df[ 'Projection.Mode' ].tolist()
-list_projection_param = Demand_df[ 'Projection.Parameter' ].tolist()
 # Initialize lists to accumulate data
 accumulated_rows_SpecAnnualDemand = []
 accumulated_rows_SpecDemandProfile = []
-for m in range( len( list_demand_or_share ) ):
-    # This is the case for *Passenger* transport:
-    if params['gdp'] in list_projection_mode[m]:
-        this_tech = list_fuel_or_tech[m]
-        other_value_BY = 0
-        if params['joint'] in list_projection_mode[m]:
-            other_tech = list_projection_mode[m].split(' ')[-1]
-            other_tech_index = list_fuel_or_tech.index( other_tech )
-            other_value_BY = Demand_df.loc[ other_tech_index, params['initial_year'] ]
-        this_value_BY = Demand_df.loc[ m, params['initial_year'] ]
-        #
-        this_net_value_BY = this_value_BY + other_value_BY
-        #
-        demand_trajectory = [ this_net_value_BY ]
-        for y in range( len( Projections_sheet['Year'].tolist() ) ):
+#
+for s in range( len( param_sheets ) ):
+    Demand_df = Demand.parse( Demand.sheet_names[s] )
+    
+    list_demand_or_share = Demand_df[ 'Demand/Share' ].tolist()
+    #
+    list_fuel_or_tech = Demand_df[ 'Fuel/Tech' ].tolist()
+    Fuels_dems = [ i for i in range( len( list_fuel_or_tech ) ) if params['E6'] in list_fuel_or_tech[i] ] 
+    Fuels_techs = [ i for i in range( len( list_fuel_or_tech ) ) if params['techs'] in list_fuel_or_tech[i] ]
+    Fuels_techs_2_dems = {}
+    for i in range( len( list_fuel_or_tech ) ):
+        if i in Fuels_techs:
+            for k in range( len( Fuels_dems ) ):
+                if Fuels_dems[k] > i:
+                    Fuel_dem_index = Fuels_dems[k-1]
+                    break
+            Fuels_techs_2_dems.update( { list_fuel_or_tech[i]:list_fuel_or_tech[Fuel_dem_index] } )
+    #
+    list_projection_mode = Demand_df[ 'Projection.Mode' ].tolist()
+    list_projection_param = Demand_df[ 'Projection.Parameter' ].tolist()
 
-            if params['passenger'] in list_projection_param[m]:
-                demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Passenger'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
-            if params['freight_column'] in list_projection_param[m]:
-                demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Freight'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
-            Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( demand_trajectory[-1]*( this_value_BY/( this_value_BY + other_value_BY ) ), 4 )
+    for m in range( len( list_demand_or_share ) ):
+        # This is the case for *Passenger* transport:
+        if params['gdp'] in list_projection_mode[m]:
+            this_tech = list_fuel_or_tech[m]
+            other_value_BY = 0
+            if params['joint'] in list_projection_mode[m]:
+                other_tech = list_projection_mode[m].split(' ')[-1]
+                other_tech_index = list_fuel_or_tech.index( other_tech )
+                other_value_BY = Demand_df.loc[ other_tech_index, params['initial_year'] ]
+            this_value_BY = Demand_df.loc[ m, params['initial_year'] ]
+            #
+            this_net_value_BY = this_value_BY + other_value_BY
+            #
+            demand_trajectory = [ this_net_value_BY ]
+            for y in range( len( Projections_sheet['Year'].tolist() ) ):
+    
+                if params['passenger'] in list_projection_param[m]:
+                    demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Passenger'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
+                if params['freight_column'] in list_projection_param[m]:
+                    demand_trajectory.append( demand_trajectory[-1]*( 1 + Projections_sheet['e_Freight'].tolist()[y]*Projections_sheet['Variation_GDP'].tolist()[y]/100 ) )
+                Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round( demand_trajectory[-1]*( this_value_BY/( this_value_BY + other_value_BY ) ), 4 )
+            #
         #
-    #
-    if 'Flat' == list_projection_mode[m]:                                               
-        this_value_BY = Demand_df.loc[ m, 2018 ]
-        for y in range(len(Projections_sheet['Year'].tolist())):
-            Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round(this_value_BY, 4)
-    #
-    # Appending to df_SpecAnnualDemand and df_SpecDemandProfile
-    if Demand_df['Demand/Share'].tolist()[m] == 'Demand':
-        this_fuel = list_fuel_or_tech[m]
-        for y in range(len(time_range_vector)):
-            # SpecifiedAnnualDemand
-            spec_annual_demand_row = {
-                'PARAMETER': 'SpecifiedAnnualDemand', 
-                'Scenario': other_setup_params['Main_Scenario'],
-                'REGION': other_setup_params['Region'], 
-                'FUEL': this_fuel,
-                'YEAR': time_range_vector[y],
-                'Value': Demand_df.loc[m, time_range_vector[y]]
-            }
-            accumulated_rows_SpecAnnualDemand.append(spec_annual_demand_row)
+        if 'Flat' == list_projection_mode[m]:                                               
+            this_value_BY = Demand_df.loc[ m, 2018 ]
+            for y in range(len(Projections_sheet['Year'].tolist())):
+                Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round(this_value_BY, 4)
+        #
+        # Appending to df_SpecAnnualDemand and df_SpecDemandProfile
+        if Demand_df['Demand/Share'].tolist()[m] == 'Demand':
+            this_fuel = list_fuel_or_tech[m]
+            for y in range(len(time_range_vector)):
+                # SpecifiedAnnualDemand
+                spec_annual_demand_row = {
+                    'PARAMETER': 'SpecifiedAnnualDemand', 
+                    'Scenario': other_setup_params['Main_Scenario'],
+                    'REGION': other_setup_params['Region'], 
+                    'FUEL': this_fuel,
+                    'YEAR': time_range_vector[y],
+                    'Value': Demand_df.loc[m, time_range_vector[y]]
+                }
+                accumulated_rows_SpecAnnualDemand.append(spec_annual_demand_row)
+                
             
-            # SpecifiedDemandProfile
-            spec_demand_profile_row = {
-                'PARAMETER': 'SpecifiedDemandProfile', 
-                'Scenario': other_setup_params['Main_Scenario'],
-                'REGION': other_setup_params['Region'], 
-                'FUEL': this_fuel,
-                'TIMESLICE': other_setup_params['Timeslice'], 
-                'YEAR': time_range_vector[y],
-                'Value': 1
-            }
-            accumulated_rows_SpecDemandProfile.append(spec_demand_profile_row)
+            if other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
+                timeslices_list = timeslices_list_check
+            elif (other_setup_params['Timeslice'] == 'Some' and timeslices_list_check == []) or \
+                (other_setup_params['Timeslice'] == 'All' and timeslices_list_check != []):
+                print('Check the defintion of Timeslices, into A-O_Demand.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen')
+                sys.exit()
+            elif other_setup_params['Timeslice'] == 'All':
+                timeslices_list = [other_setup_params['Timeslice']]
             
+    
+            for ts in range(len(timeslices_list)):  
+                for y in range(len(time_range_vector)):
+                    # SpecifiedDemandProfile
+                    
+                    # Condition when the model has one or more than one timeslice
+                    if (param_sheets[s] == 'Timeslices' and timeslices_list_check != []) or \
+                        (param_sheets[s] != 'Timeslices' and timeslices_list_check == []):
+                        spec_demand_profile_row = {
+                            'PARAMETER': 'SpecifiedDemandProfile', 
+                            'Scenario': other_setup_params['Main_Scenario'],
+                            'REGION': other_setup_params['Region'], 
+                            'FUEL': this_fuel,
+                            'TIMESLICE': timeslices_list[ts], 
+                            'YEAR': time_range_vector[y],
+                            'Value': 1
+                        }
+                        accumulated_rows_SpecDemandProfile.append(spec_demand_profile_row)
+    
 # Convert the accumulated rows into DataFrames and append them to the original DataFrames
 if accumulated_rows_SpecAnnualDemand:
     new_rows_SpecAnnualDemand_df = pd.DataFrame(accumulated_rows_SpecAnnualDemand)
@@ -392,7 +421,7 @@ if accumulated_rows_SpecAnnualDemand:
 if accumulated_rows_SpecDemandProfile:
     new_rows_SpecDemandProfile_df = pd.DataFrame(accumulated_rows_SpecDemandProfile)
     df_SpecDemandProfile = pd.concat([df_SpecDemandProfile, new_rows_SpecDemandProfile_df], ignore_index=True)
-                                                                                                   
+                                                                                              
 
 print('4 - Parameterize technologies.')
 # HERE WE HAVE A FUNCTIONING DEMAND *DF* // still have to add the wide format
@@ -431,6 +460,7 @@ overall_param_df_dict.update( { 'OutputActivityRatio':df_OAR } )
 overall_param_df_dict.update( { 'YearSplit':df_Yearsplit } )
 overall_param_df_dict.update( { 'SpecifiedAnnualDemand':df_SpecAnnualDemand } )
 overall_param_df_dict.update( { 'SpecifiedDemandProfile':df_SpecDemandProfile } )
+
 for p in range( len( overall_param_list ) ):
     if overall_param_list[p] != 'OutputActivityRatio':
         overall_param_df_dict.update( { overall_param_list[p]:pd.DataFrame( columns = Wide_Param_Header ) } )
@@ -794,8 +824,6 @@ for s in range( len( param_sheets ) ):
                 
                 if other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
                     timeslices_list = timeslices_list_check
-                    # if param_sheets[s] == 'Timeslices':
-                    #     sys.exit(1)
                 elif (other_setup_params['Timeslice'] == 'Some' and timeslices_list_check == []) or \
                     (other_setup_params['Timeslice'] == 'All' and timeslices_list_check != []):
                     print('Check the defintion of Timeslices, into A-O_Parametrization.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen')
@@ -805,7 +833,10 @@ for s in range( len( param_sheets ) ):
                 
                 for ts in range(len(timeslices_list)):    
                     for y in range(len(time_range_vector)):
-                        if param_sheets[s] == 'Timeslices' and timeslices_list_check != []:
+                        
+                        # Condition when the model has one or more than one timeslice
+                        if (param_sheets[s] == 'Timeslices' and timeslices_list_check != []) or \
+                            (param_sheets[s] != 'Timeslices' and timeslices_list_check == []):
                             # Prepare dictionary to accumulate data based on conditions
                             new_row = {
                                 'PARAMETER': this_param,
@@ -822,27 +853,26 @@ for s in range( len( param_sheets ) ):
                             if this_param not in accumulated_data:
                                 accumulated_data[this_param] = []
                             accumulated_data[this_param].append(new_row)
-                            
-                        elif param_sheets[s] != 'Timeslices' and timeslices_list_check == []:
+                        
+                        # # Condition when the model has only one timeslice
+                        # elif param_sheets[s] != 'Timeslices' and timeslices_list_check == []:
 
-                            # Prepare dictionary to accumulate data based on conditions
-                            if this_param == 'DIST_NGS':
-                                sys.exit(4)
-                            new_row = {
-                                'PARAMETER': this_param,
-                                'Scenario': other_setup_params['Main_Scenario'],
-                                'REGION': other_setup_params['Region'],
-                                'TECHNOLOGY': this_tech,
-                                'YEAR': time_range_vector[y],
-                                'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4)),
-                                'TIMESLICE': timeslices_list[ts]
-                            }
+                        #     # Prepare dictionary to accumulate data based on conditions
+                        #     new_row = {
+                        #         'PARAMETER': this_param,
+                        #         'Scenario': other_setup_params['Main_Scenario'],
+                        #         'REGION': other_setup_params['Region'],
+                        #         'TECHNOLOGY': this_tech,
+                        #         'YEAR': time_range_vector[y],
+                        #         'Value': deepcopy(round(this_df_new_2.loc[n, time_range_vector[y]], 4)),
+                        #         'TIMESLICE': timeslices_list[ts]
+                        #     }
                             
                             
-                            # Accumulate data for bulk append
-                            if this_param not in accumulated_data:
-                                accumulated_data[this_param] = []
-                            accumulated_data[this_param].append(new_row)
+                        #     # Accumulate data for bulk append
+                        #     if this_param not in accumulated_data:
+                        #         accumulated_data[this_param] = []
+                        #     accumulated_data[this_param].append(new_row)
             
             else:
                 for y in range(len(time_range_vector)):
@@ -858,13 +888,8 @@ for s in range( len( param_sheets ) ):
                     }
     
                     # Additional conditions for specific parameters
-                    
-                    
-                    # if this_param in ['CapacityFactor']:
-                    #     new_row['TIMESLICE'] = other_setup_params['Timeslice']
-                    # elif this_param in ['VariableCost']:
-                    #     new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
-                    new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
+                    if this_param in ['VariableCost']:
+                        new_row['MODE_OF_OPERATION'] = other_setup_params['Mode_of_Operation']
     
                     # Accumulate data for bulk append
                     if this_param not in accumulated_data:
