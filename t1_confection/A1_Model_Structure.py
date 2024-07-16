@@ -552,6 +552,9 @@ tech_param_list_yearly_primary_df = pd.DataFrame(columns=tech_param_list_all_yea
 #
 tech_param_list_yearly_secondary_df = pd.DataFrame(columns=tech_param_list_all_yearly_df_headers)
 #
+tech_param_list_yearly_timeslices_df = pd.DataFrame(columns=tech_param_list_all_yearly_df_headers)
+tech_param_list_yearly_timeslices_df.insert(0, 'Timeslices', np.nan)
+#
 tech_param_list_yearly_demands_df = pd.DataFrame(columns=tech_param_list_all_yearly_df_headers)
 #
 tech_param_list_yearly_disttrn_df = pd.DataFrame(columns=tech_param_list_all_yearly_df_headers)
@@ -745,6 +748,55 @@ tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, 
 new_rows_yearly_secondary_df = pd.DataFrame(accumulated_rows_yearly_secondary)
 tech_param_list_yearly_secondary_df = pd.concat([tech_param_list_yearly_secondary_df, new_rows_yearly_secondary_df], ignore_index=True)
 
+#---------------------------------------------------------------------------------------------------#
+# Timeslices CapacityFactor
+
+
+# Initialize empty lists to accumulate rows
+accumulated_rows_all_notyearly_timeslices = []
+accumulated_rows_yearly_timeslices = []
+
+if params['xtra_scen']['Timeslice'] == 'Some':
+
+    # Loop through secondary techs
+    for n in range(len(codes_list_techs_secondary)):
+        # # For all not yearly parameters
+        # for p in range(len(tech_param_list_all_notyearly)):
+        #     accumulated_rows_all_notyearly_timeslices.append({
+        #         'Tech.Type': 'Secondary',
+        #         'Tech.ID': n + 1,
+        #         'Tech': codes_list_techs_secondary[n],
+        #         'Tech.Name': secondary_techs_names_eng[n],
+        #         'Parameter.ID': p + 1,
+        #         'Parameter': tech_param_list_all_notyearly[p]
+        #     })
+    
+        # For yearly secondary parameters
+        for p in range(len(tech_param_list_secondary)):
+            
+            for ts in params['xtra_scen']['Timeslices']:
+                if tech_param_list_secondary[p] == 'CapacityFactor':
+                
+                    accumulated_rows_yearly_timeslices.append({
+                        'Timeslices': ts,
+                        'Tech.ID': n + 1,
+                        'Tech': codes_list_techs_secondary[n],
+                        'Tech.Name': secondary_techs_names_eng[n],
+                        'Parameter.ID': p + 1,
+                        'Parameter': tech_param_list_secondary[p],
+                        'Projection.Parameter': 0  # Assuming this is a constant value for all rows
+                    })
+
+
+
+
+    # # Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
+    # new_rows_all_notyearly_timeslices_df = pd.DataFrame(accumulated_rows_all_notyearly_timeslices)
+    # tech_param_list_all_notyearly_df = pd.concat([tech_param_list_all_notyearly_df, new_rows_all_notyearly_timeslices_df], ignore_index=True)
+    
+    # Convert the accumulated rows for yearly secondary parameters into a DataFrame and concatenate
+    new_rows_yearly_timeslices_df = pd.DataFrame(accumulated_rows_yearly_timeslices)
+    tech_param_list_yearly_timeslices_df = pd.concat([tech_param_list_yearly_timeslices_df, new_rows_yearly_timeslices_df], ignore_index=True)
 #---------------------------------------------------------------------------------------------------#
 # Demand Techs (simple)
 
@@ -1392,14 +1444,16 @@ tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df.replace(np.n
 #
 tech_param_list_yearly_primary_df = tech_param_list_yearly_primary_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_secondary_df = tech_param_list_yearly_secondary_df.replace(np.nan, '', regex=True)
+tech_param_list_yearly_timeslices_df = tech_param_list_yearly_timeslices_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_demands_df = tech_param_list_yearly_demands_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_disttrn_df = tech_param_list_yearly_disttrn_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_trn_df = tech_param_list_yearly_trn_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_trngroups_df = tech_param_list_yearly_trngroups_df.replace(np.nan, '', regex=True)
 #
 tech_param_list_dfs = [ tech_param_list_all_notyearly_df, tech_param_list_yearly_primary_df ,
-                        tech_param_list_yearly_secondary_df, tech_param_list_yearly_demands_df ,
-                        tech_param_list_yearly_disttrn_df, tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
+                        tech_param_list_yearly_secondary_df, tech_param_list_yearly_timeslices_df, 
+                        tech_param_list_yearly_demands_df , tech_param_list_yearly_disttrn_df, 
+                        tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
 tech_param_list_dfs_names = params['tech_param_list_dfs_names']
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
