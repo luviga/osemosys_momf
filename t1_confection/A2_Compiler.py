@@ -29,6 +29,7 @@ dict_xtra_scen = params['xtra_scen']
 other_setup_parameters = pd.DataFrame(list(dict_xtra_scen.items()), columns=['Name', 'Param'])
 other_setup_params_name = other_setup_parameters['Name'].tolist()
 other_setup_params_param = other_setup_parameters['Param'].tolist()
+other_setup_params_timeslices = other_setup_params_param[-1]
 other_setup_params = {}
 for n in range( len( other_setup_params_name ) ):
     other_setup_params.update( { other_setup_params_name[n]:other_setup_params_param[n] } )
@@ -41,18 +42,28 @@ df_Yearsplit = pd.DataFrame( columns = Wide_Param_Header )
 # Initialize an empty list to accumulate dictionaries
 accumulated_dicts_Yearsplit = []
 
-# Loop through the time range vector
-for y in range(len(time_range_vector)):
-    # Create a dictionary for the current iteration
-    this_dict_4_wide = {
-        'PARAMETER': 'Yearsplit',
-        'Scenario': other_setup_params['Main_Scenario'],
-        'TIMESLICE': other_setup_params['Timeslice'],
-        'YEAR': time_range_vector[y],
-        'Value': 1
-    }
-    # Add the dictionary to the list
-    accumulated_dicts_Yearsplit.append(this_dict_4_wide)
+
+if other_setup_params['Timeslice'] == 'Some' and other_setup_params_timeslices != []:
+    timeslices_list = other_setup_params_timeslices
+elif other_setup_params['Timeslice'] == 'Some' and other_setup_params_timeslices == []:
+    print('These variables have inconsistance variable xtra_scen/Timeslice and xtra_scen/Timeslices')
+    sys.exit()
+elif other_setup_params['Timeslice'] == 'All':
+    timeslices_list = [other_setup_params['Timeslice']]
+
+for ts in range(len(timeslices_list)):
+    # Loop through the time range vector
+    for y in range(len(time_range_vector)):
+        # Create a dictionary for the current iteration
+        this_dict_4_wide = {
+            'PARAMETER': 'YearSplit',
+            'Scenario': other_setup_params['Main_Scenario'],
+            'TIMESLICE': timeslices_list[ts],
+            'YEAR': time_range_vector[y],
+            'Value': 1
+        }
+        # Add the dictionary to the list
+        accumulated_dicts_Yearsplit.append(this_dict_4_wide)
 
 # Convert the accumulated list of dictionaries to a DataFrame
 new_rows_Yearsplit_df = pd.DataFrame(accumulated_dicts_Yearsplit)
@@ -385,11 +396,15 @@ for s in range( len( param_sheets ) ):
                 accumulated_rows_SpecAnnualDemand.append(spec_annual_demand_row)
                 
             
-            if other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
+            if other_setup_params_timeslices != timeslices_list_check and other_setup_params['Timeslice'] == 'Some' and \
+                timeslices_list_check != []:
+                print('These variables are differents, so you need check A-O_Demand.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen/Timeslices')
+                sys.exit()
+            elif other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
                 timeslices_list = timeslices_list_check
             elif (other_setup_params['Timeslice'] == 'Some' and timeslices_list_check == []) or \
                 (other_setup_params['Timeslice'] == 'All' and timeslices_list_check != []):
-                print('Check the defintion of Timeslices, into A-O_Demand.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen')
+                print('Check the defintion of Timeslices, into A-O_Demand.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen/Timeslice')
                 sys.exit()
             elif other_setup_params['Timeslice'] == 'All':
                 timeslices_list = [other_setup_params['Timeslice']]
@@ -822,11 +837,15 @@ for s in range( len( param_sheets ) ):
         elif this_projection_mode not in ['EMPTY', 'Zero', '', None, 'According to demand'] and type(this_projection_mode) == str and param_sheets[s] != 'Other_Techs':
             if this_param in ['CapacityFactor']:
                 
-                if other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
+                if other_setup_params_timeslices != timeslices_list_check and other_setup_params['Timeslice'] == 'Some' and \
+                    timeslices_list_check != []:
+                    print('These variables are differents, so you need check A-O_Parametrization.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen/Timeslices')
+                    sys.exit()
+                elif other_setup_params['Timeslice'] == 'Some' and timeslices_list_check != []:
                     timeslices_list = timeslices_list_check
                 elif (other_setup_params['Timeslice'] == 'Some' and timeslices_list_check == []) or \
                     (other_setup_params['Timeslice'] == 'All' and timeslices_list_check != []):
-                    print('Check the defintion of Timeslices, into A-O_Parametrization.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen')
+                    print('Check the defintion of Timeslices, into A-O_Parametrization.xlsx sheet Timeslices and MOMF_T1_A.yaml variable xtra_scen/Timeslice')
                     sys.exit()
                 elif other_setup_params['Timeslice'] == 'All':
                     timeslices_list = [other_setup_params['Timeslice']]
