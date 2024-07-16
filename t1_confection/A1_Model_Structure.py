@@ -749,8 +749,7 @@ new_rows_yearly_secondary_df = pd.DataFrame(accumulated_rows_yearly_secondary)
 tech_param_list_yearly_secondary_df = pd.concat([tech_param_list_yearly_secondary_df, new_rows_yearly_secondary_df], ignore_index=True)
 
 #---------------------------------------------------------------------------------------------------#
-# Timeslices CapacityFactor
-
+# Timeslices for CapacityFactor
 
 # Initialize empty lists to accumulate rows
 accumulated_rows_all_notyearly_timeslices = []
@@ -786,9 +785,6 @@ if params['xtra_scen']['Timeslice'] == 'Some':
                         'Parameter': tech_param_list_secondary[p],
                         'Projection.Parameter': 0  # Assuming this is a constant value for all rows
                     })
-
-
-
 
     # # Convert the accumulated rows for all not yearly parameters into a DataFrame and concatenate
     # new_rows_all_notyearly_timeslices_df = pd.DataFrame(accumulated_rows_all_notyearly_timeslices)
@@ -959,6 +955,8 @@ tech_param_list_yearly_trngroups_df = pd.concat([tech_param_list_yearly_trngroup
 #   3) Demand data, which we will define here:
 df_demands_all_header = params['df_demands_all_header'] + time_range_vector
 df_demands_all = pd.DataFrame(columns=df_demands_all_header)
+df_demands_all_timeslices = deepcopy(df_demands_all)
+df_demands_all_timeslices.insert(0, 'Timeslices', np.nan)
 df_demands_fuel_list = []
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
@@ -1102,6 +1100,7 @@ df_techs_demand_projection = pd.DataFrame(columns=df_techs_demand_projection_HEA
 accumulated_rows_demand_base_year = []
 accumulated_rows_demand_projection = []
 accumulated_rows_demands_all = []
+accumulated_rows_demands_all_timeslices = []
 
 # Loop through demand techs
 for n in range(len(codes_list_techs_demands)):
@@ -1163,20 +1162,37 @@ for n in range(len(codes_list_techs_demands)):
         'Projection.Mode': '',
         'Projection.Parameter': 0
     })
+    if params['xtra_scen']['Timeslice'] == 'Some':
+        for ts in params['xtra_scen']['Timeslices']:
+            # Accumulate rows for demands all
+            accumulated_rows_demands_all_timeslices.append({
+                'Timeslices': ts,
+                'Ref.Cap.BY': 'not needed',
+                'Ref.OAR.BY': 'not needed',
+                'Ref.km.BY': 'not needed',
+                'Demand/Share': 'Demand',
+                'Fuel/Tech': this_fuel_o,
+                'Name': this_fuel_o_name,
+                'Projection.Mode': '',
+                'Projection.Parameter': 0
+            })
 
 # Convert the accumulated rows into DataFrames
 new_rows_demand_base_year_df = pd.DataFrame(accumulated_rows_demand_base_year)
 new_rows_demand_projection_df = pd.DataFrame(accumulated_rows_demand_projection)
 new_rows_demands_all_df = pd.DataFrame(accumulated_rows_demands_all)
+new_rows_demands_all_timeslices_df = pd.DataFrame(accumulated_rows_demands_all_timeslices)
 
 # Concatenate the new rows with the original DataFrames
 df_techs_demand_base_year = pd.concat([df_techs_demand_base_year, new_rows_demand_base_year_df], ignore_index=True)
 df_techs_demand_projection = pd.concat([df_techs_demand_projection, new_rows_demand_projection_df], ignore_index=True)
 df_demands_all = pd.concat([df_demands_all, new_rows_demands_all_df], ignore_index=True)
+df_demands_all_timeslices = pd.concat([df_demands_all_timeslices, new_rows_demands_all_timeslices_df], ignore_index=True)
 
 # Replace NaN values in the DataFrames
 df_techs_demand_projection = df_techs_demand_projection.replace(np.nan, '', regex=True)
 df_demands_all = df_demands_all.replace(np.nan, '', regex=True)
+df_demands_all_timeslices = df_demands_all_timeslices.replace(np.nan, '', regex=True)
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
 # D - Let's now take the elements of the fuel distribution elements of transport
@@ -1356,6 +1372,7 @@ accumulated_rows_TRNGROUP_base_year = []
 accumulated_rows_TRNGROUP_projection = []
 accumulated_demands_fuel_list = []  # To track which fuels have been added
 accumulated_rows_demands_all = []
+accumulated_rows_demands_all_timeslices = []
 
 # Loop through TRNGROUP techs
 for n in range(len(codes_list_techs_TRNGROUP)):
@@ -1416,6 +1433,16 @@ for n in range(len(codes_list_techs_TRNGROUP)):
             'Projection.Mode': '',
             'Projection.Parameter': 0
         })
+        if params['xtra_scen']['Timeslice'] == 'Some':
+            for ts in params['xtra_scen']['Timeslices']:
+                accumulated_rows_demands_all_timeslices.append({
+                    'Timeslices': ts,
+                    'Demand/Share': 'Demand',
+                    'Fuel/Tech': this_fuel_o,
+                    'Name': this_fuel_o_name,
+                    'Projection.Mode': '',
+                    'Projection.Parameter': 0
+                })
 
     # Always add the share row
     accumulated_rows_demands_all.append({
@@ -1430,15 +1457,21 @@ for n in range(len(codes_list_techs_TRNGROUP)):
 new_rows_TRNGROUP_base_year_df = pd.DataFrame(accumulated_rows_TRNGROUP_base_year)
 new_rows_TRNGROUP_projection_df = pd.DataFrame(accumulated_rows_TRNGROUP_projection)
 new_rows_demands_all_df = pd.DataFrame(accumulated_rows_demands_all)
+new_rows_demands_all_timelsices_df = pd.DataFrame(accumulated_rows_demands_all_timeslices)
 
 # Concatenate the new rows with the original DataFrames
 df_techs_TRNGROUP_base_year = pd.concat([df_techs_TRNGROUP_base_year, new_rows_TRNGROUP_base_year_df], ignore_index=True)
 df_techs_TRNGROUP_projection = pd.concat([df_techs_TRNGROUP_projection, new_rows_TRNGROUP_projection_df], ignore_index=True)
 df_demands_all = pd.concat([df_demands_all, new_rows_demands_all_df], ignore_index=True)
+df_demands_all_timeslices = pd.concat([df_demands_all_timeslices, new_rows_demands_all_timelsices_df], ignore_index=True)
 
 # Replace NaN values in the DataFrames
 df_techs_TRNGROUP_projection = df_techs_TRNGROUP_projection.replace(np.nan, '', regex=True)
 df_demands_all = df_demands_all.replace(np.nan, '', regex=True)
+df_demands_all_timeslices = df_demands_all_timeslices.replace(np.nan, '', regex=True)
+df_demands_all_list = []
+df_demands_all_list.append(df_demands_all)
+df_demands_all_list.append(df_demands_all_timeslices)
 #
 tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df.replace(np.nan, '', regex=True)
 #
@@ -1492,8 +1525,9 @@ writer_df_projection.close()
 With that done, we now need to print the final demands. This is crucial for parameterization.
 '''
 writer_df_demand = pd.ExcelWriter(params['A1_outputs'] + params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
-this_df_sheet_name = params['Dem_Proj']
-df_demands_all.to_excel(writer_df_demand, sheet_name = this_df_sheet_name, index=False)
+this_df_sheet_name = [params['Dem_Proj'], params['Timeslices']]
+for n in range(len(this_df_sheet_name)):
+    df_demands_all_list[n].to_excel(writer_df_demand, sheet_name = this_df_sheet_name[n], index=False)
 writer_df_demand.close()
 #
 '''
