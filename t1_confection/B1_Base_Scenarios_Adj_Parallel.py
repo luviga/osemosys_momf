@@ -1102,6 +1102,12 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
                             # these_values = this_scenario_data[ this_param ]['value'][ value_indices[0]:value_indices[-1]+1 ]
                             these_values = []
                             for val in range( len( value_indices ) ):
+                                # if scenario_list[scen] == 'LTS' and val ==0:
+                                #     print('this_set_element_unique_1[n1]',this_set_element_unique_1[n1])
+                                #     print('this_set_element_unique_2[n2]',this_set_element_unique_2[n2])
+                                #     print('second_last_set_element_unique[s]',second_last_set_element_unique[s])
+                                    # print('this_scenario_data[ this_param ]["value"][ value_indices[val] ]',this_scenario_data[ this_param ]['value'][ value_indices[val] ])
+                                    # sys.exit()
                                 these_values.append( this_scenario_data[ this_param ]['value'][ value_indices[val] ] )
                             for val in range( len( these_values ) ):
                                 g.write( str( these_values[val] ) + ' ' )
@@ -1444,6 +1450,9 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
         for n in range( len( synthesized_all_data_row ) ):
             csvwriter.writerow( synthesized_all_data_row[n] )
     #
+    print('£££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££')
+    print('Finish writing input')
+    print('£££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££')
 
 def generalized_logistic_curve(x, L, Q, k, M):
   return L/( 1 + Q*math.exp( -k*( x-M ) ) )
@@ -3665,17 +3674,23 @@ if __name__ == '__main__':
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] + [ float(e) for e in electrical_Params_mYears ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
-    
+                            if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
+                                value_list = value_list + value_list
+
                         if params['interpo'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] + [ float(e) for e in electrical_Params_mYears ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
-    
+                            if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
+                                value_list = value_list + value_list
+                            
                         if params['fix_ind'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] +  [ electrical_Params_initialYear ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float( electrical_Params_mValues[0] ) ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
-    
+                            if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
+                                value_list = value_list + value_list
+                            
                         if params['write'] in electrical_Params_methods:
                             value_list = [ round( e*electrical_Params_secMultiplier, params['round_#'] ) for e in value_list ]
                             for y in range( len( time_range_vector ) ):
@@ -3683,7 +3698,7 @@ if __name__ == '__main__':
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['t'].append( set_list[l] )                            
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['y'].append( str( time_range_vector[y] ) )
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['value'].append( float( value_list[y] ) )
-    
+                        
                     # Let us modify the value vector if it already exists:
                     if electrical_Params_built_in == 'YES':
                         this_param_indices = [ i for i, x in enumerate( stable_scenarios[ this_scenario_name ][ param_list[p] ][ 't' ] ) if x == str( set_list[l] ) ]
@@ -3695,11 +3710,17 @@ if __name__ == '__main__':
                             known_years += [ float(e) for e in electrical_Params_mYears ]
                             known_values += [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
+                            if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
+                                value_list = value_list + value_list
                         #
                         if params['interpo'] in electrical_Params_methods and params['fix_last'] in electrical_Params_methods and params['intact'] not in electrical_Params_exactYears:
                             known_years     = [ float(e) for e in electrical_Params_exactYears ] + [ float(e) for e in electrical_Params_mYears ]
                             known_values     = [ float(e) for e in electrical_Params_exactValues ] + [ float(e) for e in electrical_Params_mValues ]
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
+                            if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
+                                value_list = value_list + value_list
+                            # if iter_scen == 'LTS' and set_list[l] == 'PPCCTNGSDSL' and param_list[p] == 'CapacityFactor' and len(range(this_param_indices[0],this_param_indices[-1]+1)) == 66:
+                            #     sys.exit(9)
                         #
                         if params['overwrite'] in electrical_Params_methods:
                             value_list = [ round( e, params['round_#'] ) for e in value_list ]
@@ -3774,7 +3795,7 @@ if __name__ == '__main__':
                         value_list = [round(e, params['round_#']) for e in value_list]
                         this_param_indices = [i for i, x in enumerate(stable_scenarios[this_scenario_name][param_list[p]]['t']) if x == str(this_set)]
                         stable_scenarios[this_scenario_name][param_list[p]]['value'][this_param_indices[0]:this_param_indices[-1]+1] = deepcopy(value_list)
-
+                        
         #########################################################################################
         ''' MODIFYING *base_configuration_E_and_D* '''
         this_scenario_df = deepcopy( base_configuration_E_and_D.loc[ base_configuration_E_and_D['Scenario'].isin( [ this_scenario_name ] ) ] )
@@ -3809,7 +3830,7 @@ if __name__ == '__main__':
                     stable_scenarios[ this_scenario_name ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] = deepcopy( value_list )
 
         #########################################################################################
-
+    
     print('  finished, now to processing')
     # sys.exit()
 
