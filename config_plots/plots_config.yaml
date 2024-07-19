@@ -23,7 +23,7 @@ scens: ['BAU', 'LTS']
 
 # Fourth: Select if you want see information
 # Recomendation: Ever put like true in the first run and run now
-info: False
+info: True
 
 # Fifth: Set years for plots
 start_year: 2020 # This is the firts year for the ticks in the plot
@@ -35,7 +35,7 @@ year_apply_discount_rate: 2024
 
 #Check the second word of names of the list are the same than the scenario
 # BAU
-techs_BAU_AccumulatedNewCapacity: [[], []]
+techs_BAU_AccumulatedNewCapacity: [['DIST_FIR', 'DIST_BIM'], []]
 techs_BAU_AnnualEmissions: [[], []]
 techs_BAU_AnnualFixedOperatingCost: [[], []]
 techs_BAU_AnnualTechnologyEmission: [[], []]

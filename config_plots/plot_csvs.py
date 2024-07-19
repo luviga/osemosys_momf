@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 29 17:18:23 2024
+Climate Lead Group
+MOMF Grafication Module
 
-@author: luisf
+@author: luisf and andreysava
 """
 
 import os
@@ -175,13 +176,18 @@ if __name__ == '__main__':
                     df_outputs = pd.read_csv(f'{tier}/{scen}/{case}/{case}_output.csv', low_memory=False)
                     parameters = df_outputs.columns.values
                     columns_names_delete = [
-                        'Unnamed: 0', 'YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'
+                        'Unnamed: 0', 'YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION', 'Year', 'Technology', 'Fuel', 'Emission'
                         ]
                 elif params['tier']=='1':
                     # Read dataframe with csv concatenates in the script create_csv_concatenate.py
                     df_outputs = pd.read_csv(f'{tier}/{case}/{case}_output.csv', low_memory=False)
                     parameters = df_outputs.columns.values
                     columns_names_delete = [
+                                            "Unnamed: 0",
+                                            "YEAR",
+                                            "TECHNOLOGY",
+                                            "FUEL",
+                                            "EMISSION",                    
                                             "Strategy",
                                             "Future.ID",
                                             "Fuel",
@@ -226,7 +232,7 @@ if __name__ == '__main__':
                 if params['info']: # and int(case[-1])==0:
                     with open(info_filename, option) as file_info:
                         file_info.write('\n###################################################################################')
-                        file_info.write(f'\n\nData information of this scenario: {case[0:3]}')
+                        file_info.write(f'\n\nData information of this scenario: {scen}')
                         file_info.write(f'\n\nThese are the years availables:\n{years}')
                         file_info.write('\n-----------------------------------------------------------------------------------\n')
 
@@ -242,8 +248,15 @@ if __name__ == '__main__':
                         
                         df_tech_filtered = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
                         technologies =  df_tech_filtered['TECHNOLOGY'].unique()
+                        fuels =  df_tech_filtered['FUEL'].unique()
+                        emissions =  df_tech_filtered['EMISSION'].unique()
                         with open(info_filename, option) as file_info:
-                            file_info.write(f'\nFor {parameter}, these are the technologies availables:\n{technologies}')
+                            if parameter == 'Demand':
+                                file_info.write(f'\nFor {parameter}, these are the technologies availables:\n{fuels}')
+                            elif parameter == 'AnnualTechnologyEmission' or parameter == 'AnnualEmissions':
+                                file_info.write(f'\nFor {parameter}, these are the technologies availables:\n{emissions}')
+                            else:
+                                file_info.write(f'\nFor {parameter}, these are the technologies availables:\n{technologies}')                                                                                                
                             file_info.write('\n-----------------------------------------------------------------------------------\n')
                             file_info.close()
 
@@ -265,73 +278,239 @@ if __name__ == '__main__':
                             
                             
                     
-                    if parameter in techs_desired:
+                    if parameter == 'Demand':
+                        if parameter in techs_desired:
+                            
+                            
+                            # Info about ticks years 
+                            start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label           
+                            
+                            # Filter the DataFrame for the current parameter
+                            parameter_df = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
+    
+                            # Filter the DataFrame for the techcologies selected
+                            parameter_df = parameter_df[parameter_df['FUEL'].isin(techs_desired[parameter])]
+                            
+                            # If the filtered DataFrame is empty, skip this parameter
+                            if parameter_df.empty:
+                                print(f"No data for parameter {parameter}. Skipping plot.")
+                                continue
                         
+                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            parameter_df = parameter_df.groupby(['YEAR', 'FUEL'], as_index=False).agg('sum')
                         
-                        # Info about ticks years 
-                        start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label           
-                        
-                        # Filter the DataFrame for the current parameter
-                        parameter_df = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
-
-                        # Filter the DataFrame for the techcologies selected
-                        parameter_df = parameter_df[parameter_df['TECHNOLOGY'].isin(techs_desired[parameter])]
-                        
-                        # If the filtered DataFrame is empty, skip this parameter
-                        if parameter_df.empty:
-                            print(f"No data for parameter {parameter}. Skipping plot.")
-                            continue
-                    
-                        # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
-                        parameter_df = parameter_df.groupby(['YEAR', 'TECHNOLOGY'], as_index=False).agg('sum')
-                    
-                        # Create the plot only if there are technologies/fuels for this parameter
-                        if not parameter_df['TECHNOLOGY'].empty:
-                            if params['plot_type']=='bar':
-                                plt.figure(figsize=(10, 6))  # Adjust the size as needed
-                                # Plot the DataFrame as a bar chart
-                                sns.barplot(data=parameter_df, x='YEAR', y='VALUE', hue='TECHNOLOGY')
-                        
-                            if params['plot_type']=='stacked_bar':
-                                # Pivot the DataFrame to have technologies as columns and years as rows
-                                pivot_df = parameter_df.pivot(index='YEAR', columns='TECHNOLOGY', values='VALUE').fillna(0)
-                                # Plot the pivoted DataFrame as a stacked bar chart
-                                pivot_df.plot(kind='bar', stacked=True, figsize=(10, 6))
+                            # Create the plot only if there are technologies/fuels for this parameter
+                            if not parameter_df['FUEL'].empty:
+                                if params['plot_type']=='bar':
+                                    plt.figure(figsize=(10, 6))  # Adjust the size as needed
+                                    # Plot the DataFrame as a bar chart
+                                    sns.barplot(data=parameter_df, x='YEAR', y='VALUE', hue='FUEL')
+                            
+                                if params['plot_type']=='stacked_bar':
+                                    # Pivot the DataFrame to have technologies as columns and years as rows
+                                    pivot_df = parameter_df.pivot(index='YEAR', columns='FUEL', values='VALUE').fillna(0)
+                                    # Plot the pivoted DataFrame as a stacked bar chart
+                                    pivot_df.plot(kind='bar', stacked=True, figsize=(10, 6))
+                                    
+    
+                            
+                                # Adjust the X-axis ticks if necessary
+                                xticks = plt.xticks()[0]  # Gets the current locations of the ticks
+                                xticklabels = [label+int(years[0]) if (int(label-start_pos_year)%params['separation_years'] == 0) else '' for i, label in enumerate(xticks)]
+                                plt.xticks(rotation=0, ticks=xticks, labels=xticklabels)
                                 
-
+                                # Labels and title
+                                plt.title(f'{parameter} {case}')
+                                plt.xlabel('Year')
+                                if y_label_title:
+                                    plt.ylabel(y_label_title[0])
+                                
+                                # Display the legend and the chart
+                                plt.legend(title='Fuel').set_visible(params['visible_legend'])
+                                if params['visible_legend']:
+                                    plt.legend(title='Fuel', bbox_to_anchor=(1.05, 1), loc='upper left')
+                                
+                                # Adjust layout to ensure everything fits without overlap
+                                plt.tight_layout()
+                                
+                                # Adjust margins if necessary to avoid cutting off the legend
+                                plt.subplots_adjust(right=0.75)
+                                
+                                # Show/save the plot
+                                if params['show_fig']:
+                                    plt.show()
+                                # To save the plot, uncomment the following line
+                                if params['save_fig']:
+                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    directory = os.path.dirname(file_path)
+                                    if not os.path.exists(directory):
+                                        os.makedirs(directory)
+                                    plt.savefig(file_path)
+                                plt.close()
+                            else:
+                                print(f"No technologies associated with parameter {parameter} {case}.")
+                                
                         
-                            # Adjust the X-axis ticks if necessary
-                            xticks = plt.xticks()[0]  # Gets the current locations of the ticks
-                            xticklabels = [label+int(years[0]) if (int(label-start_pos_year)%params['separation_years'] == 0) else '' for i, label in enumerate(xticks)]
-                            plt.xticks(rotation=0, ticks=xticks, labels=xticklabels)
+                    elif parameter == 'AnnualTechnologyEmission' or parameter == 'AnnualEmissions':
+                        if parameter in techs_desired:
                             
-                            # Labels and title
-                            plt.title(f'{parameter} {case}')
-                            plt.xlabel('Year')
-                            if y_label_title:
-                                plt.ylabel(y_label_title[0])
                             
-                            # Display the legend and the chart
-                            plt.legend(title='Technology').set_visible(params['visible_legend'])
-                            if params['visible_legend']:
-                                plt.legend(title='Technology', bbox_to_anchor=(1.05, 1), loc='upper left')
+                            # Info about ticks years 
+                            start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label           
                             
-                            # Adjust layout to ensure everything fits without overlap
-                            plt.tight_layout()
+                            # Filter the DataFrame for the current parameter
+                            parameter_df = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
+    
+                            # Filter the DataFrame for the techcologies selected
+                            parameter_df = parameter_df[parameter_df['EMISSION'].isin(techs_desired[parameter])]
                             
-                            # Adjust margins if necessary to avoid cutting off the legend
-                            plt.subplots_adjust(right=0.75)
+                            # If the filtered DataFrame is empty, skip this parameter
+                            if parameter_df.empty:
+                                print(f"No data for parameter {parameter}. Skipping plot.")
+                                continue
+                        
+                                                                                 
+                                              
+                                                                                       
+                                    
+                    
+                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            parameter_df = parameter_df.groupby(['YEAR', 'EMISSION'], as_index=False).agg('sum')
+                    
+                                                                                                 
+                                                                
+                                                          
+                                                                                        
+                                                                   
+                                                                                                     
+                        
+                            # Create the plot only if there are technologies/fuels for this parameter
+                            if not parameter_df['FUEL'].empty:
+                                if params['plot_type']=='bar':
+                                    plt.figure(figsize=(10, 6))  # Adjust the size as needed
+                                    # Plot the DataFrame as a bar chart
+                                    sns.barplot(data=parameter_df, x='YEAR', y='VALUE', hue='EMISSION')
                             
-                            # Show/save the plot
-                            if params['show_fig']:
-                                plt.show()
-                            # To save the plot, uncomment the following line
-                            if params['save_fig']:
-                                file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
-                                directory = os.path.dirname(file_path)
-                                if not os.path.exists(directory):
-                                    os.makedirs(directory)
-                                plt.savefig(file_path)
-                            plt.close()
-                        else:
-                            print(f"No technologies associated with parameter {parameter} {case}.")
+                                if params['plot_type']=='stacked_bar':
+                                    # Pivot the DataFrame to have technologies as columns and years as rows
+                                    pivot_df = parameter_df.pivot(index='YEAR', columns='EMISSION', values='VALUE').fillna(0)
+                                    # Plot the pivoted DataFrame as a stacked bar chart
+                                    pivot_df.plot(kind='bar', stacked=True, figsize=(10, 6))
+                                    
+    
+                            
+                                # Adjust the X-axis ticks if necessary
+                                xticks = plt.xticks()[0]  # Gets the current locations of the ticks
+                                xticklabels = [label+int(years[0]) if (int(label-start_pos_year)%params['separation_years'] == 0) else '' for i, label in enumerate(xticks)]
+                                plt.xticks(rotation=0, ticks=xticks, labels=xticklabels)
+                                
+                                # Labels and title
+                                plt.title(f'{parameter} {case}')
+                                plt.xlabel('Year')
+                                if y_label_title:
+                                    plt.ylabel(y_label_title[0])
+                                
+                                # Display the legend and the chart
+                                plt.legend(title='Emission').set_visible(params['visible_legend'])
+                                if params['visible_legend']:
+                                    plt.legend(title='Emission', bbox_to_anchor=(1.05, 1), loc='upper left')
+                                
+                                # Adjust layout to ensure everything fits without overlap
+                                plt.tight_layout()
+                                
+                                # Adjust margins if necessary to avoid cutting off the legend
+                                plt.subplots_adjust(right=0.75)
+                                
+                                # Show/save the plot
+                                if params['show_fig']:
+                                    plt.show()
+                                # To save the plot, uncomment the following line
+                                if params['save_fig']:
+                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    directory = os.path.dirname(file_path)
+                                    if not os.path.exists(directory):
+                                        os.makedirs(directory)
+                                    plt.savefig(file_path)
+                                plt.close()
+                            else:
+                                print(f"No technologies associated with parameter {parameter} {case}.")
+                    
+                    else:
+                        if parameter in techs_desired:
+                            
+                                              
+                                                            
+                                              
+                                             
+                                                            
+                            
+                            # Info about ticks years 
+                            start_pos_year = params['start_year'] - int(years[0]) #Initial year for ticks of x label           
+                                                        
+                                                                                                          
+                            
+                            # Filter the DataFrame for the current parameter
+                            parameter_df = filter_and_select_columns(df_outputs, parameter, ['YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION'])
+    
+                            # Filter the DataFrame for the techcologies selected
+                            parameter_df = parameter_df[parameter_df['TECHNOLOGY'].isin(techs_desired[parameter])]
+                            
+                            # If the filtered DataFrame is empty, skip this parameter
+                            if parameter_df.empty:
+                                print(f"No data for parameter {parameter}. Skipping plot.")
+                                continue
+                        
+                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            parameter_df = parameter_df.groupby(['YEAR', 'TECHNOLOGY'], as_index=False).agg('sum')
+                        
+                            # Create the plot only if there are technologies/fuels for this parameter
+                            if not parameter_df['TECHNOLOGY'].empty:
+                                if params['plot_type']=='bar':
+                                    plt.figure(figsize=(10, 6))  # Adjust the size as needed
+                                    # Plot the DataFrame as a bar chart
+                                    sns.barplot(data=parameter_df, x='YEAR', y='VALUE', hue='TECHNOLOGY')
+                            
+                                if params['plot_type']=='stacked_bar':
+                                    # Pivot the DataFrame to have technologies as columns and years as rows
+                                    pivot_df = parameter_df.pivot(index='YEAR', columns='TECHNOLOGY', values='VALUE').fillna(0)
+                                    # Plot the pivoted DataFrame as a stacked bar chart
+                                    pivot_df.plot(kind='bar', stacked=True, figsize=(10, 6))
+                                    
+    
+                            
+                                # Adjust the X-axis ticks if necessary
+                                xticks = plt.xticks()[0]  # Gets the current locations of the ticks
+                                xticklabels = [label+int(years[0]) if (int(label-start_pos_year)%params['separation_years'] == 0) else '' for i, label in enumerate(xticks)]
+                                plt.xticks(rotation=0, ticks=xticks, labels=xticklabels)
+                                
+                                # Labels and title
+                                plt.title(f'{parameter} {case}')
+                                plt.xlabel('Year')
+                                if y_label_title:
+                                    plt.ylabel(y_label_title[0])
+                                
+                                # Display the legend and the chart
+                                plt.legend(title='Technology').set_visible(params['visible_legend'])
+                                if params['visible_legend']:
+                                    plt.legend(title='Technology', bbox_to_anchor=(1.05, 1), loc='upper left')
+                                
+                                # Adjust layout to ensure everything fits without overlap
+                                plt.tight_layout()
+                                
+                                # Adjust margins if necessary to avoid cutting off the legend
+                                plt.subplots_adjust(right=0.75)
+                                
+                                # Show/save the plot
+                                if params['show_fig']:
+                                    plt.show()
+                                # To save the plot, uncomment the following line
+                                if params['save_fig']:
+                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    directory = os.path.dirname(file_path)
+                                    if not os.path.exists(directory):
+                                        os.makedirs(directory)
+                                    plt.savefig(file_path)
+                                plt.close()
+                            else:
+                                print(f"No technologies associated with parameter {parameter} {case}.")
+                                
