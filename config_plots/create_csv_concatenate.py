@@ -13,7 +13,7 @@ import sys
 import shutil
 import numpy as np
 
-def get_config_main_path(full_path, base_folder='config_plots'):
+def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
     parts = full_path.split(os.sep)
     
@@ -27,7 +27,7 @@ def get_config_main_path(full_path, base_folder='config_plots'):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, base_folder) + os.sep
+    appended_path = os.path.join(base_path, base_folder)
     
     return appended_path
 
@@ -129,6 +129,12 @@ if __name__ == '__main__':
     # Take scenario and future from the main_path
     # example
     # this_case[0] = 'BAU_15.txt'
+    
+    # case = 'LTS_0'
+    # scen = 'LTS_0'
+    # scen = scen[:3]
+    # tier_by_path = '1'
+    
     case = main_path[1].replace('.txt', '')
     scen = main_path[1]
     scen = scen[:3]
@@ -141,8 +147,8 @@ if __name__ == '__main__':
     
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
+    params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
 
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
         
     sets_corrects = deepcopy(params['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
@@ -174,39 +180,22 @@ if __name__ == '__main__':
         #         dir_tier = dir_tier = dir_tier.replace('\\', '/')
         #         all_files_internal = os.listdir(dir_tier)
         #         dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-                
-        # for scen in dict_scen_folder_unique:
-            # for case in dict_scen_folder_unique[f'{scen}']:
 
-        
+
         # Select folder path
         if tier_by_path=='1':
-            tier_dir = params['tier1_dir'] + '\\\\' + str(case) + params['outputs']
-            output_filename = params['tier1_dir'] + '\\\\status_of_each_future.txt'
+            tier_dir = params['tier1_dir'].replace('\\Executables','').replace('\\','')
+            output_filename = os.path.join(tier_dir, 'status_of_each_future.txt')
+            
         elif tier_by_path=='3a':
-            tier_dir = params['tier3a_dir'] + '\\\\' + str(scen) + '\\\\' + str(case) + params['outputs']
-            output_filename = params['tier3a_dir'] + '\\\\status_of_each_future.txt'
-
+            tier_dir = params['tier3a_dir'].replace('\\Futures','')[1:]
+            output_filename = os.path.join(tier_dir, 'status_of_each_future.txt')
         # 1st try
-        tier_dir = tier_dir.replace('/','\\\\')
-        tier_dir = tier_dir.replace('..\\\\','')
-        
-        tier_dir = tier_dir.replace('\\\\', '\\')
         tier_dir = get_config_main_path(os.path.abspath(''), tier_dir)
         
-        output_filename = output_filename.replace('/','\\\\')
-        output_filename = output_filename.replace('..\\\\','')
-        
-        output_filename = output_filename.replace('\\\\', '\\')
         output_filename = get_config_main_path(os.path.abspath(''), output_filename)
-        output_filename = output_filename[:-1]
-        if tier_by_path=='1':
-            output_filename = output_filename.replace('\\Executables', '')
-        elif tier_by_path=='3a':
-            output_filename = output_filename.replace('\\Futures', '')
-        
-        
-        
+
+ 
         if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
             option = 'w'
         else:
@@ -221,14 +210,23 @@ if __name__ == '__main__':
             
             out_quick = params['outputs'].replace('/','')
             file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
-        
+            file_path_outputs = case + params['outputs'].replace('/', '\\')
+
+            if tier_by_path=='1':
+                tier_dir = os.path.join(tier_dir, 'Executables')
+                case_dir = os.path.join(tier_dir, file_path_outputs).replace('\\Outputs', '')
+                case_outputs_dir = os.path.join(tier_dir, file_path_outputs)
+            elif tier_by_path=='3a':
+                tier_dir = os.path.join(tier_dir, 'Futures')
+                case_dir = os.path.join(tier_dir, scen, file_path_outputs).replace('\\Outputs', '')
+                case_outputs_dir = os.path.join(tier_dir, scen, file_path_outputs)
         
             if os.path.exists(tier_dir):
-                csv_file_list = os.listdir(tier_dir)
+                csv_file_list = os.listdir(case_outputs_dir)
                 
                 # Search for the .sol file in the specified directory
                 sol_file = None
-                sol_folder = tier_dir.replace('Outputs\\','')
+                sol_folder = os.path.join(tier_dir, case_dir)
                 for file_name in os.listdir(sol_folder):
                     if file_name.endswith('.sol'):
                         sol_file = os.path.join(sol_folder, file_name)
@@ -266,8 +264,8 @@ if __name__ == '__main__':
                         csv_file_list.remove(f'{params["vis_dir"]}')
                     
                     for f in csv_file_list:
-                        
-                        local_df = pd.read_csv(tier_dir + '/' + f)
+                        otoole_csv_param = os.path.join(case_outputs_dir, f)
+                        local_df = pd.read_csv(otoole_csv_param)
                         
                         
                         # Delete columns of sets do not use in otoole config yaml
@@ -284,8 +282,6 @@ if __name__ == '__main__':
                     df_all = pd.concat(df_list, ignore_index=True, sort=False)
                     df_all = df_all[ sets_csv_temp ]
                     file_df_dir = params["excel_data_file_dir"].replace('../','')
-                    
-                    # df_all.to_csv(f'Data_plots_{case}.csv')
                     
                     # 3rd try
                     # Assuming parameter_list and parameter_dict are defined
@@ -324,13 +320,12 @@ if __name__ == '__main__':
                                         
                     
                     # The 'outer' join ensures that all combinations of dimension values are included, filling missing values with NaN
-                    # df_all_3.to_csv(f'{file_df_dir}/Data_Output_{case[-1]}.csv')
-
                     df_all_3.to_csv(f'{sol_folder}/{case}_Output.csv')
     
                     # Delete Outputs folder with otoole csvs files
                     if params['del_files']:
-                        outputs_otoole_csvs = sol_folder + out_quick
+                        # Delete Outputs folder with otoole csvs files
+                        outputs_otoole_csvs = os.path.join(sol_folder, out_quick)
                         if os.path.exists(outputs_otoole_csvs):
                             shutil.rmtree(outputs_otoole_csvs)
                     
@@ -341,11 +336,12 @@ if __name__ == '__main__':
                 else:
                     # Delete Outputs folder with otoole csvs files
                     if params['del_files']:
-                        outputs_otoole_csvs = file_df_dir + out_quick
+                        outputs_otoole_csvs = os.path.join(sol_folder, out_quick)
                         if os.path.exists(outputs_otoole_csvs):
                             shutil.rmtree(outputs_otoole_csvs)
                     
                         # Delete glp, lp, txt and sol files
                         if params['del_files'] and (params['solver'] == 'cplex' or params['solver'] == 'cbc' or (params['solver'] == 'glpk' and not params['glpk_option'] == 'old')):
+                            print('Esta es ',sol_file)
                             delete_files(sol_file, params['solver'])
                     file_status.write(f'\n{case}: Infeasible solution.')

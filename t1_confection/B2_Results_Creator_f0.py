@@ -23,6 +23,58 @@ import yaml
 sys.path.insert(0, 'Executables')
 import local_dataset_creator_0
 
+# def get_config_main_path(full_path, base_folder='config_main_files'):
+#     # Split the path into parts
+#     parts = full_path.split(os.sep)
+    
+#     # Find the index of the target directory 'osemosys_momf'
+#     target_index = parts.index('osemosys_momf') if 'osemosys_momf' in parts else None
+    
+#     # If the directory is found, reconstruct the path up to that point
+#     if target_index is not None:
+#         base_path = os.sep.join(parts[:target_index + 1])
+#     else:
+#         base_path = full_path  # If not found, return the original path
+    
+#     # Append the specified directory to the base path
+#     appended_path = os.path.join(base_path, base_folder) + os.sep
+    
+#     return appended_path
+
+# def load_and_process_yaml(path):
+#     """
+#     Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+#     Args:
+#     path (str): The path to the YAML file.
+    
+#     Returns:
+#     dict: The updated data from the YAML file where the specific placeholder is replaced.
+#     """
+#     with open(path, 'r') as file:
+#         # Load the YAML content into 'params'
+#         params = yaml.safe_load(file)
+
+#     # Retrieve the reference year from the YAML file and convert it to string for replacement
+#     reference_year = str(params['year_apply_discount_rate'])
+
+#     # Function to recursively update strings containing the placeholder
+#     def update_strings(obj):
+#         if isinstance(obj, dict):
+#             return {k: update_strings(v) for k, v in obj.items()}
+#         elif isinstance(obj, list):
+#             return [update_strings(element) for element in obj]
+#         elif isinstance(obj, str):
+#             # Replace the specific placeholder with the reference year
+#             return obj.replace('${year_apply_discount_rate}', reference_year)
+#         else:
+#             return obj
+
+#     # Update all string values in the loaded YAML structure
+#     updated_params = update_strings(params)
+
+#     return updated_params
+
 def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
     parts = full_path.split(os.sep)
@@ -37,7 +89,7 @@ def get_config_main_path(full_path, base_folder='config_main_files'):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, base_folder) + os.sep
+    appended_path = os.path.join(base_path, base_folder)
     
     return appended_path
 
@@ -79,7 +131,6 @@ def load_and_process_yaml(path):
 file_config_address = get_config_main_path(os.path.abspath(''))
 params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
 
-
 # Assuming `df` is your DataFrame after loading the Excel file
 df_structure = pd.read_excel('B1_Model_Structure.xlsx')
 
@@ -94,7 +145,8 @@ if run_for_first_time == True:
     local_dataset_creator_0.execute_local_dataset_creator_0_outputs()
     local_dataset_creator_0.execute_local_dataset_creator_0_inputs()
 ############################################################################################################
-df_0_output = pd.read_csv('.\Executables\output_dataset_0.csv', index_col=None, header=0, low_memory=False)
+path_output_0 = os.path.join('.', 'Executables', 'output_dataset_0.csv')
+df_0_output = pd.read_csv(path_output_0, index_col=None, header=0, low_memory=False)
 #
 li_output = [df_0_output]
 #
@@ -131,7 +183,8 @@ for i in range(len(llaves)):
     
 
 ############################################################################################################
-df_0_input = pd.read_csv('.\Executables\input_dataset_0.csv', index_col=None, header=0, low_memory=False)
+path_input_0 = os.path.join('.', 'Executables', 'input_dataset_0.csv')
+df_0_input = pd.read_csv(path_input_0, index_col=None, header=0, low_memory=False)
 #
 li_intput = [df_0_input]
 #

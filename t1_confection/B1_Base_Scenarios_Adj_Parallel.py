@@ -31,6 +31,7 @@ import yaml
 import openpyxl
 from setup_utils import install_requirements
 import subprocess
+import platform
 
 '''
 We implement OSEMOSYS-CR in a csv based system for semi-automatic manipulation of parameters.
@@ -63,100 +64,124 @@ def interp_max_cap( x ):
     #
 #
 def check_enviro_variables(solver_command):
-    where_solver = subprocess.run(['where', solver_command], capture_output=True, text=True)
+    # Determine the command based on the operating system
+    command = 'where' if platform.system() == 'Windows' else 'which'
+    
+    # Execute the appropriate command
+    where_solver = subprocess.run([command, solver_command], capture_output=True, text=True)
     paths = where_solver.stdout.splitlines()
     
-    if paths:  # Ensure at least one path was found
+    if paths:  # Ensure that at least one path was found
         path_solver = paths[0]
-    
+        
         # Check if the path is already in the environment variable PATH
         if path_solver not in os.environ["PATH"]:
             # If not in PATH, add it
             os.environ["PATH"] += os.pathsep + path_solver
             print("Path added:", path_solver)
     else:
-        print("No 'glpsol' found on the system.")
+        print(f"No '{solver_command}' found on the system.")
     #
 #
 def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     set_first_list(scenario_list_print, params)
-    file_aboslute_address = os.path.abspath(params['B1_script'])
+    # Obtaining the absolute path of the specified script file
+    file_absolute_address = os.path.abspath(params['B1_script'])
+    # Getting the configuration main path
     file_config_address = get_config_main_path(os.path.abspath(''))
-    file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) )
+    # Escaping characters that could be interpreted by operating system functions
+    file_address = file_absolute_address.replace(params['B1_script'], '')
     #
-    case_address = file_adress + params['results'] + str( first_list[n1] )
-    this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
+    # Constructing the address for the case using the parameters provided
+    case_address = os.path.join(file_address, params['results'].replace('\\\\', ''), first_list[n1])
+    # Listing '.txt' files in the specified directory
+    this_case = [e for e in os.listdir(case_address) if '.txt' in e]
     #
-    str_start = params['start'] + file_adress
+    # Preparing the command start sequence
+    str_start = params['start'] + file_address
     #
-    data_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] )
-    output_file = case_address.replace('./','').replace('/','\\') + '\\' + str( this_case[0] ).replace('.txt','') + '_output'
-
-    # Solve model
+    # Constructing paths for the data file and the output file, adapting for file system differences
+    data_file = os.path.join(case_address, this_case[0] )
+    output_file = os.path.join(case_address, this_case[0].replace('.txt', '_output') )
+    #
+    # Determining the solver based on parameters
     solver = params['solver']
 
     if solver == 'glpk' and params['glpk_option'] == 'old':
-        # OLD GLPK
-        # Check if solver was added
+        # Using older GLPK options
+        # Check and update environment variables if necessary
         check_enviro_variables('glpsol')
 
-        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file )  +  ' -o ' + str(output_file) + '.txt'
-        os.system( str_start and str_solve )
+        # Composing the command to solve the model
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' -o ' + str(output_file) + '.txt'
+        os.system(str_start and str_solve)
         #
-        data_processor(n1,packaged_useful_elements, params)
+        # Processing data post-solution
+        data_processor(n1, packaged_useful_elements, params)
 
-    elif solver == 'glpk'and params['glpk_option'] == 'new':
-        # GLPK
-        # Check if solver was added
+    elif solver == 'glpk' and params['glpk_option'] == 'new':
+        # Using newer GLPK options
+        # Check and update environment variables if necessary
         check_enviro_variables('glpsol')
             
-        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
-        os.system( str_start and str_solve )        
+        # Composing the command to solve the model with new options
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
+        os.system(str_start and str_solve)        
     else:      
-        # LP
-        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wlp ' + output_file + '.lp --check'
-        os.system( str_start and str_solve )
+        # For LP models
+        str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wlp ' + output_file + '.lp --check'
+        os.system(str_start and str_solve)
         if solver == 'cbc':
-            # CBC
-            # Check if solver was added
+            # Using CBC solver
+            # Check and update environment variables if necessary
             check_enviro_variables('cbc')
             
+            # Composing the command for CBC solver
             str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
-            os.system( str_start and str_solve )
+            os.system(str_start and str_solve)
         elif solver == 'cplex':
-            # CPLEX
+            # Using CPLEX solver
             if os.path.exists(output_file + '.sol'):
                 shutil.os.remove(output_file + '.sol')
             
-            # Check if solver was added
+            # Check and update environment variables if necessary
             check_enviro_variables('cplex')
                 
+            # Composing the command for CPLEX solver
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
-            os.system( str_start and str_solve )
+            os.system(str_start and str_solve)
     
-    # If not existe yaml file to use with otoole
+    # Handling configuration if yaml is not available for otoole use
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
-        str_otoole_config = 'python -u ' + file_config_address + params['otoole_config']
-        os.system( str_start and str_otoole_config )
+        script_otoole_config = os.path.join(file_config_address, params['otoole_config'])
+        str_otoole_config = 'python -u ' + script_otoole_config
+        os.system(str_start and str_otoole_config)
+    
         
-    # Conversion of outputs from .sol to csvs
+    script_config = os.path.join(file_config_address, params['config'])
+    file_path_conv_format = os.path.join(script_config, params['conv_format'])
+    file_path_template = os.path.join(script_config, params['templates'])
+    file_path_outputs = os.path.join(case_address, params['outputs'].replace('/',''))
+    
+    
+    # Converting outputs from .sol to csv format
     if solver == 'glpk' and params['glpk_option'] == 'new':
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' datafile ' + str( data_file ) + ' ' + file_config_address + params['config'] + params['conv_format'] + ' --glpk_model ' + output_file + '.glp'
-        os.system( str_start and str_outputs )
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' datafile ' + str(data_file) + ' ' + file_path_conv_format + ' --glpk_model ' + output_file + '.glp'
+        os.system(str_start and str_outputs)
         
-    elif solver == 'cbc' or solver == 'cplex': # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+    elif solver == 'cbc' or solver == 'cplex':  # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
-        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + case_address + '\\' + params['outputs'].replace('/','') + ' csv ' + file_config_address + params['config'] + params['templates'] + ' ' + file_config_address + params['config'] + params['conv_format']
-        os.system( str_start and str_outputs )
+        str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' csv ' + file_path_template + ' ' + file_path_conv_format
+        os.system(str_start and str_outputs)
     
     time.sleep(1)
-
-
     # Module to concatenate csvs otoole outputs
-    if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
+    if (params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex':
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
-        os.system( str_start and str_otoole_concate_csv )
+        script_concate_csv = os.path.join(file_conca_csvs, params['concat_csvs'])
+        str_otoole_concate_csv = 'python -u ' + script_concate_csv + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
+        os.system(str_start and str_otoole_concate_csv)
+
 
 #
 def set_first_list(scenario_list_print, params):
@@ -183,10 +208,10 @@ def data_processor( case, unpackaged_useful_elements, params ):
     dr_default = params['disc_rate']
 
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( os.path.join(params['A1_Inputs'], params['Modes_Trans']), sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( os.path.join(params['A1_Inputs'], params['Modes_Trans']), sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -270,7 +295,8 @@ def data_processor( case, unpackaged_useful_elements, params ):
     #-------------------------------------------------------#
     #
     vars_as_appear = []
-    data_name = params['Executables'] + str( '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    # data_name = params['Executables'] + str( '/' + first_list[case] ) + '/' + str(first_list[case]) + '_output.txt'
+    data_name = os.path.join(params['Executables'], str( first_list[case] ),  f'{str(first_list[case])}_output.txt')
     #
     n = 0
     break_this_while = False
@@ -461,7 +487,7 @@ def data_processor( case, unpackaged_useful_elements, params ):
             aide_dict_totalcap[t_aid].append(this_value)
 
     #-----------------------------------------------------------------------------------------------------------%
-    output_adress = params['Executables'] + '/' + str( first_list[case] )
+    output_adress = os.path.join(params['Executables'], str( first_list[case] ))
     combination_list = [] # [fuel, technology, emission, year]
     data_row_list = []
     for var in range( len( vars_as_appear ) ):
@@ -914,10 +940,10 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
         Blend_Shares =                      unpackaged_useful_elements[9]
     #
     # Briefly open up the system coding to use when processing for visualization:
-    df_fuel_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Fuel_Code'] )
+    df_fuel_to_code = pd.read_excel( os.path.join(params['A1_Inputs'], params['Modes_Trans']), sheet_name=params['Fuel_Code'] )
     df_fuel_2_code_fuel_list        = df_fuel_to_code['Code'].tolist()
     df_fuel_2_code_plain_english    = df_fuel_to_code['Plain English'].tolist()
-    df_tech_to_code = pd.read_excel( params['A1_Inputs'] + params['Modes_Trans'], sheet_name=params['Tech_Code'] )
+    df_tech_to_code = pd.read_excel( os.path.join(params['A1_Inputs'], params['Modes_Trans']), sheet_name=params['Tech_Code'] )
     df_tech_2_code_fuel_list        = df_tech_to_code['Techs'].tolist()
     df_tech_2_code_plain_english    = df_tech_to_code['Plain English'].tolist()
     #
@@ -928,7 +954,7 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     print('# This is scenario ', scenario_list[scen] )
     #
     try:
-        scen_file_dir = print_adress + '/' + str( scenario_list[scen] ) + '_0'
+        scen_file_dir = os.path.join(print_adress, f'{str( scenario_list[scen] )}_0')
         os.mkdir( scen_file_dir )
     except OSError as exc:
         if exc.errno != errno.EEXIST:
@@ -936,7 +962,7 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
         pass
     this_scenario_data = stable_scenarios[ scenario_list[scen] ]
     #
-    g= open( print_adress + '/' + str( scenario_list[scen] ) + '_0' + '/' + str( scenario_list[scen] ) + '_0' + '.txt',"w+")
+    g= open( os.path.join(print_adress, f'{str( scenario_list[scen] )}_0', f'{str( scenario_list[scen] )}_0.txt'),"w+")
     g.write( '###############\n#    Sets     #\n###############\n#\n' )
     g.write( 'set DAILYTIMEBRACKET :=  ;\n' )
     g.write( 'set DAYTYPE :=  ;\n' )
@@ -1436,7 +1462,8 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
     #
     ###########################################################################################################################
     #
-    with open( params['Executables'] + '/' + str( scenario_list[scen] ) + '_0' + '/' + str( scenario_list[scen] ) + '_0' + '_Input.csv', 'w', newline = '') as param_csv:
+    # with open( params['Executables'] + '/' + str( scenario_list[scen] ) + '_0' + '/' + str( scenario_list[scen] ) + '_0' + '_Input.csv', 'w', newline = '') as param_csv:
+    with open( os.path.join(params['Executables'], f'{str( scenario_list[scen] )}_0', f'{str( scenario_list[scen] )}_0_Input.csv'), 'w', newline = '') as param_csv:
         csvwriter = csv.writer(param_csv, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         # Print the header:
         csvwriter.writerow( input_params_table_headers )
@@ -1858,7 +1885,7 @@ def get_config_main_path(full_path, base_folder='config_main_files'):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, base_folder) + os.sep
+    appended_path = os.path.join(base_path, base_folder)
     
     return appended_path
 
@@ -1902,9 +1929,8 @@ if __name__ == '__main__':
 
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
+    params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
 
-    # if config
 
     all_years = [ y for y in range( params['year_first_range'] , params['final_year']+1 ) ]
     index_change_year = all_years.index( params['change_year_B1'] )
@@ -2091,7 +2117,7 @@ if __name__ == '__main__':
         stable_scenarios.update( { scen:{} } )
     #
     for scen in range( len( scenario_list ) ):
-        this_paramter_list_dir = params['A2_Output_Params'] + str( scenario_list[scen] )
+        this_paramter_list_dir = os.path.join(all_dataset_address, str( scenario_list[scen] ))
         parameter_list = os.listdir( this_paramter_list_dir )
         #
         for p in range( len( parameter_list ) ):
@@ -3952,10 +3978,11 @@ if __name__ == '__main__':
         # Module to run test when mode is 'Generator'
         file_aboslute_address = os.path.abspath(params['B1_script'])
         file_config_plots_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
-        file_adress = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) )
+        file_address = re.escape( file_aboslute_address.replace( params['B1_script'], '' ) )
         #
-        str_start = params['start'] + file_adress
-        str_tests = 'python -u ' + str(file_config_plots_csvs) + params['test_path'] + ' ' + str(file_adress) + ' 1' # last int is the ID tier
+        str_start = params['start'] + file_address
+        path_test_config_plots = os.path.join(file_config_plots_csvs, params['test_path'])
+        str_tests = 'python -u ' + path_test_config_plots + ' ' + str(file_address) + ' 1' # last int is the ID tier
         os.system( str_start and str_tests )            
     
     # Delete log files when solver='cplex'

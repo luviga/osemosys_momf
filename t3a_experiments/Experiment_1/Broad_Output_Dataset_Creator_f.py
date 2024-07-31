@@ -27,11 +27,11 @@ def get_config_main_path(full_path):
 
 # Read yaml file with parameterization
 file_config_address = get_config_main_path(os.path.abspath(''))
-with open(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml', 'r') as file:
+with open(os.path.join(file_config_address,'MOMF_B1_exp_manager.yaml'), 'r') as file:
     # Load content file
     params = yaml.safe_load(file)
 
-sys.path.insert(0, params['Executables_3'])
+sys.path.insert(0, params['Executables'])
 import local_dataset_creator_0
 
 sys.path.insert(0, params['Futures_4'])
@@ -39,7 +39,7 @@ import local_dataset_creator_f
 
 'Define control parameters:'
 file_aboslute_address = os.path.abspath(params['Bro_out_dat_cre'])
-file_adress = re.escape( file_aboslute_address.replace( params['Bro_out_dat_cre'], '' ) )
+file_adress = file_aboslute_address.replace( params['Bro_out_dat_cre'], '' )
 
 run_for_first_time = True
 
@@ -50,7 +50,7 @@ if run_for_first_time == True:
     local_dataset_creator_f.execute_local_dataset_creator_f_inputs()
 
 ############################################################################################################
-df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_col=None, header=0, low_memory=False)
+df_0_output = pd.read_csv(os.path.join(params['Executables'], params['Out_dat_0']), index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -79,7 +79,7 @@ df_0_output = pd.read_csv(params['Executables_2'] + params['Out_dat_0'], index_c
 #----------------------------------------------------------------------------------------------------------#
 
 
-df_f_output = pd.read_csv( '.' + params['Futures_3'] + params['Out_dat_f'], index_col=None, header=0, low_memory=False)
+df_f_output = pd.read_csv( os.path.join(params['Futures_4'], params['Out_dat_f']), index_col=None, header=0, low_memory=False)
 
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
@@ -109,14 +109,14 @@ li_output = [df_0_output, df_f_output]
 df_output = pd.concat(li_output, axis=0, ignore_index=True)
 df_output.sort_values(by=params['by_1'], inplace=True)
 ############################################################################################################
-df_0_input = pd.read_csv(params['Executables_2'] + params['In_dat_0'], index_col=None, header=0, low_memory=False)
+df_0_input = pd.read_csv(os.path.join(params['Executables'], params['In_dat_0']), index_col=None, header=0, low_memory=False)
 
 # In case if you use solver='glpk' and glpk='old' uncomment this section
 #----------------------------------------------------------------------------------------------------------#
 # df_0_input['Strategy'] = df_0_input['Strategy'].replace('DDP50', 'DDP')
 #----------------------------------------------------------------------------------------------------------#
 
-df_f_input = pd.read_csv('.' + params['Futures_3'] + params['In_dat_f'], index_col=None, header=0, low_memory=False)
+df_f_input = pd.read_csv(os.path.join(params['Futures_4'], params['In_dat_f']), index_col=None, header=0, low_memory=False)
 li_intput = [df_0_input, df_f_input]
 #
 df_input = pd.concat(li_intput, axis=0, ignore_index=True)
@@ -124,7 +124,7 @@ df_input.sort_values(by=params['by_2'], inplace=True)
 
 #############################
 #############################
-libro = pd.ExcelFile('./0_From_Confection/B1_Model_Structure.xlsx')
+libro = pd.ExcelFile(os.path.join('0_From_Confection', 'B1_Model_Structure.xlsx'))
 hoja=libro.parse( 'sector' , skiprows = 0 )
 encabezados=list(hoja)
 
