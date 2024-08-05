@@ -182,7 +182,7 @@ parallel: True
 # Control inputs
 is_this_last_update: True # B1, em
 # Mode of simulation
-generator_or_executor: 'Both' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
+generator_or_executor: 'Generator' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
 gen_or_exe_1: 'Generator' # B1, em # Must not change
 gen_or_exe_2: 'Both' # B1, em # Must not change
 gen_or_exe_3: 'Executor' # B1, em # Must not change

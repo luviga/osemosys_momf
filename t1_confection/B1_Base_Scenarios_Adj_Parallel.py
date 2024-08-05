@@ -1964,7 +1964,7 @@ if __name__ == '__main__':
     #
     S_DICT_params_structure = params['S_DICT_params_structure']
     param_category_list = []
-    for col in range(1,30+1):  # 30 columns
+    for col in range(1,33+1):  # 33 columns
         if str( sheet_params_structure.iat[0, col] ) != '':
             param_category_list.append( sheet_params_structure.iat[0, col] )
         S_DICT_params_structure['category'].append( param_category_list[-1] )

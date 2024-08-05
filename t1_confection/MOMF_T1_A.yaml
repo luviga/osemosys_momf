@@ -217,9 +217,19 @@ xtra_scen: {
   Other_Scenarios: 'LTS',
   Region: 'RD',
   Mode_of_Operation: 1,
+  Season: [1,2,3], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
+  DayType: [1], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
+  DailyTimeBracket: [1,2], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
   Timeslice: 'Some',
-  Timeslices: ['P1', 'P2']
+  Timeslices: ['P1', 'P2'],
   }
+
+# Remember the values of the "Conversionls", "Conversionld" and "Conversionlh"
+# are binary
+Conversionls: [1, 1, 1, 1, 1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(Season)
+Conversionld: [1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(DayType)
+Conversionlh: [1, 1, 1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(DailyTimeBracket)
+
 #---------------------------------------------------------------#
 # Technologies parameters
 #---------------------------------------------------------------#

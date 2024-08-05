@@ -1074,6 +1074,68 @@ for param, rows in accumulated_data_by_param.items():
         if param not in overall_param_df_dict_ndp:
             overall_param_df_dict_ndp[param] = pd.DataFrame(columns=Wide_Param_Header)
         overall_param_df_dict_ndp[param] = pd.concat([overall_param_df_dict_ndp[param], new_rows_df], ignore_index=True)
+#
+#------------------------------------------------------------------------------
+if params['xtra_scen']['Timeslice'] == 'Some':
+    print('6 - Include Conversions parameters.')
+    #
+    df_Conversions = pd.DataFrame( columns = Wide_Param_Header )  
+    accumulated_data_by_param_conversion = {}
+    
+    conversions_params = ['Conversionls', 'Conversionld', 'Conversionlh']
+    
+    for c in range(len(conversions_params)):
+        this_param = conversions_params[c]
+        
+        if this_param == 'Conversionls':
+            set_by_param = 'SEASON'
+            name_by_set = 'Season'
+        elif this_param == 'Conversionld':
+            set_by_param = 'DAYTYPE'
+            name_by_set = 'DayType'
+        elif this_param == 'Conversionlh':
+            set_by_param = 'DAILYTIMEBRACKET'
+            name_by_set = 'DailyTimeBracket'
+        
+        count_values = 0
+        for t in range(len(params['xtra_scen']['Timeslices'])):
+            for l in range(len(params['xtra_scen'][name_by_set])):
+                
+                new_row = {
+                    'PARAMETER': this_param,
+                    'Scenario': other_setup_params['Main_Scenario'],
+                    # 'REGION': other_setup_params['Region'],
+                    'TIMESLICE': params['xtra_scen']['Timeslices'][t],
+                    set_by_param: params['xtra_scen'][name_by_set][l], # Quantity of values
+                    'Value': params[this_param][count_values] # List with that quantity
+                }
+                
+                # Accumulate data based on parameter
+                if this_param not in accumulated_data_by_param_conversion:
+                    accumulated_data_by_param_conversion[this_param] = []
+                accumulated_data_by_param_conversion[this_param].append(new_row)
+                count_values += 1
+    
+        # Update the overall_param_df_dict and overall_param_df_dict_ndp
+        overall_param_df_dict[this_param] = df_Conversions
+        overall_param_df_dict_ndp[this_param] = df_Conversions
+    
+    # After the loop, convert accumulated data into DataFrames and append them in bulk
+    for param, rows in accumulated_data_by_param_conversion.items():
+        if rows:  # Check if there are rows to append for this parameter
+            new_rows_df = pd.DataFrame(rows)
+            # Check if the parameter already exists in overall_param_df_dict, if not, initialize it
+            if param not in overall_param_df_dict:
+                overall_param_df_dict[param] = pd.DataFrame(columns=Wide_Param_Header)  
+            # Check if the parameter already exists in overall_param_df_dict_ndp , if not, initialize it
+            elif param not in overall_param_df_dict_ndp:
+                overall_param_df_dict_ndp[param] = pd.DataFrame(columns=Wide_Param_Header)
+            overall_param_df_dict[param] = pd.concat([overall_param_df_dict[param], new_rows_df], ignore_index=True)   
+            overall_param_df_dict_ndp[param] = pd.concat([overall_param_df_dict_ndp[param], new_rows_df], ignore_index=True) 
+            #
+        #
+    #
+#        
 end_1 = time.time()   
 time_elapsed_1 = -start1 + end_1
 print( str( time_elapsed_1 ) + ' seconds /', str( time_elapsed_1/60 ) + ' minutes' )
