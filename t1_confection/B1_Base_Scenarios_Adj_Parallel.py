@@ -111,6 +111,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
         check_enviro_variables('glpsol')
             
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str( data_file ) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
+        print('str_solve_glpk',str_solve)
         os.system( str_start and str_solve )        
     else:      
         # LP
@@ -121,7 +122,8 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
             # Check if solver was added
             check_enviro_variables('cbc')
             
-            str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
+            str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' --threads 1 solve -solu ' + output_file + '.sol'
+            print('str_solve_cbc',str_solve)
             os.system( str_start and str_solve )
         elif solver == 'cplex':
             # CPLEX
@@ -131,7 +133,8 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
             # Check if solver was added
             check_enviro_variables('cplex')
                 
-            str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
+            str_solve = 'cplex -c "read ' + output_file + '.lp" "set threads 1" "optimize" "write ' + output_file + '.sol"'
+            print('str_solve_cplex',str_solve)
             os.system( str_start and str_solve )
     
     # If not existe yaml file to use with otoole
@@ -3961,8 +3964,8 @@ if __name__ == '__main__':
     # Delete log files when solver='cplex'
     if params['solver'] == 'cplex' and params['del_files']:
         shutil.os.remove('cplex.log')
-        shutil.os.remove('clone1.log')
-        shutil.os.remove('clone2.log')
+    #     shutil.os.remove('clone1.log')
+    #     shutil.os.remove('clone2.log')
 
     end_1 = time.time()   
     time_elapsed_1 = -start1 + end_1
