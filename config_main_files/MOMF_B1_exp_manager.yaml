@@ -156,10 +156,10 @@ results: 'Executables\\' # B1
 start: 'start cmd.exe /k cd ' # B1, em, FRM
 
 # Solver
-solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
+solver: 'glpk' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # For CBC use
 iteration_time: 60
