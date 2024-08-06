@@ -1108,7 +1108,18 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
                                 #     print('second_last_set_element_unique[s]',second_last_set_element_unique[s])
                                     # print('this_scenario_data[ this_param ]["value"][ value_indices[val] ]',this_scenario_data[ this_param ]['value'][ value_indices[val] ])
                                     # sys.exit()
-                                these_values.append( this_scenario_data[ this_param ]['value'][ value_indices[val] ] )
+                                try:
+                                    these_values.append( this_scenario_data[ this_param ]['value'][ value_indices[val] ] )
+                                except IndexError:
+                                    # Imprime información útil cuando ocurra un IndexError
+                                    print("Error: IndexError al intentar acceder a un índice que no existe.")
+                                    print(f"this_param: {this_param}")
+                                    print(f"Longitud de 'value': {len(this_scenario_data[this_param]['value'])}")
+                                    print(f"Índice intentado: {value_indices[val]}")
+                                    print(f"value_indices: {value_indices}")
+                                    print(f"scenario: {scenario_list[scen]}")
+                                    # Opcionalmente, puedes agregar más información si es necesario
+                                    raise  # Vuelve a lanzar la excepción para que puedas ver el traceback completo
                             for val in range( len( these_values ) ):
                                 g.write( str( these_values[val] ) + ' ' )
                             g.write('\n') #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -1450,9 +1461,9 @@ def function_C_mathprog( scen, stable_scenarios, unpackaged_useful_elements, par
         for n in range( len( synthesized_all_data_row ) ):
             csvwriter.writerow( synthesized_all_data_row[n] )
     #
-    print('£££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££')
-    print('Finish writing input')
-    print('£££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££££')
+    print('###############################################################################')
+    print(f'Finish writing input {scenario_list[scen]}_0')
+    print('###############################################################################')
 
 def generalized_logistic_curve(x, L, Q, k, M):
   return L/( 1 + Q*math.exp( -k*( x-M ) ) )
@@ -3698,7 +3709,7 @@ if __name__ == '__main__':
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['t'].append( set_list[l] )                            
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['y'].append( str( time_range_vector[y] ) )
                                 stable_scenarios[ this_scenario_name ][ param_list[p] ]['value'].append( float( value_list[y] ) )
-                        
+
                     # Let us modify the value vector if it already exists:
                     if electrical_Params_built_in == 'YES':
                         this_param_indices = [ i for i, x in enumerate( stable_scenarios[ this_scenario_name ][ param_list[p] ][ 't' ] ) if x == str( set_list[l] ) ]
@@ -3719,13 +3730,15 @@ if __name__ == '__main__':
                             value_list = linear_interpolation_time_series( time_range_vector, known_years, known_values )
                             if len(range(this_param_indices[0],this_param_indices[-1]+1)) < 33:
                                 value_list = value_list + value_list
-                            # if iter_scen == 'LTS' and set_list[l] == 'PPCCTNGSDSL' and param_list[p] == 'CapacityFactor' and len(range(this_param_indices[0],this_param_indices[-1]+1)) == 66:
+                            # if iter_scen == 'LTS' and param_list[p] == 'CapacityFactor' and len(range(this_param_indices[0],this_param_indices[-1]+1)) == 66:
                             #     sys.exit(9)
                         #
                         if params['overwrite'] in electrical_Params_methods:
                             value_list = [ round( e, params['round_#'] ) for e in value_list ]
+                            if len(value_list) != len(range(this_param_indices[0],this_param_indices[-1]+1)):
+                                for i in range(1, (len(range(this_param_indices[0],this_param_indices[-1]+1)))//33):
+                                    value_list = value_list + value_list[:33]
                             stable_scenarios[ this_scenario_name ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] = deepcopy( value_list )
-
         #########################################################################################
         ''' MODIFYING *base_configuration_smartGrid* '''
         this_scenario_df = deepcopy( base_configuration_smartGrid.loc[ base_configuration_smartGrid['Scenario'].isin( [ this_scenario_name ] ) ] )

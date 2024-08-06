@@ -165,7 +165,7 @@ glpk_option: 'old' # Could you use 'old' for the first method and 'new' for meth
 iteration_time: 60
 
 # Choose if want to delete or not the solver solutions files
-del_files: True # B1, em, FRM
+del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
 Number_of_Runs: 2 # em
@@ -350,9 +350,9 @@ params_inputs_data: # B1, em, FRM ###
   #- CapacityToActivityUnit
   #- CapitalCost
   - CapitalCostStorage
-  - Conversionld
-  - Conversionlh
-  - Conversionls
+  #- Conversionld
+  #- Conversionlh
+  #- Conversionls
   - DaySplit
   - DaysInDayType
   - DepreciationMethod
