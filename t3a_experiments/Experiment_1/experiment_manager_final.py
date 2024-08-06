@@ -40,13 +40,13 @@ interpolation : implemented in a function for linear of non-linear time-series
 def set_first_list( Executed_Scenario, params ):
     #
     directory = './' + params['Futures'] + str( Executed_Scenario )
-    print(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)
     first_list_raw = os.listdir( directory )
     #
     global first_list
     first_list = [e for e in first_list_raw if ( '.csv' not in e ) and ( 'Table' not in e ) and ( '.py' not in e ) and ( '__pycache__' not in e ) ]
+    print('first_list',first_list)
 
 ############################################################################################################################################################################################################
 
@@ -5804,12 +5804,16 @@ if __name__ == '__main__':
         #
         print('5: We will produce the outputs and store the data.')
         #
+        if 'All' not in params['execute_scenarios']:
+            scenario_list_print = params['execute_scenarios']
+        #
         for a_scen in range( len( scenario_list_print ) ):
             #
             # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
             packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
             #
             Executed_Scenario = scenario_list_print[ a_scen ]
+            # Executed_Scenario = scenario_list_print[ 0 ]
             set_first_list(Executed_Scenario, params)
             #
             if params['parallel']:
@@ -5835,7 +5839,12 @@ if __name__ == '__main__':
                     else:
                         max_iter = x
                     #
+                    if 'All' not in params['execute_scenarios']:
+                        n_ini = params['execute_futures'][0]
+                        max_iter = params['execute_futures'][1] 
+                    #
                     for n2 in range( n_ini , max_iter ):
+                    # for n2 in range( 2 , max_iter ):
                         print(n2)
                         p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
                         processes.append(p)

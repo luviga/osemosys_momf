@@ -175,6 +175,8 @@ Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
 max_x_per_iter: 2 # B1, em
+execute_scenarios: ['All'] # em # Could you put 'All', 'BAU' or any scenario of the study
+execute_futures: [3,4] #
 
 # Choose if want run script in parallel or not
 parallel: True
