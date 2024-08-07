@@ -5809,11 +5809,9 @@ if __name__ == '__main__':
         #
         for a_scen in range( len( scenario_list_print ) ):
             #
-            # packaged_useful_elements = [ specific_tech_to_group_tech, prefix_list, group_tech_ALL, BAU_reference_driven_distance, NDP_reference_driven_distance, NDP_A_reference_driven_distance, OP15C_reference_driven_distance, BAU_reference_occupancy_rate, NDP_reference_occupancy_rate, NDP_A_reference_occupancy_rate, OP15C_reference_occupancy_rate ]
             packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
             #
             Executed_Scenario = scenario_list_print[ a_scen ]
-            # Executed_Scenario = scenario_list_print[ 0 ]
             set_first_list(Executed_Scenario, params)
             #
             if params['parallel']:
