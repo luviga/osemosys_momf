@@ -156,7 +156,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
 
 
     # Module to concatenate csvs otoole outputs
-    if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
+    if (solver == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex':
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
         str_otoole_concate_csv = 'python -u ' + file_conca_csvs + params['concat_csvs'] + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
         os.system( str_start and str_otoole_concate_csv )
