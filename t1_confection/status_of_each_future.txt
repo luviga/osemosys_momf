@@ -6,11 +6,11 @@ Write in order of solution.
 
 
 
-BAU_0: Infeasible solution.
+BAU_0: Optimal solution.
 
 
 ################################# LTS #################################
 
 
 
-LTS_0: Infeasible solution.
+LTS_0: Optimal solution.

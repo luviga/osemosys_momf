@@ -1,7 +1,7 @@
 PARAMETER,Scenario,REGION,TECHNOLOGY,FUEL,EMISSION,MODE_OF_OPERATION,YEAR,TIMESLICE,SEASON,DAYTYPE,DAILYTIMEBRACKET,STORAGE,Value
-Conversionls,LTS,,,,,,,P1,1,,,,1
-Conversionls,LTS,,,,,,,P1,2,,,,1
-Conversionls,LTS,,,,,,,P1,3,,,,1
-Conversionls,LTS,,,,,,,P2,1,,,,1
-Conversionls,LTS,,,,,,,P2,2,,,,1
-Conversionls,LTS,,,,,,,P2,3,,,,0
+Conversionls,LTS,,,,,,,DRY,1,,,,1
+Conversionls,LTS,,,,,,,DRY,2,,,,1
+Conversionls,LTS,,,,,,,DRY,3,,,,1
+Conversionls,LTS,,,,,,,RAIN,1,,,,1
+Conversionls,LTS,,,,,,,RAIN,2,,,,1
+Conversionls,LTS,,,,,,,RAIN,3,,,,0

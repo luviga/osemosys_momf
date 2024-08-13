@@ -221,7 +221,7 @@ xtra_scen: {
   DayType: [1], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
   DailyTimeBracket: [1,2], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
   Timeslice: 'Some',
-  Timeslices: ['P1', 'P2'],
+  Timeslices: ['DRY', 'RAIN'],
   }
 
 # Remember the values of the "Conversionls", "Conversionld" and "Conversionlh"
