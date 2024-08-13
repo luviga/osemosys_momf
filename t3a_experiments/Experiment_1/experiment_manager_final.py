@@ -147,7 +147,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     #-------------------------------------------------------#
     this_strategy = first_list[case].split('_')[0] 
     this_future   = first_list[case].split('_')[1]
-    list_gdp_ref = dict_gdp_ref[int(this_future)]
+    list_gdp_ref = dict_gdp_ref[int(this_future)-1]
     #-------------------------------------------------------#
     #
     vars_as_appear = []
@@ -580,7 +580,7 @@ def data_processor( case, Executed_Scenario, unpackaged_useful_elements, params 
     gc.collect(generation=2)
     time.sleep(0.05)
     #-----------------------------------------------------------------------------------------------------------%
-    print(  'We finished with printing the outputs.', case)
+    print(  'We finished with printing the outputs.', first_list[case])
 ############################################################################################################################################################################################################
 def check_enviro_variables(solver_command):
     # Determine the command based on the operating system
@@ -637,7 +637,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         os.system(str_start and str_solve)
         #
         # Processing data post-solution
-        data_processor(n1, packaged_useful_elements, params)
+        data_processor(n1, Executed_Scenario, packaged_useful_elements, params)
 
     elif solver == 'glpk' and params['glpk_option'] == 'new':
         # Using newer GLPK options

@@ -210,7 +210,7 @@ if __name__ == '__main__':
             
             out_quick = params['outputs'].replace('/','')
             file_df_dir = tier_dir.replace(f'{out_quick}\\', '')
-            file_path_outputs = case + params['outputs'].replace('/', '\\')
+            file_path_outputs = os.path.join(case, params['outputs'].replace('/', ''))
 
             if tier_by_path=='1':
                 tier_dir = os.path.join(tier_dir, 'Executables')

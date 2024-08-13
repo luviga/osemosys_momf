@@ -635,8 +635,8 @@ if __name__ == '__main__':
                 file_path = specific_case_path_txt
             else:
                 file_path = os.path.join(initial_path, 'Futures')
-                file_path = os.path.join(file_path, 'scen')
-                file_path = os.path.join(file_path, 'future')
+                file_path = os.path.join(file_path, f'{scen}')
+                file_path = os.path.join(file_path, f'{future}')
                 file_path = os.path.join(file_path, f'{future}.txt')
             
             with open(file_path, 'r') as file:

@@ -24,7 +24,7 @@ A1_Outputs: './A1_Outputs/' # B1
 A2_Output_Params: 'A2_Output_Params' # B1
 B1_Output_Params: './B1_Output_Params/' # B1
 outputs: '/Outputs' # B1, em, FRM
-config: 'config\\' # B1
+config: 'config' # B1
 templates: 'templates' # B1
 Experi_plat: './Experimental_Platform' 
 Futures: '/Futures/' # em, FRM
@@ -165,18 +165,18 @@ glpk_option: 'new' # Could you use 'old' for the first method and 'new' for meth
 iteration_time: 60
 
 # Choose if want to delete or not the solver solutions files
-del_files: True # B1, em, FRM
+del_files: False # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 1 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 1 # B1, em
+max_x_per_iter: 2 # B1, em
 execute_scenarios: ['All'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [3,4] # em # Select range of the futures you want to execute
+execute_futures: [0,2] # em # Select range of the futures you want to execute
 
 # Choose if want run script in parallel or not
 parallel: True
