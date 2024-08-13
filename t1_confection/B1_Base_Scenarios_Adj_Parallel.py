@@ -176,7 +176,7 @@ def main_executer(n1, packaged_useful_elements, scenario_list_print, params):
     
     time.sleep(1)
     # Module to concatenate csvs otoole outputs
-    if (params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex':
+    if (solver == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex':
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
         script_concate_csv = os.path.join(file_conca_csvs, params['concat_csvs'])
         str_otoole_concate_csv = 'python -u ' + script_concate_csv + ' ' + str(this_case[0]) + ' 1' # last int is the ID tier
