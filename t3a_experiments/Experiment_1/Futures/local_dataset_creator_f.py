@@ -8,8 +8,9 @@ def test1():
 ############################################################################################################################
 def execute_local_dataset_creator_f_outputs ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += '\\Futures\\'
+    print('file_aboslute_address',file_aboslute_address)
+    file_adress = os.path.join(file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ),'Futures')
+    print('file_adress',file_adress)
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -18,11 +19,16 @@ def execute_local_dataset_creator_f_outputs ():
     #
     for s in range( len( scenario_list ) ):
         #
-        case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
+        case_list_raw = os.listdir(os.path.join(file_adress, scenario_list[s]))
+        print('case_list_raw',case_list_raw)
+        # case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
         case_list = [e for e in case_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
+        print('case_list',case_list)
         #
         for n in range( len( case_list ) ):
-            filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Output.csv'
+            # filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Output.csv'
+            filename = os.path.join(file_adress, scenario_list[s], case_list[n], f'{case_list[n]}_Output.csv')
+            print('filename',filename )
             #
             print('######################')
             print(case_list[n])
@@ -45,12 +51,12 @@ def execute_local_dataset_creator_f_outputs ():
                 pass
     #
     frame = pd.concat(li, axis=0, ignore_index=True)
-    export_csv = frame.to_csv ( str(file_adress) + '\\output_dataset_f.csv', index = None, header=True)
+    export_csv = frame.to_csv ( os.path.join(file_adress, 'output_dataset_f.csv'), index = None, header=True)
+    # export_csv = frame.to_csv ( str(file_adress) + '\\output_dataset_f.csv', index = None, header=True)
 ############################################################################################################################
 def execute_local_dataset_creator_f_inputs ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Futures\\'
+    file_adress = os.path.join(file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ),'Futures')
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -59,11 +65,13 @@ def execute_local_dataset_creator_f_inputs ():
     #
     for s in range( len( scenario_list ) ):
         #
-        case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
+        case_list_raw = os.listdir(os.path.join(file_adress, scenario_list[s]))
+        # case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
         case_list = [e for e in case_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
         #
         for n in range( len( case_list ) ):
-            filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Input.csv'
+            # filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Input.csv'
+            filename = os.path.join(file_adress, scenario_list[s], case_list[n], f'{case_list[n]}_Input.csv')
             #
             line_count = 0
             with open( filename ) as csv_file:
@@ -77,12 +85,12 @@ def execute_local_dataset_creator_f_inputs ():
                 pass
     #
     frame = pd.concat(li, axis=0, ignore_index=True)
-    export_csv = frame.to_csv ( str(file_adress) + '\\input_dataset_f.csv', index = None, header=True)
+    # export_csv = frame.to_csv ( str(file_adress) + '\\input_dataset_f.csv', index = None, header=True)
+    export_csv = frame.to_csv ( os.path.join(file_adress, 'input_dataset_f.csv'), index = None, header=True)
 ############################################################################################################################
 def execute_local_dataset_creator_f_prices ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Futures\\'
+    file_adress = os.path.join(file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ),'Futures')
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -91,16 +99,19 @@ def execute_local_dataset_creator_f_prices ():
     #
     for s in range( len( scenario_list ) ):
         #
-        case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
+        case_list_raw = os.listdir(os.path.join(file_adress, scenario_list[s]))
+        # case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
         case_list = [e for e in case_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
         #
         for n in range( len( case_list ) ):
             #
-            x = os.listdir( file_adress + '\\' + scenario_list[s] + '\\' + case_list[n]  )
+            x = os.listdir( os.path.join(file_adress, scenario_list[s], case_list[n])  )
+            # x = os.listdir( file_adress + '\\' + scenario_list[s] + '\\' + case_list[n]  )
             #
             if len(x) == 5:
                 #
-                filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Prices.csv'
+                filename = os.path.join(file_adress, scenario_list[s], case_list[n], f'{case_list[n]}_Prices.csv')
+                # filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Prices.csv'
                 #
                 line_count = 0
                 with open( filename ) as csv_file:
@@ -118,12 +129,12 @@ def execute_local_dataset_creator_f_prices ():
     print('###')
     #
     frame = pd.concat(li, axis=0, ignore_index=True)
-    export_csv = frame.to_csv ( str(file_adress) + '\\price_dataset_f.csv', index = None, header=True)
+    # export_csv = frame.to_csv ( str(file_adress) + '\\price_dataset_f.csv', index = None, header=True)
+    export_csv = frame.to_csv ( os.path.join(file_adress, 'price_dataset_f.csv'), index = None, header=True)
 ############################################################################################################################
 def execute_local_dataset_creator_f_distribution ():
     file_aboslute_address = os.path.abspath("local_dataset_creator_f.py")
-    file_adress = re.escape( file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ) ).replace( '\:', ':' )
-    file_adress += 'Futures\\'
+    file_adress = os.path.join(file_aboslute_address.replace( 'local_dataset_creator_f.py', '' ),'Futures')
     #
     scenario_list_raw = os.listdir( file_adress )
     scenario_list = [e for e in scenario_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
@@ -132,16 +143,19 @@ def execute_local_dataset_creator_f_distribution ():
     #
     for s in range( len( scenario_list ) ):
         #
-        case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
+        case_list_raw = os.listdir(os.path.join(file_adress, scenario_list[s]))
+        # case_list_raw = os.listdir( file_adress + '\\' + scenario_list[s] )
         case_list = [e for e in case_list_raw if ('.py' not in e ) and ('.csv' not in e ) and ('__pycache__' not in e) ]
         #
         for n in range( len( case_list ) ):
             #
-            x = os.listdir( file_adress + '\\' + scenario_list[s] + '\\' + case_list[n]  )
+            x = os.listdir( os.path.join(file_adress, scenario_list[s], case_list[n])  )
+            # x = os.listdir( file_adress + '\\' + scenario_list[s] + '\\' + case_list[n]  )
             #
             if len(x) == 5:
                 #
-                filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Distribution.csv'
+                filename = os.path.join(file_adress, scenario_list[s], case_list[n], f'{case_list[n]}_Distribution.csv')
+                # filename = file_adress + '\\' + scenario_list[s] + '\\' + case_list[n] + '\\' + case_list[n] + '_Distribution.csv'
                 #
                 line_count = 0
                 with open( filename ) as csv_file:
@@ -159,5 +173,6 @@ def execute_local_dataset_creator_f_distribution ():
     print('###')
     #
     frame = pd.concat(li, axis=0, ignore_index=True)
-    export_csv = frame.to_csv ( str(file_adress) + '\\distribution_dataset_f.csv', index = None, header=True)
+    # export_csv = frame.to_csv ( str(file_adress) + '\\distribution_dataset_f.csv', index = None, header=True)
+    export_csv = frame.to_csv ( os.path.join(file_adress, 'distribution_dataset_f.csv'), index = None, header=True)
 ############################################################################################################################
