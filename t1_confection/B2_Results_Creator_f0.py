@@ -19,6 +19,7 @@ from copy import deepcopy
 import csv
 import numpy as np
 import yaml
+import platform
 
 sys.path.insert(0, 'Executables')
 import local_dataset_creator_0
@@ -80,6 +81,11 @@ def load_and_process_yaml(path):
 file_config_address = get_config_main_path(os.path.abspath(''))
 params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
 
+#------------------------------------------------------------------------------------------------
+# For macOS system delete a folder hidden
+if platform.system() == 'Darwin':
+    os.remove(os.path.join('Executables', '.DS_Store'))
+#------------------------------------------------------------------------------------------------
 
 # Assuming `df` is your DataFrame after loading the Excel file
 df_structure = pd.read_excel('B1_Model_Structure.xlsx')
@@ -95,7 +101,7 @@ if run_for_first_time == True:
     local_dataset_creator_0.execute_local_dataset_creator_0_outputs()
     local_dataset_creator_0.execute_local_dataset_creator_0_inputs()
 ############################################################################################################
-path_output_0 = os.path.join('.', 'Executables', 'output_dataset_0.csv')
+path_output_0 = os.path.join('Executables', 'output_dataset_0.csv')
 df_0_output = pd.read_csv(path_output_0, index_col=None, header=0, low_memory=False)
 #
 li_output = [df_0_output]
@@ -133,7 +139,7 @@ for i in range(len(llaves)):
     
 
 ############################################################################################################
-path_input_0 = os.path.join('.', 'Executables', 'input_dataset_0.csv')
+path_input_0 = os.path.join('Executables', 'input_dataset_0.csv')
 df_0_input = pd.read_csv(path_input_0, index_col=None, header=0, low_memory=False)
 #
 li_intput = [df_0_input]

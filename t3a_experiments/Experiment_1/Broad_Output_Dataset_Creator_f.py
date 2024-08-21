@@ -5,9 +5,10 @@ import os
 import re
 import yaml
 import numpy as np
+import platform
 
 
-def get_config_main_path(full_path):
+def get_config_main_path(full_path, base_folder='config_main_files'):
     # Split the path into parts
     parts = full_path.split(os.sep)
     
@@ -21,21 +22,59 @@ def get_config_main_path(full_path):
         base_path = full_path  # If not found, return the original path
     
     # Append the specified directory to the base path
-    appended_path = os.path.join(base_path, 'config_main_files') + os.sep
+    appended_path = os.path.join(base_path, base_folder)
     
     return appended_path
 
+def load_and_process_yaml(path):
+    """
+    Load a YAML file and replace the specific placeholder '${year_apply_discount_rate}' with the year specified in the file.
+    
+    Args:
+    path (str): The path to the YAML file.
+    
+    Returns:
+    dict: The updated data from the YAML file where the specific placeholder is replaced.
+    """
+    with open(path, 'r') as file:
+        # Load the YAML content into 'params'
+        params = yaml.safe_load(file)
+
+    # Retrieve the reference year from the YAML file and convert it to string for replacement
+    reference_year = str(params['year_apply_discount_rate'])
+
+    # Function to recursively update strings containing the placeholder
+    def update_strings(obj):
+        if isinstance(obj, dict):
+            return {k: update_strings(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [update_strings(element) for element in obj]
+        elif isinstance(obj, str):
+            # Replace the specific placeholder with the reference year
+            return obj.replace('${year_apply_discount_rate}', reference_year)
+        else:
+            return obj
+
+    # Update all string values in the loaded YAML structure
+    updated_params = update_strings(params)
+
+    return updated_params
+    
 # Read yaml file with parameterization
 file_config_address = get_config_main_path(os.path.abspath(''))
-with open(os.path.join(file_config_address,'MOMF_B1_exp_manager.yaml'), 'r') as file:
-    # Load content file
-    params = yaml.safe_load(file)
+params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
 
 sys.path.insert(0, params['Executables'])
 import local_dataset_creator_0
 
 sys.path.insert(0, params['Futures_4'])
 import local_dataset_creator_f
+
+#------------------------------------------------------------------------------------------------
+# For macOS system delete a folder hidden
+if platform.system() == 'Darwin':
+    os.remove(os.path.join('Executables', '.DS_Store'))
+#------------------------------------------------------------------------------------------------
 
 'Define control parameters:'
 file_aboslute_address = os.path.abspath(params['Bro_out_dat_cre'])

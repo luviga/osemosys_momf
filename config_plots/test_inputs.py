@@ -554,7 +554,7 @@ if __name__ == '__main__':
     
     # Read yaml file
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
+    params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
   
     if specific_case:
         pickle_path = specific_case_pickle_path
