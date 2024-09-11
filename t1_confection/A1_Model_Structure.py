@@ -37,7 +37,7 @@ classifier_demand_fuel_to_code = pd.read_excel( params['A1_inputs'] + params['Mo
 
 cd_sectors_all = classifier_demand_sectors['Sector'].tolist()
 cd_sectors_name_eng = classifier_demand_sectors['Plain English'].tolist()
-cd_sectors_name_spa = classifier_demand_sectors['Plain Spanish'].tolist()
+# cd_sectors_name_spa = classifier_demand_sectors['Plain Spanish'].tolist()
 cd_sectors_method = classifier_demand_sectors['Address_Method'].tolist()
 
 cd_sectors_index = [ i for i, x in enumerate( cd_sectors_method ) if x != str( 'Detailed' ) ] # Only grabs 'Simple' Demands
@@ -48,7 +48,7 @@ cd_fuels_in_sectors = classifier_demand_fuel_per_sectors['Fuel/Sector'].tolist()
 cd_fuel_to_code_fuels = classifier_demand_fuel_to_code['Fuel'].tolist()
 cd_fuel_to_code_codes = classifier_demand_fuel_to_code['Code'].tolist()
 cd_fuel_to_code_names_eng = classifier_demand_fuel_to_code['Plain English'].tolist()
-cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code['Plain Spanish'].tolist()
+# cd_fuel_to_code_names_spa = classifier_demand_fuel_to_code['Plain Spanish'].tolist()
 
 demands_simple = []
 demands_simple_eng = []
@@ -70,21 +70,21 @@ for s in cd_sectors_simple:
     this_s_index = cd_sectors_all.index( s )
     this_s_code = s
     this_s_name_eng = cd_sectors_name_eng[ this_s_index ]
-    this_s_name_spa = cd_sectors_name_spa[ this_s_index ]
+    # this_s_name_spa = cd_sectors_name_spa[ this_s_index ]
     #
     for f in these_s_fuels:
         f_code_index = cd_fuel_to_code_fuels.index( f )
         this_f_code = cd_fuel_to_code_codes[ f_code_index ]
         this_f_name_eng = cd_fuel_to_code_names_eng[ f_code_index ]
-        this_f_name_spa = cd_fuel_to_code_names_spa[ f_code_index ]
+        # this_f_name_spa = cd_fuel_to_code_names_spa[ f_code_index ]
         #
         demands_simple.append( 'E5' + this_s_code + this_f_code )
         demands_simple_eng.append( 'Demand ' + this_s_name_eng + ' ' + this_f_name_eng )
-        demands_simple_spa.append( 'Demanda ' + this_s_name_spa + ' ' + this_f_name_spa )
+        # demands_simple_spa.append( 'Demanda ' + this_s_name_spa + ' ' + this_f_name_spa )
         #
         techs_demand_simple.append( 'T5' + this_f_code + '' + this_s_code )
         techs_demand_simple_eng.append( 'Demand ' + this_f_name_eng + ' for ' + this_s_name_eng )
-        techs_demand_simple_spa.append( 'Demanda ' + this_f_name_spa + ' for ' + this_s_name_spa )
+        # techs_demand_simple_spa.append( 'Demanda ' + this_f_name_spa + ' for ' + this_s_name_spa )
         #
         techs_demand_input_connect.update( { techs_demand_simple[-1]:this_f_code } ) # *we leave this fuel code but later replace it with the supply side*
         #

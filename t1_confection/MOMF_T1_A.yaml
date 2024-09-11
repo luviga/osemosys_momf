@@ -18,34 +18,12 @@ Modes_Demand: '/A-I_Classifier_Modes_Demand.xlsx'
 Sectors: 'Sectors'
 Fuel_per_Sectors: 'Fuel_per_Sectors'
 Fuel_Code: 'Fuel_to_Code'
-# Columns (First letter of the word y lowercase)
-sector: 'Sector'
-plain_eng: 'Plain English'
-plain_spa: 'Plain Spanish'
-address: 'Address_Method'
-fuel_slash_sector: 'Fuel/Sector'
-fuel: 'Fuel'
-code: 'Code'
 # Structural feature 2
 # File
 Modes_Supply: '/A-I_Classifier_Modes_Supply.xlsx'
 # Sheets
 Pri_eng: 'PrimaryEnergy'
 Sec_eng: 'SecondaryEnergy'
-# Columns
-final: 'Final in Chain'
-pri_commodity: 'Primary_Commodity'
-sec_commodity: 'Secondary_Commodity'
-ter_commodity: 'Tertiary_Commodity'
-tech_code: 'Tech - Code'
-tech_plain_eng: 'Tech - Plain English'
-tech_plain_spa: 'Tech - Plain Spanish'
-fuel_code_in: 'Fuel - Code (Input)'
-fuel_plain_eng_in: 'Fuel - Plain English (Input)'
-fuel_plain_spa_in: 'Fuel - Plain Spanish (Input)'
-fuel_code_out: 'Fuel - Code (Output)'
-fuel_plain_eng_out: 'Fuel - Plain English (Output)'
-fuel_plain_spa_out: 'Fuel - Plain Spanish (Output)'
 # Structural feature 3
 # File
 Modes_Trans: '/A-I_Classifier_Modes_Transport.xlsx'
@@ -57,18 +35,10 @@ Fuel_per_Vehfuel: 'Fuel_per_VehFuel'
 Vehfuel_Code: 'VehFuel_to_Code'
 Tech_Code: 'Tech_to_Code'
 Dem_Code: 'Dem_to_Code'
-# Columns
-# Fuel, Code, Plain English and Plain Spanish: are strutural feature 1
-vehfuel: 'VehFuel'
-techs: 'Techs'
-dem_codes: 'Demand_Codes'
-techs_slash_dem: 'Techs/Demand'
-vehfuel_slash_tech: 'VehFuel/Tech'
 # Structural feature 3
 # File
 Horizon_configuration: '/A-I_Horizon_Configuration.xlsx'
 # Columns
-initial_year: 'Initial_Year'
 final_year: 'Final_Year'
 # Print Base Year
 # File
@@ -100,36 +70,18 @@ log_file_A1: '/Log.txt'
 # Extra Scenarios
 # File
 Xtra_Scen: '/A-Xtra_Scenarios.xlsx'
-# Columns
-name: 'Name'
-param: 'Param'
 # Extra Projections
 # File
 Xtra_Proj: '/A-Xtra_Projections.xlsx'
-# Columns
-variable: 'Variable'
-proj_mode: 'Projection Mode'
-dem_slash_share: 'Demand/Share'
-fuel_slash_tech: 'Fuel/Tech'
-proj_mode: 'Projection.Mode'
-proj_param: 'Projection.Parameter'
 # Extra Battery Replacement
 # File
 Xtra_Battery: '/A-Xtra_Battery_Replacement.xlsx'
-# Columns
-parameter: 'Parameter'
 # Extra Emissions
 # File
 Xtra_Emi: '/A-Xtra_Emissions.xlsx'
 # Sheets
 GHGs: 'GHGs'
 Externalities: 'Externalities'
-# Columns
-emi: 'Emissions'
-external_cost: 'External Cost'
-tech: 'Tech'
-emi_acti_ratio: 'EmissionActivityRatio'
-emi_penal: 'EmissionPenalty'
 # Print Demand Completed
 # File
 Print_Dem_Completed: '/A-O_Demand_COMPLETED.xlsx'
@@ -164,32 +116,27 @@ Pickle_Fleet_Groups_T2D: '/A-O_Fleet_Groups_T2D.pickle'
 # Years variables
 #----------------------------------------------------------------------------------#
 # Base year
-base_year: 2018
+base_year: 2021
 initial_year: 2018
 
 # Final year
-final_year: 2050
+final_year: 2055
 
 test_tertiary_fuels: [
     'Electricity', 'Hydrogen',
-    'Moist_Broadleaf',
-    'Coniferous',
-    'Mangrove',
-    'Deciduous_Broadleaf',
-    'Commercial_Plantation',
+    'Diesel',
+    'Gasoline',
+    'LPG',
+    'Fuel Oil',
+    'Jet',
+    'OtherPetroleum',
     'Clinker_production',
-    'Cement_production',
-    'Inorganic_collection',
-    'Organic_collection',
-    'Blend_collection',
-    'No_collection',
-    'Inorganic_source_separation',
-    'Organic_source_separation',
-    'No_source_separation',
-    'Total_solid_waste',
-    'Sewer_water',
-    'Direct_discharged_water',
-    'Total_waste_water']
+    'Electricity Transmission',
+    'Electricity Distribution',
+    'Distributed Hydrogen',
+    'Blue Hydrogen',
+    'Green Hydrogen'
+    ]
 
 # Type of transport
 #---------------------------#
@@ -197,16 +144,14 @@ dict_dist_fam_to_name_eng: {
   PUB: Public,
   PRI: Private,
   HEA: Heavy Freight ,
-  LIG: Light Freight,
-  TUR: Tourism
+  LIG: Light Freight
   }
 
 dict_dist_fam_to_name_spa: {
   PUB: Público,
   PRI: Privado,
   HEA: Carga Pesada,
-  LIG: Carga Liviana,
-  TUR: Turismo
+  LIG: Carga Liviana
   }
 #---------------------------#
 
@@ -214,84 +159,83 @@ dict_dist_fam_to_name_spa: {
 #---------------------------------------------------------------#
 xtra_scen: {
   Main_Scenario: 'BAU',
-  Other_Scenarios: 'LTS',
-  Region: 'RD',
+  Other_Scenarios: 'NDP',
+  Region: 'JAM',
   Mode_of_Operation: 1,
-  Season: [1,2,3], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
-  DayType: [1], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
-  DailyTimeBracket: [1,2], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
-  Timeslice: 'Some',
-  Timeslices: ['DRY', 'RAIN'],
+  Season: [], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
+  DayType: [], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
+  DailyTimeBracket: [], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
+  Timeslice: 'All',
+  Timeslices: [],
   }
 
 # Remember the values of the "Conversionls", "Conversionld" and "Conversionlh"
 # are binary
-Conversionls: [1, 1, 1, 1, 1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(Season)
-Conversionld: [1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(DayType)
-Conversionlh: [1, 1, 1, 0] # Quantity of the values is the multiply of len(Timeslices) x len(DailyTimeBracket)
+Conversionls: [] # Quantity of the values is the multiply of len(Timeslices) x len(Season)
+Conversionld: [] # Quantity of the values is the multiply of len(Timeslices) x len(DayType)
+Conversionlh: [] # Quantity of the values is the multiply of len(Timeslices) x len(DailyTimeBracket)
 
 #---------------------------------------------------------------#
 # Technologies parameters
 #---------------------------------------------------------------#
-codes_primary_secondary_demands_df_headers: [
-  'Primary.Tech', 'Primary.Fuel.O',
-  'Secondary.Fuel.I', 'Secondary.Tech', 'Secondary.Fuel.O',
-  'Demands.Fuel.I', 'Demands.Tech', 'Demands.Fuel.O'
-  ]
+codes_primary_secondary_demands_df_headers: [   
+    'Primary.Tech', 'Primary.Fuel.O',
+    'Secondary.Fuel.I', 'Secondary.Tech', 'Secondary.Fuel.O',
+    'Demands.Fuel.I', 'Demands.Tech', 'Demands.Fuel.O'
+    ]
 
-codes_transport_df_headers: [ 
-  'DISTTRN.Fuel.I', 'DISTTRN.Tech', 'DISTTRN.Fuel.O',
-  'TRN.Fuel.I', 'TRN.Tech', 'TRN.Fuel.O',
-  'TRNGROUP.Fuel.I', 'TRNGROUP.Tech', 'TRNGROUP.Fuel.O'
-  ]
+codes_transport_df_headers: [
+    'DISTTRN.Fuel.I', 'DISTTRN.Tech', 'DISTTRN.Fuel.O',
+    'TRN.Fuel.I', 'TRN.Tech', 'TRN.Fuel.O',
+    'TRNGROUP.Fuel.I', 'TRNGROUP.Tech', 'TRNGROUP.Fuel.O'
+    ]
 
 tech_param_list_all_notyearly: [
-  'CapacityToActivityUnit', 'OperationalLife'
-  ]
+  'CapacityToActivityUnit', 'OperationalLife' ]
 
 tech_param_list_primary: [     
-  'CapitalCost', 'FixedCost', 'VariableCost', 
-  'ResidualCapacity', 'TotalAnnualMaxCapacity',
-  'TotalTechnologyAnnualActivityUpperLimit',
-  'TotalTechnologyAnnualActivityLowerLimit',
-  'TotalAnnualMinCapacityInvestment',
-  'CapacityFactor', 'AvailabilityFactor'
-  ]
+    'CapitalCost', 'FixedCost', 'VariableCost', 
+    'ResidualCapacity', 'TotalAnnualMaxCapacity',
+    'TotalTechnologyAnnualActivityUpperLimit',
+    'TotalTechnologyAnnualActivityLowerLimit',
+    'TotalAnnualMinCapacityInvestment',
+    'CapacityFactor', 'AvailabilityFactor'
+    ]
 tech_param_list_secondary: [
-  'CapitalCost', 'FixedCost', 'VariableCost', 
-  'ResidualCapacity', 'TotalAnnualMaxCapacity',
-  'TotalTechnologyAnnualActivityUpperLimit',
-  'TotalTechnologyAnnualActivityLowerLimit',
-  'TotalAnnualMinCapacityInvestment',
-  'CapacityFactor', 'AvailabilityFactor'
-  ]
+    'CapitalCost', 'FixedCost', 'VariableCost', 
+    'ResidualCapacity', 'TotalAnnualMaxCapacity',
+    'TotalTechnologyAnnualActivityUpperLimit',
+    'TotalTechnologyAnnualActivityLowerLimit',
+    'TotalAnnualMinCapacityInvestment',
+    'CapacityFactor', 'AvailabilityFactor'
+    ]
 
 tech_param_list_demands: [
   'CapitalCost', 'FixedCost', 'ResidualCapacity'
   ]
 
 tech_param_list_disttrn: [
-  'CapitalCost', 'FixedCost', 'ResidualCapacity'
+    'CapitalCost', 'FixedCost', 'ResidualCapacity'
   ]
 
 tech_param_list_trn: [
-  'CapitalCost', 'FixedCost', 'ResidualCapacity', 
-  'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'
+    'CapitalCost', 'FixedCost', 'ResidualCapacity', 
+    'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'
   ]
 
 tech_param_list_trngroups: [
-  'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'                            
+    'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit'                           
   ]
 
 tech_param_list_all_notyearly_df_headers: [
-  'Tech.Type','Tech.ID', 'Tech', 'Tech.Name',
+  'Tech.Type','Tech.ID', 'Tech', 'Tech.Name' ,
   'Parameter.ID', 'Parameter', 'Unit', 'Value'
   ]
 
 tech_param_list_all_yearly_df_headers: [
-  'Tech.ID', 'Tech', 'Tech.Name', 'Parameter.ID',
-  'Parameter', 'Unit', 'Projection.Mode',
-  'Projection.Parameter'
+    'Tech.ID', 'Tech', 'Tech.Name' , 'Parameter.ID',
+    'Parameter', 'Unit', 'Projection.Mode',
+    'Projection.Parameter'
   ]
 #---------------------------------------------------------------#
 
