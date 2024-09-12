@@ -117,7 +117,8 @@ Pickle_Fleet_Groups_T2D: '/A-O_Fleet_Groups_T2D.pickle'
 #----------------------------------------------------------------------------------#
 # Base year
 base_year: 2021
-initial_year: 2018
+initial_year: 2021
+initial_year_gdp: 2018
 
 # Final year
 final_year: 2055
@@ -159,7 +160,7 @@ dict_dist_fam_to_name_spa: {
 #---------------------------------------------------------------#
 xtra_scen: {
   Main_Scenario: 'BAU',
-  Other_Scenarios: 'NDP',
+  Other_Scenarios: 'LTS',
   Region: 'JAM',
   Mode_of_Operation: 1,
   Season: [], # Put in "B1_Model_Structure.xlsx" on the sheet "set"
