@@ -1477,16 +1477,22 @@ tech_param_list_all_notyearly_df = tech_param_list_all_notyearly_df.replace(np.n
 #
 tech_param_list_yearly_primary_df = tech_param_list_yearly_primary_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_secondary_df = tech_param_list_yearly_secondary_df.replace(np.nan, '', regex=True)
-tech_param_list_yearly_timeslices_df = tech_param_list_yearly_timeslices_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_demands_df = tech_param_list_yearly_demands_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_disttrn_df = tech_param_list_yearly_disttrn_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_trn_df = tech_param_list_yearly_trn_df.replace(np.nan, '', regex=True)
 tech_param_list_yearly_trngroups_df = tech_param_list_yearly_trngroups_df.replace(np.nan, '', regex=True)
 #
-tech_param_list_dfs = [ tech_param_list_all_notyearly_df, tech_param_list_yearly_primary_df ,
-                        tech_param_list_yearly_secondary_df, tech_param_list_yearly_timeslices_df, 
-                        tech_param_list_yearly_demands_df , tech_param_list_yearly_disttrn_df, 
-                        tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
+if params['xtra_scen']['Timeslice'] == 'All':
+    tech_param_list_dfs = [ tech_param_list_all_notyearly_df, tech_param_list_yearly_primary_df ,
+                            tech_param_list_yearly_secondary_df, 
+                            tech_param_list_yearly_demands_df , tech_param_list_yearly_disttrn_df, 
+                            tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
+else:
+    tech_param_list_yearly_timeslices_df = tech_param_list_yearly_timeslices_df.replace(np.nan, '', regex=True)
+    tech_param_list_dfs = [ tech_param_list_all_notyearly_df, tech_param_list_yearly_primary_df ,
+                            tech_param_list_yearly_secondary_df, tech_param_list_yearly_timeslices_df, 
+                            tech_param_list_yearly_demands_df , tech_param_list_yearly_disttrn_df, 
+                            tech_param_list_yearly_trn_df, tech_param_list_yearly_trngroups_df ]
 tech_param_list_dfs_names = params['tech_param_list_dfs_names']
 #
 #---------------------------------------------------------------------------------------------------------------------------------#
@@ -1505,6 +1511,7 @@ for n in range( len( df_base_year_names ) ):
     this_df = df_base_year_list[n]
     this_df_sheet_name = df_base_year_names[n]
     this_df.to_excel(writer_df_baseyear,sheet_name = this_df_sheet_name, index=False)
+writer_df_baseyear_1_M = this_df
 writer_df_baseyear.close()
 #
 # Print the Projection "Activity Ratio", without the units.
@@ -1516,6 +1523,7 @@ for n in range( len( df_projection_names ) ):
     this_df = df_projection_list[n]
     this_df_sheet_name = df_projection_names[n]
     this_df.to_excel(writer_df_projection,sheet_name = this_df_sheet_name, index=False)
+writer_df_projection_2_M = this_df
 writer_df_projection.close()
 #
 # REMEMBER to apply this: https://support.microsoft.com/en-us/office/change-the-column-width-and-row-height-72f5e3cc-994d-43e8-ae58-9774a0905f46
@@ -1525,9 +1533,14 @@ writer_df_projection.close()
 With that done, we now need to print the final demands. This is crucial for parameterization.
 '''
 writer_df_demand = pd.ExcelWriter(params['A1_outputs'] + params['Print_Demand'], engine='xlsxwriter') # These are activity ratios // we should add the units.
-this_df_sheet_name = [params['Dem_Proj'], params['Timeslices']]
-for n in range(len(this_df_sheet_name)):
-    df_demands_all_list[n].to_excel(writer_df_demand, sheet_name = this_df_sheet_name[n], index=False)
+if params['xtra_scen']['Timeslice'] == 'All':
+    this_df_sheet_name = params['Dem_Proj']
+    df_demands_all.to_excel(writer_df_demand, sheet_name = this_df_sheet_name, index=False)
+else:
+    this_df_sheet_name = [params['Dem_Proj'], params['Timeslices']]
+    for n in range(len(this_df_sheet_name)):
+        df_demands_all_list[n].to_excel(writer_df_demand, sheet_name = this_df_sheet_name[n], index=False)
+writer_df_demand_3_M = df_demands_all
 writer_df_demand.close()
 #
 '''
@@ -1539,6 +1552,7 @@ for n in range( len( tech_param_list_dfs_names ) ):
     this_df = tech_param_list_dfs[n]
     this_df_sheet_name = tech_param_list_dfs_names[n]
     this_df.to_excel(writer_df_parameters, sheet_name = this_df_sheet_name, index=False)
+writer_df_parameters_4_M = this_df
 writer_df_parameters.close()
 #
 '''
@@ -1604,6 +1618,7 @@ with open( params['A1_outputs'] + params['Pickle_Fleet_Groups'], 'wb') as handle
 writer_df_fleet = pd.ExcelWriter(params['A1_outputs'] + params['Print_Fleet'], engine='xlsxwriter') # These are activity ratios // we should add the units.
 this_df_sheet_name = params['Cali_Fleet']
 df_techs_fleet.to_excel(writer_df_fleet, sheet_name = this_df_sheet_name, index=False)
+writer_df_fleet_5_M = df_techs_fleet
 writer_df_fleet.close()
 '''
 -------------------------------------------------------------------------------------------------------------
