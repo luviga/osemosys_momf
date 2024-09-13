@@ -1922,7 +1922,7 @@ if __name__ == '__main__':
 
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''))
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
+    params = load_and_process_yaml(file_config_address + 'MOMF_B1_exp_manager.yaml')
 
     # if config
 
@@ -1975,7 +1975,7 @@ if __name__ == '__main__':
     #
     S_DICT_params_structure = params['S_DICT_params_structure']
     param_category_list = []
-    for col in range(1,33+1):  # 33 columns
+    for col in range(1,30+1):  # 33 columns
         if str( sheet_params_structure.iat[0, col] ) != '':
             param_category_list.append( sheet_params_structure.iat[0, col] )
         S_DICT_params_structure['category'].append( param_category_list[-1] )
@@ -2071,7 +2071,7 @@ if __name__ == '__main__':
     scenario_list = [ scenario_list_reference[i] for i in range( len( scenario_list_all ) ) if scenario_list_reference[i] != 'based' ]
     #
     base_configuration_overall = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Over_params'] )
-    base_configuration_waste = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Waste'])
+    # base_configuration_waste = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Waste'])
     base_configuration_ippu = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['IPPU'])
     base_configuration_distance = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Dis_Levers'] )
     base_configuration_modeshift = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Mode_Shift'] )
@@ -2080,8 +2080,8 @@ if __name__ == '__main__':
     base_configuration_electrical = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Elec'] )
     base_configuration_smartGrid = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Smart_Grid'] )
     base_configuration_E_and_D = pd.read_excel( params['B1_Scen_Config'], sheet_name=params['Effi'] )
-    base_configuration_transport_elasticity = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['TElas'])                                                                                                             
-    base_configuration_emi_res = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Emission_Restriction'])                                                                                       
+    # base_configuration_transport_elasticity = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['TElas'])                                                                                                             
+    # base_configuration_emi_res = pd.read_excel(params['B1_Scen_Config'], sheet_name=params['Emission_Restriction'])                                                                                      
     #
     all_dataset_address = params['A2_Output_Params']
     ''' 
@@ -2338,6 +2338,8 @@ if __name__ == '__main__':
             relative_tkm_to_demand_nonrail  = { 'TotalAnnualMaxCapacity':{}, 'TotalTechnologyAnnualActivityLowerLimit':{} }
         #
         ### Call the demand and go from there for restriciton definition ###
+        '''
+        # Comment transport section for this model
         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('FUEL') ]
         passpub_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pub'] ) ]
         passpriv_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ this_set_type_initial ] ) if x == str( params['tra_dem_pri'] ) ]
@@ -2579,47 +2581,46 @@ if __name__ == '__main__':
                                 stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ this_set_complement_indices[0]:this_set_complement_indices[-1]+1 ] = deepcopy( new_value_list_comp_rounded )
 
                 #
-                '''
-                if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['built_in'] and this_set == params['tech_train_ele']:  # *ALERT* add the elimination of rail as a possible tool
-                    this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
-                    value_range_set = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                    value_range_set = [ float(value_range_set[j]) for j in range( len( time_range_vector ) ) ]
-                    #
-                    new_value_range_set_group = [ float( value_range_set_group[i] ) + float( value_range_set[i] ) for i in range( len( value_range_set ) ) ]
-                    new_value_range_set_group_rounded = [ round(elem, params['round_#']) for elem in new_value_range_set_group ]
-                    #
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_group_range_indices[0]:this_set_group_range_indices[-1]+1 ] = deepcopy( new_value_range_set_group_rounded )
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_group_range_indices_lm[0]:this_set_group_range_indices_lm[-1]+1 ] = deepcopy( new_value_range_set_group_rounded )
-                #
-                if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['linear'] and this_set == params['tech_train_ele']:  # *ALERT* add the elimination of rail as a possible tool
-                    #
-                    value_range_set_zero = [ 0.0 for j in range( len( time_range_vector ) ) ]
-                    #
-                    # Set zero for NDP (total capacity)
-                    this_set_range_indices_max = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
-                    this_set_range_indices_lower = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
-                    #
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_max[0]:this_set_range_indices_max[-1]+1 ] = deepcopy( value_range_set_zero )
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices_lower[0]:this_set_range_indices_lower[-1]+1 ] = deepcopy( value_range_set_zero )
-                    #
-                    # Set zero for NDP (costs for passenger rail)
-                    cost_sets_eliminate = params['cost_sets_eliminate']
-                    for this_cost in cost_sets_eliminate:
-                        this_set_range_indices_cost = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'CapitalCost' ][ 't' ] ) if x == str( this_cost ) ]
-                        stable_scenarios[ scenario_list[ s ] ][ 'CapitalCost' ]['value'][ this_set_range_indices_cost[0]:this_set_range_indices_cost[-1]+1 ] = deepcopy( value_range_set_zero )
-                    #
-                    cost_sets_eliminate = ['TRANRAILINF']
-                    for this_cost in cost_sets_eliminate:
-                        this_set_range_indices_cost = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'FixedCost' ][ 't' ] ) if x == str( this_cost ) ]
-                        stable_scenarios[ scenario_list[ s ] ][ 'FixedCost' ]['value'][ this_set_range_indices_cost[0]:this_set_range_indices_cost[-1]+1 ] = deepcopy( value_range_set_zero )
-                    #
-                    # Re-establish BAU for NDP (group capacity)
-                    this_set_range_indices_bau = [ i for i, x in enumerate( stable_scenarios[ params['BAU'] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set_group ) ]
-                    value_range_set = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_bau[0]:this_set_range_indices_bau[-1]+1 ] )
-                    value_range_set = [ float(value_range_set[j]) for j in range( len( time_range_vector ) ) ]
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_group_range_indices[0]:this_set_group_range_indices[-1]+1 ] = deepcopy( value_range_set )
-                    stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_group_range_indices_lm[0]:this_set_group_range_indices_lm[-1]+1 ] = deepcopy( value_range_set )
-                '''
+                # if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['built_in'] and this_set == params['tech_train_ele']:  # *ALERT* add the elimination of rail as a possible tool
+                #     this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
+                #     value_range_set = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+                #     value_range_set = [ float(value_range_set[j]) for j in range( len( time_range_vector ) ) ]
+                #     #
+                #     new_value_range_set_group = [ float( value_range_set_group[i] ) + float( value_range_set[i] ) for i in range( len( value_range_set ) ) ]
+                #     new_value_range_set_group_rounded = [ round(elem, params['round_#']) for elem in new_value_range_set_group ]
+                #     #
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_group_range_indices[0]:this_set_group_range_indices[-1]+1 ] = deepcopy( new_value_range_set_group_rounded )
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_group_range_indices_lm[0]:this_set_group_range_indices_lm[-1]+1 ] = deepcopy( new_value_range_set_group_rounded )
+                # #
+                # if modeshift_params[ scenario_list[s] ][ this_set ][ params['type'] ] == params['linear'] and this_set == params['tech_train_ele']:  # *ALERT* add the elimination of rail as a possible tool
+                #     #
+                #     value_range_set_zero = [ 0.0 for j in range( len( time_range_vector ) ) ]
+                #     #
+                #     # Set zero for NDP (total capacity)
+                #     this_set_range_indices_max = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
+                #     this_set_range_indices_lower = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
+                #     #
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_max[0]:this_set_range_indices_max[-1]+1 ] = deepcopy( value_range_set_zero )
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_range_indices_lower[0]:this_set_range_indices_lower[-1]+1 ] = deepcopy( value_range_set_zero )
+                #     #
+                #     # Set zero for NDP (costs for passenger rail)
+                #     cost_sets_eliminate = params['cost_sets_eliminate']
+                #     for this_cost in cost_sets_eliminate:
+                #         this_set_range_indices_cost = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'CapitalCost' ][ 't' ] ) if x == str( this_cost ) ]
+                #         stable_scenarios[ scenario_list[ s ] ][ 'CapitalCost' ]['value'][ this_set_range_indices_cost[0]:this_set_range_indices_cost[-1]+1 ] = deepcopy( value_range_set_zero )
+                #     #
+                #     cost_sets_eliminate = ['TRANRAILINF']
+                #     for this_cost in cost_sets_eliminate:
+                #         this_set_range_indices_cost = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'FixedCost' ][ 't' ] ) if x == str( this_cost ) ]
+                #         stable_scenarios[ scenario_list[ s ] ][ 'FixedCost' ]['value'][ this_set_range_indices_cost[0]:this_set_range_indices_cost[-1]+1 ] = deepcopy( value_range_set_zero )
+                #     #
+                #     # Re-establish BAU for NDP (group capacity)
+                #     this_set_range_indices_bau = [ i for i, x in enumerate( stable_scenarios[ params['BAU'] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set_group ) ]
+                #     value_range_set = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_range_indices_bau[0]:this_set_range_indices_bau[-1]+1 ] )
+                #     value_range_set = [ float(value_range_set[j]) for j in range( len( time_range_vector ) ) ]
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ]['value'][ this_set_group_range_indices[0]:this_set_group_range_indices[-1]+1 ] = deepcopy( value_range_set )
+                #     stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ this_set_group_range_indices_lm[0]:this_set_group_range_indices_lm[-1]+1 ] = deepcopy( value_range_set )
+
             #
             tourism_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ][ 'f' ] ) if x == str( params['tra_dem_tur'] ) ]
             tourism_values = deepcopy( stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ tourism_range_indices[0]:tourism_range_indices[-1]+1 ] )                                                                                                                                                         
@@ -2631,7 +2632,8 @@ if __name__ == '__main__':
             stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ passpriv_range_indices[0]:passpriv_range_indices[-1]+1 ] = deepcopy( new_value_list_PRIV_rounded )
             stable_scenarios[ scenario_list[s] ][ 'SpecifiedAnnualDemand' ]['value'][ nonmotorized_range_indices[0]:nonmotorized_range_indices[-1]+1 ] = deepcopy( new_value_list_NOMOT_rounded )
             #
-        #
+        '''
+            #
         ### BLOCK 4: call and modify the occupancy rate ###
         this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
         if scenario_list[s] == params['BAU']:
@@ -2986,17 +2988,17 @@ if __name__ == '__main__':
                                     new_value_list = [ round( value_list[e]*value_list_mult[e], params['round_#'] ) for e in range(len(value_list)) ]
                                     stable_scenarios[ scenario_list[s] ][ param_list[p] ]['value'][ this_param_indices[0]:this_param_indices[-1]+1 ] = deepcopy( new_value_list )
                 
-
-        # This is necessary to lose the restrictions we already defined
-        unique_max_cap_techs = list( set( stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) )
-        unique_low_lim_techs = list( set( stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) )
-        ignore_techs = params['ignore_techs']
-        rewrite_techs_maxcap = \
-            [e for e in unique_max_cap_techs if
-             params['tr'] in e[:2] and params['in'] not in e and e not in ignore_techs]
-        rewrite_techs_lowlim = \
-            [e for e in unique_low_lim_techs if
-             params['tr'] in e[:2] and params['in'] not in e and 'IMP' not in e and e not in ignore_techs]
+        # Comment this section for this energy model
+        # # This is necessary to lose the restrictions we already defined
+        # unique_max_cap_techs = list( set( stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) )
+        # unique_low_lim_techs = list( set( stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) )
+        # ignore_techs = params['ignore_techs']
+        # rewrite_techs_maxcap = \
+        #     [e for e in unique_max_cap_techs if
+        #      params['tr'] in e[:2] and params['in'] not in e and e not in ignore_techs]
+        # rewrite_techs_lowlim = \
+        #     [e for e in unique_low_lim_techs if
+        #      params['tr'] in e[:2] and params['in'] not in e and 'IMP' not in e and e not in ignore_techs]
         '''
         # Here we need to adjust the max capacities based on the adjusted demand
         for tech_gr in Fleet_Groups_techs_2_dem:
@@ -3039,256 +3041,256 @@ if __name__ == '__main__':
         '''   
         # Let's adjust existing restrictions to new capacities (transport sector);
         # First, max capacity:
-        for t in range(len(rewrite_techs_maxcap)):
-            this_set = rewrite_techs_maxcap[t]
-            group_tech_set = Fleet_Groups_inv[ this_set ]
+        # for t in range(len(rewrite_techs_maxcap)):
+        #     this_set = rewrite_techs_maxcap[t]
+        #     group_tech_set = Fleet_Groups_inv[ this_set ]
 
-            group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( group_tech_set ) ]
-            group_value_list = stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
-            group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
+        #     group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( group_tech_set ) ]
+        #     group_value_list = stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
+        #     group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
 
-            set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
+        #     set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
 
-            freeze_group_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( group_tech_set ) ]
-            freeze_group_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ freeze_group_set_range_indices[0]:freeze_group_set_range_indices[-1]+1 ]
-            freeze_group_value_list = [ float( freeze_group_value_list[j] ) for j in range( len( freeze_group_value_list ) ) ]
+        #     freeze_group_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( group_tech_set ) ]
+        #     freeze_group_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ freeze_group_set_range_indices[0]:freeze_group_set_range_indices[-1]+1 ]
+        #     freeze_group_value_list = [ float( freeze_group_value_list[j] ) for j in range( len( freeze_group_value_list ) ) ]
 
-            freeze_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
-            freeze_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ freeze_set_range_indices[0]:freeze_set_range_indices[-1]+1 ]
-            freeze_value_list = [ float( freeze_value_list[j] ) for j in range( len( freeze_value_list ) ) ]
+        #     freeze_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
+        #     freeze_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ freeze_set_range_indices[0]:freeze_set_range_indices[-1]+1 ]
+        #     freeze_value_list = [ float( freeze_value_list[j] ) for j in range( len( freeze_value_list ) ) ]
 
-            value_list = [1.01*group_value_list[i]*freeze_value_list[i]/freeze_group_value_list[i] for i in range(len(group_value_list))]
-            value_list_rounded = [ round(elem, params['round_#']) for elem in value_list ]
-            stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ set_range_indices[0]:set_range_indices[-1]+1 ] = deepcopy(value_list_rounded)
+        #     value_list = [1.01*group_value_list[i]*freeze_value_list[i]/freeze_group_value_list[i] for i in range(len(group_value_list))]
+        #     value_list_rounded = [ round(elem, params['round_#']) for elem in value_list ]
+        #     stable_scenarios[ scenario_list[s] ][ 'TotalAnnualMaxCapacity' ]['value'][ set_range_indices[0]:set_range_indices[-1]+1 ] = deepcopy(value_list_rounded)
 
-        # Second, lower limit:
-        for t in range(len(rewrite_techs_lowlim)):
-            this_set = rewrite_techs_lowlim[t]
-            group_tech_set = Fleet_Groups_inv[ this_set ]
+        # # Second, lower limit:
+        # for t in range(len(rewrite_techs_lowlim)):
+        #     this_set = rewrite_techs_lowlim[t]
+        #     group_tech_set = Fleet_Groups_inv[ this_set ]
 
-            group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_set ) ]
-            group_value_list = stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
-            group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
+        #     group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_set ) ]
+        #     group_value_list = stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
+        #     group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
 
-            set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
+        #     set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
 
-            freeze_group_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_set ) ]
-            freeze_group_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ freeze_group_set_range_indices[0]:freeze_group_set_range_indices[-1]+1 ]
-            freeze_group_value_list = [ float( freeze_group_value_list[j] ) for j in range( len( freeze_group_value_list ) ) ]
+        #     freeze_group_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( group_tech_set ) ]
+        #     freeze_group_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ freeze_group_set_range_indices[0]:freeze_group_set_range_indices[-1]+1 ]
+        #     freeze_group_value_list = [ float( freeze_group_value_list[j] ) for j in range( len( freeze_group_value_list ) ) ]
 
-            freeze_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
-            freeze_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ freeze_set_range_indices[0]:freeze_set_range_indices[-1]+1 ]
-            freeze_value_list = [ float( freeze_value_list[j] ) for j in range( len( freeze_value_list ) ) ]
+        #     freeze_set_range_indices = [ i for i, x in enumerate( stable_scenarios_freeze[ scenario_list[ s ] ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
+        #     freeze_value_list = stable_scenarios_freeze[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ freeze_set_range_indices[0]:freeze_set_range_indices[-1]+1 ]
+        #     freeze_value_list = [ float( freeze_value_list[j] ) for j in range( len( freeze_value_list ) ) ]
 
-            value_list = [0.999*group_value_list[i]*freeze_value_list[i]/freeze_group_value_list[i] for i in range(len(group_value_list))]
-            value_list_rounded = [ round(elem, params['round_#']) for elem in value_list ]
-            stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ set_range_indices[0]:set_range_indices[-1]+1 ] = deepcopy(value_list)
+        #     value_list = [0.999*group_value_list[i]*freeze_value_list[i]/freeze_group_value_list[i] for i in range(len(group_value_list))]
+        #     value_list_rounded = [ round(elem, params['round_#']) for elem in value_list ]
+        #     stable_scenarios[ scenario_list[s] ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ set_range_indices[0]:set_range_indices[-1]+1 ] = deepcopy(value_list)
 
-        ### BLOCK 7: define the *vehicle/ind_tech fuel tech* composition for each scenario ###
-        # NOTE: check whether the scenario is contained in the system dictionary:
-        if scenario_list[s] in list( set( list( adoption_params.keys() ) ) ):
-            applicable_sets = []
-            for a_set in range( len( list( adoption_params[ scenario_list[s] ].keys() ) ) ):
-                this_set = list( adoption_params[ scenario_list[s] ].keys() )[ a_set ]
-                applicable_sets.append( this_set )
+        # ### BLOCK 7: define the *vehicle/ind_tech fuel tech* composition for each scenario ###
+        # # NOTE: check whether the scenario is contained in the system dictionary:
+        # if scenario_list[s] in list( set( list( adoption_params.keys() ) ) ):
+        #     applicable_sets = []
+        #     for a_set in range( len( list( adoption_params[ scenario_list[s] ].keys() ) ) ):
+        #         this_set = list( adoption_params[ scenario_list[s] ].keys() )[ a_set ]
+        #         applicable_sets.append( this_set )
 
-            # Now we perform the adjustment of the system, after having modified the demand:
-            for a_set in range( len( applicable_sets ) ):
+        #     # Now we perform the adjustment of the system, after having modified the demand:
+        #     for a_set in range( len( applicable_sets ) ):
 
-                this_set = applicable_sets[ a_set ]
-                this_sector = adoption_params[ scenario_list[s] ][ this_set ][ 'Sector' ]
-                #
-                this_param = adoption_params[ scenario_list[s] ][ this_set ][ 'Restriction_Type' ]
-                #
-                this_type = adoption_params[ scenario_list[s] ][ this_set ][ params['type'] ]
-                #
-                if this_param == params['min__max'] and this_sector == params['trans']:
-                    cap_vars = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
-                if this_param == params['min__max'] and this_sector == params['indus']:
-                    cap_vars = [ 'TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit' ]
-                if this_param == params['min']:
-                    cap_vars = [ 'TotalTechnologyAnnualActivityLowerLimit' ]
-                if this_param == params['max'] and this_sector == params['trans']:
-                    cap_vars = [ 'TotalAnnualMaxCapacity']
-                if this_param == params['max'] and this_sector == params['indus']:
-                    cap_vars = [ 'TotalTechnologyAnnualActivityUpperLimit']
-                #########################################################################################
-                # Here, let's select the groups:
-                if this_sector == params['trans']:
-                    group_tech_set = Fleet_Groups_inv[ this_set ]
-                #########################################################################################
-                if this_type == params['linear']:
-                    y_ini  = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
-                    v_first_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
-                    v_sec_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
-                    v_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
-                    #
-                    known_years_ini = [e for e in range(params['year_first_range'], int(y_ini)+1)]
-                    known_years = known_years_ini + [params['first_decade_year'], params['sec_decade_year'], params['final_year'] ]
-                    # First decade year
-                    try:
-                        float_v_first_decade_year = float(v_first_decade_year)
-                    except Exception:
-                        float_v_first_decade_year = params['interp']
-                    # Second decade year
-                    try:
-                        float_v_sec_decade_year = float(v_sec_decade_year)
-                    except Exception:
-                        float_v_sec_decade_year = params['interp'] 
-                    #Final year
-                    try:
-                        float_v_final_year = float(v_final_year)
-                    except Exception:    
-                        float_v_final_year = params['interp']
-                    #
-                    ### if this_sector == params['indus']:
-                    # Here we must know the initial share (extracting the group values):
-                    group_set_range_indices = [ i for i, x in enumerate(stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str(group_tech_set)]
-                    group_value_list = stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['value'][group_set_range_indices[0]:group_set_range_indices[-1]+1]
-                    group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
+        #         this_set = applicable_sets[ a_set ]
+        #         this_sector = adoption_params[ scenario_list[s] ][ this_set ][ 'Sector' ]
+        #         #
+        #         this_param = adoption_params[ scenario_list[s] ][ this_set ][ 'Restriction_Type' ]
+        #         #
+        #         this_type = adoption_params[ scenario_list[s] ][ this_set ][ params['type'] ]
+        #         #
+        #         if this_param == params['min__max'] and this_sector == params['trans']:
+        #             cap_vars = [ 'TotalAnnualMaxCapacity', 'TotalTechnologyAnnualActivityLowerLimit' ]
+        #         if this_param == params['min__max'] and this_sector == params['indus']:
+        #             cap_vars = [ 'TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit' ]
+        #         if this_param == params['min']:
+        #             cap_vars = [ 'TotalTechnologyAnnualActivityLowerLimit' ]
+        #         if this_param == params['max'] and this_sector == params['trans']:
+        #             cap_vars = [ 'TotalAnnualMaxCapacity']
+        #         if this_param == params['max'] and this_sector == params['indus']:
+        #             cap_vars = [ 'TotalTechnologyAnnualActivityUpperLimit']
+        #         #########################################################################################
+        #         # Here, let's select the groups:
+        #         if this_sector == params['trans']:
+        #             group_tech_set = Fleet_Groups_inv[ this_set ]
+        #         #########################################################################################
+        #         if this_type == params['linear']:
+        #             y_ini  = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
+        #             v_first_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+        #             v_sec_decade_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
+        #             v_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
+        #             #
+        #             known_years_ini = [e for e in range(params['year_first_range'], int(y_ini)+1)]
+        #             known_years = known_years_ini + [params['first_decade_year'], params['sec_decade_year'], params['final_year'] ]
+        #             # First decade year
+        #             try:
+        #                 float_v_first_decade_year = float(v_first_decade_year)
+        #             except Exception:
+        #                 float_v_first_decade_year = params['interp']
+        #             # Second decade year
+        #             try:
+        #                 float_v_sec_decade_year = float(v_sec_decade_year)
+        #             except Exception:
+        #                 float_v_sec_decade_year = params['interp'] 
+        #             #Final year
+        #             try:
+        #                 float_v_final_year = float(v_final_year)
+        #             except Exception:    
+        #                 float_v_final_year = params['interp']
+        #             #
+        #             ### if this_sector == params['indus']:
+        #             # Here we must know the initial share (extracting the group values):
+        #             group_set_range_indices = [ i for i, x in enumerate(stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str(group_tech_set)]
+        #             group_value_list = stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['value'][group_set_range_indices[0]:group_set_range_indices[-1]+1]
+        #             group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
 
-                    this_set_range_indices = [ i for i, x in enumerate(stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str(this_set)]
-                    if len( this_set_range_indices ) != 0:
-                        value_list = stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ]
-                        value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
-                        known_value_ini = []
-                        for y in range( len( time_range_vector ) ):
-                            if time_range_vector[y] <= y_ini:
-                                known_value_ini.append(value_list[y]/group_value_list[y])
-                                #
-                            #
-                        #
-                    #
-                    else:  # If there is no prior restriction, we star from zero.
-                        known_value_ini = []
-                        for y in range( len( time_range_vector ) ):
-                            if time_range_vector[y] <= y_ini:
-                                known_value_ini.append(0)
-                                #
-                            #
-                        #
-                    #
-                    known_values = known_value_ini + [float_v_first_decade_year, float_v_sec_decade_year, float_v_final_year ]
-                    #
-                    x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
-                    for y in range( len( time_range_vector ) ):
-                        not_known_e = True
-                        if time_range_vector[y] <= y_ini:
-                            xp_coord_known.append( float(y) )
-                            yp_coord_known.append( float(known_value_ini[y]) )
-                            not_known_e = False
-                        if v_first_decade_year != params['interp'] and time_range_vector[y] == params['first_decade_year']:
-                            xp_coord_known.append( float(y) )
-                            yp_coord_known.append( float(v_first_decade_year) )
-                            not_known_e = False
-                        if v_sec_decade_year != params['interp'] and time_range_vector[y] == params['sec_decade_year']:
-                            xp_coord_known.append( float(y) )
-                            yp_coord_known.append( float(v_sec_decade_year) )
-                            not_known_e = False
-                        if v_final_year != params['interp'] and time_range_vector[y] == params['final_year']:
-                            xp_coord_known.append( float(y) )
-                            yp_coord_known.append( float(v_final_year) )
-                            not_known_e = False
-                        if not_known_e == True:
-                            x_coord_tofill.append( float(y) )
-                    #
-                    y_coord_filled = list( np.interp( x_coord_tofill, xp_coord_known, yp_coord_known ) )
-                    interpolated_values = []
-                    for coord in range( len( time_range_vector ) ):
-                        if coord in xp_coord_known:
-                            value_index = xp_coord_known.index(coord)
-                            interpolated_values.append( float( yp_coord_known[value_index] ) )
-                        elif coord in x_coord_tofill:
-                            value_index = x_coord_tofill.index(coord)
-                            interpolated_values.append( float( y_coord_filled[value_index] ) )
-                    #
-                    adoption_shift = interpolated_values
-                    #
-                #
-                if this_type == params['logistic']:
-                    R_base_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
-                    R_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
-                    L =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
-                    C =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
-                    M =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 4 ]
-                    #
-                    r_final_year = 1/R_final_year
-                    Q =     L/C - 1
-                    k =     np.log( (r_final_year-1)/Q )/(M-params['final_year'])
-                    #
-                    shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,params['final_year']+1 ) ]
-                    shift_year_counter = 0
-                    adoption_shift = []
-                    #
-                    for t in range( len( time_range_vector ) ):
-                        if time_range_vector[t] > Initial_Year_of_Uncertainty:
-                            x = int( shift_years[shift_year_counter] )
-                            adoption_shift.append( generalized_logistic_curve(x, L, Q, k, M))
-                            shift_year_counter += 1
-                        else:
-                            adoption_shift.append( 0.0 )
-                #########################################################################################
-                #
-                for cp in range( len( cap_vars ) ):
-                    #
-                    if cap_vars[cp] in params['cap_vars_cond']:
-                        security_multiplier_factor = 1.001 # 1.0001
-                    elif cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit':
-                        security_multiplier_factor = 0.999 # 0.9999
-                    #
-                    group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ cap_vars[cp] ][ 't' ] ) if x == str( group_tech_set ) ]
-                    group_value_list = stable_scenarios[ scenario_list[s] ][ cap_vars[cp] ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
-                    group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
-                    #**********************************************************************
-                    if this_type == params['linear']:
-                        if 999 in known_values:
-                            indices_999 = [ i for i, x in enumerate( known_values ) if x != float( 999 ) ]
-                            max_known_years = known_years[ max( indices_999 ) ]
-                            for y in range( len( time_range_vector ) ):
-                                if cap_vars[cp] == 'TotalAnnualMaxCapacity' and time_range_vector[y] > max_known_years:
-                                    adoption_shift[y] = 1
-                                elif cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit' and time_range_vector[y] > max_known_years:
-                                    adoption_shift[y] = 0
+        #             this_set_range_indices = [ i for i, x in enumerate(stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str(this_set)]
+        #             if len( this_set_range_indices ) != 0:
+        #                 value_list = stable_scenarios[scenario_list[s]]['TotalTechnologyAnnualActivityLowerLimit']['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ]
+        #                 value_list = [ float( value_list[j] ) for j in range( len( value_list ) ) ]
+        #                 known_value_ini = []
+        #                 for y in range( len( time_range_vector ) ):
+        #                     if time_range_vector[y] <= y_ini:
+        #                         known_value_ini.append(value_list[y]/group_value_list[y])
+        #                         #
+        #                     #
+        #                 #
+        #             #
+        #             else:  # If there is no prior restriction, we star from zero.
+        #                 known_value_ini = []
+        #                 for y in range( len( time_range_vector ) ):
+        #                     if time_range_vector[y] <= y_ini:
+        #                         known_value_ini.append(0)
+        #                         #
+        #                     #
+        #                 #
+        #             #
+        #             known_values = known_value_ini + [float_v_first_decade_year, float_v_sec_decade_year, float_v_final_year ]
+        #             #
+        #             x_coord_tofill, xp_coord_known, yp_coord_known = [], [], []
+        #             for y in range( len( time_range_vector ) ):
+        #                 not_known_e = True
+        #                 if time_range_vector[y] <= y_ini:
+        #                     xp_coord_known.append( float(y) )
+        #                     yp_coord_known.append( float(known_value_ini[y]) )
+        #                     not_known_e = False
+        #                 if v_first_decade_year != params['interp'] and time_range_vector[y] == params['first_decade_year']:
+        #                     xp_coord_known.append( float(y) )
+        #                     yp_coord_known.append( float(v_first_decade_year) )
+        #                     not_known_e = False
+        #                 if v_sec_decade_year != params['interp'] and time_range_vector[y] == params['sec_decade_year']:
+        #                     xp_coord_known.append( float(y) )
+        #                     yp_coord_known.append( float(v_sec_decade_year) )
+        #                     not_known_e = False
+        #                 if v_final_year != params['interp'] and time_range_vector[y] == params['final_year']:
+        #                     xp_coord_known.append( float(y) )
+        #                     yp_coord_known.append( float(v_final_year) )
+        #                     not_known_e = False
+        #                 if not_known_e == True:
+        #                     x_coord_tofill.append( float(y) )
+        #             #
+        #             y_coord_filled = list( np.interp( x_coord_tofill, xp_coord_known, yp_coord_known ) )
+        #             interpolated_values = []
+        #             for coord in range( len( time_range_vector ) ):
+        #                 if coord in xp_coord_known:
+        #                     value_index = xp_coord_known.index(coord)
+        #                     interpolated_values.append( float( yp_coord_known[value_index] ) )
+        #                 elif coord in x_coord_tofill:
+        #                     value_index = x_coord_tofill.index(coord)
+        #                     interpolated_values.append( float( y_coord_filled[value_index] ) )
+        #             #
+        #             adoption_shift = interpolated_values
+        #             #
+        #         #
+        #         if this_type == params['logistic']:
+        #             R_base_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 0 ] # This is not used / remove in future versions.
+        #             R_final_year = adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 1 ]
+        #             L =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 2 ]
+        #             C =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 3 ]
+        #             M =     adoption_params[ scenario_list[s] ][ this_set ][ 'Values' ][ 4 ]
+        #             #
+        #             r_final_year = 1/R_final_year
+        #             Q =     L/C - 1
+        #             k =     np.log( (r_final_year-1)/Q )/(M-params['final_year'])
+        #             #
+        #             shift_years = [ n for n in range( Initial_Year_of_Uncertainty+1,params['final_year']+1 ) ]
+        #             shift_year_counter = 0
+        #             adoption_shift = []
+        #             #
+        #             for t in range( len( time_range_vector ) ):
+        #                 if time_range_vector[t] > Initial_Year_of_Uncertainty:
+        #                     x = int( shift_years[shift_year_counter] )
+        #                     adoption_shift.append( generalized_logistic_curve(x, L, Q, k, M))
+        #                     shift_year_counter += 1
+        #                 else:
+        #                     adoption_shift.append( 0.0 )
+        #         #########################################################################################
+        #         #
+        #         for cp in range( len( cap_vars ) ):
+        #             #
+        #             if cap_vars[cp] in params['cap_vars_cond']:
+        #                 security_multiplier_factor = 1.001 # 1.0001
+        #             elif cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit':
+        #                 security_multiplier_factor = 0.999 # 0.9999
+        #             #
+        #             group_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ cap_vars[cp] ][ 't' ] ) if x == str( group_tech_set ) ]
+        #             group_value_list = stable_scenarios[ scenario_list[s] ][ cap_vars[cp] ]['value'][ group_set_range_indices[0]:group_set_range_indices[-1]+1 ]
+        #             group_value_list = [ float( group_value_list[j] ) for j in range( len( group_value_list ) ) ]
+        #             #**********************************************************************
+        #             if this_type == params['linear']:
+        #                 if 999 in known_values:
+        #                     indices_999 = [ i for i, x in enumerate( known_values ) if x != float( 999 ) ]
+        #                     max_known_years = known_years[ max( indices_999 ) ]
+        #                     for y in range( len( time_range_vector ) ):
+        #                         if cap_vars[cp] == 'TotalAnnualMaxCapacity' and time_range_vector[y] > max_known_years:
+        #                             adoption_shift[y] = 1
+        #                         elif cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit' and time_range_vector[y] > max_known_years:
+        #                             adoption_shift[y] = 0
 
-                    #**********************************************************************
-                    new_value_list = []
-                    for n in range( len( time_range_vector ) ):
-                        new_value_list.append( security_multiplier_factor*adoption_shift[n]*group_value_list[n] )
-                        new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
-                    #
-                    this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ cap_vars[cp] ][ 't' ] ) if x == str( this_set ) ]
-                    if len( this_set_range_indices ) != 0:
-                        stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
-                        # print('happens??', this_set, this_sector, scenario_list[s], cap_vars[cp])
-                    else: # this means we need to add the data to the dictionary
-                        # print('happens??', this_set, this_sector, scenario_list[s], cap_vars[cp])
-                        for y in range( len( time_range_vector ) ):
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'].append( params['coun_initial'] )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'].append( this_set )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'].append( str( time_range_vector[y] ) )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'].append( new_value_list_rounded[y] )
-            #
-            # This section makes the code have coherent restrictions for transport:
-            if scenario_list[s] != params['BAU']:
-                cap_vars = params['cap_vars']
-                for cp in range( len( cap_vars ) ):
-                    all_sets = list( set( stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] ) )
-                    all_sets.sort()
-                    ref_dict = deepcopy( stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ] )
-                    stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'] = []
-                    stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] = []
-                    stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'] = []
-                    stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'] = []
-                    for t in range( len( all_sets ) ):
-                        ###if all_sets[t] in applicable_sets or all_sets[t][:2] != params['tr]:
-                        if ((all_sets[t] in applicable_sets or all_sets[t][:2] != params['tr']) or
-                            (all_sets[t] in rewrite_techs_lowlim and all_sets[t] not in applicable_sets and cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit') or
-                            (all_sets[t] in rewrite_techs_maxcap and all_sets[t] not in applicable_sets and cap_vars[cp] == 'TotalAnnualMaxCapacity')):
-                            this_set_range_indices = [ i for i, x in enumerate( ref_dict[ 't' ] ) if x == str( all_sets[t] ) ]
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'] += deepcopy( ref_dict['r'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] += deepcopy( ref_dict['t'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'] += deepcopy( ref_dict['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
-                            stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'] += deepcopy( ref_dict['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+        #             #**********************************************************************
+        #             new_value_list = []
+        #             for n in range( len( time_range_vector ) ):
+        #                 new_value_list.append( security_multiplier_factor*adoption_shift[n]*group_value_list[n] )
+        #                 new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
+        #             #
+        #             this_set_range_indices = [ i for i, x in enumerate( stable_scenarios[ scenario_list[ s ] ][ cap_vars[cp] ][ 't' ] ) if x == str( this_set ) ]
+        #             if len( this_set_range_indices ) != 0:
+        #                 stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
+        #                 # print('happens??', this_set, this_sector, scenario_list[s], cap_vars[cp])
+        #             else: # this means we need to add the data to the dictionary
+        #                 # print('happens??', this_set, this_sector, scenario_list[s], cap_vars[cp])
+        #                 for y in range( len( time_range_vector ) ):
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'].append( params['coun_initial'] )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'].append( this_set )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'].append( str( time_range_vector[y] ) )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'].append( new_value_list_rounded[y] )
+        #     #
+        #     # This section makes the code have coherent restrictions for transport:
+        #     if scenario_list[s] != params['BAU']:
+        #         cap_vars = params['cap_vars']
+        #         for cp in range( len( cap_vars ) ):
+        #             all_sets = list( set( stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] ) )
+        #             all_sets.sort()
+        #             ref_dict = deepcopy( stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ] )
+        #             stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'] = []
+        #             stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] = []
+        #             stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'] = []
+        #             stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'] = []
+        #             for t in range( len( all_sets ) ):
+        #                 ###if all_sets[t] in applicable_sets or all_sets[t][:2] != params['tr]:
+        #                 if ((all_sets[t] in applicable_sets or all_sets[t][:2] != params['tr']) or
+        #                     (all_sets[t] in rewrite_techs_lowlim and all_sets[t] not in applicable_sets and cap_vars[cp] == 'TotalTechnologyAnnualActivityLowerLimit') or
+        #                     (all_sets[t] in rewrite_techs_maxcap and all_sets[t] not in applicable_sets and cap_vars[cp] == 'TotalAnnualMaxCapacity')):
+        #                     this_set_range_indices = [ i for i, x in enumerate( ref_dict[ 't' ] ) if x == str( all_sets[t] ) ]
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['r'] += deepcopy( ref_dict['r'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['t'] += deepcopy( ref_dict['t'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['y'] += deepcopy( ref_dict['y'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
+        #                     stable_scenarios[ scenario_list[s] ][ cap_vars[ cp ] ]['value'] += deepcopy( ref_dict['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] )
 
         ### BLOCK 8: Adjust all paramters for distance change ### // we do not apply this to BAU // here the occupancy rate AND the modal shift were already adjusted
         # parameters_involved = ['CapitalCost','FixedCost','ResidualCapacity','TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit']
@@ -3398,17 +3400,18 @@ if __name__ == '__main__':
                             new_value_list_rounded = [ round(elem, params['round_#']) for elem in new_value_list ]
                             stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
         
-                            if this_group_set == params['tech_he_fre'] and scenario_list[s] != params['BAU']:  # here we need to adjust the capacity of freight rail for consistency
-                                tsri_frerail = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ this_parameter ][ this_set_type_initial ] ) if x == str( params['tech_train_fre'] ) ]
-                                value_list_frerail = deepcopy( stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] )
-                                value_list_frerail = [ float(value_list_frerail[j]) for j in range( len(value_list_frerail) ) ]
-                                #
-                                new_value_list_frerail = []
-                                for n in range( len( value_list_frerail ) ):
-                                    new_value_list_frerail.append( value_list_frerail[n]*new_distance[n]/base_distance[n] )
-                                #
-                                new_value_list_frerail_rounded = [ round(elem, params['round_#']) for elem in new_value_list_frerail ]
-                                stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] = deepcopy( new_value_list_frerail_rounded )
+                            # Comment this section for this energy model
+                            # if this_group_set == params['tech_he_fre'] and scenario_list[s] != params['BAU']:  # here we need to adjust the capacity of freight rail for consistency
+                            #     tsri_frerail = [ i for i, x in enumerate( stable_scenarios[scenario_list[s]][ this_parameter ][ this_set_type_initial ] ) if x == str( params['tech_train_fre'] ) ]
+                            #     value_list_frerail = deepcopy( stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] )
+                            #     value_list_frerail = [ float(value_list_frerail[j]) for j in range( len(value_list_frerail) ) ]
+                            #     #
+                            #     new_value_list_frerail = []
+                            #     for n in range( len( value_list_frerail ) ):
+                            #         new_value_list_frerail.append( value_list_frerail[n]*new_distance[n]/base_distance[n] )
+                            #     #
+                            #     new_value_list_frerail_rounded = [ round(elem, params['round_#']) for elem in new_value_list_frerail ]
+                            #     stable_scenarios[scenario_list[s]][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] = deepcopy( new_value_list_frerail_rounded )
 
                     '''
                     # Me must act upon the parameters that get affected by the distance change. We must the read the scenario and extract a list of the technologies that require the change.
@@ -3518,7 +3521,7 @@ if __name__ == '__main__':
         '''
         ### BLOCK 9: makes the code have coherent restrictions for industry // applies for any scenario:
         '''
-        '''
+        
         #***********************************************************************************************
         ### BLOCK 10: Integrate biofuels according to RECOPE / *we must use a new interpolation function*.
         #  Note: the biodiesel blend will affect all the sectors, not only transport.
@@ -3577,34 +3580,35 @@ if __name__ == '__main__':
                     value_list = deepcopy( stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] )
                     value_list = [ float(value_list[j]) for j in range( len(value_list) ) ]
                     #
-                    start_blend_point = [params['year_start_blend_point'], 2]
-                    mid_blend_point = [params['year_mid_blend_point'], 4]
-                    final_blend_point = [params['year_final_blend_point'], 8]
+                    start_blend_point = [params['year_start_blend_point'], 9.98]
+                    mid_blend_point = [params['year_mid_blend_point'], 9.99]
+                    final_blend_point = [params['year_final_blend_point'], 10]
                     new_value_list_rounded, biofuel_shares = interpolation_blend( start_blend_point, mid_blend_point, final_blend_point, value_list, time_range_vector )
                     #
                     stable_scenarios[ scenario_list[ s ] ][ 'EmissionActivityRatio' ]['value'][ this_tech_emission_indices[0]:this_tech_emission_indices[-1]+1 ] = deepcopy( new_value_list_rounded )
                     #
                     if params['Use_Blend_Shares_B1']:
                         Blend_Shares[ scenario_list[s] ][  Gasoline_Techs[n] ].update( { Gasoline_Techs_Emissions[ Gasoline_Techs[n] ][n2]:biofuel_shares } )
-        '''
-        # BLOCK 11: Integrate emission restriction
-        if scenario_list[s] in list(set(base_configuration_emi_res['Scenario'].tolist())):
-            this_scenario_df = deepcopy(base_configuration_emi_res.loc[base_configuration_emi_res['Scenario'].isin([scenario_list[s]])])
-            set_list = list(set(this_scenario_df['Emission'].tolist()))
-            for l in range(len(set_list)):
-                this_scenario_tech_df = this_scenario_df.loc[this_scenario_df['Emission'] == set_list[l]]
-                # Assuming you are only interested in the first row based on some condition, as your code suggests.
-                this_index = this_scenario_tech_df.index.tolist()[0]
+        
+        # Comment this section for this energy model
+        # # BLOCK 11: Integrate emission restriction
+        # if scenario_list[s] in list(set(base_configuration_emi_res['Scenario'].tolist())):
+        #     this_scenario_df = deepcopy(base_configuration_emi_res.loc[base_configuration_emi_res['Scenario'].isin([scenario_list[s]])])
+        #     set_list = list(set(this_scenario_df['Emission'].tolist()))
+        #     for l in range(len(set_list)):
+        #         this_scenario_tech_df = this_scenario_df.loc[this_scenario_df['Emission'] == set_list[l]]
+        #         # Assuming you are only interested in the first row based on some condition, as your code suggests.
+        #         this_index = this_scenario_tech_df.index.tolist()[0]
 
-                # Retrieve the row corresponding to `this_index` and only keep columns that are in `time_range_vector`.
-                # Then, convert the resulting Series to a list.
-                value_list = this_scenario_tech_df.loc[this_index, time_range_vector].tolist()
+        #         # Retrieve the row corresponding to `this_index` and only keep columns that are in `time_range_vector`.
+        #         # Then, convert the resulting Series to a list.
+        #         value_list = this_scenario_tech_df.loc[this_index, time_range_vector].tolist()
 
-                for n in range(len(time_range_vector)):
-                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['r'].append(params['coun_initial'])
-                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['e'].append(set_list[l])
-                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['y'].append(time_range_vector[n])
-                    stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['value'].append(value_list[n])
+        #         for n in range(len(time_range_vector)):
+        #             stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['r'].append(params['coun_initial'])
+        #             stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['e'].append(set_list[l])
+        #             stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['y'].append(time_range_vector[n])
+        #             stable_scenarios[scenario_list[s]]['AnnualEmissionLimit']['value'].append(value_list[n])
                                             
     print('  finished the standard adjustment, now to processing')
 
@@ -3895,12 +3899,8 @@ if __name__ == '__main__':
 
     #########################################################################################
     global scenario_list_print
-    scenario_list_print = deepcopy( scenario_list ) # [params['BAU'],'OP15C',params['NDP']]
-    # scenario_list_print = [params['BAU'],params['NDP'],'NDP_A','OP15C'] # FLAG: This is an input
-    # scenario_list_print = [params['NDP']]
+    scenario_list_print = deepcopy( scenario_list ) 
 
-    # print('stop before printing')
-    # sys.exit()
 
     if generator_or_executor == params['gen_or_exe_1'] or generator_or_executor == params['gen_or_exe_2']:
         #

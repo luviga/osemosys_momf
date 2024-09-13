@@ -159,7 +159,7 @@ start: 'start cmd.exe /k cd ' # B1, em, FRM
 solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # For CBC use
 iteration_time: 60
@@ -193,7 +193,7 @@ gen_or_exe_4: 'Both' # B1, em # Must not change
 inputs_txt_csv: 'Both' # 'Both', 'csv' # B1, em # Must not change
 
 # Country
-coun_initial: 'RD' # B1
+coun_initial: 'JAM' # B1
 
 disc_rate: 0.0504 # Is the same value of the parameter DiscountRate of the dict "default_val_params" # em ###
 
@@ -217,8 +217,8 @@ round_#: 4 # B1, em
 # Sectors variables
 Use_Energy: True # em 
 Use_Waste: True #  em
-Use_Waste_B1: True # B1
-Use_Transport_B1: True # B1
+Use_Waste_B1: False # B1
+Use_Transport_B1: False # B1
 Use_AFOLU: True # em
 Use_PIUP: True # em
 
@@ -248,10 +248,10 @@ R_base_year: 'R2021' # em #check
 # r_base_year_max == r2021max Do not uncommented, this is a variable defined at the script
 year_first_range: 2018 # B1, em
 year_driven_distance: 2019 # B1
-year_start_blend_point: 2020 # B1
+year_start_blend_point: 2024 # B1
 year_start_blend_point_2: 2026 # B1
-year_mid_blend_point: 2021 # B1
-year_final_blend_point: 2022 # B1
+year_mid_blend_point: 2025 # B1
+year_final_blend_point: 2026 # B1
 year_final_blend_point_2: 2030 # B1
 
 # Changed year
@@ -290,7 +290,7 @@ v_sec_decade_year: 'v_2040' # B1
 #----------------------------------------------------------------------------------#
 default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   AccumulatedAnnualDemand: 0,
-  AnnualEmissionLimit: 999999999999999999999,
+  AnnualEmissionLimit: 99999,
   AnnualExogenousEmission: 0,
   AvailabilityFactor: 1,
   CapacityFactor: 1,
@@ -310,7 +310,7 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   FixedCost: 0,
   InputActivityRatio: 0,
   MinStorageCharge: 0,
-  ModelPeriodEmissionLimit: 999999999999999999999,
+  ModelPeriodEmissionLimit: 99999,
   ModelPeriodExogenousEmission: 0,
   OperationalLife: 1,
   OperationalLifeStorage: 1,
@@ -330,14 +330,14 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
   StorageMaxDischargeRate: 0,
   TechnologyFromStorage: 0,
   TechnologyToStorage: 0,
-  TotalAnnualMaxCapacity: 999999999999999999999,
-  TotalAnnualMaxCapacityInvestment: 999999999999999999999,
+  TotalAnnualMaxCapacity: 99999,
+  TotalAnnualMaxCapacityInvestment: 99999,
   TotalAnnualMinCapacity: 0,
   TotalAnnualMinCapacityInvestment: 0,
   TotalTechnologyAnnualActivityLowerLimit: 0,
-  TotalTechnologyAnnualActivityUpperLimit: 999999999999999999999,
+  TotalTechnologyAnnualActivityUpperLimit: 99999,
   TotalTechnologyModelPeriodActivityLowerLimit: 0,
-  TotalTechnologyModelPeriodActivityUpperLimit: 999999999999999999999,
+  TotalTechnologyModelPeriodActivityUpperLimit: 99999,
   TradeRoute: 0,
   VariableCost: 0.0001,
   YearSplit: 0
@@ -345,7 +345,7 @@ default_val_params: { # B1, em, FRM, plot_csvs, change_default_vals_params ###
 
 params_inputs_data: # B1, em, FRM ###
   - AccumulatedAnnualDemand
-  #- AnnualEmissionLimit
+  - AnnualEmissionLimit
   - AnnualExogenousEmission
   #- AvailabilityFactor
   #- CapacityFactor
@@ -361,7 +361,7 @@ params_inputs_data: # B1, em, FRM ###
   - DepreciationMethod
   - DiscountRate
   #- EmissionActivityRatio
-  #- EmissionsPenalty
+  - EmissionsPenalty
   #- FixedCost
   #- InputActivityRatio
   - MinStorageCharge
@@ -387,7 +387,7 @@ params_inputs_data: # B1, em, FRM ###
   - TechnologyToStorage
   #- TotalAnnualMaxCapacity
   - TotalAnnualMaxCapacityInvestment
-  #- TotalAnnualMinCapacity
+  - TotalAnnualMinCapacity
   #- TotalAnnualMinCapacityInvestment
   #- TotalTechnologyAnnualActivityLowerLimit
   #- TotalTechnologyAnnualActivityUpperLimit
@@ -398,7 +398,7 @@ params_inputs_data: # B1, em, FRM ###
   #- YearSplit
 
 params_inputs_data_excep_by_scen: { # B1, em, FRM ###
-  BAU: ['TotalAnnualMinCapacity', 'AnnualEmissionLimit'],
+  BAU: [],
   LTS: []
 }                   
 
@@ -509,34 +509,34 @@ parameters_to_print: [ # B1, em, FRM
   ]
 
 parameters_to_print_last: [ # B1
-  'AnnualEmissionLimit',
+  #'AnnualEmissionLimit',
   'AvailabilityFactor',
   'CapacityFactor',
   'CapacityToActivityUnit',
   'CapitalCost',
-  'DepreciationMethod',
-  'DiscountRate',
+  #'DepreciationMethod',
+  #'DiscountRate',
   'EmissionActivityRatio',
   'EmissionsPenalty',
   'FixedCost',
   'InputActivityRatio',
-  'ModelPeriodEmissionLimit',
+  #'ModelPeriodEmissionLimit',
   'OperationalLife',
   'OutputActivityRatio',
-  'REMinProductionTarget',
+  #'REMinProductionTarget',
   'ResidualCapacity',
-  'RETagFuel',
-  'RETagTechnology',
+  #'RETagFuel',
+  #'RETagTechnology',
   'SpecifiedAnnualDemand',
   'SpecifiedDemandProfile',
   'TotalAnnualMaxCapacity',
-  'TotalAnnualMaxCapacityInvestment',
+  #'TotalAnnualMaxCapacityInvestment',
   'TotalAnnualMinCapacity',
   'TotalAnnualMinCapacityInvestment',
   'TotalTechnologyAnnualActivityLowerLimit',
   'TotalTechnologyAnnualActivityUpperLimit',
-  'TotalTechnologyModelPeriodActivityLowerLimit',
-  'TotalTechnologyModelPeriodActivityUpperLimit',
+  #'TotalTechnologyModelPeriodActivityLowerLimit',
+  #'TotalTechnologyModelPeriodActivityUpperLimit',
   'VariableCost',
   'YearSplit'
   ]
@@ -639,23 +639,14 @@ parameters_involved: [ # B1
   'CapitalCost','FixedCost','TotalAnnualMaxCapacity','TotalTechnologyAnnualActivityLowerLimit','ResidualCapacity'
   ]
 
-Diesel_Techs: ['T4DSL_HEA', 'T4DSL_LIG', 'T4DSL_PRI', 'T4DSL_PUB'] # B1
+Diesel_Techs: [] # B1
 
-Diesel_Techs_Emissions: { # B1
-  T4DSL_HEA: [ 'CO2e_Freight', 'CO2e_HeavyCargo', 'CO2e' ],
-  T4DSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-  T4DSL_PRI: [ 'CO2e' ],
-  T4DSL_PUB: [ 'CO2e' ] 
-  }
+Diesel_Techs_Emissions: [] # B1
 
-Gasoline_Techs: ['T4GSL_LIG', 'T4GSL_PRI', 'T4GSL_PUB', 'DIST_GSL'] # B1
+Gasoline_Techs: [] # B1
 
-Gasoline_Techs_Emissions: { # B1
-  T4GSL_LIG: [ 'CO2e_Freight', 'CO2e_LightCargo', 'CO2e' ],
-  T4GSL_PRI: [ 'CO2e' ],
-  T4GSL_PUB: [ 'CO2e' ],
-  DIST_GSL: ['CO2e_sources']
-  }
+Gasoline_Techs_Emissions: [] # B1
+  
 
 basic_header_elements: [ # B1
   'Future.ID', 'Strategy.ID', 'Strategy', 'Fuel',
@@ -739,9 +730,7 @@ train: 'Train' # B1, em
 tech_train: 'Techs_Trains' # B1, em
 param_print: ['TotalAnnualMaxCapacity', 'CapitalCost', 'FixedCost'] # B1, em
 this_combina: [ # B1, em ##@
-  'salud_residuos', 'FERT_ORG','RM','contam_agua','Health',
-  'Accidents','turismo_residuos','Congestion', 'CONHAB',
-  'CONTUR', 'CONVAR', 'CONHICK', 'RESHID', 'DAPANI'
+  'Accidents', 'Health', 'Congestion', 'CONVAR', 'CONHICK', 'REHAB'
   ] 
 PRI: 'PRI' # B1, em
 PUB: 'PUB' # B1, em

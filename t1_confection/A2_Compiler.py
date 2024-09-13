@@ -304,9 +304,12 @@ param_sheets = Demand.sheet_names # see all sheet names
 
 # Define variable to check how many Timeslices model has
 timeslices_dict = {}
-timeslices_dict.update( { 'Timeslices':Demand.parse( 'Timeslices' ) } )
-timeslices_list_check = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
-
+if params['xtra_scen']['Timeslice'] == 'Some':
+    timeslices_dict.update( { 'Timeslices':Demand.parse( 'Timeslices' ) } )
+    timeslices_dict = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
+else:
+    timeslices_dict = []
+timeslices_list_check = timeslices_dict
 
 #
 df_SpecAnnualDemand = pd.DataFrame( columns = Wide_Param_Header )
@@ -360,8 +363,8 @@ for s in range( len( param_sheets ) ):
             if params['joint'] in list_projection_mode[m]:
                 other_tech = list_projection_mode[m].split(' ')[-1]
                 other_tech_index = list_fuel_or_tech.index( other_tech )
-                other_value_BY = Demand_df.loc[ other_tech_index, params['initial_year'] ]
-            this_value_BY = Demand_df.loc[ m, params['initial_year'] ]
+                other_value_BY = Demand_df.loc[ other_tech_index, params['initial_year_gdp'] ]
+            this_value_BY = Demand_df.loc[ m, params['initial_year_gdp'] ]
             #
             this_net_value_BY = this_value_BY + other_value_BY
             #
@@ -376,7 +379,7 @@ for s in range( len( param_sheets ) ):
             #
         #
         if 'Flat' == list_projection_mode[m]:                                               
-            this_value_BY = Demand_df.loc[ m, 2018 ]
+            this_value_BY = Demand_df.loc[ m, params['initial_year'] ]
             for y in range(len(Projections_sheet['Year'].tolist())):
                 Demand_df.loc[ m, Projections_sheet['Year'].tolist()[y] ] = round(this_value_BY, 4)
         #
@@ -453,6 +456,7 @@ Fleet_Groups_OR = {} # *OR* is occupancy rate
 #
 Parametrization = pd.ExcelFile(params['A1_outputs'] + params['Print_Paramet'])
 param_sheets = Parametrization.sheet_names # see all sheet names
+param_sheets.remove('growth_formula')
 #
 params_dict = {}
 params_dict_new = {}
@@ -548,8 +552,12 @@ accumulated_data = {}
 #
 # Define variable to check how many Timeslices model has
 timeslices_dict = {}
-timeslices_dict.update( { 'Timeslices':Parametrization.parse( 'Timeslices' ) } )
-timeslices_list_check = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
+if params['xtra_scen']['Timeslice'] == 'Some':
+    timeslices_dict.update( { 'Timeslices':Parametrization.parse( 'Timeslices' ) } )
+    timeslices_dict = timeslices_dict['Timeslices']['Timeslice'].unique().tolist()
+else:
+    timeslices_dict = []
+timeslices_list_check = timeslices_dict
 #
 print('4.b. - Remaining parameters.')
 for s in range( len( param_sheets ) ):
