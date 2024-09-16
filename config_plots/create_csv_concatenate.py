@@ -129,10 +129,14 @@ if __name__ == '__main__':
     # Take scenario and future from the main_path
     # example
     # this_case[0] = 'BAU_15.txt'
-    case = main_path[1].replace('.txt', '')
-    scen = main_path[1]
-    scen = scen[:3]
-    tier_by_path = main_path[2]
+    # case = main_path[1].replace('.txt', '')
+    # scen = main_path[1]
+    # scen = scen[:3]
+    # tier_by_path = main_path[2]
+    
+    case = 'BAU_0'
+    scen = 'BAU'
+    tier_by_path = str(1)
     
     
     

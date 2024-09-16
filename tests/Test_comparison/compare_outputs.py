@@ -280,12 +280,12 @@ def manipulate_dataframe_columns(df, sce, num):
 if __name__ == '__main__':
     
     # Control variables
-    sector = 'Energy'
+    sector = 'JAM'
     sce = 'BAU'
-    num = 1
-    scen = f'{sector}/{sce}/{num}/' # Do not change
+    num = 0
+    scen = f'Outputs_files/{sector}/{sce}/{num}/' # Do not change
     out_name = f'{sector}_{sce}_{num}' # Do not change
-    case = 'new' # 'old' or 'new'
+    case = 'old' # 'old' or 'new'
     sf_round = 5
     tolerance = 0.05
     
@@ -329,7 +329,7 @@ if __name__ == '__main__':
     
     # Yaml case
     if case == 'old':
-        file_path = scen + f'{sce}_{num}_Output_yaml.csv'
+        file_path = scen + f'Data_Output_{num}.csv'
         # To use with new workflow but with glpk old dataprocessor
         columns_to_remove = [
             'Strategy',

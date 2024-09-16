@@ -159,7 +159,7 @@ start: 'start cmd.exe /k cd ' # B1, em, FRM
 solver: 'cbc' # Could you use 'glpk', 'cbc' or 'cplex' # B1, em, FRM
 
 # For GLPK use
-glpk_option: 'new' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
+glpk_option: 'old' # Could you use 'old' for the first method and 'new' for method with otoole incorporate # B1, em, FRM
 
 # For CBC use
 iteration_time: 60
@@ -1048,14 +1048,14 @@ vis_dir: 'Visualizations' # Only changes y you want to change the folder name wh
 dir_main_script_yaml: '..\\config_main_files'
 scens: ['BAU', 'LTS']
 parameters_reference : [
-  'AnnualTechnologyEmissionPenaltyByEmission',
+  # 'AnnualTechnologyEmissionPenaltyByEmission',
   'CapitalInvestment',
   'OperatingCost',
   'AnnualFixedOperatingCost',
   'AnnualVariableOperatingCost'
 ]
 parameters_news: [
-  'Externalities2024',
+  # 'Externalities2024',
   'Capex2024',
   'Opex2024',
   'FixedOpex2024',
