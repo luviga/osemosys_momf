@@ -109,25 +109,25 @@ df_output=df_output.assign(Description=np.NaN)
 df_output=df_output.assign(SpecificSector=np.NaN)
 
 
-libro = pd.ExcelFile('B1_Model_Structure.xlsx')
-hoja=libro.parse( 'sector' , skiprows = 0 )
-encabezados=list(hoja)
+# libro = pd.ExcelFile('B1_Model_Structure.xlsx')
+# hoja=libro.parse( 'sector' , skiprows = 0 )
+# encabezados=list(hoja)
 
-col_t=list(hoja[encabezados[0]])
-col_s=list(hoja[encabezados[1]])
-col_d=list(hoja[encabezados[2]])
-col_ss=list(hoja[encabezados[3]])
-dicSector=dict(zip(col_t,col_s))
-dicDescription=dict(zip(col_t,col_d))
-dicSpecificSector=dict(zip(col_t,col_ss))
+# col_t=list(hoja[encabezados[0]])
+# col_s=list(hoja[encabezados[1]])
+# col_d=list(hoja[encabezados[2]])
+# col_ss=list(hoja[encabezados[3]])
+# dicSector=dict(zip(col_t,col_s))
+# dicDescription=dict(zip(col_t,col_d))
+# dicSpecificSector=dict(zip(col_t,col_ss))
 
-llaves=list(dicSector.keys())
-col_sector=np.array(list(df_output['Sector']))
+# llaves=list(dicSector.keys())
+# col_sector=np.array(list(df_output['Sector']))
 
-for i in range(len(llaves)):
-    df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
-    df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
-    df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
+# for i in range(len(llaves)):
+#     df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'Sector'] =  dicSector[llaves[i]]
+#     df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'Description'] =  dicDescription[llaves[i]]
+#     df_output.loc[df_output['TECHNOLOGY'] == llaves[i], 'SpecificSector'] =  dicSpecificSector[llaves[i]]
     
 
 ############################################################################################################
