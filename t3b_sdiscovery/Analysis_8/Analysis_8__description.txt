@@ -1,3 +1,0 @@
-PRIM analysis that validates the runs.
-
-Applies for 2000 future runs.
