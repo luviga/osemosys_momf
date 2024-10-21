@@ -40,7 +40,6 @@ interpolation : implemented in a function for linear of non-linear time-series
 def set_first_list( Executed_Scenario, params ):
     #
     directory = './' + params['Futures'] + str( Executed_Scenario )
-    print(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)
     first_list_raw = os.listdir( directory )
@@ -604,7 +603,6 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     file_adress = re.escape( file_aboslute_address.replace( params['Manager'], '' ) )
     #
     
-
     case_address = file_adress + params['futures_2'] + Executed_Scenario + '\\' + str( first_list[n1] )
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
@@ -5799,13 +5797,28 @@ if __name__ == '__main__':
         #
     
     #######################################################################################
-    
+    count_cases=0
     if generator_or_executor == params['gen_or_exe_3'] or generator_or_executor == params['gen_or_exe_4']:
         #
         print('5: We will produce the outputs and store the data.')
         #
+        # Define se scnarios to execute                               
         if 'All' not in params['execute_scenarios']:
             scenario_list_print = params['execute_scenarios']
+            first_scen = params['execute_scenarios'][0]
+        else:
+            first_scen = params['scens'][0]
+        
+        # Manage of status file  
+        if params['status_file_status'] == 'new':
+            output_filename = 'status_of_each_future.txt'
+            
+            if os.path.exists(output_filename):
+                shutil.os.remove(output_filename)
+                with open(output_filename, 'w') as file_status:
+                    file_status.write('Status of solution of each future.\nWrite in order of solution.')
+                    file_status.write(f'\n\n\n################################# {first_scen} #################################\n\n\n')
+                                                       
         #
         for a_scen in range( len( scenario_list_print ) ):
             #
@@ -5816,7 +5829,10 @@ if __name__ == '__main__':
             #
             if params['parallel']:
                 print('Entered Parallelization')
-                x = len(first_list)
+                if 'All' not in params['execute_scenarios']:
+                    x = len(range(params['execute_futures'][0],params['execute_futures'][1]))
+                else:
+                    x = len(first_list)
                 #
                 max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
                 #
@@ -5826,6 +5842,7 @@ if __name__ == '__main__':
                 # sys.exit()
                 #'''
                 for n in range(0,y_ceil):
+                    count_cases +=1               
                     print('###')
                     n_ini = n*max_x_per_iter
                     processes = []
