@@ -121,6 +121,12 @@ def delete_files(file, solver):
         shutil.os.remove(file.replace('sol', 'glp'))        
     else:
         shutil.os.remove(file.replace('sol', 'lp'))
+def text_exists_in_file(filename, text):
+    if not os.path.exists(filename):
+        return False
+    with open(filename, 'r') as file:
+        content = file.read()
+        return text in content                                        
 
 if __name__ == '__main__':    
     
@@ -134,6 +140,10 @@ if __name__ == '__main__':
     scen = scen[:3]
     tier_by_path = main_path[2]
     
+    # case = 'BAU_4'
+    # scen = 'BAU_4'
+    # scen = scen[:3]
+    # tier_by_path = '3a'                   
     
     
     # Define option to write the file with the detail of solution of each file
@@ -205,18 +215,35 @@ if __name__ == '__main__':
         elif tier_by_path=='3a':
             output_filename = output_filename.replace('\\Futures', '')
         
+        # Define the number of first case for tier 3a
+        if params['execute_scenarios'][-1] == 'All':
+            first_scen = params['scens'][0]
+            first_case_num = 1
+        else:
+            first_scen = params['execute_scenarios'][0]
+            first_case_num = params['execute_futures'][0] -1
         
         
-        if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
+        
+        if case == 'BAU_0' and tier_by_path=='1':
             option = 'w'
+        elif tier_by_path=='3a':
+            option = 'a'
         else:
             option = 'a'
+            
+        
         with open(output_filename, option) as file_status:
-            if (case == 'BAU_1' and tier_by_path=='3a') or (case == 'BAU_0' and tier_by_path=='1'):
+            if scen == first_scen and tier_by_path == '1':
                 file_status.write('Status of solution of each future.\nWrite in order of solution.')
-                file_status.write('\n\n\n################################# BAU #################################\n\n\n')
-            if (case == 'LTS_1' and tier_by_path=='3a') or (case == 'LTS_0' and tier_by_path=='1'):
-                file_status.write('\n\n\n################################# LTS #################################\n\n\n')
+                file_status.write(f'\n\n\n################################# {scen} #################################\n\n\n')
+            elif scen != first_scen and tier_by_path == '1':
+                file_status.write(f'\n\n\n################################# {scen} #################################\n\n\n')
+            elif scen != first_scen and tier_by_path == '3a':
+                text_to_write = f'\n\n\n################################# {scen} #################################\n\n\n'
+                if not text_exists_in_file(output_filename, text_to_write):
+                    file_status.seek(0, 2)  # Move to the end of the file
+                    file_status.write(text_to_write)
             
             
             out_quick = params['outputs'].replace('/','')
