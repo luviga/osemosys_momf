@@ -603,6 +603,108 @@ def check_enviro_variables(solver_command):
     #
 #
 ############################################################################################################################################################################################################
+# def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list_print, params, n2=None):  
+#     set_first_list(Executed_Scenario, params)
+#     # Obtaining the absolute path of the specified script file
+#     file_aboslute_address = os.path.abspath(params['Manager'])
+#     # Getting the configuration main path
+#     file_config_address = get_config_main_path(os.path.abspath(''))
+#     # Escaping characters that could be interpreted by operating system functions
+#     file_address = file_aboslute_address.replace( params['Manager'], '' )
+#     #
+#     # Constructing the address for the case using the parameters provided
+#     case_address = os.path.join(file_address, params['futures_2'].replace('\\\\', ''), Executed_Scenario, first_list[n1])
+#     # Listing '.txt' files in the specified directory
+#     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
+#     #
+#     # Preparing the command start sequence
+#     str_start = params['start'] + file_address
+#     #
+#     # Constructing paths for the data file and the output file, adapting for file system differences
+#     data_file = os.path.join(case_address, this_case[0] )
+#     output_file = os.path.join(case_address, this_case[0].replace('.txt', '_output') )
+#     #
+#     # Determining the solver based on parameters
+#     solver = params['solver']
+
+#     if solver == 'glpk' and params['glpk_option'] == 'old':
+#         # Using older GLPK options
+#         # Check and update environment variables if necessary
+#         check_enviro_variables('glpsol')
+
+#         # Composing the command to solve the model
+#         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' -o ' + str(output_file) + '.txt'
+#         os.system(str_start and str_solve)
+#         #
+#         # Processing data post-solution
+#         data_processor(n1, Executed_Scenario, packaged_useful_elements, params)
+
+#     elif solver == 'glpk' and params['glpk_option'] == 'new':
+#         # Using newer GLPK options
+#         # Check and update environment variables if necessary
+#         check_enviro_variables('glpsol')
+            
+#         # Composing the command to solve the model with new options
+#         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
+#         os.system(str_start and str_solve)        
+#     else:      
+#         # For LP models
+#         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wlp ' + output_file + '.lp --check'
+#         os.system(str_start and str_solve)
+#         if solver == 'cbc':
+#             # Using CBC solver
+#             # Check and update environment variables if necessary
+#             check_enviro_variables('cbc')
+            
+#             # Composing the command for CBC solver
+#             str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
+#             os.system(str_start and str_solve)
+#         elif solver == 'cplex':
+#             # Using CPLEX solver
+#             if os.path.exists(output_file + '.sol'):
+#                 shutil.os.remove(output_file + '.sol')
+            
+#             # Check and update environment variables if necessary
+#             check_enviro_variables('cplex')
+                
+#             # Composing the command for CPLEX solver
+#             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
+#             os.system(str_start and str_solve)
+    
+#     # Handling configuration if yaml is not available for otoole use
+#     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
+#         script_otoole_config = os.path.join(file_config_address, params['otoole_config'])
+#         str_otoole_config = 'python -u ' + script_otoole_config
+#         os.system(str_start and str_otoole_config)
+    
+        
+#     script_config = os.path.join(file_config_address, params['config'])
+#     file_path_conv_format = os.path.join(script_config, params['conv_format'])
+#     file_path_template = os.path.join(script_config, params['templates'])
+#     file_path_outputs = os.path.join(case_address, params['outputs'].replace('/',''))
+    
+    
+#     # Converting outputs from .sol to csv format
+#     if solver == 'glpk' and params['glpk_option'] == 'new':
+#         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' datafile ' + str(data_file) + ' ' + file_path_conv_format + ' --glpk_model ' + output_file + '.glp'
+#         os.system(str_start and str_outputs)
+        
+#     elif solver == 'cbc' or solver == 'cplex':  # the command line for cbc and cplex is the same, the unique difference is the name of the solver
+#         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
+#         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' csv ' + file_path_template + ' ' + file_path_conv_format
+#         os.system(str_start and str_outputs)
+    
+#     time.sleep(1)
+#     # Module to concatenate csvs otoole outputs
+#     # if params['del_files'] and ((params['solver'] == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex'):
+#     if (solver == 'glpk' and params['glpk_option'] == 'new') or solver == 'cbc' or solver == 'cplex':
+#         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
+#         script_concate_csv = os.path.join(file_conca_csvs, params['concat_csvs'])
+#         str_otoole_concate_csv = 'python -u ' + script_concate_csv + ' ' + str(this_case[0]) + ' 3a' # last int is the ID tier
+#         os.system(str_start and str_otoole_concate_csv)
+
+
+
 def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list_print, params, n2=None):  
     set_first_list(Executed_Scenario, params)
     # Obtaining the absolute path of the specified script file
@@ -617,8 +719,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     # Listing '.txt' files in the specified directory
     this_case = [ e for e in os.listdir( case_address ) if '.txt' in e ]
     #
-    # Preparing the command start sequence
-    str_start = params['start'] + file_address
+
     #
     # Constructing paths for the data file and the output file, adapting for file system differences
     data_file = os.path.join(case_address, this_case[0] )
@@ -626,6 +727,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     #
     # Determining the solver based on parameters
     solver = params['solver']
+    commands = []
 
     if solver == 'glpk' and params['glpk_option'] == 'old':
         # Using older GLPK options
@@ -634,7 +736,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
 
         # Composing the command to solve the model
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' -o ' + str(output_file) + '.txt'
-        os.system(str_start and str_solve)
+        commands.append(str_solve)
         #
         # Processing data post-solution
         data_processor(n1, Executed_Scenario, packaged_useful_elements, params)
@@ -646,11 +748,11 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
             
         # Composing the command to solve the model with new options
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wglp ' + output_file + '.glp --write ' + output_file + '.sol'
-        os.system(str_start and str_solve)        
+        commands.append(str_solve)      
     else:      
         # For LP models
         str_solve = 'glpsol -m ' + params['OSeMOSYS_Model'] + ' -d ' + str(data_file) + ' --wlp ' + output_file + '.lp --check'
-        os.system(str_start and str_solve)
+        commands.append(str_solve)
         if solver == 'cbc':
             # Using CBC solver
             # Check and update environment variables if necessary
@@ -658,7 +760,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
             
             # Composing the command for CBC solver
             str_solve = 'cbc ' + output_file + '.lp -seconds ' + str(params['iteration_time']) + ' solve -solu ' + output_file + '.sol'
-            os.system(str_start and str_solve)
+            commands.append(str_solve)
         elif solver == 'cplex':
             # Using CPLEX solver
             if os.path.exists(output_file + '.sol'):
@@ -669,13 +771,16 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
                 
             # Composing the command for CPLEX solver
             str_solve = 'cplex -c "read ' + output_file + '.lp" "optimize" "write ' + output_file + '.sol"'
-            os.system(str_start and str_solve)
+            commands.append(str_solve)
+    
+    for cmd in commands:
+        subprocess.run(cmd, shell=True, check=True)
     
     # Handling configuration if yaml is not available for otoole use
     if not (solver == 'glpk' and params['glpk_option'] == 'old') and not os.path.exists(file_config_address + 'config'):
         script_otoole_config = os.path.join(file_config_address, params['otoole_config'])
         str_otoole_config = 'python -u ' + script_otoole_config
-        os.system(str_start and str_otoole_config)
+        subprocess.run(str_otoole_config, shell=True)
     
         
     script_config = os.path.join(file_config_address, params['config'])
@@ -687,12 +792,12 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
     # Converting outputs from .sol to csv format
     if solver == 'glpk' and params['glpk_option'] == 'new':
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' datafile ' + str(data_file) + ' ' + file_path_conv_format + ' --glpk_model ' + output_file + '.glp'
-        os.system(str_start and str_outputs)
+        subprocess.run(str_outputs, shell=True, check=True)
         
     elif solver == 'cbc' or solver == 'cplex':  # the command line for cbc and cplex is the same, the unique difference is the name of the solver
         # but this attribute comes from the variable 'solver' and that variable comes from yaml parametrization file
         str_outputs = 'otoole results ' + solver + ' csv ' + output_file + '.sol ' + file_path_outputs + ' csv ' + file_path_template + ' ' + file_path_conv_format
-        os.system(str_start and str_outputs)
+        subprocess.run(str_outputs, shell=True, check=True)
     
     time.sleep(1)
     # Module to concatenate csvs otoole outputs
@@ -701,7 +806,7 @@ def main_executer(n1, Executed_Scenario, packaged_useful_elements, scenario_list
         file_conca_csvs = get_config_main_path(os.path.abspath(''),'config_plots')
         script_concate_csv = os.path.join(file_conca_csvs, params['concat_csvs'])
         str_otoole_concate_csv = 'python -u ' + script_concate_csv + ' ' + str(this_case[0]) + ' 3a' # last int is the ID tier
-        os.system(str_start and str_otoole_concate_csv)
+        subprocess.run(str_otoole_concate_csv, shell=True, check=True)
 
 #
 def function_C_mathprog_parallel( fut_index, inherited_scenarios, unpackaged_useful_elements, params ):
