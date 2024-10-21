@@ -1,2 +1,3 @@
+pyDOE
 xlsxwriter
 xlrd
