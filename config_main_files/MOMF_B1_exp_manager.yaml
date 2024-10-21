@@ -16,15 +16,15 @@
 # Model external dependencies: Directories, Files, sheets and columns
 ########################################################################################
 # Directories
-Executables: './Executables' # B1
+Executables: 'Executables' # B1
 Executables_2: '.\Executables'
 Executables_3: 'Executables'
 A1_Inputs: './A1_Inputs/' # B1
 A1_Outputs: './A1_Outputs/' # B1
-A2_Output_Params: './A2_Output_Params/' # B1
+A2_Output_Params: 'A2_Output_Params' # B1
 B1_Output_Params: './B1_Output_Params/' # B1
 outputs: '/Outputs' # B1, em, FRM
-config: 'config\\' # B1
+config: 'config' # B1
 templates: 'templates' # B1
 Experi_plat: './Experimental_Platform' # em
 Futures: '/Futures/' # em, FRM
@@ -129,16 +129,16 @@ Uncer_Table: 'Uncertainty_Tables_RD.xlsx' # em
 Bro_out_dat_cre: 'Broad_Output_Dataset_Creator_f.py'
 # Output Dataset 0
 # File
-Out_dat_0: '\output_dataset_0.csv'
+Out_dat_0: 'output_dataset_0.csv'
 # Output Dataset f
 # File
-Out_dat_f: '\output_dataset_f.csv'
+Out_dat_f: 'output_dataset_f.csv'
 # Input Dataset 0
 # File
-In_dat_0: '\input_dataset_0.csv'
+In_dat_0: 'input_dataset_0.csv'
 # Input Dataset f
 # File
-In_dat_f: '\input_dataset_f.csv'
+In_dat_f: 'input_dataset_f.csv'
 # OSeMOSYS Country Input
 # File
 ose_cou_in: 'OSMOSYS_RD_Input'
@@ -168,15 +168,15 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 4 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
 max_x_per_iter: 2 # B1, em
-execute_scenarios: ['BAU', 'LTS'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [3,4] # em # Select range of the futures you want to execute
+execute_scenarios: ['All'] # em # Could you put 'All', 'BAU' or any scenario of the study
+execute_futures: [0,2] # em # Select range of the futures you want to execute
 status_file_status: 'new' # The options are 'new' or 'old'
 # if you select 'new' the file was reset 
 #----------------------------------------------------------------------------------#
@@ -1054,9 +1054,9 @@ model: 'MOMF'
 tier: '3a' # two options: '1' or '3a'
 
 # Second: Select folders
-tier1_dir: '..\\t1_confection\\Executables' # Don't change
-tier3a_dir: '..\\t3a_experiments\\Experiment_1\\Futures' #'../t3a_experiments/Experiment_1/Futures'
-excel_data_file_dir:  '..\\t3a_experiments\\Experiment_1\\Futures\\'
+tier1_dir: '\t1_confection\Executables' # Don't change
+tier3a_dir: '\t3a_experiments\Experiment_1\Futures' #'../t3a_experiments/Experiment_1/Futures'
+excel_data_file_dir:  '\t3a_experiments\Experiment_1\Futures\'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
 dir_main_script_yaml: '..\\config_main_files'
 scens: ['BAU', 'LTS']

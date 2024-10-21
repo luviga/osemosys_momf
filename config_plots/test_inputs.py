@@ -554,14 +554,16 @@ if __name__ == '__main__':
     
     # Read yaml file
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_main_files')
-    params = load_and_process_yaml(file_config_address + '\\' + 'MOMF_B1_exp_manager.yaml')
+    params = load_and_process_yaml(os.path.join(file_config_address, 'MOMF_B1_exp_manager.yaml'))
   
     if specific_case:
         pickle_path = specific_case_pickle_path
     elif tier == str(1):
-        pickle_path = initial_path + 'A1_outputs\A-O_Fleet_Groups.pickle'
+        path_fleet_group = os.path.join('A1_outputs', 'A-O_Fleet_Groups.pickle')
+        pickle_path = os.path.join(initial_path, path_fleet_group)
     else:
-        pickle_path = initial_path + '0_From_Confection\A-O_Fleet_Groups.pickle'
+        path_fleet_group = os.path.join('0_From_Confection', 'A-O_Fleet_Groups.pickle')
+        pickle_path = os.path.join(initial_path, path_fleet_group)
         
     # Load mother and child technologies from the .pickle file
     with open(pickle_path, 'rb') as file:
@@ -602,9 +604,10 @@ if __name__ == '__main__':
         if specific_case:
             dir_files = os.path.dirname(os.path.abspath(__file__))
         elif tier == str(1):
-            dir_files = initial_path + '\Executables'
+            dir_files = os.path.join(initial_path, 'Executables')
         else:
-            dir_files = initial_path + '\Futures\\' + scen
+            path_of_dir_files = os.path.join(initial_path, 'Futures')
+            dir_files = os.path.join(path_of_dir_files, scen)
     
         # List all entries in the directory
         all_entries = os.listdir(dir_files)
@@ -625,12 +628,16 @@ if __name__ == '__main__':
                     future = f
             
             if future == 0 and not specific_case:
-                file_path = f'{initial_path}\Executables\{scen}_{future}\{scen}_{future}.txt'
-                
+                file_path = os.path.join(initial_path, 'Executables')
+                file_path = os.path.join(file_path, f'{scen}_{future}')
+                file_path = os.path.join(file_path, f'{scen}_{future}.txt')                
             elif specific_case:
                 file_path = specific_case_path_txt
             else:
-                file_path = f'{initial_path}\Futures\{scen}\{future}\{future}.txt'
+                file_path = os.path.join(initial_path, 'Futures')
+                file_path = os.path.join(file_path, f'{scen}')
+                file_path = os.path.join(file_path, f'{future}')
+                file_path = os.path.join(file_path, f'{future}.txt')
             
             with open(file_path, 'r') as file:
                 lines = file.readlines()
@@ -639,11 +646,13 @@ if __name__ == '__main__':
             if not os.path.exists('tests_results'):
                 os.makedirs('tests_results')
             if specific_case:
-                output_filename = f'tests_results/comparison_results_{specific_case_path_txt}'
+                output_filename = os.path.join('tests_results', 'comparison_results_{specific_case_path_txt}')
             elif future == 0:
-                output_filename = f'{initial_path}tests_results\comparison_results_{scen}_{future}.txt'
+                output_filename = os.path.join(initial_path, 'tests_results')
+                output_filename = os.path.join(output_filename, f'comparison_results_{scen}_{future}.txt')
             else:
-                output_filename = f'{initial_path}tests_results\comparison_results_{future}.txt'
+                output_filename = os.path.join(initial_path, 'tests_results')
+                output_filename = os.path.join(output_filename, f'comparison_results_{future}.txt')
             
             
             for i in range(len(file_names)):
@@ -693,11 +702,13 @@ if __name__ == '__main__':
             
             # Load the Excel file
             if tier == str(1):
-                file_path_modes_transp = initial_path + 'A1_Inputs/A-I_Classifier_Modes_Transport.xlsx'
+                path_classifier_modes_transport = os.path.join('A1_Inputs', 'A-I_Classifier_Modes_Transport.xlsx')
+                file_path_modes_transp = os.path.join(initial_path, path_classifier_modes_transport)
             elif specific_case:
                 file_path_modes_transp = specific_case_file_path_modes_transp
             else:
-                file_path_modes_transp = initial_path + '0_From_Confection/A-I_Classifier_Modes_Transport.xlsx'
+                path_classifier_modes_transport = os.path.join('0_From_Confection', 'A-I_Classifier_Modes_Transport.xlsx')
+                file_path_modes_transp = os.path.join(initial_path, path_classifier_modes_transport)
             
             # Load the 'Mode_Broad' sheet
             df_mode_broad = pd.read_excel(file_path_modes_transp, sheet_name='Mode_Broad')
