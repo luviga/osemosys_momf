@@ -1,0 +1,27 @@
+--upgrade pip setuptools
+pyDOE
+xlsxwriter
+xlrd
+otoole
+pyyaml
+os
+copy
+shutil
+sys
+pandas
+numpy
+datetime
+pickle
+time
+warnings
+math
+subprocess
+multiprocessing
+gc
+linecache
+csv
+re
+errno
+scipy
+openpyxl
+operator
