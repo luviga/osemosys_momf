@@ -120,10 +120,12 @@ def load_and_process_yaml(path):
 
 if __name__ == '__main__':
     
+    # Set the path relative to the current script location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Read yaml file with parameterization
     file_config_address = get_config_main_path(os.path.abspath(''), 'config_plots')
-    params = load_and_process_yaml(file_config_address + '\\' + 'plots_config.yaml')
+    params = load_and_process_yaml(os.path.join(file_config_address, 'plots_config.yaml'))
         
     sets_corrects = deepcopy(params['sets_otoole'])
     sets_corrects.insert(0,'Parameter')
@@ -139,13 +141,15 @@ if __name__ == '__main__':
         dict_scen_folder_unique = {}
         for scen in params['scens']:
             if params['tier']=='1':
-                all_files_internal = os.listdir(params['tier1_dir'])
+                path_tier1_exe_dir = os.path.join(script_dir, '..', 't1_confection', 'Executables')
+                all_files_internal = os.listdir(path_tier1_exe_dir)
                 dict_scen_folder_unique[f'{scen}_0'] = [i for i in all_files_internal if scen in i]
-                info_filename = params['tier1_dir'].replace('Executables','') + '/' + params['info_filename']
+                info_filename = os.path.join(params['tier1_dir'].replace('Executables',''), params['info_filename'])
             elif params['tier']=='3a':
-                all_files_internal = os.listdir(params['tier3a_dir'] + '/' + scen)
+                path_tier3a_exe_dir = os.path.join(script_dir, '..', 't3a_experiments', 'Experiment_1', 'Futures', scen)
+                all_files_internal = os.listdir(path_tier3a_exe_dir)
                 dict_scen_folder_unique[f'{scen}'] = [i for i in all_files_internal if scen in i]
-                info_filename = params['tier3a_dir'].replace('Futures','') + '/' + params['info_filename']
+                info_filename = os.path.join(params['tier3a_dir'].replace('Futures',''), params['info_filename'])
         count = 0
         for scen in dict_scen_folder_unique:
             
@@ -153,11 +157,11 @@ if __name__ == '__main__':
                 scen = scen.replace('_0', '')
                 # Select folder path
                 if params['tier']=='1':
-                    tier_dir = params['tier1_dir'] + '/' + case
-                    tier = params['tier1_dir']
+                    tier_dir = os.path.join(path_tier1_exe_dir, case)
+                    tier = path_tier1_exe_dir
                 elif params['tier']=='3a':
-                    tier_dir = params['tier3a_dir'] + '/' + scen + '/' + case 
-                    tier = params['tier3a_dir']
+                    tier_dir = os.path.join(path_tier3a_exe_dir, scen, case)
+                    tier = path_tier3a_exe_dir
     
                 # 1st try
                 csv_file_list = os.listdir(tier_dir)
@@ -173,14 +177,16 @@ if __name__ == '__main__':
                 
                 if params['tier']=='3a':
                     # Read dataframe with csv concatenates in the script create_csv_concatenate.py
-                    df_outputs = pd.read_csv(f'{tier}/{scen}/{case}/{case}_output.csv', low_memory=False)
+                    path_tier_outputs = os.path.join(tier, scen, case, f'{case}_output.csv')
+                    df_outputs = pd.read_csv(path_tier_outputs, low_memory=False)
                     parameters = df_outputs.columns.values
                     columns_names_delete = [
                         'Unnamed: 0', 'YEAR', 'TECHNOLOGY', 'FUEL', 'EMISSION', 'Year', 'Technology', 'Fuel', 'Emission'
                         ]
                 elif params['tier']=='1':
                     # Read dataframe with csv concatenates in the script create_csv_concatenate.py
-                    df_outputs = pd.read_csv(f'{tier}/{case}/{case}_output.csv', low_memory=False)
+                    path_tier_outputs = os.path.join(tier, case, f'{case}_output.csv')
+                    df_outputs = pd.read_csv(path_tier_outputs, low_memory=False)
                     parameters = df_outputs.columns.values
                     columns_names_delete = [
                                             "Unnamed: 0",
@@ -296,7 +302,7 @@ if __name__ == '__main__':
                                 print(f"No data for parameter {parameter}. Skipping plot.")
                                 continue
                         
-                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            # Check if there are multiple values for the same Year and Fuel and aggregate them if necessary
                             parameter_df = parameter_df.groupby(['YEAR', 'FUEL'], as_index=False).agg('sum')
                         
                             # Create the plot only if there are technologies/fuels for this parameter
@@ -341,7 +347,7 @@ if __name__ == '__main__':
                                     plt.show()
                                 # To save the plot, uncomment the following line
                                 if params['save_fig']:
-                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    file_path = os.path.join(tier_dir, params['vis_dir'], f'{parameter}.png')
                                     directory = os.path.dirname(file_path)
                                     if not os.path.exists(directory):
                                         os.makedirs(directory)
@@ -374,7 +380,7 @@ if __name__ == '__main__':
                                                                                        
                                     
                     
-                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            # Check if there are multiple values for the same Year and Emission and aggregate them if necessary
                             parameter_df = parameter_df.groupby(['YEAR', 'EMISSION'], as_index=False).agg('sum')
                     
                                                                                                  
@@ -426,7 +432,7 @@ if __name__ == '__main__':
                                     plt.show()
                                 # To save the plot, uncomment the following line
                                 if params['save_fig']:
-                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    file_path = os.path.join(tier_dir, params['vis_dir'], f'{parameter}.png')
                                     directory = os.path.dirname(file_path)
                                     if not os.path.exists(directory):
                                         os.makedirs(directory)
@@ -460,7 +466,7 @@ if __name__ == '__main__':
                                 print(f"No data for parameter {parameter}. Skipping plot.")
                                 continue
                         
-                            # Check if there are multiple values for the same Year and Technology/Fuel and aggregate them if necessary
+                            # Check if there are multiple values for the same Year and Technology and aggregate them if necessary
                             parameter_df = parameter_df.groupby(['YEAR', 'TECHNOLOGY'], as_index=False).agg('sum')
                         
                             # Create the plot only if there are technologies/fuels for this parameter
@@ -505,7 +511,7 @@ if __name__ == '__main__':
                                     plt.show()
                                 # To save the plot, uncomment the following line
                                 if params['save_fig']:
-                                    file_path = f'{tier_dir}/{params["vis_dir"]}/{parameter}.png'
+                                    file_path = os.path.join(tier_dir, params['vis_dir'], f'{parameter}.png')
                                     directory = os.path.dirname(file_path)
                                     if not os.path.exists(directory):
                                         os.makedirs(directory)
