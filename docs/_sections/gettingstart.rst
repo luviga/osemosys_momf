@@ -160,7 +160,7 @@ of the data from the file ``A2_Structure_Lists.xlsx``` to the
 file ``B1_Model_Structure``.
 
 Then, you must do the parametrization of the model in the
-files ``B1_Scenario_Config.xslx`` and ``MOMF_B1_exp_manager.yaml``.
+files ``B1_Scenario_Config.xlsx`` and ``MOMF_B1_exp_manager.yaml``.
 In the last yaml file mention use use for some scripts, for
 this reason each variable have a flag to indicate in what
 scripts it is use, except the two sections in the final of
@@ -467,14 +467,15 @@ Comparison Models
 ^^^^^^^^^^^^^^^^^
 The MOMF has two modes for postprocessing of the data: 
 
-    * The orginal one of the method: this only use as solver
-    `GLPK` and the a function of the method name `Data_Processor`.
-    * **otoole**: through this tool the user should use the
-    following solvers: `GLPK`, `CBC` and `CPLEX`. The results
-    of **otoole** are a csv file by parameter, so was create a
-    routine to concatenate these files and to have the same output
-    file than the first mode, to do that is call the python script
-    `create_csv_concatenate.py`.
+   * The orginal one of the method: this only use as solver
+     `GLPK` and the a function of the method name `Data_Processor`.
+
+   * **otoole**: through this tool the user should use the
+     following solvers: `GLPK`, `CBC` and `CPLEX`. The results
+     of **otoole** are a csv file by parameter, so was create a
+     routine to concatenate these files and to have the same output
+     file than the first mode, to do that is call the python script
+     `create_csv_concatenate.py`.
 
 Data Postprocessing Modes
 """""""""""""""""""""""""
@@ -486,67 +487,76 @@ traditional and updated methods. It checks if values are equivalent,
 though their order might change, as the script could modify the row
 order.
 
-- **Reading Text Files**: Begins by opening and reading two specified
-  files.
-- **Sorting Parameters**: Organizes parameters within a DataFrame sorted
-  into five categories:
-      * **Type 1**: Column names are years, and index names are the first
-        element from the data row, e.g.:
-        .. code-block:: bash
-            param AvailabilityFactor default 1 :=
+- **Reading Text Files**: Begins by opening and reading two specified files.
+- **Sorting Parameters**: Organizes parameters within a DataFrame sorted into five categories:
 
-            [GUA,*,*]:
-
-            2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
-
-            INORG_RCY_OS 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
-
-            ;
-
-      * **Type 2**: Similar to Type 1, but uses the second element of the
-        second row as index names.
-        .. code-block:: bash
-            param CapacityFactor default 1 :=
-
-            [GUA,AD,*,*]:
-
-            2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
-            
-            All 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
-            
-            ;
+   * **Type 1**: Column names are years, and index names are the first element from the data row, e.g.:
+    
+     .. code-block:: text
+     
+        param AvailabilityFactor default 1 :=
         
-      * **Type 3**: Columns are years, and indexes combine the second and
-        third elements of each parameter's definition, e.g.:
-        .. code-block:: bash
-            param EmissionActivityRatio default 0 :=
-
-            [GUA,NO_OSS_NO_COLL,CO2e,*,*]:
-
-            2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
-            
-            1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-            
-            ;
+        [GUA,*,*]:
         
-      * **Type 4**: Column names are the second row vector, and the index
-        is the first element of the third row, e.g.:
-        .. code-block:: bash
-            param CapacityToActivityUnit default 1 :
-            
-            INORG_RCY_OS AD COMPOST LANDFILL NO_CONTR_OD OPEN_BURN SIT_CLAN LANDFILL_ELEC AERO_PTAR AERO_PTAR_RU ANAE_LAGN ANAE_LAGN_RU SEPT_SYST LATR EFLT_DISC OSS_INORG OSS_ORG NO_OSS_BLEND NO_OSS_NO_COLL INORG_DCOLL ORG_DCOLL BLEND_NO_DCOLL BLEND_NO_COLL INORG_SS ORG_SS NO_SS WWWT WWWOT SEWERWW DIRECT_DISC T5TSWTSW T5TWWTWW :=
-            
-            GUA 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 
-            
-            ;
-
+        2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
         
-      * **Type 5**: Stores the complete definition row as a list, differing
-        in treatment from the other types, e.g.:
-        .. code-block:: bash
-            param AccumulatedAnnualDemand default 0 :=
+        INORG_RCY_OS 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+        
+        ;
 
-            ;
+
+   * **Type 2**: Similar to Type 1, but uses the second element of the
+     second row as index names.
+    
+     .. code-block:: text
+     
+        param CapacityFactor default 1 :=
+
+        [GUA,AD,*,*]:
+
+        2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
+        
+        All 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+        
+        ;
+        
+   * **Type 3**: Columns are years, and indexes combine the second and
+     third elements of each parameter's definition, e.g.:
+    
+     .. code-block:: text
+     
+        param EmissionActivityRatio default 0 :=
+
+        [GUA,NO_OSS_NO_COLL,CO2e,*,*]:
+
+        2018 2019 2020 2021 2022 2023 2024 2025 2026 2027 2028 2029 2030 2031 2032 2033 2034 2035 2036 2037 2038 2039 2040 2041 2042 2043 2044 2045 2046 2047 2048 2049 2050 :=
+        
+        1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+        
+        ;
+    
+   * **Type 4**: Column names are the second row vector, and the index
+     is the first element of the third row, e.g.:
+    
+     .. code-block:: text
+     
+        param CapacityToActivityUnit default 1 :
+        
+        INORG_RCY_OS AD COMPOST LANDFILL NO_CONTR_OD OPEN_BURN SIT_CLAN LANDFILL_ELEC AERO_PTAR AERO_PTAR_RU ANAE_LAGN ANAE_LAGN_RU SEPT_SYST LATR EFLT_DISC OSS_INORG OSS_ORG NO_OSS_BLEND NO_OSS_NO_COLL INORG_DCOLL ORG_DCOLL BLEND_NO_DCOLL BLEND_NO_COLL INORG_SS ORG_SS NO_SS WWWT WWWOT SEWERWW DIRECT_DISC T5TSWTSW T5TWWTWW :=
+        
+        GUA 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 
+        
+        ;
+
+    
+   * **Type 5**: Stores the complete definition row as a list, differing
+     in treatment from the other types, e.g.:
+    
+     .. code-block:: text
+     
+        param AccumulatedAnnualDemand default 0 :=
+
+        ;
 
 - **Storing in Dictionaries**: Data extracted is stored in dictionaries
   where each key is a parameter name and the value is the relevant

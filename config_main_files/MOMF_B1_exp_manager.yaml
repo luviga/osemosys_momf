@@ -168,7 +168,7 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 4 # em
+Number_of_Runs: 2 # em
 Scenario_to_Reproduce: 'All' # em
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em

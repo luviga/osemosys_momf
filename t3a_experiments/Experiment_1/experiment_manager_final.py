@@ -1822,6 +1822,17 @@ if __name__ == '__main__':
 
     # sys.exit()
     hypercube = lhs( P-subtracter , samples = N )
+
+    # Routine to save hypercube
+    # Create a list for the index labels you want to use
+    index_labels = ['Future_' + str(i) for i in range(1, hypercube.shape[0] + 1)]
+    # Filter out indices where the value is 'none'
+    valid_columns = list_xlrm_IDs[list_xlrm_IDs != 'none']
+    # Convert hypercube to DataFrame
+    df = pd.DataFrame(hypercube, index=index_labels, columns=valid_columns)
+    # Export hypercube as csv file
+    df.to_csv('hypercube.csv')  # Includes index and column names in the file
+    
     #hypercube = lhs( P , samples = N )
     # hypercube[p] gives vector with values of variable p across the N futures, hence len( hypercube[p] ) = N
     #
@@ -2129,6 +2140,7 @@ if __name__ == '__main__':
             #
         #
     #
+    
     '''''
     ################################# PART 2 #################################
     '''''
@@ -5648,6 +5660,7 @@ if __name__ == '__main__':
             #
             fut_id += 1
     # print('HOLA')
+
     # sys.exit()
     #
     print( '    We have finished the experiment and inheritance' )
@@ -5695,7 +5708,7 @@ if __name__ == '__main__':
     with open(params['Exper_Dict'], 'wb') as handle:
         pickle.dump(experiment_dictionary, handle, protocol=pickle.HIGHEST_PROTOCOL)
     handle.close()
-    
+
     if params['Use_Blend_Shares']:
         blend_shares_zero = pickle.load( open( params['From_Confection'] + params['Blend_Shares_0'], "rb" ) )
         Blend_Shares[params['NDP']].update({0: blend_shares_zero[params['NDP']]})

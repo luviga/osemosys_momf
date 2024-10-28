@@ -50,12 +50,25 @@ that are integral to our processes:
    and "Windows 10 SDK" are checked.
    Is optional but usually is needed to use CBC in Windows.
 
-Note
-^^^^
-Also, the model has dependencies of some Python
-package. You need to check `requirements.txt`
-could find in the a `GitHub repository 
-<insert repository link here>`__
+
+Install Python Packages
+-----------------------
+After clone the repository you can find a python script
+name `install_requirements.py`, you need to execute it
+to install all packages the method need.
+If you prefer you could install one by one through shell
+with the command ``pip install name_package``. In the
+following list you could find every pckage you need:
+
+.. code:: text
+
+   pandas
+   numpy
+   PyYAML
+   scipy
+   pyDOE
+   xlsxwriter
+   xlrd
 
 
 Test Installation of Solvers
