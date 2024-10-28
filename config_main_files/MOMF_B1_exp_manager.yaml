@@ -177,6 +177,8 @@ Experiment_ID: 1 # em
 max_x_per_iter: 2 # B1, em
 execute_scenarios: ['All'] # em # Could you put 'All', 'BAU' or any scenario of the study
 execute_futures: [2,4] #
+status_file_status: 'new' # The options are 'new' or 'old'
+# if you select 'new' the file was reset 
 #----------------------------------------------------------------------------------#
 
 # Choose if want run script in parallel or not
