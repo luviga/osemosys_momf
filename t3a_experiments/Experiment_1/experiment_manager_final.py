@@ -5864,9 +5864,14 @@ if __name__ == '__main__':
             if params['parallel']:
                 print('Entered Parallelization')
                 if 'All' not in params['execute_scenarios']:
-                    x = len(range(params['execute_futures'][0],params['execute_futures'][1]))
+                    if params['execute_futures'][0] == 0:
+                        x = len(range(params['execute_futures'][0],params['execute_futures'][1]+1))
+                    else:
+                        x = len(first_list)
+                    case_ini = params['execute_futures'][0]
                 else:
                     x = len(first_list)
+                    case_ini = 0
                 #
                 max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
                 #
@@ -5875,11 +5880,16 @@ if __name__ == '__main__':
                 #
                 # sys.exit()
                 #'''
+                y_ini_cel = math.ceil(params['execute_futures'][0]/max_x_per_iter)-1
+                if y_ini_cel < 0:
+                    y_ini_cel = 0
                 
-                for n in range(0,y_ceil):
-                    count_cases +=1               
+                for n in range(y_ini_cel,y_ceil):
                     print('###')
                     n_ini = n*max_x_per_iter
+                    
+                    if n*max_x_per_iter <= case_ini:
+                        n_ini = case_ini
                     processes = []
                     #
                     start1 = time.time()
@@ -5888,14 +5898,17 @@ if __name__ == '__main__':
                         max_iter = n_ini + max_x_per_iter
                     else:
                         max_iter = x
+                        
+                    if max_iter > params['execute_futures'][1]:
+                        max_iter = params['execute_futures'][1]
                     #
-                    if 'All' not in params['execute_scenarios']:
-                        n_ini = params['execute_futures'][0]
-                        max_iter = params['execute_futures'][1] 
+                    # if count_cases == 0 and 'All' not in params['execute_scenarios']:
+                    #     n_ini = params['execute_futures'][0]
+                    # if 'All' not in params['execute_scenarios']:
+                    #     max_iter = params['execute_futures'][1] 
                     #
                     for n2 in range( n_ini , max_iter ):
                     # for n2 in range( 2 , max_iter ):
-                        print(n2)
                         p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
                         processes.append(p)
                         p.start()
@@ -5907,6 +5920,7 @@ if __name__ == '__main__':
                     time_elapsed_1 = -start1 + end_1
                     print( str( time_elapsed_1 ) + ' seconds' )
                     time_list.append( time_elapsed_1 )
+                    count_cases +=1
 
             else:
                 print('Started Linear Runs')
