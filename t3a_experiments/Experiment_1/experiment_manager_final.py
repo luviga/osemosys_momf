@@ -2181,7 +2181,8 @@ if __name__ == '__main__':
         scenario_list.append( params['BAU'] )
         scenario_list.append( params['NDP'] )
     elif scenarios_to_reproduce != 'All' and scenarios_to_reproduce != params['exper']:
-        scenario_list.append( scenarios_to_reproduce )
+        for scen_repr in scenarios_to_reproduce:
+            scenario_list.append( scen_repr )
     #
     '''
     print('brake here to check experiment scenarios')
@@ -2320,12 +2321,14 @@ if __name__ == '__main__':
                 # NOTE 3: we go ahead with the manipulation of the uncertainty if it is applicable to the scenario we are interested in reproducing.
                 # NOTE 4: we store the TotalDemand vector to be used in the uncertainties that require it.
                 
-                # if scenario_list[s] == 'LTS' and f == 2:
+                # if scenario_list[s] == 'LTS' and f == 1:
                     
-                #     this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRYTKLPG')]
+                #     this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRMOTELE')]
 
                 #     value_list = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
-                #     print('Esta',u,X_Cat,value_list[-14:-1])
+                #     print('Esta',u,X_Cat,value_list[4:15])
+                    
+                    
                     # if f == 10 and u == 49:
                     #     sys.exit()
                 
@@ -2345,7 +2348,7 @@ if __name__ == '__main__':
                         ####################
                         ### Inicio de WASTE
                         ####################
-
+                        
                         if params['Use_Waste']==True and Sectors_Involved[0][2]=="W":
 
                             if X_Cat in list_variation_waste:
@@ -3372,6 +3375,8 @@ if __name__ == '__main__':
                             #
                             if scenario_list[s] == params['BAU']:
                                 distribution_passenger_BAU = {}
+                            elif scenario_list[s] == params['NDP']:
+                                distribution_passenger_NDP = {}
                             # This uncertainty must be dealt with by adding the specified annual demand of the involved sets. Then, the final value is changed with the experimetn value. Finally, the time series (math type) is interpolated.
                             this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('FUEL') ]
                             summed_value_list = []
@@ -3395,6 +3400,9 @@ if __name__ == '__main__':
                                 if scenario_list[s] == params['BAU']:
                                     distribution_passenger_BAU.update( { this_set:[] } )
                                     distribution_passenger_BAU[ this_set ] = deepcopy( value_list )
+                                elif scenario_list[s] == params['NDP']:
+                                    distribution_passenger_NDP.update( { this_set:[] } )
+                                    distribution_passenger_NDP[ this_set ] = deepcopy( value_list )
                                 #
                             # Here we take advantage of the loop to obtain the baseline shares to apply to the BAU scenario:
                             if scenario_list[s] == params['BAU']:
@@ -3402,6 +3410,13 @@ if __name__ == '__main__':
                                 for a_set_BASE in range( len( Sets_Involved ) ):
                                     this_set_distribution = [ distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ][n] / TotalDemand_BASE_BAU[n] for n in range( len( TotalDemand_BASE_BAU ) ) ]
                                     distribution_passenger_BAU[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
+                            
+                            # Here we take advantage of the loop to obtain the baseline shares to apply to the NDP scenario:
+                            elif scenario_list[s] == params['NDP']:
+                                TotalDemand_BASE_NDP = deepcopy( summed_value_list )
+                                for a_set_BASE in range( len( Sets_Involved ) ):
+                                    this_set_distribution = [ distribution_passenger_NDP[ Sets_Involved[a_set_BASE] ][n] / TotalDemand_BASE_NDP[n] for n in range( len( TotalDemand_BASE_NDP ) ) ]
+                                    distribution_passenger_NDP[ Sets_Involved[a_set_BASE] ] = deepcopy( this_set_distribution )
 
                             # print('Energy_check_7')
                             # # now that the value is extracted, we must manipulate the result and store in TotalDemand
@@ -3476,7 +3491,20 @@ if __name__ == '__main__':
                                     updated_value_list_rounded = [ round(elem, params['round_#']) for elem in updated_value_list ]
                                     #
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( updated_value_list_rounded )
-                        #
+                            
+                            
+                            elif scenario_list[s] == params['NDP']:
+                                for a_set in range( len( Sets_Involved ) ):
+                                    this_set = Sets_Involved[a_set]
+                                    this_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ][ this_set_type_initial ] ) if x == str( this_set ) ]
+                                    updated_value_list = []
+                                    #
+                                    for n in range( len(TotalDemand) ):
+                                        updated_value_list.append( TotalDemand[n]*distribution_passenger_NDP[ this_set ][n] )
+                                    updated_value_list_rounded = [ round(elem, params['round_#']) for elem in updated_value_list ]
+                                    #
+                                    inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy( updated_value_list_rounded )
+                        
                         
                         elif X_Cat in params['x_cat_list'] and params['Use_Energy'] and Sectors_Involved[0][2]=="E":
                             print("Demanda de carga")
@@ -4928,7 +4956,6 @@ if __name__ == '__main__':
 
                                         # Adjust: check check
                                         for r_set in rem_sets:
-                                            print(rem_sets)
                                             r_set_range_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f][this_parameter][this_set_type_initial]) if x == str(r_set)]
                                             r_set_range_indices_2 = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity'][this_set_type_initial]) if x == str(r_set)]
                                             if len(r_set_range_indices) != 0:
@@ -5018,6 +5045,46 @@ if __name__ == '__main__':
                                         # if has_negative:
                                         #    print('Alert!')
                                         #    sys.exit()
+
+
+                                        #**********************************************************************
+                                        # Let us grab the Residual Capacity and add it up to the "new_value_list"
+                                        # Also check LowerLimit vs MaxCapacity
+                                        rescap_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'ResidualCapacity' ][ 't' ] ) if x == str( this_set ) ]
+                                        if len(rescap_set_range_indices) != 0:
+                                            print('Actually happens for: ', this_set)
+                                            # ResidualCapacity
+                                            rescap_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'ResidualCapacity' ]['value'][ rescap_set_range_indices[0]:rescap_set_range_indices[-1]+1 ]
+                                            rescap_value_list = [ float( rescap_value_list[j] ) for j in range( len( rescap_value_list ) ) ]
+                                            use_rescap_value_list = [0]*len(rescap_value_list)
+                                            # MaxCapacity
+                                            maxcap_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalAnnualMaxCapacity' ][ 't' ] ) if x == str( this_set ) ]
+                                            maxcap_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ maxcap_set_range_indices[0]:maxcap_set_range_indices[-1]+1 ]
+                                            # LowerLimit
+                                            lowerli_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
+                                            lowerli_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ maxcap_set_range_indices[0]:maxcap_set_range_indices[-1]+1 ]
+                                            
+                                            if 'ELE' in this_set:
+                                                for i_cap in range(len(rescap_value_list)):
+                                                    if maxcap_value_list == []:
+                                                        use_rescap_value_list[i_cap] = float(deepcopy(rescap_value_list[i_cap]))
+
+                                                    if maxcap_value_list[i_cap] < rescap_value_list[i_cap]: 
+                                                        use_rescap_value_list[i_cap] = deepcopy(maxcap_value_list[i_cap])
+                                                        
+                                                    else:
+                                                        use_rescap_value_list[i_cap] = deepcopy(rescap_value_list[i_cap])
+
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'ResidualCapacity' ]['value'][ rescap_set_range_indices[0]:rescap_set_range_indices[-1]+1 ] = deepcopy(use_rescap_value_list)
+                                                
+                                                for i_lower in range(len(lowerli_value_list)):
+                                                    if maxcap_value_list[i_lower] < lowerli_value_list[i_lower]: 
+                                                        lowerli_value_list[i_lower] = deepcopy(maxcap_value_list[i_lower])
+
+                                                inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ lowerli_set_range_indices[0]:lowerli_set_range_indices[-1]+1 ] = deepcopy(lowerli_value_list)
+                                                
+
+
 
                                     if this_set in special_list:
                                         non_rem_sets = special_list_dict[this_set]
@@ -5197,6 +5264,7 @@ if __name__ == '__main__':
                                         #     new_value_list_frerail_rounded = [ round(elem, params['round_#']) for elem in new_value_list_frerail ]
                                         #     inherited_scenarios[ scenario_list[ s ] ][ f ][ this_parameter ]['value'][ tsri_frerail[0]:tsri_frerail[-1]+1 ] = deepcopy( new_value_list_frerail_rounded )
 
+                                    
                                 # Me must act upon the parameters that get affected by the distance change. We must the read the scenario and extract a list of the technologies that require the change.
                                 go_to_file = os.path.join(all_dataset_address, scenario_list[s], f'{this_parameter}.csv')
                                 df_getter = pd.read_csv( go_to_file )
@@ -5803,7 +5871,14 @@ if __name__ == '__main__':
                     fut = all_futures[fut_index - scen*len( all_futures ) ]
                     #
                     
-                    if scenario_list_print[scen] == params['NDP'] or scenario_list_print[scen] == params['BAU']:
+                    # filter_futs_list = [fi for fi in range(966,1001)]
+                    
+                    # print('check this')
+                    # sys.exit()
+                    
+                    # if scenario_list_print[scen] == params['NDP'] or scenario_list_print[scen] == params['BAU']:
+                    # if scenario_list_print[scen] in params['scens_write_inputs'] and ((scenario_list_print[scen] == 'BAU' and int(fut) in filter_futs_list) or scenario_list_print[scen] == 'LTS'):
+                    if scenario_list_print[scen] in params['scens_write_inputs']:
                         p = mp.Process(target=function_C_mathprog_parallel, args=(n2,inherited_scenarios,packaged_useful_elements,params) )
                         processes.append(p)
                         p.start()
@@ -5855,6 +5930,7 @@ if __name__ == '__main__':
                                                        
         #
         for a_scen in range( len( scenario_list_print ) ):
+            
             #
             packaged_useful_elements = [reference_driven_distance, reference_occupancy_rate, Fleet_Groups_inv, time_range_vector, gdp_dict_export]
             #
@@ -5864,9 +5940,14 @@ if __name__ == '__main__':
             if params['parallel']:
                 print('Entered Parallelization')
                 if 'All' not in params['execute_scenarios']:
-                    x = len(range(params['execute_futures'][0],params['execute_futures'][1]))
+                    if params['execute_futures'][0] == 0:
+                        x = len(range(params['execute_futures'][0],params['execute_futures'][1]+1))
+                    else:
+                        x = len(first_list)
+                    case_ini = params['execute_futures'][0]
                 else:
                     x = len(first_list)
+                    case_ini = 0
                 #
                 max_x_per_iter = params['max_x_per_iter'] # FLAG: This is an input.
                 #
@@ -5875,10 +5956,16 @@ if __name__ == '__main__':
                 #
                 # sys.exit()
                 #'''
-                for n in range(0,y_ceil):
-                    count_cases +=1               
+                y_ini_cel = math.ceil(params['execute_futures'][0]/max_x_per_iter)-1
+                if y_ini_cel < 0:
+                    y_ini_cel = 0
+                
+                for n in range(y_ini_cel,y_ceil):
                     print('###')
                     n_ini = n*max_x_per_iter
+                    
+                    if n*max_x_per_iter <= case_ini:
+                        n_ini = case_ini
                     processes = []
                     #
                     start1 = time.time()
@@ -5887,13 +5974,17 @@ if __name__ == '__main__':
                         max_iter = n_ini + max_x_per_iter
                     else:
                         max_iter = x
+                        
+                    if max_iter > params['execute_futures'][1]:
+                        max_iter = params['execute_futures'][1]
                     #
-                    if 'All' not in params['execute_scenarios']:
-                        n_ini = params['execute_futures'][0]
-                        max_iter = params['execute_futures'][1] 
+                    # if count_cases == 0 and 'All' not in params['execute_scenarios']:
+                    #     n_ini = params['execute_futures'][0]
+                    # if 'All' not in params['execute_scenarios']:
+                    #     max_iter = params['execute_futures'][1] 
                     #
                     for n2 in range( n_ini , max_iter ):
-                        print(n2)
+                    # for n2 in range( 2 , max_iter ):
                         p = mp.Process(target=main_executer, args=(n2,Executed_Scenario,packaged_useful_elements,scenario_list_print,params) )
                         processes.append(p)
                         p.start()
@@ -5905,6 +5996,7 @@ if __name__ == '__main__':
                     time_elapsed_1 = -start1 + end_1
                     print( str( time_elapsed_1 ) + ' seconds' )
                     time_list.append( time_elapsed_1 )
+                    count_cases +=1
 
             else:
                 print('Started Linear Runs')
@@ -5933,7 +6025,6 @@ if __name__ == '__main__':
         str_start = params['start'] + file_address
         path_test_config_plots = os.path.join(file_config_plots_csvs, params['test_path'])
         str_tests = 'python -u ' + path_test_config_plots + ' ' + str(file_address) + ' 3a' # last int is the ID tier
-        print(str_tests)
         os.system( str_start and str_tests )
         
     

@@ -168,15 +168,15 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 2 # em
-Scenario_to_Reproduce: 'All' # em
+Number_of_Runs: 100 # em
+Scenario_to_Reproduce: ['BAU','LTS'] # em #options: 'All' or in a list each scenario
 Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 2 # B1, em
-execute_scenarios: ['All'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [0,2] # em # Select range of the futures you want to execute
+max_x_per_iter: 7 # B1, em
+execute_scenarios: ['BAU','LTS'] # em # Could you put 'All', 'BAU' or any scenario of the study
+execute_futures: [0,100] # em # Select range of the futures you want to execute
 status_file_status: 'new' # The options are 'new' or 'old'
 # if you select 'new' the file was reset 
 #----------------------------------------------------------------------------------#
@@ -187,7 +187,7 @@ parallel: True
 # Control inputs
 is_this_last_update: True # B1, em
 # Mode of simulation
-generator_or_executor: 'Both' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
+generator_or_executor: 'Executor' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
 gen_or_exe_1: 'Generator' # B1, em # Must not change
 gen_or_exe_2: 'Both' # B1, em # Must not change
 gen_or_exe_3: 'Executor' # B1, em # Must not change
@@ -237,6 +237,10 @@ NDP: 'LTS' # B1, em, FRM ###
 # You need define whatever new scenario name you use 
 DDP: 'DDP' # B1, em, FRM
 LTS: 'LTS' # em
+LTSNZ: 'LTSNZ' # em
+
+# Scens to write input file
+scens_write_inputs: ['BAU', 'LTS']
 #--------------------------------------------------------------------------------------------------------------------#
 
 # Years variables
@@ -401,7 +405,8 @@ params_inputs_data: # B1, em, FRM ###
 
 params_inputs_data_excep_by_scen: { # B1, em, FRM ###
   BAU: ['TotalAnnualMinCapacity', 'AnnualEmissionLimit'],
-  LTS: []
+  LTS: [],
+  LTSNZ: ['AnnualEmissionLimit']
 }                   
 
 
@@ -1059,7 +1064,7 @@ tier3a_dir: '\t3a_experiments\Experiment_1\Futures' #'../t3a_experiments/Experim
 excel_data_file_dir:  '\t3a_experiments\Experiment_1\Futures\'
 vis_dir: 'Visualizations' # Only changes y you want to change the folder name where save png plots files
 dir_main_script_yaml: '..\\config_main_files'
-scens: ['BAU', 'LTS']
+scens: ['BAU', 'LTS', 'LTSNZ']
 parameters_reference : [
   'AnnualTechnologyEmissionPenaltyByEmission',
   'CapitalInvestment',

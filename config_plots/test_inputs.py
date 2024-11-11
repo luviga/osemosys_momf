@@ -575,7 +575,7 @@ if __name__ == '__main__':
         all_technologies.update(techs)  # Include child technologies
     
     # Definition of scenarios and files to check
-    scenarios = ['BAU', 'LTS']
+    scenarios = params['scens_write_inputs']
     file_names = ['TotalTechnologyAnnualActivityUpperLimit', 'TotalTechnologyAnnualActivityLowerLimit', 'TotalAnnualMaxCapacity','ResidualCapacity']
     base_path = '1_Baseline_Modelling/'
 

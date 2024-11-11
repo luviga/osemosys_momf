@@ -132,13 +132,18 @@ if __name__ == '__main__':
     
     # Take the case from the model (B1 or experiment_manager)
     main_path = sys.argv
+    # print(main_path)
     # Take scenario and future from the main_path
     # example
     # this_case[0] = 'BAU_15.txt'
+    
     case = main_path[1].replace('.txt', '')
-    scen = main_path[1]
-    scen = scen[:3]
+    scen = case
+    last_underscore_index = scen.rfind('_')
+    if last_underscore_index != -1:
+        scen = scen[:last_underscore_index]
     tier_by_path = main_path[2]
+    
     
     # case = 'BAU_4'
     # scen = 'BAU_4'
