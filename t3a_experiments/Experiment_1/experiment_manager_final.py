@@ -2321,11 +2321,11 @@ if __name__ == '__main__':
                 # NOTE 3: we go ahead with the manipulation of the uncertainty if it is applicable to the scenario we are interested in reproducing.
                 # NOTE 4: we store the TotalDemand vector to be used in the uncertainties that require it.
                 
-                # if scenario_list[s] == 'LTS' and f == 1:
+                # if scenario_list[s] == 'LTS' and f == 2:
                     
-                #     this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['t']) if x == str('TRMOTELE')]
+                #     this_nvs_indices = [i for i, x in enumerate(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['t']) if x == str('TRAUTELE')]
 
-                #     value_list = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalAnnualMaxCapacity']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
+                #     value_list = deepcopy(inherited_scenarios[scenario_list[s]][f]['TotalTechnologyAnnualActivityLowerLimit']['value'][this_nvs_indices[0]:this_nvs_indices[-1]+1])
                 #     print('Esta',u,X_Cat,value_list[4:15])
                     
                     
@@ -4721,6 +4721,7 @@ if __name__ == '__main__':
                             enter_if_cycle = True
                             #
                             for a_set in range( len( Sets_Involved ) ):
+                                
                                 this_set_type_initial = S_DICT_sets_structure['initial'][ S_DICT_sets_structure['set'].index('TECHNOLOGY') ]
                                 #
                                 this_set = Sets_Involved[a_set]
@@ -4864,6 +4865,8 @@ if __name__ == '__main__':
                                     # if this_parameter == 'TotalAnnualMaxCapacity' and this_set == 'TRAUTELE':
                                     #     print('Revisar TRAUTELE')
                                         # sys.exit()
+                                    # if Sectors_Involved == ['L_E_7']:
+                                    #     sys.exit(7)
                                     inherited_scenarios[ scenario_list[s] ][ f ][ this_parameter ]['value'][ this_set_range_indices[0]:this_set_range_indices[-1]+1 ] = deepcopy(new_value_list_rounded)
                                     
                                     #####################################################
@@ -5062,7 +5065,7 @@ if __name__ == '__main__':
                                             maxcap_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalAnnualMaxCapacity' ]['value'][ maxcap_set_range_indices[0]:maxcap_set_range_indices[-1]+1 ]
                                             # LowerLimit
                                             lowerli_set_range_indices = [ i for i, x in enumerate( inherited_scenarios[ scenario_list[ s ] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ][ 't' ] ) if x == str( this_set ) ]
-                                            lowerli_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ maxcap_set_range_indices[0]:maxcap_set_range_indices[-1]+1 ]
+                                            lowerli_value_list = inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ lowerli_set_range_indices[0]:lowerli_set_range_indices[-1]+1 ]
                                             
                                             if 'ELE' in this_set:
                                                 for i_cap in range(len(rescap_value_list)):
@@ -5080,7 +5083,8 @@ if __name__ == '__main__':
                                                 for i_lower in range(len(lowerli_value_list)):
                                                     if maxcap_value_list[i_lower] < lowerli_value_list[i_lower]: 
                                                         lowerli_value_list[i_lower] = deepcopy(maxcap_value_list[i_lower])
-
+                                                # if this_set == 'TRAUTELE':
+                                                #     sys.exit(8)
                                                 inherited_scenarios[ scenario_list[s] ][ f ][ 'TotalTechnologyAnnualActivityLowerLimit' ]['value'][ lowerli_set_range_indices[0]:lowerli_set_range_indices[-1]+1 ] = deepcopy(lowerli_value_list)
                                                 
 
