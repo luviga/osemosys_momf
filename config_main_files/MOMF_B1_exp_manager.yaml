@@ -174,9 +174,9 @@ Initial_Future_to_Print: 1 # em
 Final_Future_to_Print: 10 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
-max_x_per_iter: 30 # B1, em
+max_x_per_iter: 7 # B1, em
 execute_scenarios: ['BAU','LTS'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [0,10] # em # Select range of the futures you want to execute
+execute_futures: [0,100] # em # Select range of the futures you want to execute
 status_file_status: 'new' # The options are 'new' or 'old'
 # if you select 'new' the file was reset
 # Scens to write input file
@@ -189,7 +189,7 @@ parallel: True
 # Control inputs
 is_this_last_update: True # B1, em
 # Mode of simulation
-generator_or_executor: 'Generator' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
+generator_or_executor: 'Executor' # options: 'None', 'Generator', 'Executor', 'Both' # B1, em
 gen_or_exe_1: 'Generator' # B1, em # Must not change
 gen_or_exe_2: 'Both' # B1, em # Must not change
 gen_or_exe_3: 'Executor' # B1, em # Must not change

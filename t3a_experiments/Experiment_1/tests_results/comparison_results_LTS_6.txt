@@ -8,26 +8,18 @@ only for transport sector.
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Auto:
      Check   2018: greater      mother value: 6.6089,   children value: 6.6635
+     Check   2046: greater      mother value: 6.8197,   children value: 6.8401
+     Check   2047: greater      mother value: 6.8913,   children value: 6.9877
+     Check   2048: greater      mother value: 6.9683,   children value: 7.1108
+     Check   2049: greater      mother value: 7.0491,   children value: 7.2197000000000005
+     Check   2050: greater      mother value: 7.1327,   children value: 7.3215
 -------------------------------------------------
 
 
 
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Buses_Micro:
-     Check   2025: greater      mother value: 5.2069,   children value: 5.415900000000001
--------------------------------------------------
-
-
-
-Results for TotalTechnologyAnnualActivityLowerLimit:
-   Results for Techs_He_Freight:
-     Children without values: ['TRYTKLPG', 'TRYTKHD']
-     Check   2045: greater      mother value: 0.3588,   children value: 0.3597
-     Check   2046: greater      mother value: 0.3613,   children value: 0.36400000000000005
-     Check   2047: greater      mother value: 0.3638,   children value: 0.36750000000000005
-     Check   2048: greater      mother value: 0.3662,   children value: 0.3704
-     Check   2049: greater      mother value: 0.3687,   children value: 0.373
-     Check   2050: greater      mother value: 0.3712,   children value: 0.3756
+     Check   2025: greater      mother value: 5.2069,   children value: 5.4081
 -------------------------------------------------
 -----------------------------------------------------------------------------------------------
 

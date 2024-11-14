@@ -8,18 +8,18 @@ only for transport sector.
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Auto:
      Check   2018: greater      mother value: 6.6089,   children value: 6.6635
-     Check   2046: greater      mother value: 6.9502,   children value: 6.991700000000001
-     Check   2047: greater      mother value: 7.0147,   children value: 7.133699999999999
-     Check   2048: greater      mother value: 7.0839,   children value: 7.249899999999999
-     Check   2049: greater      mother value: 7.1567,   children value: 7.3513
-     Check   2050: greater      mother value: 7.2318,   children value: 7.4449000000000005
+     Check   2046: greater      mother value: 6.8199,   children value: 6.8452
+     Check   2047: greater      mother value: 6.8791,   children value: 6.980300000000001
+     Check   2048: greater      mother value: 6.9432,   children value: 7.0907
+     Check   2049: greater      mother value: 7.0108,   children value: 7.186
+     Check   2050: greater      mother value: 7.0808,   children value: 7.2742
 -------------------------------------------------
 
 
 
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Buses_Micro:
-     Check   2025: greater      mother value: 5.2069,   children value: 5.4084
+     Check   2025: greater      mother value: 5.2069,   children value: 5.4089
 -------------------------------------------------
 
 
@@ -27,16 +27,15 @@ Results for TotalTechnologyAnnualActivityLowerLimit:
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_He_Freight:
      Children without values: ['TRYTKLPG', 'TRYTKHD']
-     Check   2041: greater      mother value: 0.3505,   children value: 0.354
-     Check   2042: greater      mother value: 0.3545,   children value: 0.37339999999999995
-     Check   2043: greater      mother value: 0.3584,   children value: 0.3826
-     Check   2044: greater      mother value: 0.3626,   children value: 0.3868
-     Check   2045: greater      mother value: 0.3665,   children value: 0.3906
-     Check   2046: greater      mother value: 0.3694,   children value: 0.3935
-     Check   2047: greater      mother value: 0.3723,   children value: 0.3964
-     Check   2048: greater      mother value: 0.3753,   children value: 0.3994
-     Check   2049: greater      mother value: 0.3782,   children value: 0.4023
-     Check   2050: greater      mother value: 0.3812,   children value: 0.4052
+     Check   2042: greater      mother value: 0.353,   children value: 0.3588
+     Check   2043: greater      mother value: 0.3567,   children value: 0.37150000000000005
+     Check   2044: greater      mother value: 0.3609,   children value: 0.3811
+     Check   2045: greater      mother value: 0.3647,   children value: 0.38839999999999997
+     Check   2046: greater      mother value: 0.3675,   children value: 0.3932
+     Check   2047: greater      mother value: 0.3702,   children value: 0.3972
+     Check   2048: greater      mother value: 0.3731,   children value: 0.40080000000000005
+     Check   2049: greater      mother value: 0.3759,   children value: 0.4039
+     Check   2050: greater      mother value: 0.3787,   children value: 0.40700000000000003
 -------------------------------------------------
 -----------------------------------------------------------------------------------------------
 

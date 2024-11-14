@@ -14,7 +14,7 @@ Results for TotalTechnologyAnnualActivityLowerLimit:
 
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Buses_Micro:
-     Check   2025: greater      mother value: 5.2069,   children value: 5.416
+     Check   2025: greater      mother value: 5.2069,   children value: 5.4193
 -------------------------------------------------
 -----------------------------------------------------------------------------------------------
 

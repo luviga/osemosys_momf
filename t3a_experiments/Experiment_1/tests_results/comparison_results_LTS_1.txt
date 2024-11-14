@@ -14,7 +14,21 @@ Results for TotalTechnologyAnnualActivityLowerLimit:
 
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Buses_Micro:
-     Check   2025: greater      mother value: 5.2069,   children value: 5.4155
+     Check   2025: greater      mother value: 5.2069,   children value: 5.4083000000000006
+-------------------------------------------------
+
+
+
+Results for TotalTechnologyAnnualActivityLowerLimit:
+   Results for Techs_He_Freight:
+     Children without values: ['TRYTKLPG', 'TRYTKHD']
+     Check   2044: greater      mother value: 0.3749,   children value: 0.37870000000000004
+     Check   2045: greater      mother value: 0.3795,   children value: 0.3877
+     Check   2046: greater      mother value: 0.3832,   children value: 0.39390000000000003
+     Check   2047: greater      mother value: 0.3868,   children value: 0.399
+     Check   2048: greater      mother value: 0.3905,   children value: 0.40349999999999997
+     Check   2049: greater      mother value: 0.3942,   children value: 0.40769999999999995
+     Check   2050: greater      mother value: 0.3979,   children value: 0.41159999999999997
 -------------------------------------------------
 -----------------------------------------------------------------------------------------------
 

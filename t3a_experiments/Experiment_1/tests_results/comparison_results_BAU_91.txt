@@ -1,0 +1,201 @@
+######################################################## TEST 1 ########################################################
+Problem if sum of daughters technologies are greater than mother technologies for the same parameter,
+only for transport sector.
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+######################################################## TEST 2 ########################################################
+Problem with decreasing values of TotalAnnualMaxCapacity by available technologies, by available technologies.
+PPCCTDSL has decreases at the following points:
+  Check   from Year 2018: 0.4019 to Year 2019: 0.4
+  Check   from Year 2019: 0.4 to Year 2020: 0.133
+
+-------------------------------------------------
+PPCCFOIDSL has decreases at the following points:
+  Check   from Year 2020: 0.185 to Year 2021: 0.0
+
+-------------------------------------------------
+PPCCTNGS has decreases at the following points:
+  Check   from Year 2018: 0.8183 to Year 2019: 0.6782
+
+-------------------------------------------------
+PPICEFOI has decreases at the following points:
+  Check   from Year 2019: 1.0927 to Year 2020: 0.6126
+  Check   from Year 2021: 0.6126 to Year 2022: 0.4956
+
+-------------------------------------------------
+
+
+
+
+
+
+
+######################################################## TEST 3 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are greater than TotalTechnologyAnnualActivityUpperLimit,
+by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 4 ########################################################
+
+Problem if values of ResidualCapacity are greater than TotalAnnualMaxCapacity,
+by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 5 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalAnnualMaxCapacity(mothers) x OutputActivityRatio(mothers), only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 6 ########################################################
+
+Problem if values of SpecifiedAnnualDemand(fuels/grandma) are greater than
+TotalTechnologyAnnualActivityLowerLimit(mothers) x OutputActivityRatio(mothers), only for transport sector.
+ Check   for E6TDPASPRI in year 2018, the condition is NOT satisfied.
+ Check   for E6TDFREHEA in year 2018, the condition is NOT satisfied.
+
+
+
+
+
+
+
+######################################################## TEST 7 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 8 ########################################################
+
+Problem if values of TotalTechnologyAnnualActivityLowerLimit are less than
+TotalAnnualMaxCapacity x CapacityFactor x AvailabilityFactor x 31.356, by available technologies.
+
+
+
+
+
+
+
+######################################################## TEST 9 ########################################################
+
+Problem if TotalAnnualMaxCapacity is less than TotalTechnologyAnnualActivityLowerLimit, only for transport sector.
+
+
+
+
+
+
+
+######################################################## TEST 10 ########################################################
+
+Problem if sum of TotalAnnualMaxCapacity(daughters) are less than TotalTechnologyAnnualActivityLowerLimit(mother),
+only for transport sector.
+   Results for Techs_Telef:
+     Check   2018: -0.0712      TotalTechnologyAnnualActivityLowerLimit value: 0.0712,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2019: -0.0748      TotalTechnologyAnnualActivityLowerLimit value: 0.0748,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2020: -0.0691      TotalTechnologyAnnualActivityLowerLimit value: 0.0691,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2021: -0.0781      TotalTechnologyAnnualActivityLowerLimit value: 0.0781,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2022: -0.083      TotalTechnologyAnnualActivityLowerLimit value: 0.083,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2023: -0.0843      TotalTechnologyAnnualActivityLowerLimit value: 0.0843,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2024: -0.087      TotalTechnologyAnnualActivityLowerLimit value: 0.087,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2025: -0.0897      TotalTechnologyAnnualActivityLowerLimit value: 0.0897,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2026: -0.0923      TotalTechnologyAnnualActivityLowerLimit value: 0.0923,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2027: -0.0949      TotalTechnologyAnnualActivityLowerLimit value: 0.0949,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2028: -0.0976      TotalTechnologyAnnualActivityLowerLimit value: 0.0976,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2029: -0.1003      TotalTechnologyAnnualActivityLowerLimit value: 0.1003,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2030: -0.1029      TotalTechnologyAnnualActivityLowerLimit value: 0.1029,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2031: -0.1053      TotalTechnologyAnnualActivityLowerLimit value: 0.1053,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2032: -0.1077      TotalTechnologyAnnualActivityLowerLimit value: 0.1077,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2033: -0.1101      TotalTechnologyAnnualActivityLowerLimit value: 0.1101,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2034: -0.1126      TotalTechnologyAnnualActivityLowerLimit value: 0.1126,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2035: -0.1152      TotalTechnologyAnnualActivityLowerLimit value: 0.1152,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2036: -0.1173      TotalTechnologyAnnualActivityLowerLimit value: 0.1173,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2037: -0.1195      TotalTechnologyAnnualActivityLowerLimit value: 0.1195,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2038: -0.1217      TotalTechnologyAnnualActivityLowerLimit value: 0.1217,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2039: -0.1239      TotalTechnologyAnnualActivityLowerLimit value: 0.1239,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2040: -0.1262      TotalTechnologyAnnualActivityLowerLimit value: 0.1262,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2041: -0.128      TotalTechnologyAnnualActivityLowerLimit value: 0.128,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2042: -0.1299      TotalTechnologyAnnualActivityLowerLimit value: 0.1299,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2043: -0.1318      TotalTechnologyAnnualActivityLowerLimit value: 0.1318,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2044: -0.1337      TotalTechnologyAnnualActivityLowerLimit value: 0.1337,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2045: -0.1356      TotalTechnologyAnnualActivityLowerLimit value: 0.1356,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2046: -0.1371      TotalTechnologyAnnualActivityLowerLimit value: 0.1371,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2047: -0.1386      TotalTechnologyAnnualActivityLowerLimit value: 0.1386,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2048: -0.1401      TotalTechnologyAnnualActivityLowerLimit value: 0.1401,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2049: -0.1416      TotalTechnologyAnnualActivityLowerLimit value: 0.1416,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2050: -0.1432      TotalTechnologyAnnualActivityLowerLimit value: 0.1432,   Sum TotalAnnualMaxCapacity value: 0.0
+-------------------------------------------------
+   Results for Techs_Trains:
+     Check   2018: -0.0417      TotalTechnologyAnnualActivityLowerLimit value: 0.0417,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2019: -0.0439      TotalTechnologyAnnualActivityLowerLimit value: 0.0439,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2020: -0.0406      TotalTechnologyAnnualActivityLowerLimit value: 0.0406,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2021: -0.0458      TotalTechnologyAnnualActivityLowerLimit value: 0.0458,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2022: -0.0487      TotalTechnologyAnnualActivityLowerLimit value: 0.0487,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2023: -0.0495      TotalTechnologyAnnualActivityLowerLimit value: 0.0495,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2024: -0.0511      TotalTechnologyAnnualActivityLowerLimit value: 0.0511,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2025: -0.0527      TotalTechnologyAnnualActivityLowerLimit value: 0.0527,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2026: -0.0542      TotalTechnologyAnnualActivityLowerLimit value: 0.0542,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2027: -0.0557      TotalTechnologyAnnualActivityLowerLimit value: 0.0557,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2028: -0.0573      TotalTechnologyAnnualActivityLowerLimit value: 0.0573,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2029: -0.0588      TotalTechnologyAnnualActivityLowerLimit value: 0.0588,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2030: -0.0604      TotalTechnologyAnnualActivityLowerLimit value: 0.0604,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2031: -0.0618      TotalTechnologyAnnualActivityLowerLimit value: 0.0618,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2032: -0.0632      TotalTechnologyAnnualActivityLowerLimit value: 0.0632,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2033: -0.0646      TotalTechnologyAnnualActivityLowerLimit value: 0.0646,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2034: -0.0661      TotalTechnologyAnnualActivityLowerLimit value: 0.0661,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2035: -0.0676      TotalTechnologyAnnualActivityLowerLimit value: 0.0676,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2036: -0.0689      TotalTechnologyAnnualActivityLowerLimit value: 0.0689,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2037: -0.0701      TotalTechnologyAnnualActivityLowerLimit value: 0.0701,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2038: -0.0714      TotalTechnologyAnnualActivityLowerLimit value: 0.0714,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2039: -0.0727      TotalTechnologyAnnualActivityLowerLimit value: 0.0727,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2040: -0.0741      TotalTechnologyAnnualActivityLowerLimit value: 0.0741,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2041: -0.0752      TotalTechnologyAnnualActivityLowerLimit value: 0.0752,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2042: -0.0762      TotalTechnologyAnnualActivityLowerLimit value: 0.0762,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2043: -0.0773      TotalTechnologyAnnualActivityLowerLimit value: 0.0773,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2044: -0.0785      TotalTechnologyAnnualActivityLowerLimit value: 0.0785,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2045: -0.0796      TotalTechnologyAnnualActivityLowerLimit value: 0.0796,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2046: -0.0805      TotalTechnologyAnnualActivityLowerLimit value: 0.0805,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2047: -0.0813      TotalTechnologyAnnualActivityLowerLimit value: 0.0813,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2048: -0.0822      TotalTechnologyAnnualActivityLowerLimit value: 0.0822,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2049: -0.0831      TotalTechnologyAnnualActivityLowerLimit value: 0.0831,   Sum TotalAnnualMaxCapacity value: 0.0
+     Check   2050: -0.084      TotalTechnologyAnnualActivityLowerLimit value: 0.084,   Sum TotalAnnualMaxCapacity value: 0.0
+-------------------------------------------------
+
+
+
+
+
+
+
+######################################################## TEST 11 ########################################################
+
+Problem if sum of TotalTechnologyAnnualActivityLowerLimit(daughters) are greater than TotalTechnologyAnnualActivityUpperLimit(mother),
+only for afolu sector.

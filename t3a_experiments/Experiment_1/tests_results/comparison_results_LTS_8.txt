@@ -8,17 +8,13 @@ only for transport sector.
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Auto:
      Check   2018: greater      mother value: 6.6089,   children value: 6.6635
-     Check   2047: greater      mother value: 6.7222,   children value: 6.8035
-     Check   2048: greater      mother value: 6.7931,   children value: 6.9571
-     Check   2049: greater      mother value: 6.8689,   children value: 7.0852
-     Check   2050: greater      mother value: 6.948,   children value: 7.1901
 -------------------------------------------------
 
 
 
 Results for TotalTechnologyAnnualActivityLowerLimit:
    Results for Techs_Buses_Micro:
-     Check   2025: greater      mother value: 5.2069,   children value: 5.4095
+     Check   2025: greater      mother value: 5.2069,   children value: 5.4159
 -------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
