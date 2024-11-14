@@ -176,9 +176,11 @@ Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
 max_x_per_iter: 30 # B1, em
 execute_scenarios: ['BAU','LTS'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [0,100] # em # Select range of the futures you want to execute
+execute_futures: [0,10] # em # Select range of the futures you want to execute
 status_file_status: 'new' # The options are 'new' or 'old'
-# if you select 'new' the file was reset 
+# if you select 'new' the file was reset
+# Scens to write input file
+scens_write_inputs: ['BAU','LTS']
 #----------------------------------------------------------------------------------#
 
 # Choose if want run script in parallel or not
@@ -239,8 +241,7 @@ DDP: 'DDP' # B1, em, FRM
 LTS: 'LTS' # em
 LTSNZ: 'LTSNZ' # em
 
-# Scens to write input file
-scens_write_inputs: ['BAU', 'LTS']
+
 #--------------------------------------------------------------------------------------------------------------------#
 
 # Years variables
@@ -405,7 +406,7 @@ params_inputs_data: # B1, em, FRM ###
 
 params_inputs_data_excep_by_scen: { # B1, em, FRM ###
   BAU: ['TotalAnnualMinCapacity', 'AnnualEmissionLimit'],
-  LTS: [],
+  LTS: ['AnnualEmissionLimit'],
   LTSNZ: ['AnnualEmissionLimit']
 }                   
 
