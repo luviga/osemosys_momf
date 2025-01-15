@@ -168,15 +168,15 @@ iteration_time: 60
 del_files: True # B1, em, FRM
 
 # Maximun cores to use per iteration
-Number_of_Runs: 10 # em
+Number_of_Runs: 4 # em
 Scenario_to_Reproduce: ['BAU','LTS'] # em #options: 'All' or in a list each scenario
 Initial_Future_to_Print: 1 # em
-Final_Future_to_Print: 10 # em
+Final_Future_to_Print: 4 # em
 Initial_Year_of_Uncertainty: 2025 # em ##@
 Experiment_ID: 1 # em
 max_x_per_iter: 2 # B1, em
 execute_scenarios: ['BAU','LTS'] # em # Could you put 'All', 'BAU' or any scenario of the study
-execute_futures: [0,10] # em # Select range of the futures you want to execute
+execute_futures: [0,4] # em # Select range of the futures you want to execute
 status_file_status: 'new' # The options are 'new' or 'old'
 # if you select 'new' the file was reset 
 # Scens to write input file
