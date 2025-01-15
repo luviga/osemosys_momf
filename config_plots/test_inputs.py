@@ -311,9 +311,9 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
         # Calculate the equation for each grandmother technology
         for grandmother in df_mode_broad.columns[1:]:
             mother_techs = df_mode_broad[df_mode_broad[grandmother] == 'x']['Techs/Demand']
-            sum_products = 0
         
             for year in parameter.columns:
+                sum_products = 0
                 for mother in mother_techs:
                     if mother in parameter.index and mother in oar_techs.index:
                         max_cap = parameter.loc[mother, year]
@@ -322,7 +322,7 @@ def check_demand_vs_capacity(df_mode_broad, parameter, spec_an_dem_techs, oar_te
         
                 specified_demand = spec_an_dem_techs.loc[grandmother, year]
                 # Check if the sum of products is greater than or equal to the specified demand
-                if not sum_products >= specified_demand:
+                if sum_products <= specified_demand:
                     file.write(f" Check   for {grandmother} in year {year}, the condition is NOT satisfied.\n")
 
 def check_demand_vs_capacity_variant(parameter, parameter_2, parameter_3, output_filename, param_names, num, parameter_4=None):
