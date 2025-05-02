@@ -2495,8 +2495,10 @@ if __name__ == '__main__':
             adjust_with_rail = False
             for a_set in range( len( applicable_sets_tech ) ): # REMEMBER THIS IS A CHANGE FUNCTION
                 this_set = applicable_sets_tech[ a_set ]
+                p = this_set
                 if params['techs_var'] not in this_set:
                     this_set_group = Fleet_Groups_inv[ this_set ]
+                    sys.exit()
                 else:
                     this_set_group = this_set
                 adjust_with_rail = True
